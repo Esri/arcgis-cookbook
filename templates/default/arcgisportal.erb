@@ -1,0 +1,50 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: arcgisportal
+# Required-Start: $ALL
+# Required-Stop: 
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Description: Portal for ArcGIS Service
+# Short-Description: Portal for ArcGIS
+### END INIT INFO
+
+invoker=`id | cut -f 2 -d '(' | cut -f 1 -d ')'`
+
+rwd=`dirname $0`/../../..
+if [ -L "$0" ]; then
+  link=`readlink $0`
+  rwd=`dirname $link`/../../..
+fi
+
+#portalhome=`cd $rwd && pwd`
+portalhome=<%=@portalhome%>
+portalowner=`stat -c %U $portalhome/framework/etc/arcgisportal`
+MAX_SLEEP_COUNT=30
+
+if [ -f /etc/init.d/functions ] ; then
+   . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+   . /etc/rc.d/init.d/functions
+fi
+
+count=0
+while [ 1 ]; do
+  myip=`ifconfig | grep "Bcast:" | grep -v 127.0.0.1`
+  if [ "x$myip" != "x" ]; then
+    break
+  fi
+  count=`expr $count + 1`
+  if [ $count -gt $MAX_SLEEP_COUNT ]; then
+    exit 1
+  fi
+  sleep 1
+done
+
+if [ "$invoker" != "$portalowner" ]; then
+  echo "Invoking user ($invoker) is not owner of Portal for ArcGIS ($portalowner). Switching to account $portalowner"
+  su - $portalowner -c "$portalhome/framework/etc/agsportal.sh $1"
+  echo ""
+else
+   $portalhome/framework/etc/agsportal.sh $1
+fi

@@ -1,0 +1,54 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: arcgisdatastore
+# Required-Start: $ALL
+# Required-Stop: 
+# Default-Start: 5 6
+# Default-Stop: 0 1 2 4
+# Description: ArcGIS Data Store
+# Short-Description: ArcGIS Data Store
+### END INIT INFO
+
+invoker=`id | cut -f 2 -d '(' | cut -f 1 -d ')'`
+agsfilecheck=etc/arcgis-data-store-config.properties
+
+rwd=`dirname $0`/../../..
+if [ -L "$0" ]; then
+  link=`readlink $0`
+  rwd=`dirname $link`/../../..
+fi
+
+#agshome=`cd $rwd && pwd`
+agshome=<%=@datastorehome%>
+MAX_SLEEP_COUNT=30
+if [ ! -f $agshome/$agsfilecheck ]; then
+  exit 1
+fi
+agsowner=`stat -c %U $agshome/$agsfilecheck`
+
+if [ -f /etc/init.d/functions ] ; then
+   . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+   . /etc/rc.d/init.d/functions
+fi
+
+count=0
+while [ 1 ]; do
+  myip=`ifconfig | grep "Bcast:" | grep -v 127.0.0.1`
+  if [ "x$myip" != "x" ]; then
+    break
+  fi
+  count=`expr $count + 1`
+  if [ $count -gt $MAX_SLEEP_COUNT ]; then
+    exit 1
+  fi
+  sleep 1
+done
+
+if [ "$invoker" != "$agsowner" ]; then
+  echo "Invoking user ($invoker) is not ArcGIS Data Store owner ($agsowner). Switching to account $agsowner"
+  su - $agsowner -c "$agshome/framework/etc/scripts/arcgisdatastore.sh $1"
+  echo ""
+else
+   $agshome/framework/etc/scripts/arcgisdatastore.sh $1
+fi

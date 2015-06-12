@@ -1,0 +1,148 @@
+require 'openssl'
+require 'digest/md5'
+
+action :enable do
+  
+#  if node['platform_version'] >= '6.2'
+#    features = [
+#      "Web-Mgmt-Tools", 
+#      "Web-Server",
+#      "Web-Mgmt-Console",
+#      "Web-Scripting-Tools",
+#      "Web-Static-Content",
+#      "Web-ISAPI-Filter",
+#      "Web-ISAPI-Ext",
+#      "Web-Basic-Auth",
+#      "Web-Windows-Auth",
+#      "Web-Net-Ext",
+#      "Web-Asp-Net",
+#      #"Web-Asp-Net45",
+#      #"Web-Net-Ext45",
+#      "Web-Mgmt-Compat",
+#      "Web-Metabase",
+#      "Web-Mgmt-Service"]
+#  else
+#    features = [
+#      "Web-Mgmt-Tools", 
+#      "Web-Server",
+#      "Web-Mgmt-Console",
+#      "Web-Scripting-Tools",
+#      "Web-Static-Content",
+#      "Web-ISAPI-Filter",
+#      "Web-ISAPI-Ext",
+#      "Web-Basic-Auth",
+#      "Web-Windows-Auth",
+#      "Web-Net-Ext",
+#      "Web-Asp-Net",
+#      "Web-Mgmt-Compat",
+#      "Web-Metabase",
+#      "Web-Mgmt-Service"]
+#  end
+
+  node['iis']['features'].each do |feature|
+    windows_feature feature do
+      action :install
+    end
+  end
+    
+  service "W3SVC" do
+    action [:enable]
+  end
+  
+  new_resource.updated_by_last_action(true)
+end
+
+action :configure_https do
+  pfx_file = @new_resource.keystore_file
+  keystore_pass = @new_resource.keystore_password
+
+  site_info = `%systemroot%\\system32\\inetsrv\\appcmd list site "Default Web Site"`
+  https_binding_exist = site_info.include? "https/*:443:" 
+
+  if !https_binding_exist
+    if pfx_file == nil || !::File.exist?(pfx_file)
+      if pfx_file == nil
+        Chef::Log.warn("SSL certificate file was not specified.")
+      else
+        Chef::Log.warn("SSL certificate file '#{pfx_file}' was not found.")
+      end
+  
+      Chef::Log.warn("HTTPS binding will be configured using a self-signed certificate.")
+        
+      #Generate self-signed SSL certificate
+      domain_name = node['fqdn']
+      cert_file = ::File.join(Chef::Config[:file_cache_path], domain_name + ".pem")
+      key_file = ::File.join(Chef::Config[:file_cache_path], domain_name + ".key")
+      pfx_file = ::File.join(Chef::Config[:file_cache_path], domain_name + ".pfx")
+        
+      if keystore_pass == nil
+        keystore_pass = "test"
+      end
+      
+      openssl_x509 cert_file do
+        common_name domain_name
+        org "test"
+        org_unit "dev"
+        country "US"
+      end
+        
+      ruby_block "Configure SSL with HTTP.SYS" do
+        block do
+          key = OpenSSL::PKey.read ::File.read(key_file)
+          cert = OpenSSL::X509::Certificate.new ::File.read(cert_file)
+          pkcs12 = OpenSSL::PKCS12.create(keystore_pass, nil, key, cert)
+        
+          ::File.open(pfx_file, "wb") do |output|
+            output.write pkcs12.to_der
+          end
+          
+          pkcs12 = OpenSSL::PKCS12.new(::File.binread(pfx_file), keystore_pass)
+          certhash = Digest::SHA1.hexdigest(pkcs12.certificate.to_der)
+          `certutil -f -p \"#{keystore_pass}\" -importpfx "#{pfx_file}"`
+          `netsh http add sslcert ipport=0.0.0.0:443 certhash=#{certhash} appid=#{node['iis']['appid']}`
+        end
+        action :run
+      end
+    else
+      #There is an easy way in Windows Server 2012
+      #    powershell_script "Configure HTTPS Binding in IIS" do
+      #      code <<-EOH
+      #        Import-Module WebAdministration
+      #        $binding = Get-WebBinding -Protocol https -Port 443
+      #        if($binding -eq $null) 
+      #        {
+      #          New-WebBinding -Name "Default Web Site" -IP "*" -Port 443 -Protocol https
+      #          $secure_password = convertto-securestring "#{keystore_pass}" -asplaintext -force
+      #          $cert = Import-PfxCertificate "#{pfx_file}" -CertStoreLocation "cert:\\LocalMachine\\My" -Password $secure_password
+      #          $cert | New-Item "IIS:\\SslBindings\\0.0.0.0!443"
+      #        } 
+      #      EOH
+      #    end
+  
+      ruby_block "Configure SSL with HTTP.SYS" do
+        block do
+          pkcs12 = OpenSSL::PKCS12.new(::File.binread(pfx_file), keystore_pass)
+          certhash = Digest::SHA1.hexdigest(pkcs12.certificate.to_der)
+          `certutil -f -p \"#{keystore_pass}\" -importpfx "#{pfx_file}"`
+          `netsh http add sslcert ipport=0.0.0.0:443 certhash=#{certhash} appid=#{node['iis']['appid']}`
+        end
+        action :run
+      end
+    end    
+   
+    execute "Add HTTPS Binding to Default Web Site" do
+      command "%systemroot%\\system32\\inetsrv\\appcmd set site \"Default Web Site\" /+bindings.[protocol='https',bindingInformation='*:443:']"    
+    end
+    
+    new_resource.updated_by_last_action(true)
+  end  
+end
+
+action :start do
+  service "W3SVC" do
+    action [:start]
+  end
+  
+  new_resource.updated_by_last_action(true)
+end
+
