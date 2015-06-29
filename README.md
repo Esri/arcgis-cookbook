@@ -170,7 +170,7 @@ node-rhel.json
                 "admin_username":"admin",
                 "admin_password":"admin123",
                 "directories_root":"/home/ags/arcgis/server/usr/directories",
-                "setup":"/arcgisl/Server10.3.1/Setup",
+                "setup":"/arcgis/Server10.3.1/Setup",
                 "authorization_file":"/arcgis/server.prvc"
         },
         "portal":{
