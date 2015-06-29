@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis
-# Resource:: datastore
+# Resource:: desktop
 #
 # Copyright 2015 Esri
 #
@@ -17,17 +17,20 @@
 # limitations under the License.
 #
 
-actions :install, :configure  
+actions :install, :authorize
 
 attribute :setup, :kind_of => String
 attribute :install_dir, :kind_of => String
-attribute :data_dir, :kind_of => String
-attribute :backup_dir, :kind_of => String
-attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
-attribute :server_url, :kind_of => String
-attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :python_dir, :kind_of => String
+attribute :install_features, :kind_of => String
+attribute :authorization_file, :kind_of => String
+attribute :authorization_file_version, :kind_of => String
+attribute :esri_license_host, :kind_of => String
+attribute :software_class, :kind_of => String
+attribute :seat_preference, :kind_of => String
+attribute :desktop_config, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :renewal_check, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :modifyflexdacl, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)
   super

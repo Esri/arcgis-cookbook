@@ -33,4 +33,8 @@ recipe 'arcgis::server_wa', 'Installs Web Adaptor and configures it with ArcGIS 
 recipe 'arcgis::portal', 'Installs and configures Portal for ArcGIS'
 recipe 'arcgis::portal_wa', 'Installs Web Adaptor and configures it with Portal for ArcGIS'
 recipe 'arcgis::datastore', 'Installs and configures ArcGIS Data Store'
+recipe 'arcgis::egdb', 'Registers GeoDatabases with server'
 recipe 'arcgis::federation', 'Federates ArcGIS Server with Portal for ArcGIS'
+recipe 'arcgis::desktop', 'Installs ArcGIS Desktop'
+recipe 'arcgis::licensemanager', 'Installs ArcGIS License Manager'
+recipe 'arcgis::fileserver', 'Configures shared directories on file server machine'

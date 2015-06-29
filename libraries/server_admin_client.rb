@@ -1,9 +1,27 @@
+#
+# Copyright 2015 Esri
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 require "net/http"
 require "uri"
 require "json"
 
 module ArcGIS
   class ServerAdminClient
+
+    MAX_RETRIES = 300
+    SLEEP_TIME = 10.0
 
     @server_url = nil
     @admin_username = nil
@@ -44,9 +62,41 @@ module ArcGIS
       return false
     end
     
-    def create_site(server_directories_root)
-      wait_until_available()
+    def wait_until_site_exist()
+      count = 0
+      for i in 1..MAX_RETRIES
+        if site_exist?
+          count += 1
+          
+          if count >= 3
+            break
+          end
+        end
+  
+        sleep(SLEEP_TIME)
+      end 
+    end
+    
+    def get_local_machine_name()
+      uri = URI.parse(@server_url + "/admin/local")
+
+      token = generate_token(@server_url + "/admin/generateToken")
+            
+      uri.query = URI.encode_www_form({
+        "token" => token,
+        "f" => "json"})
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field("Referer", "referer")
+
+      response = send_request(request)
+
+      validate_response(response)
       
+      JSON.parse(response.body)['machineName']
+    end
+    
+    def create_site(server_directories_root)
       config_store_connection = {
         "type" => "FILESYSTEM",
         "connectionString" => ::File.join(server_directories_root, "config-store")
@@ -103,6 +153,38 @@ module ArcGIS
         "directories" => directories.to_json,
         "settings" => log_settings.to_json,
         "cluster" => "",
+        "f" => "json"})
+  
+      response = send_request(request)
+  
+      validate_response(response)
+    end
+    
+    def join_site(primary_server_url)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/joinSite').request_uri)
+  
+      request.set_form_data({
+        "username" => @admin_username,
+        "password" => @admin_password,
+        "adminURL" => primary_server_url + '/admin',
+        "f" => "json"})
+  
+      response = send_request(request)
+  
+      validate_response(response)
+    end
+    
+    def add_machine_to_cluster(machine_name, cluster)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + "/admin/clusters/#{cluster}/machines/add").request_uri)
+      request.add_field("Referer", "referer")
+        
+      token = generate_token(@server_url + "/admin/generateToken")
+      
+      request.set_form_data({
+        "username" => @admin_username,
+        "password" => @admin_password,
+        "machineNames" => machine_name,
+        "token" => token,
         "f" => "json"})
   
       response = send_request(request)

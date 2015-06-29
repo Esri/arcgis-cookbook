@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis
-# Recipe:: portal_wa
+# Recipe:: desktop
 #
 # Copyright 2015 Esri
 #
@@ -17,19 +17,19 @@
 # limitations under the License.
 #
 
-arcgis_webadaptor "Setup Web Adaptor for Portal" do
-  install_dir node['web_adaptor']['install_dir']
-  setup node['web_adaptor']['setup']
-  instance_name node['portal']['wa_name']
+arcgis_desktop "Install ArcGIS for Desktop" do
+  setup node['desktop']['setup']
+  install_dir node['desktop']['install_dir']
+  python_dir node['python']['install_dir']
+  install_features node['desktop']['install_features']
+  esri_license_host node['desktop']['esri_license_host']
+  software_class node['desktop']['software_class']
+  seat_preference node['desktop']['seat_preference']
   action :install
 end
 
-arcgis_webadaptor "Configure Web Adaptor with Portal" do
-  portal_url node['portal']['url']
-  portal_local_url "https://" + node['portal']['domain_name'] + ":7443"
-  install_dir node['web_adaptor']['install_dir']
-  instance_name node['portal']['wa_name']
-  username node['portal']['admin_username']
-  password node['portal']['admin_password']
-  action :configure_with_portal
+arcgis_desktop "Authorize ArcGIS for Desktop" do
+  authorization_file node['desktop']['authorization_file']
+  authorization_file_version node['desktop']['authorization_file_version']
+  action :authorize
 end

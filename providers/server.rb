@@ -1,3 +1,22 @@
+#
+# Cookbook Name:: arcgis
+# Provider:: server
+#
+# Copyright 2015 Esri
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 action :install do
   if node['platform'] == 'windows' 
     cmd = @new_resource.setup
@@ -23,6 +42,7 @@ action :install do
 
     execute "Change 'ArcGIS Server' service logon account" do
       command "sc.exe config \"ArcGIS Server\" obj= \"#{service_logon_user}\" password= \"#{run_as_password}\""
+      #sensitive true
     end
     
     service "ArcGIS Server" do
@@ -89,6 +109,36 @@ action :create_site do
 
     new_resource.updated_by_last_action(true)
   end
+end
+
+action :join_site do
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url, @new_resource.username, @new_resource.password)
+  
+  admin_client.wait_until_available()
+
+  if admin_client.site_exist?
+    Chef::Log.warn("Machine is already connected to an ArcGIS Server site.")
+  else
+    primary_admin_client = ArcGIS::ServerAdminClient.new(@new_resource.primary_server_url, @new_resource.username, @new_resource.password)
+
+    primary_admin_client.wait_until_site_exist()
+          
+    admin_client.join_site(@new_resource.primary_server_url)
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
+action :join_cluster do
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url, @new_resource.username, @new_resource.password)
+  
+  admin_client.wait_until_available()
+
+  machine_name = admin_client.get_local_machine_name()
+
+  admin_client.add_machine_to_cluster(machine_name, @new_resource.cluster)
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :enable_ssl do

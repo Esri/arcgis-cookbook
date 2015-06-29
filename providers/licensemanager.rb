@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis
-# Resource:: datastore
+# Provider:: licensemanager
 #
 # Copyright 2015 Esri
 #
@@ -15,21 +15,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-actions :install, :configure  
+action :install do
+  cmd = @new_resource.setup
+  args = "/qb ADDLOCAL=ALL INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\""
 
-attribute :setup, :kind_of => String
-attribute :install_dir, :kind_of => String
-attribute :data_dir, :kind_of => String
-attribute :backup_dir, :kind_of => String
-attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
-attribute :server_url, :kind_of => String
-attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+  install_dir = @new_resource.install_dir
+  install_dir2 = install_dir.gsub(/\\/,'/')
 
-def initialize(*args)
-  super
-  @action = :install
+  execute "Install ArcGIS License Manager" do
+    command "\"#{cmd}\" #{args}"
+    only_if {::Dir.glob("#{install_dir2}/License*").empty?}
+  end
 end

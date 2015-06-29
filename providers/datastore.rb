@@ -1,3 +1,21 @@
+#
+# Cookbook Name:: arcgis
+# Provider:: datastore
+#
+# Copyright 2015 Esri
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 action :install do
   if node['platform'] == 'windows'
     install_dir = @new_resource.install_dir
@@ -90,6 +108,7 @@ action :configure do
         `icacls.exe \"#{data_dir}\" /grant #{run_as_user}:(OI)(CI)F`
         `sc.exe config \"ArcGIS Data Store\" obj= \"#{service_logon_user}\" password= \"#{run_as_password}\"`
       end
+      #sensitive true
       action :run
     end
 
@@ -108,6 +127,8 @@ action :configure do
     end
   end
 
+  change_backup_location(@new_resource.install_dir, @new_resource.backup_dir, @new_resource.run_as_user, @new_resource.run_as_password)
+  
   new_resource.updated_by_last_action(true)
 end
 
@@ -134,5 +155,28 @@ def configure_autostart(datastorehome)
   service "arcgisdatastore" do
     supports :status => true, :restart => true, :reload => true
     action [:enable, :start]
+  end
+end
+
+def change_backup_location(install_dir, backup_dir, run_as_user, run_as_password)
+  if node['platform'] == 'windows' 
+    cmd = ::File.join(install_dir, "tools\\changebackuplocation")
+    is_shared_folder = backup_dir.start_with?("\\\\") ? "true" : "false"
+    args = "\"#{backup_dir}\" --is-shared-folder #{is_shared_folder} --keep-old-backups true --prompt no"
+    env = {'AGSDATASTORE' => install_dir}
+
+    execute "Change ArcGIS DataStore Backup Location" do
+      command "\"#{cmd}\" #{args}"
+      environment env
+    end
+  else
+    install_subdir = ::File.join(install_dir, node['data_store']['install_subdir'])
+    cmd = ::File.join(install_subdir, "tools/changebackuplocation.sh")
+    args = "\"#{backup_dir}\" --is-shared-folder true --keep-old-backups true --prompt no"
+    
+    execute "Change ArcGIS DataStore Backup Location" do
+      command "\"#{cmd}\" #{args}"
+      user run_as_user
+    end
   end
 end

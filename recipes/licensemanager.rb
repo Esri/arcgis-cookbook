@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis
-# Resource:: datastore
+# Recipe:: licensemanager
 #
 # Copyright 2015 Esri
 #
@@ -17,19 +17,9 @@
 # limitations under the License.
 #
 
-actions :install, :configure  
-
-attribute :setup, :kind_of => String
-attribute :install_dir, :kind_of => String
-attribute :data_dir, :kind_of => String
-attribute :backup_dir, :kind_of => String
-attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
-attribute :server_url, :kind_of => String
-attribute :username, :kind_of => String
-attribute :password, :kind_of => String
-
-def initialize(*args)
-  super
-  @action = :install
+arcgis_licensemanager "Install ArcGIS for License Manager" do
+  setup node['licensemanager']['setup']
+  install_dir node['licensemanager']['install_dir']
+  python_dir node['python']['install_dir']
+  action :install
 end

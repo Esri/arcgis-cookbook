@@ -2,8 +2,19 @@
 # Cookbook Name:: arcgis
 # Recipe:: server
 #
-# Copyright 2014, Environmental Systems Research Institute
+# Copyright 2015 Esri
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 arcgis_server "Setup ArcGIS for Server" do
@@ -23,42 +34,54 @@ end
 
 directory node['server']['directories_root'] do
   owner node['arcgis']['run_as_user']
-  mode '0755'
+  if node['platform'] != 'windows'
+    group 'root'    
+    mode '0755'
+  end
   recursive true
+  not_if { node['server']['directories_root'].start_with?("\\\\") }
   action :create
 end
 
-arcgis_server "Create ArcGIS for Server Site" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  server_directories_root node['server']['directories_root']
-  action :create_site
-end
-
-arcgis_server "Enable SSL on ArcGIS Server Site" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  action :enable_ssl
-end
-
-arcgis_server "Register Managed Database" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  data_item_path "/enterpriseDatabases/managedDatabase"
-  connection_string node['server']['managed_database']
-  is_managed true
-  action :register_database
-end
-
-arcgis_server "Register Replicated Database" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  data_item_path "/namedWorkspaces/replicatedDatabase"
-  connection_string node['server']['replicated_database']
-  is_managed false
-  action :register_database
+if node['server']['primary_server_url'].nil?
+  #Create Site
+  arcgis_server "Create ArcGIS for Server Site" do
+    server_url node['server']['local_url']
+    username node['server']['admin_username']
+    password node['server']['admin_password']
+    server_directories_root node['server']['directories_root']
+    retries 5
+    retry_delay 30
+    action :create_site
+  end
+  
+  arcgis_server "Enable SSL on ArcGIS Server Site" do
+    server_url node['server']['local_url']
+    username node['server']['admin_username']
+    password node['server']['admin_password']
+    retries 5
+    retry_delay 30
+    action :enable_ssl
+  end
+else
+  #Join Site
+  arcgis_server "Join ArcGIS for Server Site" do
+    server_url node['server']['local_url']
+    username node['server']['admin_username']
+    password node['server']['admin_password']
+    primary_server_url node['server']['primary_server_url']
+    retries 10
+    retry_delay 30
+    action :join_site
+  end
+  
+  arcgis_server "Add machine to default cluster" do
+    server_url node['server']['local_url']
+    username node['server']['admin_username']
+    password node['server']['admin_password']
+    cluster 'default'
+    retries 10
+    retry_delay 30
+    action :join_cluster
+  end
 end
