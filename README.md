@@ -19,7 +19,7 @@ Requirements
 * Rhel 6
 * Suse
 
-### Cookbooks 
+### Dependencies 
 * hostsfile
 * limits 
 * authbind
