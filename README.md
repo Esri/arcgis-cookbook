@@ -1,4 +1,4 @@
-arcgis Cookbook
+ArcGIS Cookbook
 ===============
 
 This cookbook installs and configures ArcGIS for Server, ArcGIS DataStore, and Portal for ArcGIS on the machine.
@@ -17,7 +17,6 @@ Requirements
 * Windows Server 2012 R2
 * Ubuntu 14.04
 * Rhel 6
-* Suse
 
 ### Dependencies 
 * hostsfile
@@ -29,70 +28,70 @@ Requirements
 
 Attributes
 ----------
-* `node['arcgis']['run_as_user']` - Run as account for Server, Portal, and Data Store, default `arcgis`
-* `node['arcgis']['run_as_password']` - Run as account password for Server, Portal, and Data Store, default `Pa$$w0rdPa$$w0rd`
-* `node['server']['wa_name']` - Web Adaptor name for server, default `server` 
-* `node['server']['domain_name']` - Server domain name, default FQDN of the node
-* `node['server']['admin_username']` - Primary server administrator user name, default `admin`
-* `node['server']['admin_password']` - Primary server administrator password, default `changeit`
-* `node['server']['directories_root']` - Server root directory, default `C:\arcgisserver`, `/mnt/arcgisserver`
-* `node['server']['setup']` - Server setup path, default `C:\Temp\ArcGISServer\Setup.exe`, `/tmp/server-cd/Setup`
-* `node['server']['install_dir']` - Server installation directory, default `%ProgramW6432%\ArcGIS\Server`, `/`
-* `node['server']['authorization_file']` - Server authorization file path, default `C:\Temp\server_license.prvc`, `/tmp/server_license.prvc`
-* `node['server']['authorization_file_version']` - Server authorization file version, default `10.3` 
-* `node['server']['managed_database']` - Managed GeoDatabase connection string
-* `node['server']['replicated_database']` - Replicated GeoDatabase connection string
-* `node['portal']['domain_name']` - Portal domin name, default FQDN of the node
-* `node['portal']['wa_name']` - Web Adaptor name for portal, default `portal`
-* `node['portal']['admin_username']` - Initial portal administrator user name, default `admin`
-* `node['portal']['admin_password']` - Initial portal administrator password, default `changeit`
-* `node['portal']['admin_email']` - Initial portal administrator e-mail, default `admin@mydomain.com`
-* `node['portal']['admin_full_name']` - Initial portal administrator full name, default `Administrator`
-* `node['portal']['admin_description']` - Initial portal administrator description, default `Initial portal account administrator`
-* `node['portal']['security_question']` - Security question, default `Your favorite ice cream flavor?`
-* `node['portal']['security_question_answer']` - Security question answer, default `bacon`
-* `node['portal']['setup']` - Portal for ArcGIS setup path, default `C:\Temp\ArcGISPortal\Setup.exe`, `/tmp/portal-cd/Setup`
-* `node['portal']['install_dir']` - Portal installation directory, default `%ProgramW6432%\ArcGIS\Portal`, `/`
-* `node['portal']['content_dir']` - Portal content directory, default `C:\arcgisportal\content`, `/arcgis/portal/usr/arcgisportal/content`
-* `node['portal']['authorization_file']` - Portal authorization file path, default `C:\Temp\portal_license.prvc`, `/tmp/portal_license.prvc`
-* `node['portal']['authorization_file_version']` - Portal authorization file version, default `10.3` 
-* `node['web_adaptor']['setup']` - Web Adaptor setup path, default `C:\Temp\WebAdaptorIIS\Setup.exe`, `/tmp/web-adaptor-cd/Setup`
-* `node['web_adaptor']['install_dir']` - Web Adaptor installation directory
-* `node['data_store']['data_dir']` - Data Store data directory, default `C:\arcgisdatastore\data`, `/mnt/arcgisdatastore/data`
-* `node['data_store']['setup']` - Data Store setup path, default `C:\Temp\ArcGISDataStore\Setup.exe`, `/tmp/tmp/data-store-cd/Setup`
-* `node['data_store']['install_dir']` - Data Store installation directory, default `%ProgramW6432%\ArcGIS\DataStore`, `/`
-* `node['data_store']['preferredidentifier']` - Data Store preferred identifier, default `ip`
-* `node['iis']['keystore_file']` - Path to PKSC12 keystore file with server SSL certificate
-* `node['iis']['keystore_password']` - Keystore password
+* `node['arcgis']['run_as_user']` = Account used to run Server, Portal, and Data Store, default `arcgis`
+* `node['arcgis']['run_as_password']` = Password for the account used to run Server, Portal, and Data Store, default `Pa$$w0rdPa$$w0rd`
+* `node['server']['wa_name']` = The name of the web adaptor used for ArcGIS Server, default `server` 
+* `node['server']['domain_name']` = ArcGIS Server domain name; default value is the fully qualified domain name of the node
+* `node['server']['admin_username']` = Primary ArcGIS Server administrator user name; default is `admin`
+* `node['server']['admin_password']` = Primary ArcGIS Server administrator password; default password is `changeit`
+* `node['server']['directories_root']` = ArcGIS Server root directory; default directory is `C:\arcgisserver`, `/mnt/arcgisserver`
+* `node['server']['setup']` = The location of the ArcGIS Server setup executable; default location is `C:\Temp\ArcGISServer\Setup.exe`, `/tmp/server-cd/Setup`
+* `node['server']['install_dir']` = ArcGIS Server installation directory; default directory is `%ProgramW6432%\ArcGIS\Server`, `/`
+* `node['server']['authorization_file']` = ArcGIS Server authorization file path; default path is `C:\Temp\server_license.prvc`, `/tmp/server_license.prvc`
+* `node['server']['authorization_file_version']` = ArcGIS Server authorization file version; default version is `10.3` 
+* `node['server']['managed_database']` = Connection inofrmation for the ArcGIS Server's managed database
+* `node['server']['replicated_database']` = Replicated GeoDatabase connection string
+* `node['portal']['domain_name']` = Portal domin name; default the fully qualified domain name of the node
+* `node['portal']['wa_name']` = The web adaptor name for Portal; default name is `portal`
+* `node['portal']['admin_username']` = Initial portal administrator user name; default name is `admin`
+* `node['portal']['admin_password']` = Initial portal administrator password; default password is `changeit`
+* `node['portal']['admin_email']` = Initial portal administrator e-mail; default email is `admin@mydomain.com`
+* `node['portal']['admin_full_name']` = Initial portal administrator full name; default name is `Administrator`
+* `node['portal']['admin_description']` = Initial portal administrator description, default description is `Initial portal account administrator`
+* `node['portal']['security_question']` = Security question; default question is `Your favorite ice cream flavor?`
+* `node['portal']['security_question_answer']` = Security question answer; default answer is `bacon`
+* `node['portal']['setup']` = Portal for ArcGIS setup path; default path is `C:\Temp\ArcGISPortal\Setup.exe`, `/tmp/portal-cd/Setup`
+* `node['portal']['install_dir']` = Portal installation directory; default path is `%ProgramW6432%\ArcGIS\Portal`, `/`
+* `node['portal']['content_dir']` = Portal content directory; default directory is `C:\arcgisportal\content`, `/arcgis/portal/usr/arcgisportal/content`
+* `node['portal']['authorization_file']` = Portal authorization file path; default location is `C:\Temp\portal_license.prvc`, `/tmp/portal_license.prvc`
+* `node['portal']['authorization_file_version']` = Portal authorization file version; default version is `10.3` 
+* `node['web_adaptor']['setup']` = Location of ArcGIS Web Adaptor setup executable; default location is `C:\Temp\WebAdaptorIIS\Setup.exe`, `/tmp/web-adaptor-cd/Setup`
+* `node['web_adaptor']['install_dir']` = ArcGIS Web Adaptor installation directory
+* `node['data_store']['data_dir']` = ArcGIS Data Store data directory; default directory is `C:\arcgisdatastore\data`, `/mnt/arcgisdatastore/data`
+* `node['data_store']['setup']` = Location of ArcGIS Data Store setup executable; default location is `C:\Temp\ArcGISDataStore\Setup.exe`, `/tmp/tmp/data-store-cd/Setup`
+* `node['data_store']['install_dir']` = ArcGIS Data Store installation directory; default directory is `%ProgramW6432%\ArcGIS\DataStore`, `/`
+* `node['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method; default is `ip`
+* `node['iis']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with server SSL certificate
+* `node['iis']['keystore_password']` = Keystore password
 
 Usage
 -----
 ### arcgis::system
-Creates arcgis user run as account, sets limits, and installs required packages.
+Creates user account that will run all ArcGIS software components, sets limits, and installs required packages.
 
 ### arcgis::all_installed
-Installs ArcGIS for Server, Portal for ArcGIS, ArcGIS Data Store, and Web Adaptors for server and portal
+Installs ArcGIS for Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal
 
 ### arcgis::authbind
-Configures authbind for tomcat user (for Debian linux family).
+Configures authbind for Apache Tomcat user (for Debian Linux family).
 
 ### arcgis::iptables
 Configures iptables to forward ports 80/443 to 8080/8443.
 
 ### arcgis::iis
-Enables IIS with features required by Web Adaptor, configures HTTPS, and starts IIS
+Enables IIS with features required by ArcGIS Web Adaptor IIS, configures HTTPS, and starts IIS
 
 ### arcgis::server
 Installs and configures ArcGIS for Server.  
 
 ### arcgis::server_wa
-Installs Web Adaptor and configures it with server. IIS or java application server such as Tomcat must be installed and configured before this. 
+Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. You must install and condigure an IIS or Java application server such as Tomcat before installing ArcGIS Web Adaptor. 
 
 ### arcgis::portal
 Installs and configures Portal for ArcGIS.
  
 ### arcgis::portal_wa
-Installs Web Adaptor and configures it with portal. IIS or java application server such as Tomcat must be installed and configured before this. 
+Installs ArcGIS Web Adaptor and configures it with ArcGIS Portal. You must install and condigure an IIS or Java application server such as Tomcat before installing ArcGIS Web Adaptor. 
 
 ### arcgis::datastore
 Installs and configures ArcGIS Data Store.
