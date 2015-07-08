@@ -44,15 +44,23 @@ action :install do
       only_if {::File.exists?(install_dir)}
     end
 
-    ruby_block "Grant 'Portal for ArcGIS' service logon account access to data directory" do
+    ruby_block "Grant arcgis user account access to the portal content directory" do
       block do
         properties_filename = ::File.join(install_dir, "etc", "portal-config.properties")
+        
         if ::File.exists?(properties_filename)
           config_properties = Utils.load_properties(properties_filename)
           dir_data = config_properties['dir.data']
-          if !dir_data.nil? && ::File.exists?(dir_data)
-            `icacls.exe \"#{dir_data}\" /grant #{run_as_user}:(OI)(CI)F`
-          end
+        end
+
+        if dir_data.nil?
+          dir_data = "C:\\arcgisportal"
+        end
+        
+        if ::File.exists?(dir_data)
+          cmd = Mixlib::ShellOut.new("icacls.exe \"#{dir_data}\" /grant #{run_as_user}:(OI)(CI)F")
+          cmd.run_command
+          cmd.error!
         end
       end
       action :run
@@ -244,7 +252,9 @@ def change_content_dir(portal_admin_client, content_dir, arcgis_user)
     FileUtils.cp_r old_content_dir, ::File.expand_path("..", content_dir)
   
     if node['platform'] == 'windows'
-      `icacls #{content_dir} /grant #{arcgis_user}:(OI)(CI)F`
+      cmd = Mixlib::ShellOut.new("icacls #{content_dir} /grant #{arcgis_user}:(OI)(CI)F")
+      cmd.run_command
+      cmd.error!
     else
       FileUtils.chown_R arcgis_user, "root", content_dir
     end

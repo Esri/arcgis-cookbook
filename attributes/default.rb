@@ -137,6 +137,10 @@ else
   default['data_store']['install_dir'] = '/'
   default['data_store']['install_subdir'] = 'arcgis/datastore'
   default['data_store']['data_dir'] = '/mnt/arcgisdatastore/data'
-  default['data_store']['local_backup_dir'] = '/mnt/arcgisdatastore/data/backup'
-  default['data_store']['backup_dir'] = node['data_store']['local_data_dir']
+  default['data_store']['local_backup_dir'] = node['data_store']['data_dir'] + '/backup'
+  default['data_store']['backup_dir'] = node['data_store']['local_backup_dir']
+
+  default['licensemanager']['setup'] = '/tmp/licensemanager-cd/Setup'
+  default['licensemanager']['install_dir'] = '/'
+  default['licensemanager']['install_subdir'] = 'arcgis/license10.3'
 end
