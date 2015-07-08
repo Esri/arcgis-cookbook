@@ -7,16 +7,16 @@ Requirements
 ------------
 ### ArcGIS 
 * ArcGIS for Server 10.3.1 
-* ArcGIS DataStore 10.3.1
+* ArcGIS Data Store 10.3.1
 * Portal for ArcGIS 10.3.1
+* ArcGIS Web Adaptor 10.3.1
 
 ### Platforms
 * Windows Server 2008
 * Windows Server 2008 R2
 * Windows Server 2012 
 * Windows Server 2012 R2
-* Ubuntu 14.04
-* Rhel 6
+* Rhel 6.5, 7.0
 
 ### Dependencies 
 * hostsfile
@@ -103,22 +103,22 @@ node-windows.json
 ```javascript
 {
    "iis" : {
-     "keystore_file":"C:\\arcgis\\keystore.pfx",
-     "keystore_password":"@Esri2014!"
+     "keystore_file":"C:\\ArcGIS10.3.1\\keystore.pfx",
+     "keystore_password":"changeit"
    },
    "web_adaptor" : {
-     "setup":"C:\\arcgis\\ArcGIS_WebAdaptorIIS10.3.1\\Setup.exe"
+     "setup":"C:\\ArcGIS10.3.1\\WebAdaptorIIS\\Setup.exe"
    },
    "data_store" : {
-   	 "setup":"C:\\arcgis\\ArcGIS_DataStore10.3.1\\Setup.exe"
+     "setup":"C:\\ArcGIS10.3.1\\DataStore\\Setup.exe"
    },
    "server" : {
      "domain_name":"agsportalssl.esri.com",
      "admin_username":"admin",
      "admin_password":"admin123",
      "directories_root":"C:\\arcgisserver",
-     "setup" : "C:\\arcgis\\ArcGIS_Server10.3.1\\Setup.exe",
-     "authorization_file":"C:\\arcgis\\Server.prvc"
+     "setup":"C:\\ArcGIS10.3.1\\Server\\Setup.exe",
+     "authorization_file":"C:\\ArcGIS10.3.1\\Server.prvc"
    },
    "portal" : {
      "domain_name":"agsportalssl.esri.com",
@@ -127,8 +127,8 @@ node-windows.json
      "admin_email":"admin@mydomain.com",
      "security_question":"Your favorite ice cream flavor?",
      "security_question_answer":"vanilla",
-     "setup":"C:\\arcgis\\Portal_for_ArcGIS10.3.1\\Setup.exe",
-     "authorization_file":"C:\\arcgis\\Portal.prvc"
+     "setup":"C:\\ArcGIS10.3.1\\Portal\\Setup.exe",
+     "authorization_file":"C:\\ArcGIS10.3.1\\Portal.prvc"
    },
    "run_list":[  
       "recipe[arcgis::system]",
@@ -159,18 +159,18 @@ node-rhel.json
                 "ssl_port":8443
         },
         "web_adaptor":{
-                "setup":"/arcgis/WebAdaptor10.3.1/Setup"
+                "setup":"/arcgis10.3.1/WebAdaptor/Setup"
         },
         "data_store":{
-                "setup":"/arcgis/DataStore10.3.1/Setup"
+                "setup":"/arcgis10.3.1/DataStore/Setup"
         },
         "server":{
                 "domain_name":"agsportalssl.esri.com",
                 "admin_username":"admin",
                 "admin_password":"admin123",
                 "directories_root":"/home/ags/arcgis/server/usr/directories",
-                "setup":"/arcgis/Server10.3.1/Setup",
-                "authorization_file":"/arcgis/server.prvc"
+                "setup":"/arcgis10.3.1/Server/Setup",
+                "authorization_file":"/arcgis10.3.1/server.prvc"
         },
         "portal":{
                 "domain_name":"agsportalssl.esri.com",
@@ -179,8 +179,8 @@ node-rhel.json
                 "admin_email":"admin@mydomain.com",
                 "security_question":"Your favorite ice cream flavor?",
                 "security_question_answer":"vanilla",
-                "setup":"/arcgis/Portal10.3.1/Setup", 
-                "authorization_file":"/arcgis/portal.prvc"
+                "setup":"/arcgis10.3.1/Portal/Setup", 
+                "authorization_file":"/arcgis10.3.1/portal.ecp"
         },
         "run_list":[
                 "recipe[arcgis::system]",

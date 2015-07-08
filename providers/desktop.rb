@@ -31,6 +31,8 @@ action :install do
     command "\"#{cmd}\" #{args}"
     only_if {::Dir.glob("#{install_dir2}/Desktop*").empty?}
   end
+  
+  new_resource.updated_by_last_action(true)
 end
 
 action :authorize do
@@ -38,5 +40,6 @@ action :authorize do
     cmd = node['desktop']['authorization_tool']
     args = "/S /VER \"#{@new_resource.authorization_file_version}\" /LIF \"#{@new_resource.authorization_file}\""
   end
+  
   new_resource.updated_by_last_action(true)
 end
