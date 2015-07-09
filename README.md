@@ -132,7 +132,7 @@ node-windows.json
    },
    "run_list":[  
       "recipe[arcgis::system]",
-      "recipe[iis]",
+      "recipe[arcgis::iis]",
       "recipe[arcgis::server]",
       "recipe[arcgis::server_wa]",
       "recipe[arcgis::datastore]",
