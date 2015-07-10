@@ -16,6 +16,7 @@ Requirements
 * Windows Server 2008 R2
 * Windows Server 2012 
 * Windows Server 2012 R2
+* Ubuntu 14.04 (when deploying ArcGIS for Server on Amazon Web Services)
 * Rhel 6.5, 7.0
 
 ### Dependencies 
