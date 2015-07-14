@@ -119,7 +119,7 @@ action :configure_https do
             output.write pkcs12.to_der
           end
           
-          configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
+          Utils.configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
         end
         action :run
       end
@@ -141,7 +141,7 @@ action :configure_https do
   
       ruby_block "Configure SSL with HTTP.SYS" do
         block do
-          configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
+          Utils.configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
         end
         action :run
       end
@@ -161,19 +161,4 @@ action :start do
   end
   
   new_resource.updated_by_last_action(true)
-end
-
-private
-
-def configure_ssl(pfx_file, keystore_pass, appid)
-  pkcs12 = OpenSSL::PKCS12.new(::File.binread(pfx_file), keystore_pass)
-  certhash = Digest::SHA1.hexdigest(pkcs12.certificate.to_der)
-  
-  cmd = Mixlib::ShellOut.new("certutil -f -p \"#{keystore_pass}\" -importpfx \"#{pfx_file}\"")
-  cmd.run_command
-  cmd.error!
-  
-  cmd = Mixlib::ShellOut.new("netsh http add sslcert ipport=0.0.0.0:443 certhash=#{certhash} appid=#{appid}")
-  cmd.run_command
-  cmd.error!
 end
