@@ -6,10 +6,10 @@ This cookbook installs and configures ArcGIS for Server, ArcGIS DataStore, and P
 Requirements
 ------------
 ### ArcGIS 
-* ArcGIS for Server 10.3.1 
-* ArcGIS Data Store 10.3.1
+* ArcGIS 10.3.1 for Server
+* ArcGIS 10.3.1 Data Store
 * Portal for ArcGIS 10.3.1
-* ArcGIS Web Adaptor 10.3.1
+* ArcGIS 10.3.1 Web Adaptor
 
 ### Platforms
 * Windows Server 2008
