@@ -74,7 +74,11 @@ action :configure_https do
   pfx_file = @new_resource.keystore_file
   keystore_pass = @new_resource.keystore_password
 
-  site_info = `%systemroot%\\system32\\inetsrv\\appcmd list site "Default Web Site"`
+  cmd = Mixlib::ShellOut.new("%systemroot%\\system32\\inetsrv\\appcmd list site \"Default Web Site\"")
+  cmd.run_command
+  cmd.error!
+  site_info = cmd.stdout
+  
   https_binding_exist = site_info.include? "https/*:443:" 
 
   if !https_binding_exist
@@ -106,6 +110,7 @@ action :configure_https do
         
       ruby_block "Configure SSL with HTTP.SYS" do
         block do
+          #Convert certificate to PKCS12 
           key = OpenSSL::PKey.read ::File.read(key_file)
           cert = OpenSSL::X509::Certificate.new ::File.read(cert_file)
           pkcs12 = OpenSSL::PKCS12.create(keystore_pass, nil, key, cert)
@@ -114,10 +119,7 @@ action :configure_https do
             output.write pkcs12.to_der
           end
           
-          pkcs12 = OpenSSL::PKCS12.new(::File.binread(pfx_file), keystore_pass)
-          certhash = Digest::SHA1.hexdigest(pkcs12.certificate.to_der)
-          `certutil -f -p \"#{keystore_pass}\" -importpfx "#{pfx_file}"`
-          `netsh http add sslcert ipport=0.0.0.0:443 certhash=#{certhash} appid=#{node['iis']['appid']}`
+          Utils.configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
         end
         action :run
       end
@@ -139,10 +141,7 @@ action :configure_https do
   
       ruby_block "Configure SSL with HTTP.SYS" do
         block do
-          pkcs12 = OpenSSL::PKCS12.new(::File.binread(pfx_file), keystore_pass)
-          certhash = Digest::SHA1.hexdigest(pkcs12.certificate.to_der)
-          `certutil -f -p \"#{keystore_pass}\" -importpfx "#{pfx_file}"`
-          `netsh http add sslcert ipport=0.0.0.0:443 certhash=#{certhash} appid=#{node['iis']['appid']}`
+          Utils.configure_ssl(pfx_file, keystore_pass, node['iis']['appid'])
         end
         action :run
       end
@@ -163,4 +162,3 @@ action :start do
   
   new_resource.updated_by_last_action(true)
 end
-

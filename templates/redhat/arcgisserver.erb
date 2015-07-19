@@ -35,7 +35,7 @@ fi
 
 count=0
 while [ 1 ]; do
-  myip=`ifconfig | grep "Bcast:" | grep -v 127.0.0.1`
+  myip=`ip addr | grep inet | grep brd | grep -v 127.0.0.1`
   if [ "x$myip" != "x" ]; then
     break
   fi
