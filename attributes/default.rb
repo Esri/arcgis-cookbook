@@ -94,7 +94,6 @@ when 'windows'
   elsif node['platform_version'].to_f < 6.2
     #Windows Server 2008 R2, Windows 7
     default['iis']['features'] = ["IIS-WebServerRole", "IIS-ISAPIFilter", "IIS-ISAPIExtensions",
-        "IIS-NetFxExtensibility", "IIS-ASPNET",
         "IIS-WebServerManagementTools", "IIS-ManagementConsole", "IIS-ManagementService",
         "IIS-IIS6ManagementCompatibility", "IIS-ManagementScriptingTools", "IIS-StaticContent",
         "IIS-BasicAuthentication", "IIS-WindowsAuthentication", "IIS-NetFxExtensibility",
@@ -137,6 +136,10 @@ else
   default['data_store']['install_dir'] = '/'
   default['data_store']['install_subdir'] = 'arcgis/datastore'
   default['data_store']['data_dir'] = '/mnt/arcgisdatastore/data'
-  default['data_store']['local_backup_dir'] = '/mnt/arcgisdatastore/data/backup'
-  default['data_store']['backup_dir'] = node['data_store']['local_data_dir']
+  default['data_store']['local_backup_dir'] = node['data_store']['data_dir'] + '/backup'
+  default['data_store']['backup_dir'] = node['data_store']['local_backup_dir']
+
+  default['licensemanager']['setup'] = '/tmp/licensemanager-cd/Setup'
+  default['licensemanager']['install_dir'] = '/'
+  default['licensemanager']['install_subdir'] = 'arcgis/license10.3'
 end
