@@ -94,7 +94,6 @@ when 'windows'
   elsif node['platform_version'].to_f < 6.2
     #Windows Server 2008 R2, Windows 7
     default['iis']['features'] = ["IIS-WebServerRole", "IIS-ISAPIFilter", "IIS-ISAPIExtensions",
-        "IIS-NetFxExtensibility", "IIS-ASPNET",
         "IIS-WebServerManagementTools", "IIS-ManagementConsole", "IIS-ManagementService",
         "IIS-IIS6ManagementCompatibility", "IIS-ManagementScriptingTools", "IIS-StaticContent",
         "IIS-BasicAuthentication", "IIS-WindowsAuthentication", "IIS-NetFxExtensibility",
