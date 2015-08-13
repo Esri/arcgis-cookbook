@@ -29,7 +29,6 @@ attribute :esri_license_host, :kind_of => String
 attribute :software_class, :kind_of => String
 attribute :seat_preference, :kind_of => String
 attribute :desktop_config, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :renewal_check, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :modifyflexdacl, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)

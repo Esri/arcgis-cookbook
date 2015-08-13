@@ -25,6 +25,8 @@ arcgis_desktop "Install ArcGIS for Desktop" do
   esri_license_host node['desktop']['esri_license_host']
   software_class node['desktop']['software_class']
   seat_preference node['desktop']['seat_preference']
+  desktop_config node['desktop']['desktop_config']
+  modifyflexdacl node['desktop']['modifyflexdacl']
   action :install
 end
 
