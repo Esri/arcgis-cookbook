@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-actions :install, :authorize, :create_site, :register_server, :stop, :start
+actions :install, :authorize, :create_site, :configure_ha, :register_server, :stop, :start, :copy_wa_shared_key
 
 attribute :install_dir, :kind_of => String
 attribute :setup, :kind_of => String
@@ -36,7 +36,8 @@ attribute :description, :kind_of => String
 attribute :security_question, :kind_of => String
 attribute :security_question_answer, :kind_of => String
 attribute :server_url, :kind_of => String
-attribute :is_hosted, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :is_hosted, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :peer_machine, :kind_of => String
 
 def initialize(*args)
   super

@@ -39,6 +39,7 @@ default['portal']['admin_full_name'] = 'Administrator'
 default['portal']['admin_description'] = 'Initial account administrator'
 default['portal']['security_question'] = 'Your favorite ice cream flavor?'
 default['portal']['security_question_answer'] = 'bacon'
+default['portal']['is_primary'] = true
 
 default['data_store']['preferredidentifier'] = 'ip'
 
@@ -81,7 +82,7 @@ when 'windows'
   default['desktop']['software_class'] = 'Viewer'
   default['desktop']['seat_preference'] = 'Fixed'
 
-  default['licensemanager']['setup'] = 'C:\\Temp\ArcGISLicenseManager\\Setup.exe'
+  default['licensemanager']['setup'] = 'C:\\Temp\\ArcGISLicenseManager\\Setup.exe'
   default['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
   default['dotnetframework']['3.5.1']['url'] = 'http://download.microsoft.com/download/2/0/e/20e90413-712f-438c-988e-fdaa79a8ac3d/dotnetfx35.exe'
@@ -110,21 +111,21 @@ when 'windows'
   #default['iis']['keystore_file'] = nil
   #default['iis']['keystore_password'] = nil
 else
-  default['server']['authorization_tool'] = '/arcgis/server/tools/authorizeSoftware'
-  default['server']['authorization_file'] = '/tmp/server_license.prvc'
-  default['server']['setup'] = '/tmp/server-cd/Setup'
   default['server']['install_dir'] = '/'
   default['server']['install_subdir'] = 'arcgis/server'
+  default['server']['authorization_tool'] = ::File.join(node['server']['install_dir'], node['server']['install_subdir'], '/tools/authorizeSoftware')
+  default['server']['authorization_file'] = '/tmp/server_license.prvc'
+  default['server']['setup'] = '/tmp/server-cd/Setup'
   default['server']['local_directories_root'] = '/mnt/arcgisserver'
   default['server']['directories_root'] = node['server']['local_directories_root']
-
-  default['python']['install_dir'] = '/arcgis/python27'
-
-  default['portal']['authorization_tool'] = '/arcgis/portal/tools/authorizeSoftware'
-  default['portal']['authorization_file'] = '/tmp/portal_license.prvc'
-  default['portal']['setup'] = '/tmp/portal-cd/Setup'
+  
+  default['python']['install_dir'] = '' #Not needed on Linux.
+  
   default['portal']['install_dir'] = '/'
   default['portal']['install_subdir'] = 'arcgis/portal'
+  default['portal']['authorization_tool'] = ::File.join(node['portal']['install_dir'], node['portal']['install_subdir'],'/tools/authorizeSoftware')
+  default['portal']['authorization_file'] = '/tmp/portal_license.prvc'
+  default['portal']['setup'] = '/tmp/portal-cd/Setup'
   default['portal']['local_content_dir'] = ::File.join(node['portal']['install_dir'], node['portal']['install_subdir'], 'usr/arcgisportal/content')
   default['portal']['content_dir'] = node['portal']['local_content_dir']
 
@@ -135,7 +136,7 @@ else
   default['data_store']['setup'] = '/tmp/data-store-cd/Setup'
   default['data_store']['install_dir'] = '/'
   default['data_store']['install_subdir'] = 'arcgis/datastore'
-  default['data_store']['data_dir'] = '/mnt/arcgisdatastore/data'
+  default['data_store']['data_dir'] = ::File.join(node['data_store']['install_dir'], node['data_store']['install_subdir'],'/usr/arcgisdatastore')
   default['data_store']['local_backup_dir'] = node['data_store']['data_dir'] + '/backup'
   default['data_store']['backup_dir'] = node['data_store']['local_backup_dir']
 

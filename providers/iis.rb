@@ -20,43 +20,6 @@ require 'openssl'
 require 'digest/md5'
 
 action :enable do
-  
-#  if node['platform_version'] >= '6.2'
-#    features = [
-#      "Web-Mgmt-Tools", 
-#      "Web-Server",
-#      "Web-Mgmt-Console",
-#      "Web-Scripting-Tools",
-#      "Web-Static-Content",
-#      "Web-ISAPI-Filter",
-#      "Web-ISAPI-Ext",
-#      "Web-Basic-Auth",
-#      "Web-Windows-Auth",
-#      "Web-Net-Ext",
-#      "Web-Asp-Net",
-#      #"Web-Asp-Net45",
-#      #"Web-Net-Ext45",
-#      "Web-Mgmt-Compat",
-#      "Web-Metabase",
-#      "Web-Mgmt-Service"]
-#  else
-#    features = [
-#      "Web-Mgmt-Tools", 
-#      "Web-Server",
-#      "Web-Mgmt-Console",
-#      "Web-Scripting-Tools",
-#      "Web-Static-Content",
-#      "Web-ISAPI-Filter",
-#      "Web-ISAPI-Ext",
-#      "Web-Basic-Auth",
-#      "Web-Windows-Auth",
-#      "Web-Net-Ext",
-#      "Web-Asp-Net",
-#      "Web-Mgmt-Compat",
-#      "Web-Metabase",
-#      "Web-Mgmt-Service"]
-#  end
-
   node['iis']['features'].each do |feature|
     windows_feature feature do
       action :install

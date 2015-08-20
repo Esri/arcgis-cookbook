@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis
-# Recipe:: portal_wa
+# Recipe:: portal_ha
 #
 # Copyright 2015 Esri
 #
@@ -17,19 +17,20 @@
 # limitations under the License.
 #
 
-arcgis_webadaptor "Setup Web Adaptor for Portal" do
-  install_dir node['web_adaptor']['install_dir']
-  setup node['web_adaptor']['setup']
-  instance_name node['portal']['wa_name']
-  action :install
-end
-
-arcgis_webadaptor "Configure Web Adaptor with Portal" do
-  portal_url node['portal']['url']
-  portal_local_url "https://" + node['portal']['domain_name'] + ":7443"
-  install_dir node['web_adaptor']['install_dir']
-  instance_name node['portal']['wa_name']
+arcgis_portal "Copy Web Adaptors Shared Key" do
+  portal_local_url "https://" + node['portal']['domain_name'] + ":7443"  
+  peer_machine node['portal']['peer_machine']
   username node['portal']['admin_username']
   password node['portal']['admin_password']
-  action :configure_with_portal
+  only_if {!node['portal']['is_primary']}
+  action :copy_wa_shared_key
+end
+
+arcgis_portal "Configure HA" do
+  install_dir node['portal']['install_dir']
+  content_dir node['portal']['content_dir']
+  portal_url node['portal']['url']
+  portal_local_url "https://" + node['portal']['domain_name'] + ":7443"
+  peer_machine node['portal']['peer_machine'] 
+  action :configure_ha
 end
