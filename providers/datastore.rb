@@ -104,10 +104,10 @@ action :configure do
 
     ruby_block "Change 'ArcGIS Data Store' service logon account" do
       block do
-        cmd = Mixlib::ShellOut.new("icacls.exe \"#{install_dir}\" /grant #{run_as_user}:(OI)(CI)F")
+        cmd = Mixlib::ShellOut.new("icacls.exe \"#{install_dir}\" /grant \"#{run_as_user}:(OI)(CI)F\"")
         cmd.run_command
         cmd.error!
-        cmd = Mixlib::ShellOut.new("icacls.exe \"#{data_dir}\" /grant #{run_as_user}:(OI)(CI)F")
+        cmd = Mixlib::ShellOut.new("icacls.exe \"#{data_dir}\" /grant \"#{run_as_user}:(OI)(CI)F\"")
         cmd.run_command
         cmd.error!
         cmd = Mixlib::ShellOut.new("sc.exe config \"ArcGIS Data Store\" obj= \"#{service_logon_user}\" password= \"#{run_as_password}\"")

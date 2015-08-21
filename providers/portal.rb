@@ -46,7 +46,7 @@ action :install do
     end
     
     execute "Grant 'Portal for ArcGIS' service logon account access to install directory" do
-      command "icacls.exe \"#{install_dir}\" /grant #{run_as_user}:(OI)(CI)F"
+      command "icacls.exe \"#{install_dir}\" /grant \"#{run_as_user}:(OI)(CI)F\""
       only_if {::File.exists?(install_dir)}
     end
 
@@ -64,7 +64,7 @@ action :install do
         end
         
         if ::File.exists?(dir_data)
-          cmd = Mixlib::ShellOut.new("icacls.exe \"#{dir_data}\" /grant #{run_as_user}:(OI)(CI)F")
+          cmd = Mixlib::ShellOut.new("icacls.exe \"#{dir_data}\" /grant \"#{run_as_user}:(OI)(CI)F\"")
           cmd.run_command
           cmd.error!
         end

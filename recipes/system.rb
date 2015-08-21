@@ -22,6 +22,7 @@ if platform?('windows')
     comment 'ArcGIS user account'
     supports :manage_home => true
     password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_user'].include? "\\" } #do not try to create domain accounts
     action :create
   end
   
