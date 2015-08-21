@@ -15,10 +15,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 require 'fileutils'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  require 'win32/process'
   require 'win32/service'
 end
 
@@ -34,13 +34,19 @@ action :install do
       command "\"#{cmd}\" #{args}"
       only_if {!::Win32::Service.exists?("Portal for ArcGIS")}
     end
+	
+    ruby_block "Wait for Portal installation to finish" do
+      block do
+        sleep(180.0)
+      end
+    end
 
     service "Portal for ArcGIS" do
-      action [:stop] 
+      action [:stop]
     end
     
     execute "Grant 'Portal for ArcGIS' service logon account access to install directory" do
-      command "icacls.exe \"#{install_dir}\" /grant #{run_as_user}:(OI)(CI)F"
+      command "icacls.exe \"#{install_dir}\" /grant \"#{run_as_user}:(OI)(CI)F\""
       only_if {::File.exists?(install_dir)}
     end
 
@@ -58,7 +64,7 @@ action :install do
         end
         
         if ::File.exists?(dir_data)
-          cmd = Mixlib::ShellOut.new("icacls.exe \"#{dir_data}\" /grant #{run_as_user}:(OI)(CI)F")
+          cmd = Mixlib::ShellOut.new("icacls.exe \"#{dir_data}\" /grant \"#{run_as_user}:(OI)(CI)F\"")
           cmd.run_command
           cmd.error!
         end
@@ -147,10 +153,76 @@ action :create_site do
 
     sleep(120.0)
 
-    change_content_dir(portal_admin_client, @new_resource.content_dir, node['arcgis']['run_as_user'])  
-
+    if node['portal']['is_primary']
+      change_content_dir(portal_admin_client, @new_resource.content_dir, node['arcgis']['run_as_user'])  
+    end
+    
     new_resource.updated_by_last_action(true)
   end
+end
+
+action :configure_ha do
+  if node['platform'] == 'windows'
+    portalha_dir = ::File.join(@new_resource.install_dir, "tools\\portalha")
+    portalha = ::File.join(portalha_dir, "portalha.bat")
+    
+    if node['portal']['is_primary']
+      args = "-c -sc \"#{@new_resource.content_dir}\" -lb #{@new_resource.portal_url} -pp #{@new_resource.portal_local_url} -pm #{@new_resource.peer_machine}"
+    else
+      args = "-j -sc \"#{@new_resource.content_dir}\""
+    end 
+                
+    ruby_block "portalha" do
+      block do
+        if node['arcgis']['run_as_user'].include? "\\"
+          tokens = node['arcgis']['run_as_user'].split("\\")
+          domain = tokens[0] 
+          with_logon = tokens[1] 
+        else
+          domain = nil
+          with_logon = node['arcgis']['run_as_user']
+        end
+
+        yes_txt = ::File.join(portalha_dir, "yes.txt")
+        ::File.open(yes_txt, 'w') {|f| f.write("Y")}
+
+        log_txt = ::File.join(portalha_dir, "log.txt")
+
+        cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{portalha}\" #{args} <\"#{yes_txt}\" >\"#{log_txt}\"\"", 
+          :user => with_logon, :domain => domain, :password => node['arcgis']['run_as_password'], :cwd => portalha_dir)
+        cmd.run_command
+        cmd.error!
+
+        Chef::Log.info(::File.read(log_txt))
+        
+        sleep(120.0)
+      end
+      action :run
+    end
+  else
+    portalha_dir = ::File.join(@new_resource.install_dir, node['portal']['install_subdir'], "tools/portalha")    
+    portalha = ::File.join(portalha_dir, "portalha.sh")
+    
+    if node['portal']['is_primary'] 
+      args = "-c -sc \"#{@new_resource.content_dir}\" -lb #{@new_resource.portal_url} -pp #{@new_resource.portal_local_url} -pm #{@new_resource.peer_machine}"
+    else
+      args = "-j -sc \"#{@new_resource.content_dir}\""
+    end    
+    
+    env = {'AGSPORTAL' => ::File.join(@new_resource.install_dir, node['portal']['install_subdir'])}
+      
+    yes_txt = ::File.join(portalha_dir, "yes.txt")
+    ::File.open(yes_txt, 'w') {|f| f.write("Y")}
+
+    execute "portalha" do
+      command "bash -c \"#{portalha} #{args} <#{yes_txt}\""
+      environment env
+      cwd portalha_dir
+      user node['arcgis']['run_as_user']
+    end
+  end
+  
+  new_resource.updated_by_last_action(true)
 end
 
 action :register_server do
@@ -211,6 +283,21 @@ action :start do
   new_resource.updated_by_last_action(true)
 end
 
+action :copy_wa_shared_key do
+  primary_portal_url = "https://" + @new_resource.peer_machine + ":7443/arcgis"
+  portal_local_url = @new_resource.portal_local_url + "/arcgis"
+  
+  primary_portal_admin_client = ArcGIS::PortalAdminClient.new(primary_portal_url, @new_resource.username, @new_resource.password)
+  
+  shared_key = primary_portal_admin_client.get_webadaptors_shared_key()
+  
+  portal_admin_client = ArcGIS::PortalAdminClient.new(portal_local_url, @new_resource.username, @new_resource.password)
+  
+  portal_admin_client.update_webadaptors_shared_key(shared_key)
+  
+  new_resource.updated_by_last_action(true)
+end
+
 private
 
 def configure_autostart(portalhome)
@@ -249,20 +336,31 @@ def change_content_dir(portal_admin_client, content_dir, arcgis_user)
   end
 
   if ::File.directory? old_content_dir
-    FileUtils.cp_r old_content_dir, ::File.expand_path("..", content_dir)
-  
     if node['platform'] == 'windows'
-      cmd = Mixlib::ShellOut.new("icacls #{content_dir} /grant #{arcgis_user}:(OI)(CI)F")
+      if arcgis_user.include? "\\"
+        tokens = arcgis_user.split("\\")
+        domain = tokens[0] 
+        with_logon = tokens[1] 
+      else
+        domain = nil
+        with_logon = arcgis_user
+      end
+
+      cmd = Mixlib::ShellOut.new("xcopy \"#{old_content_dir}\" \"#{content_dir}\" /E /I", 
+        :user => with_logon, :domain => domain, :password => node['arcgis']['run_as_password'])
       cmd.run_command
       cmd.error!
     else
+      FileUtils.cp_r old_content_dir, ::File.expand_path("..", content_dir)
       FileUtils.chown_R arcgis_user, "root", content_dir
     end
 
     portal_admin_client.set_content_dir(content_dir)    
-    
+
     sleep(120.0)
+
+    Chef::Log.info("Portal content directory changed to '#{content_dir}'.")
   else
-    Chef::Log.warn("Failed to change portal content directory. Original content directory #{old_content_dir} is not available.")
+    Chef::Log.warn("Failed to change portal content directory. Original content directory '#{old_content_dir}' is not available.")
   end
 end

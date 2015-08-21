@@ -22,6 +22,7 @@ if platform?('windows')
     comment 'ArcGIS user account'
     supports :manage_home => true
     password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_user'].include? "\\" } #do not try to create domain accounts
     action :create
   end
   
@@ -60,7 +61,7 @@ if platform?('windows')
     end    
   else
     #Windows Server 2012 R2, Windows 8.1
-    features = ["IIS-WebServerRole"]
+    features = ["IIS-WebServerRole", "NetFx3"]
     
     features.each do |feature|
       windows_feature feature do
@@ -103,7 +104,7 @@ else
     value 25059
     use_system true
   end
-  
+
   #TODO: Test packages for each platform family 
   case node['platform']
   when 'redhat'
@@ -175,10 +176,19 @@ else
       end
     end
   end
-  
+
 ## Firewall settings
 #  Portal for ArcGIS communicates on ports 7080, 7443, 7005, 7099, 7199, and 7654. You'll need to open these ports on your firewall before installing the software. For more information, see Ports used by Portal for ArcGIS.
 #  Ports used by ArcGIS Server:  6080, 6443, 4000–4003,  4004 and above
 #  Ports 1098, 6006, 6099, and other random ports are used by ArcGIS Server to start processes within each GIS server machine.
-end  
+end
 
+if !node['hosts'].nil?
+  node['hosts'].each do |host, ip|
+    hostsfile_entry "Map #{host} to #{ip}" do
+      hostname host
+      ip_address ip
+      action :append
+    end
+  end
+end

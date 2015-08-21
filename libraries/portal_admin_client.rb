@@ -184,6 +184,45 @@ module ArcGIS
       validate_response(response)
     end
     
+    def get_webadaptors_shared_key
+      uri = URI.parse(@portal_url + "/portaladmin/system/webadaptors/config/")
+
+      token = generate_token(@portal_url + "/sharing/generateToken")
+            
+      uri.query = URI.encode_www_form({
+        "token" => token,
+        "f" => "json"})
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field("Referer", "referer")
+
+      response = send_request(request)
+
+      validate_response(response)
+      
+      return JSON.parse(response.body)['sharedKey']
+    end
+    
+    def update_webadaptors_shared_key(shared_key)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url + "/portaladmin/system/webadaptors/config/update").request_uri)
+      request.add_field("Referer", "referer")
+      
+      token = generate_token(@portal_url + "/sharing/generateToken")
+    
+      web_adaptors_config = {
+        "sharedKey" => shared_key
+      }
+      
+      request.set_form_data({
+        "webAdaptorsConfig" => web_adaptors_config.to_json,
+        "token" => token,
+        "f" => "json"})
+    
+      response = send_request(request)
+
+      validate_response(response)
+    end
+    
     def generate_token(generate_token_url)
       request = Net::HTTP::Post.new(URI.parse(generate_token_url).request_uri)
   

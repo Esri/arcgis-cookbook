@@ -1,7 +1,7 @@
 ArcGIS Cookbook
 ===============
 
-This cookbook installs and configures ArcGIS for Server, ArcGIS DataStore, and Portal for ArcGIS on the machine.
+This cookbook installs and configures ArcGIS for Server and ArcGIS for Desktop.
 
 Requirements
 ------------
@@ -10,16 +10,19 @@ Requirements
 * ArcGIS 10.3.1 Data Store
 * Portal for ArcGIS 10.3.1
 * ArcGIS 10.3.1 Web Adaptor
+* ArcGIS 10.3.1 for Desktop (Windows only)
+* ArcGIS License Manager 10.3.1
 
 ### Platforms
-* Windows Server 2008
-* Windows Server 2008 R2
-* Windows Server 2012 
-* Windows Server 2012 R2
+* Windows 7 
+* Windows 8 (8.1)
+* Windows Server 2008 (R2)
+* Windows Server 2012 (R2) 
 * Ubuntu 14.04 (when deploying ArcGIS for Server on Amazon Web Services)
 * Rhel 6.5, 7.0
 
 ### Dependencies 
+The following cookbooks are required:
 * hostsfile
 * limits 
 * authbind
@@ -33,6 +36,8 @@ Attributes
 * `node['arcgis']['run_as_password']` = Password for the account used to run Server, Portal, and Data Store, default `Pa$$w0rdPa$$w0rd`
 * `node['server']['wa_name']` = The name of the web adaptor used for ArcGIS Server, default `server` 
 * `node['server']['domain_name']` = ArcGIS Server domain name; default value is the fully qualified domain name of the node
+* `node['server']['local_url']` = ArcGIS Server local URL; default `http://localhost:6080/arcgis`
+* `node['server']['url']` = ArcGIS Server public URL; default `https://<server domain name>/<server Web Adaptor name>`
 * `node['server']['admin_username']` = Primary ArcGIS Server administrator user name; default is `admin`
 * `node['server']['admin_password']` = Primary ArcGIS Server administrator password; default password is `changeit`
 * `node['server']['directories_root']` = ArcGIS Server root directory; default directory is `C:\arcgisserver`, `/mnt/arcgisserver`
@@ -44,6 +49,8 @@ Attributes
 * `node['server']['replicated_database']` = Replicated GeoDatabase connection string
 * `node['portal']['domain_name']` = Portal domin name; default the fully qualified domain name of the node
 * `node['portal']['wa_name']` = The web adaptor name for Portal; default name is `portal`
+* `node['portal']['local_url']` = Portal for ArcGIS local URL; default `https://<portal domain name>:7443/arcgis`
+* `node['portal']['url']` = Portal for ArcGIS public URL; default `https://<portal domain name>/<portal Web Adaptor name>`
 * `node['portal']['admin_username']` = Initial portal administrator user name; default name is `admin`
 * `node['portal']['admin_password']` = Initial portal administrator password; default password is `changeit`
 * `node['portal']['admin_email']` = Initial portal administrator e-mail; default email is `admin@mydomain.com`
@@ -52,10 +59,12 @@ Attributes
 * `node['portal']['security_question']` = Security question; default question is `Your favorite ice cream flavor?`
 * `node['portal']['security_question_answer']` = Security question answer; default answer is `bacon`
 * `node['portal']['setup']` = Portal for ArcGIS setup path; default path is `C:\Temp\ArcGISPortal\Setup.exe`, `/tmp/portal-cd/Setup`
-* `node['portal']['install_dir']` = Portal installation directory; default path is `%ProgramW6432%\ArcGIS\Portal`, `/`
+* `node['portal']['install_dir']` = Portal for ArcGIS installation directory; default path is `%ProgramW6432%\ArcGIS\Portal`, `/`
 * `node['portal']['content_dir']` = Portal content directory; default directory is `C:\arcgisportal\content`, `/arcgis/portal/usr/arcgisportal/content`
-* `node['portal']['authorization_file']` = Portal authorization file path; default location is `C:\Temp\portal_license.prvc`, `/tmp/portal_license.prvc`
+* `node['portal']['authorization_file']` = Portal for ArcGIS authorization file path; default location is `C:\Temp\portal_license.prvc`, `/tmp/portal_license.prvc`
 * `node['portal']['authorization_file_version']` = Portal authorization file version; default version is `10.3` 
+* `node['portal']['peer_machine']` = Hostname of the peer machine in a highly available portal configuration
+* `node['portal']['is_primary']` = Specifies if the machine in a highly available portal configuration is primary; default version is `true` 
 * `node['web_adaptor']['setup']` = Location of ArcGIS Web Adaptor setup executable; default location is `C:\Temp\WebAdaptorIIS\Setup.exe`, `/tmp/web-adaptor-cd/Setup`
 * `node['web_adaptor']['install_dir']` = ArcGIS Web Adaptor installation directory
 * `node['data_store']['data_dir']` = ArcGIS Data Store data directory; default directory is `C:\arcgisdatastore\data`, `/mnt/arcgisdatastore/data`
@@ -65,8 +74,19 @@ Attributes
 * `node['iis']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with server SSL certificate
 * `node['iis']['keystore_password']` = Keystore password
 
-Usage
------
+* `node['desktop']['setup']` = The location of ArcGIS for Desktop setup executable; default location is `C:\Temp\ArcGISDesktop\Setup.exe`
+* `node['desktop']['install_dir']` = Desktop for ArcGIS installation directory; default path is `%ProgramFiles(x86)%\ArcGIS`
+* `node['desktop']['install_features']` = Comma-separated list of desktop features to install; default is `ALL`
+* `node['desktop']['authorization_file']` = Desktop for ArcGIS authorization file path; default location is `C:\\Temp\\license.ecp`
+* `node['desktop']['authorization_file_version']` = Desktop authorization file version; default version is `10.3`
+* `node['desktop']['esri_license_host']` = Hostname of ArcGIS License Manager; default is `%COMPUTERNAME%`
+* `node['desktop']['software_class']` = Desktop software class <Viewer|Editor|Professional>; default is `Viewer` 
+* `node['desktop']['seat_preference']` = Desktop license seat preference <Fixed|Float>; default is `Fixed`
+* `node['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable; default location is `C:\Temp\ArcGISLicenseManager\Setup.exe`, `/tmp/licensemanager-cd/Setup`
+* `node['licensemanager']['install_dir']` = ArcGIS License Manager installation directory; default path is `%ProgramFiles(x86)%\ArcGIS`, `/`
+  
+Recipes
+-------
 ### arcgis::system
 Creates user account that will run all ArcGIS software components, sets limits, and installs required packages.
 
@@ -90,16 +110,27 @@ Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. You must insta
 
 ### arcgis::portal
 Installs and configures Portal for ArcGIS.
- 
+
 ### arcgis::portal_wa
 Installs ArcGIS Web Adaptor and configures it with ArcGIS Portal. You must install and condigure an IIS or Java application server such as Tomcat before installing ArcGIS Web Adaptor. 
+
+### arcgis::portal_ha
+Configures Portal for ArcGIS for high availability.
 
 ### arcgis::datastore
 Installs and configures ArcGIS Data Store.
 
 ### arcgis::federation
 Registers and federates ArcGIS Server with Portal.
+
+### arcgis::desktop
+Installs and configures ArcGIS for Desktop.
+
+### arcgis::licensemanager
+Installs and configures ArcGIS License Manager.
  
+Usage
+----- 
 node-windows.json
 ```javascript
 {
@@ -147,61 +178,61 @@ node-windows.json
 node-rhel.json
 ```javascript
 {
-        "java":{
-                "install_flavor":"oracle",
-                "jdk_version":"7",
-                "oracle":{
-                        "accept_oracle_download_terms":true
-                }
-        },
-        "tomcat":{
-                "base_version":7,
-                "port":8080,
-                "ssl_port":8443
-        },
-        "web_adaptor":{
-                "setup":"/arcgis10.3.1/WebAdaptor/Setup"
-        },
-        "data_store":{
-                "setup":"/arcgis10.3.1/DataStore/Setup"
-        },
-        "server":{
-                "domain_name":"agsportalssl.esri.com",
-                "admin_username":"admin",
-                "admin_password":"admin123",
-                "directories_root":"/home/ags/arcgis/server/usr/directories",
-                "setup":"/arcgis10.3.1/Server/Setup",
-                "authorization_file":"/arcgis10.3.1/server.prvc"
-        },
-        "portal":{
-                "domain_name":"agsportalssl.esri.com",
-                "admin_username":"admin",
-                "admin_password":"admin123",
-                "admin_email":"admin@mydomain.com",
-                "security_question":"Your favorite ice cream flavor?",
-                "security_question_answer":"vanilla",
-                "setup":"/arcgis10.3.1/Portal/Setup", 
-                "authorization_file":"/arcgis10.3.1/portal.ecp"
-        },
-        "run_list":[
-                "recipe[arcgis::system]",
-                "recipe[java]",
-                "recipe[iptables]",
-                "recipe[arcgis::iptables]",
-                "recipe[tomcat]",
-                "recipe[arcgis::server]",
-                "recipe[arcgis::server_wa]",
-                "recipe[arcgis::datastore]",
-                "recipe[arcgis::portal]",
-                "recipe[arcgis::portal_wa]",
-                "recipe[arcgis::federation]"
-        ]
+    "java":{
+            "install_flavor":"oracle",
+            "jdk_version":"7",
+            "oracle":{
+                    "accept_oracle_download_terms":true
+            }
+    },
+    "tomcat":{
+            "base_version":7,
+            "port":8080,
+            "ssl_port":8443
+    },
+    "web_adaptor":{
+            "setup":"/arcgis10.3.1/WebAdaptor/Setup"
+    },
+    "data_store":{
+            "setup":"/arcgis10.3.1/DataStore/Setup"
+    },
+    "server":{
+            "domain_name":"agsportalssl.esri.com",
+            "admin_username":"admin",
+            "admin_password":"admin123",
+            "directories_root":"/home/ags/arcgis/server/usr/directories",
+            "setup":"/arcgis10.3.1/Server/Setup",
+            "authorization_file":"/arcgis10.3.1/server.prvc"
+    },
+    "portal":{
+            "domain_name":"agsportalssl.esri.com",
+            "admin_username":"admin",
+            "admin_password":"admin123",
+            "admin_email":"admin@mydomain.com",
+            "security_question":"Your favorite ice cream flavor?",
+            "security_question_answer":"vanilla",
+            "setup":"/arcgis10.3.1/Portal/Setup", 
+            "authorization_file":"/arcgis10.3.1/portal.ecp"
+    },
+    "run_list":[
+            "recipe[arcgis::system]",
+            "recipe[java]",
+            "recipe[iptables]",
+            "recipe[arcgis::iptables]",
+            "recipe[tomcat]",
+            "recipe[arcgis::server]",
+            "recipe[arcgis::server_wa]",
+            "recipe[arcgis::datastore]",
+            "recipe[arcgis::portal]",
+            "recipe[arcgis::portal_wa]",
+            "recipe[arcgis::federation]"
+    ]
 }
 ```
 
 ## Issues
 
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](/../../issues).
+Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
 
 ## Contributing
 
@@ -224,7 +255,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-A copy of the license is available in the repository's [License.txt](License.txt?raw=true) file.
+A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
 
 [](Esri Tags: ArcGIS Chef Cookbook)
 [](Esri Language: Ruby)
