@@ -61,7 +61,7 @@ if platform?('windows')
     end    
   else
     #Windows Server 2012 R2, Windows 8.1
-    features = ["IIS-WebServerRole", "NetFx3"]
+    features = ["NetFx3ServerFeatures", "NetFx3", "IIS-WebServerRole"]
     
     features.each do |feature|
       windows_feature feature do
