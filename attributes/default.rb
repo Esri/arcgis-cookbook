@@ -41,7 +41,7 @@ default['portal']['security_question'] = 'Your favorite ice cream flavor?'
 default['portal']['security_question_answer'] = 'bacon'
 default['portal']['is_primary'] = true
 
-default['data_store']['preferredidentifier'] = 'ip'
+default['data_store']['preferredidentifier'] = 'hostname'
 
 case node['platform']
 when 'windows'
@@ -85,6 +85,10 @@ when 'windows'
   default['licensemanager']['setup'] = 'C:\\Temp\\ArcGISLicenseManager\\Setup.exe'
   default['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
+  default['geoevent']['authorization_file'] = ''
+  default['geoevent']['authorization_file_version'] = node['server']['authorization_file_version']
+  default['geoevent']['setup'] = 'C:\\Temp\\ArcGIS_GeoEventExtension\\setup.exe'
+    
   default['dotnetframework']['3.5.1']['url'] = 'http://download.microsoft.com/download/2/0/e/20e90413-712f-438c-988e-fdaa79a8ac3d/dotnetfx35.exe'
   if node['platform_version'].to_f < 6.1
     #Windows Server 2008
@@ -143,4 +147,8 @@ else
   default['licensemanager']['setup'] = '/tmp/licensemanager-cd/Setup'
   default['licensemanager']['install_dir'] = '/'
   default['licensemanager']['install_subdir'] = 'arcgis/license10.3'
+    
+  default['geoevent']['authorization_file'] = ''
+  default['geoevent']['authorization_file_version'] = node['server']['authorization_file_version']
+  default['geoevent']['setup'] = '/tmp/geo-event-cd/Setup.sh'
 end

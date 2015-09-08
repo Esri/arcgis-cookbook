@@ -5,13 +5,14 @@ This cookbook installs and configures ArcGIS for Server and ArcGIS for Desktop.
 
 Requirements
 ------------
-### ArcGIS 
+### ArcGIS Software
 * ArcGIS 10.3.1 for Server
 * ArcGIS 10.3.1 Data Store
 * Portal for ArcGIS 10.3.1
 * ArcGIS 10.3.1 Web Adaptor
 * ArcGIS 10.3.1 for Desktop (Windows only)
 * ArcGIS License Manager 10.3.1
+* ArcGIS 10.3.1 GeoEvent Extension for Server
 
 ### Platforms
 * Windows 7 
@@ -84,6 +85,10 @@ Attributes
 * `node['desktop']['seat_preference']` = Desktop license seat preference <Fixed|Float>; default is `Fixed`
 * `node['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable; default location is `C:\Temp\ArcGISLicenseManager\Setup.exe`, `/tmp/licensemanager-cd/Setup`
 * `node['licensemanager']['install_dir']` = ArcGIS License Manager installation directory; default path is `%ProgramFiles(x86)%\ArcGIS`, `/`
+* `node['geoevent']['authorization_file']1` = ArcGIS GeoEvent Extension for Server authorization file path, default path is `` 
+* `node['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Extension for Server authorization file version, default version is `node['server']['authorization_file_version']`
+* `node['geoevent']['setup']` = The location of ArcGIS GeoEvent Extension for Server setup executable, default location is `C:\Temp\ArcGIS_GeoEventExtension\\setup.exe`,`/tmp/geo-event-cd/Setup.sh`
+
   
 Recipes
 -------
@@ -128,10 +133,13 @@ Installs and configures ArcGIS for Desktop.
 
 ### arcgis::licensemanager
 Installs and configures ArcGIS License Manager.
+
+### arcgis::geoevent
+Installs and configures ArcGIS GeoEvent Extension for Server.
  
 Usage
 ----- 
-node-windows.json
+node-windows.json (single machine Web GIS on Windows)
 ```javascript
 {
    "iis" : {
@@ -175,7 +183,7 @@ node-windows.json
 }
 ```
 
-node-rhel.json
+node-rhel.json (single machine Web GIS on Red Hat Enterprise Linux Server)
 ```javascript
 {
     "java":{
