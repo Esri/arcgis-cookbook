@@ -1,18 +1,124 @@
 ---
 driver:
   name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
 
 platforms:
-  - name: ubuntu-12.04
-  - name: centos-6.4
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: windows-81
+  - name: centos-6.7
+  - name: centos-7.1
+  - name: ubuntu-14.04
 
 suites:
-  - name: default
+  - name: webgis
+    driver:
+      network:
+        - ["forwarded_port", {guest: 6080, host: 16080}]
+        - ["forwarded_port", {guest: 6443, host: 16443}]
+        - ["forwarded_port", {guest: 7443, host: 17443}]
+      synced_folders:
+        - ["/windows_setups/ArcGIS_Server", "C:/temp/setups/ArcGIS_Server"]
+        - ["/windows_setups/ArcGIS_DataStore", "C:/temp/setups/ArcGIS_DataStore"]
+        - ["/windows_setups/Portal_for_ArcGIS", "C:/temp/setups/Portal_for_ArcGIS"]
+        - ["/windows_setups/WebAdaptorIIS", "C:/temp/setups/WebAdaptorIIS"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/ArcGIS_Server/Advanced", "C:/temp/auth_files/ArcGIS_Server"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/Portal_for_ArcGIS", "C:/temp/auth_files/Portal_for_ArcGIS"]
     run_list:
-
-      - recipe[arcgis::default]
-
+      - recipe[arcgis::system]
+      - recipe[arcgis::iis]
+      - recipe[arcgis::server]
+      - recipe[arcgis::server_wa]
+      - recipe[arcgis::datastore]
+      - recipe[arcgis::portal]
+      - recipe[arcgis::portal_wa]
+      - recipe[arcgis::federation]
     attributes:
+      arcgis:
+        version: "10.4"
+        hosts:
+          test.com: ""
+        server:
+          setup: "C:\\temp\\setups\\ArcGIS_Server\\Setup.exe"
+          authorization_file: "C:\\temp\\auth_files\\ArcGIS_Server\\Server_Ent_Adv.ecp"
+          local_url: "http://test.com:6080/arcgis"
+          local_https_url: "https://test.com:6443/arcgis"
+          domain_name: "test.com"
+        data_store: 
+          setup: "C:\\temp\\setups\\ArcGIS_DataStore\\Setup.exe" 
+        portal:
+          setup: "C:\\temp\\setups\\Portal_for_ArcGIS\\Setup.exe"
+          authorization_file: "C:\\temp\\auth_files\\Portal_for_ArcGIS\\Portal_100.ecp"
+          local_url: "https://test.com:7443/arcgis"
+          domain_name: "test.com"
+        web_adaptor:
+          setup: "C:\\temp\\setups\\WebAdaptorIIS\\Setup.exe"
+    excludes:
+      - centos-6.7
+      - centos-7.1
+      - ubuntu-14.04
+
+  - name: webgis-linux
+    driver:
+      network:
+        - ["forwarded_port", {guest: 6080, host: 26080}]
+        - ["forwarded_port", {guest: 6443, host: 26443}]
+        - ["forwarded_port", {guest: 7443, host: 27443}]
+      synced_folders:
+        - ["/net/twoball/twoball3/daily/ArcGISServer/CD_Linux", "/tmp/server-cd"]
+        - ["/net/twoball/twoball3/daily/ArcGISDataStore/CD_Linux", "/tmp/data-store-cd"]
+        - ["/net/twoball/twoball3/daily/ArcGISPortal/CD_Linux", "/tmp/portal-cd"]
+        - ["/net/twoball/twoball3/daily/WebAdaptor/CD_Linux", "/tmp/web-adaptor-cd"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/ArcGIS_Server/Advanced", "/tmp/auth_files/ArcGISServer"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/Portal_for_ArcGIS", "/tmp/auth_files/ArcGISPortal"]
+    run_list:
+      - recipe[arcgis::system]
+      - recipe[java]
+      - recipe[iptables]
+      - recipe[arcgis::iptables]
+      - recipe[tomcat]
+      - recipe[arcgis::server]
+      - recipe[arcgis::server_wa]
+      - recipe[arcgis::datastore]
+      - recipe[arcgis::portal]
+      - recipe[arcgis::portal_wa]
+      - recipe[arcgis::federation]
+    attributes:
+      java:
+        install_flavor: "openjdk"
+        jdk_version: "7"
+      tomcat:
+        base_version: "7"
+        port: 8080
+        ssl_port: 8443
+        ssl_enabled_protocols: "TLSv1"
+        ciphers: "ALL"
+      arcgis:
+        version: "10.4"
+        hosts:
+          test.com: ""
+        server:
+          setup: "/tmp/server-cd/Setup"
+          authorization_file: "/tmp/auth_files/ArcGISServer/Server_Ent_Adv.ecp"
+          local_url: "http://test.com:6080/arcgis"
+          local_https_url: "https://test.com:6443/arcgis"
+          domain_name: "test.com"
+        data_store: 
+          setup: "/tmp/data-store-cd/Setup" 
+        portal:
+          setup: "/tmp/portal-cd/Setup"
+          authorization_file: "/tmp/auth_files/ArcGISPortal/Portal_100.ecp"
+          local_url: "https://test.com:7443/arcgis"
+          domain_name: "test.com"
+        web_adaptor:
+          setup: "/tmp/web-adaptor-cd/Setup"
+    excludes:
+      - windows-2012r2
+      - windows-2008r2
+      - windows-81

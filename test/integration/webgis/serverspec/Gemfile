@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+
+if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM)
+  gem 'winrm'
+end

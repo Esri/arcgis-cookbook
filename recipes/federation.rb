@@ -17,23 +17,20 @@
 # limitations under the License.
 #
 
-arcgis_portal "Register Server" do
-  portal_url node['portal']['url']
-  username node['portal']['admin_username']
-  password node['portal']['admin_password']
-  server_url node['server']['url']
-  is_hosted true
-  action :register_server
+if node['arcgis']['web_adaptor']['admin_access']
+  server_admin_url = node['arcgis']['server']['url']
+else
+  server_admin_url = node['arcgis']['server']['local_https_url']
 end
 
-arcgis_server "Federate Server" do
-  portal_url node['portal']['url']
-  portal_username node['portal']['admin_username']
-  portal_password node['portal']['admin_password']
-  server_url node['server']['url']
-  server_id node['server']['server_id']
-  secret_key node['server']['secret_key']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  action :federate
+arcgis_portal 'Federate Server' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  server_url node['arcgis']['server']['url']
+  server_admin_url server_admin_url
+  server_username node['arcgis']['server']['admin_username']
+  server_password node['arcgis']['server']['admin_password']
+  is_hosting true
+  action :federate_server
 end

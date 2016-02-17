@@ -17,12 +17,14 @@
 # limitations under the License.
 #
 
-actions :install, :configure  
+actions :system, :install, :uninstall, :configure, :change_backup_location
 
 attribute :setup, :kind_of => String
+attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String
 attribute :data_dir, :kind_of => String
 attribute :backup_dir, :kind_of => String
+attribute :types, :kind_of => String, :default => 'tileCache,relational'
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
 attribute :server_url, :kind_of => String

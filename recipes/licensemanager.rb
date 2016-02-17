@@ -17,10 +17,14 @@
 # limitations under the License.
 #
 
-arcgis_licensemanager "Install ArcGIS for License Manager" do
-  setup node['licensemanager']['setup']
-  install_dir node['licensemanager']['install_dir']
-  python_dir node['python']['install_dir']
+arcgis_licensemanager 'Verify ArcGIS License Manager system requirements' do
+  action :system
+end
+
+arcgis_licensemanager 'Install ArcGIS License Manager' do
+  setup node['arcgis']['licensemanager']['setup']
+  install_dir node['arcgis']['licensemanager']['install_dir']
+  python_dir node['arcgis']['python']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   action :install
 end

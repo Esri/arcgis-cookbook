@@ -17,8 +17,18 @@
 # limitations under the License.
 #
 
+action :system do
+  powershell_script 'Open Ports required by GeoEvent Extension' do
+    code <<-EOH
+      netsh advfirewall firewall add rule name="Allow_ArcGISGeoEvent_Ports2" dir=in action=allow protocol=TCP localport="2181,2182,2190,27271,27272,27273,6143,6180,5565,5570,5575" description="Allows connections through all ports used by ArcGIS GeoEvent"
+    EOH
+    only_if { node['platform'] == 'windows' && ENV['arcgis_cloud_platform'] == 'aws'}
+    ignore_failure true
+  end
+end
+
 action :install do
-  if node['platform'] == 'windows' 
+  if node['platform'] == 'windows'
     run_as_password = @new_resource.run_as_password
     install_dir = @new_resource.install_dir
 
@@ -30,31 +40,42 @@ action :install do
 
     cmd = @new_resource.setup
     args = "/qb PASSWORD=\"#{run_as_password}\""
-        
-    execute "Install ArcGIS GeoEvent Extension for Server" do
+
+    execute 'Install ArcGIS GeoEvent Extension for Server' do
       command "\"#{cmd}\" #{args}"
-      only_if {!::File.exists?(::File.join(install_dir,"GeoEvent\\bin\\startGeoEvent.bat"))}
+      only_if { !::File.exist?(::File.join(install_dir, 'GeoEvent\\bin\\startGeoEvent.bat')) }
+      notifies :run, 'ruby_block[Wait for GeoEvent Service to build dependency tree]', :immediately
     end
 
-    service "ArcGISGeoEvent" do
-      action [:stop] 
+    ruby_block 'Wait for GeoEvent Service to build dependency tree' do
+      block do
+        sleep(450.0)
+      end
+      action :nothing
     end
-    
-    execute "Change 'ArcGISGeoEvent' service logon account" do
+
+    service 'ArcGISGeoEvent' do
+      action [:stop]
+    end
+
+    execute 'Change ArcGISGeoEvent service logon account' do
       command "sc.exe config \"ArcGISGeoEvent\" obj= \"#{service_logon_user}\" password= \"#{run_as_password}\""
-      #sensitive true
+      # sensitive true
     end
-    
-    service "ArcGIS Server" do
-      action [:enable,:restart] 
+
+    service 'ArcGISGeoEvent' do
+      action [:enable, :restart]
     end
   else
     cmd = @new_resource.setup
-    arcgisgeoevent = ::File.join(@new_resource.install_dir, node['server']['install_subdir'], "GeoEvent/bin/ArcGISGeoEvent-service")
-      
-    execute "Install ArcGIS GeoEvent Extension for Server" do
-      command "sudo -H -u #{node['arcgis']['run_as_user']} bash -c \"#{cmd}\""
-      only_if {!::File.exists?(arcgisgeoevent)}
+    run_as_user = @new_resource.run_as_user
+    arcgisgeoevent = ::File.join(@new_resource.install_dir, 
+                                 node['arcgis']['server']['install_subdir'],
+                                 'GeoEvent/bin/ArcGISGeoEvent-service')
+
+    execute 'Install ArcGIS GeoEvent Extension for Server' do
+      command "su - #{run_as_user} -c \"#{cmd}\""
+      only_if { !::File.exists?(arcgisgeoevent) }
     end
 
     configure_autostart(arcgisgeoevent)
@@ -63,44 +84,88 @@ action :install do
   new_resource.updated_by_last_action(true)
 end
 
+action :uninstall do
+  if node['platform'] == 'windows'
+    product_code = @new_resource.product_code
+    cmd = 'msiexec'
+    args = "/qb /x #{product_code}"
+
+    execute 'Uninstall ArcGIS GeoEvent Extension for Server' do
+      command "\"#{cmd}\" #{args}"
+      only_if { Utils.product_installed?(product_code) }
+    end
+  else
+    install_subdir = ::File.join(@new_resource.install_dir,
+                                 node['arcgis']['server']['install_subdir'])
+    cmd = ::File.join(install_subdir, 'uninstall_GeoEvent.sh')
+    args = '-s'
+
+    service 'ArcGISGeoEvent-service' do
+      action :stop
+    end
+
+    execute 'Uninstall ArcGIS GeoEvent Extension for Server' do
+      command "su - #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\""
+      only_if { ::File.exist?(cmd) }
+    end
+
+    #disable_autostart()
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
 action :authorize do
   if !@new_resource.authorization_file.nil? && !@new_resource.authorization_file.empty?
-    cmd = node['server']['authorization_tool']
-  
+    cmd = node['arcgis']['server']['authorization_tool']
+
     if node['platform'] == 'windows'
       args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
-      
-      execute "Authorize ArcGIS GeoEvent Extension for Server" do
+
+      execute 'Authorize ArcGIS GeoEvent Extension for Server' do
         command "\"#{cmd}\" #{args}"
       end
-    else 
+    else
       args = "-f \"#{@new_resource.authorization_file}\""
-    
-      execute "Authorize ArcGIS GeoEvent Extension for Server" do
+
+      execute 'Authorize ArcGIS GeoEvent Extension for Server' do
         command "\"#{cmd}\" #{args}"
         user node['arcgis']['run_as_user']
       end
     end
-  
+
     new_resource.updated_by_last_action(true)
-  end 
+  end
 end
 
 private
 
 def configure_autostart(arcgisgeoevent)
-  Chef::Log.info("Configure ArcGIS GeoEvent Extension for Server to be started with the operating system.")
-  
-  if node["platform_family"] == "rhel"
-    init_d = "/etc/rc.d/init.d/"
-  else  
-    init_d = "/etc/init.d/"
+  Chef::Log.info('Configure ArcGIS GeoEvent Extension for Server to be started with the operating system.')
+
+  if ['rhel', 'centos'].include?(node['platform_family'])
+    init_d = '/etc/rc.d/init.d/'
+  else
+    init_d = '/etc/init.d/'
   end
-  
+
   execute "ln -s #{arcgisgeoevent} #{init_d}"
 
   service "ArcGISGeoEvent-service" do
     supports :status => true, :restart => true, :reload => true
     action [:enable, :start]
+  end
+end
+
+def disable_autostart()
+  Chef::Log.info('Disable starting the ArcGIS GeoEvent daemon when the machine is rebooted.')
+
+  if ['rhel', 'centos'].include?(node['platform_family'])
+    execute 'sudo chkconfig ArcGISGeoEvent-service off'
+    execute 'sudo chkconfig --del ArcGISGeoEvent-service'
+    execute 'sudo rm /etc/init.d/ArcGISGeoEvent-service'
+  else
+    execute 'sudo update-rc.d -f ArcGISGeoEvent-service remove'
+    execute 'sudo rm /etc/init.d/ArcGISGeoEvent-service'
   end
 end
