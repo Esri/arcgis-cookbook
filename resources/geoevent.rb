@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-actions :install, :authorize 
+actions :system, :install, :uninstall, :authorize 
 
 attribute :setup, :kind_of => String
 attribute :install_dir, :kind_of => String
@@ -25,6 +25,7 @@ attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
+attribute :product_code, :kind_of => String
 
 def initialize(*args)
   super

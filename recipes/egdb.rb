@@ -17,24 +17,24 @@
 # limitations under the License.
 #
 
-arcgis_server "Register Managed Database" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  data_item_path "/enterpriseDatabases/managedDatabase"
-  connection_string node['server']['managed_database']
+arcgis_server 'Register Managed Database' do
+  server_url node['arcgis']['server']['local_url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  data_item_path '/enterpriseDatabases/managedDatabase'
+  connection_string node['arcgis']['server']['managed_database']
   is_managed true
-  only_if { node['server']['primary_server_url'].nil? }
+  only_if { node['arcgis']['server']['primary_server_url'].nil? }
   action :register_database
 end
 
-arcgis_server "Register Replicated Database" do
-  server_url node['server']['local_url']
-  username node['server']['admin_username']
-  password node['server']['admin_password']
-  data_item_path "/namedWorkspaces/replicatedDatabase"
-  connection_string node['server']['replicated_database']
+arcgis_server 'Register Replicated Database' do
+  server_url node['arcgis']['server']['local_url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  data_item_path '/namedWorkspaces/replicatedDatabase'
+  connection_string node['arcgis']['server']['replicated_database']
   is_managed false
-  only_if { node['server']['primary_admin_url'].nil? }
+  only_if { node['arcgis']['server']['primary_admin_url'].nil? }
   action :register_database
 end

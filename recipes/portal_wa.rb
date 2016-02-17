@@ -17,19 +17,23 @@
 # limitations under the License.
 #
 
-arcgis_webadaptor "Setup Web Adaptor for Portal" do
-  install_dir node['web_adaptor']['install_dir']
-  setup node['web_adaptor']['setup']
-  instance_name node['portal']['wa_name']
+arcgis_webadaptor 'ArcGIS Web Adaptor system requirements - portal' do
+  action :system
+end
+
+arcgis_webadaptor 'Setup Web Adaptor for Portal' do
+  install_dir node['arcgis']['web_adaptor']['install_dir']
+  setup node['arcgis']['web_adaptor']['setup']
+  instance_name node['arcgis']['portal']['wa_name']
   action :install
 end
 
-arcgis_webadaptor "Configure Web Adaptor with Portal" do
-  portal_url node['portal']['url']
-  portal_local_url "https://" + node['portal']['domain_name'] + ":7443"
-  install_dir node['web_adaptor']['install_dir']
-  instance_name node['portal']['wa_name']
-  username node['portal']['admin_username']
-  password node['portal']['admin_password']
+arcgis_webadaptor 'Configure Web Adaptor with Portal' do
+  portal_url node['arcgis']['portal']['url']
+  portal_local_url node['arcgis']['portal']['local_url']
+  install_dir node['arcgis']['web_adaptor']['install_dir']
+  instance_name node['arcgis']['portal']['wa_name']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
   action :configure_with_portal
 end

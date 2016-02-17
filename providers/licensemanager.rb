@@ -16,6 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+action :system do
+  if node['platform'] == 'windows'
+    #TODO: Ensure License Manager system requirements on Windows
+  else
+    #TODO: Ensure License Manager system requirements on Linux
+  end
+  
+  new_resource.updated_by_last_action(true)
+end
+
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
@@ -24,18 +34,18 @@ action :install do
     install_dir = @new_resource.install_dir
     install_dir2 = install_dir.gsub(/\\/,'/')
 
-    execute "Install ArcGIS License Manager" do
+    execute 'Install ArcGIS License Manager' do
       command "\"#{cmd}\" #{args}"
       only_if {::Dir.glob("#{install_dir2}/License*").empty?}
     end
   else
     cmd = @new_resource.setup
     args  = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
-    install_subdir = ::File.join(@new_resource.install_dir, node['licensemanager']['install_subdir'])
+    install_subdir = ::File.join(@new_resource.install_dir, node['arcgis']['licensemanager']['install_subdir'])
     run_as_user = @new_resource.run_as_user
 
     subdir = @new_resource.install_dir
-    node['licensemanager']['install_subdir'].split("/").each do |path|
+    node['arcgis']['licensemanager']['install_subdir'].split("/").each do |path|
       subdir = ::File.join(subdir, path)
       directory subdir do
         owner run_as_user
@@ -54,11 +64,36 @@ action :install do
       end
     end
 
-    execute "Install ArcGIS License Manager" do
-      command "sudo -H -u #{node['arcgis']['run_as_user']} bash -c \"#{cmd} #{args}\""
+    execute 'Install ArcGIS License Manager' do
+      command "su - #{run_as_user} -c \"#{cmd} #{args}\""
       only_if {::Dir.glob("#{subdir}/License*").empty?}
     end
 
   end
+  new_resource.updated_by_last_action(true)
+end
+
+action :uninstall do
+  if node['platform'] == 'windows'
+    install_dir = @new_resource.install_dir
+    cmd = 'msiexec'
+    product_code = @new_resource.product_code
+    args = "/qb /x #{product_code}"
+
+    execute 'Uninstall ArcGIS License Manager' do
+      command "\"#{cmd}\" #{args}"
+      only_if { Utils.product_installed?(product_code) }
+    end
+  else
+   install_subdir = ::File.join(@new_resource.install_dir, node['arcgis']['licensemanager']['install_subdir']) 
+   cmd = ::File.join(install_subdir, 'uninstallLicenseManager')
+   args = "-s"
+
+   execute 'Uninstall ArcGIS License Manager' do
+     command "su - #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\""
+     only_if { ::File.exist?(cmd) }
+   end
+  end
+
   new_resource.updated_by_last_action(true)
 end

@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-actions :install, :configure_with_server, :configure_with_portal 
+actions :system, :install, :uninstall, :configure_with_server, :configure_with_portal
 
 attribute :install_dir, :kind_of => String
+attribute :product_code, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :instance_name, :kind_of => String
 attribute :portal_url, :kind_of => String
@@ -28,6 +29,8 @@ attribute :server_url, :kind_of => String
 attribute :server_local_url, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
+attribute :password, :kind_of => String
+attribute :admin_access, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)
   super

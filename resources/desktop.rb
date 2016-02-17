@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-actions :install, :authorize
+actions :system, :install, :uninstall, :authorize
 
 attribute :setup, :kind_of => String
+attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String
 attribute :python_dir, :kind_of => String
 attribute :install_features, :kind_of => String

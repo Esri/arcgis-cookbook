@@ -18,137 +18,218 @@
 
 default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
+default['arcgis']['version'] = '10.4'
 
-default['server']['domain_name'] = node['fqdn']
-default['server']['wa_name'] = 'server'
-default['server']['local_url'] = 'http://localhost:6080/arcgis'
-default['server']['url'] = 'https://' + node['server']['domain_name'] + '/' + node['server']['wa_name']
-default['server']['admin_username'] = 'admin'
-default['server']['admin_password'] = 'changeit'
-default['server']['managed_database'] = ''
-default['server']['replicated_database'] = ''
+default['arcgis']['server']['domain_name'] = node['fqdn']
+default['arcgis']['server']['wa_name'] = 'server'
 
-default['portal']['domain_name'] = node['fqdn']
-default['portal']['wa_name'] = 'portal'
-default['portal']['local_url'] = 'https://' + node['portal']['domain_name'] + ':7443/arcgis'
-default['portal']['url'] = 'https://' + node['portal']['domain_name'] + '/' + node['portal']['wa_name']
-default['portal']['admin_username'] = 'admin'
-default['portal']['admin_password'] = 'changeit'
-default['portal']['admin_email'] = 'admin@mydomain.com'
-default['portal']['admin_full_name'] = 'Administrator'
-default['portal']['admin_description'] = 'Initial account administrator'
-default['portal']['security_question'] = 'Your favorite ice cream flavor?'
-default['portal']['security_question_answer'] = 'bacon'
-default['portal']['is_primary'] = true
+case ENV['arcgis_cloud_platform']
+when 'aws'
+  default['arcgis']['server']['local_url'] = 'http://' + node['ipaddress'] + ':6080/arcgis'
+  default['arcgis']['server']['local_https_url'] = 'https://' + node['ipaddress'] + ':6443/arcgis'
+else
+  default['arcgis']['server']['local_url'] = 'http://' + node['fqdn'] + ':6080/arcgis'
+  default['arcgis']['server']['local_https_url'] = 'https://' + node['fqdn'] + ':6443/arcgis'
+end
 
-default['data_store']['preferredidentifier'] = 'hostname'
+default['arcgis']['server']['private_url'] = 'https://' + node['arcgis']['server']['domain_name'] + ':6443/arcgis'
+default['arcgis']['server']['url'] = 'https://' + node['arcgis']['server']['domain_name'] + '/' + node['arcgis']['server']['wa_name']
+default['arcgis']['server']['admin_username'] = 'admin'
+default['arcgis']['server']['admin_password'] = 'changeit'
+default['arcgis']['server']['managed_database'] = ''
+default['arcgis']['server']['replicated_database'] = ''
+default['arcgis']['server']['keystore_file'] = nil
+default['arcgis']['server']['keystore_password'] = nil
+default['arcgis']['server']['cert_alias'] = node['arcgis']['server']['domain_name']
+default['arcgis']['server']['system_properties'] = {}
+
+default['arcgis']['portal']['domain_name'] = node['fqdn']
+default['arcgis']['portal']['wa_name'] = 'portal'
+
+case ENV['arcgis_cloud_platform']
+when 'aws'
+  default['arcgis']['portal']['local_url'] = 'https://' + node['ipaddress'] + ':7443/arcgis'
+else
+  default['arcgis']['portal']['local_url'] = 'https://' + node['fqdn'] + ':7443/arcgis'
+end
+
+default['arcgis']['portal']['url'] = 'https://' + node['arcgis']['portal']['domain_name'] + '/' + node['arcgis']['portal']['wa_name']
+default['arcgis']['portal']['private_url'] = 'https://' + node['arcgis']['portal']['domain_name'] + ':7443/arcgis'
+default['arcgis']['portal']['web_context_url'] = nil
+default['arcgis']['portal']['admin_username'] = 'admin'
+default['arcgis']['portal']['admin_password'] = 'changeit'
+default['arcgis']['portal']['admin_email'] = 'admin@mydomain.com'
+default['arcgis']['portal']['admin_full_name'] = 'Administrator'
+default['arcgis']['portal']['admin_description'] = 'Initial account administrator'
+default['arcgis']['portal']['security_question'] = 'Your favorite ice cream flavor?'
+default['arcgis']['portal']['security_question_answer'] = 'bacon'
+default['arcgis']['portal']['keystore_file'] = nil
+default['arcgis']['portal']['keystore_password'] = nil
+default['arcgis']['portal']['cert_alias'] = node['arcgis']['portal']['domain_name']
+
+case ENV['arcgis_cloud_platform']
+when 'aws'
+  default['arcgis']['data_store']['preferredidentifier'] = 'ip'
+else
+  default['arcgis']['data_store']['preferredidentifier'] = 'hostname'
+end
+
+default['arcgis']['data_store']['types'] = 'tileCache,relational'
+
+default['arcgis']['web_adaptor']['admin_access'] = false
 
 case node['platform']
 when 'windows'
-  default['server']['authorization_tool'] = ENV['ProgramW6432'] +'\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
-  default['server']['authorization_file'] = 'C:\\Temp\\server_license.prvc'
-  default['server']['authorization_file_version'] = '10.3'
-  default['server']['setup'] = 'C:\\Temp\\ArcGISServer\\Setup.exe'
-  default['server']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Server'
-  default['server']['local_directories_root'] = 'C:\\arcgisserver'
-  default['server']['directories_root'] = node['server']['local_directories_root']
+  default['arcgis']['server']['authorization_tool'] = ENV['ProgramW6432'] +'\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
+  default['arcgis']['server']['authorization_file'] = ''
+  default['arcgis']['server']['setup'] = 'C:\\Temp\\ArcGISServer\\Setup.exe'
+  default['arcgis']['server']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Server'
+  default['arcgis']['server']['local_directories_root'] = 'C:\\arcgisserver'
+  default['arcgis']['server']['directories_root'] = node['arcgis']['server']['local_directories_root']
+  default['arcgis']['server']['config_store_type'] = 'FILESYSTEM'
+  default['arcgis']['server']['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], "config-store")
+  default['arcgis']['server']['config_store_connection_secret'] = nil
 
-  default['python']['install_dir'] = 'C:\\Python27'
+  default['arcgis']['python']['install_dir'] = 'C:\\Python27'
 
-  default['portal']['authorization_tool'] = ENV['ProgramW6432'] +'\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
-  default['portal']['authorization_file'] = 'C:\\Temp\\portal_license.prvc'
-  default['portal']['authorization_file_version'] = '10.3'
-  default['portal']['setup'] = 'C:\\Temp\\ArcGISPortal\\Setup.exe'
-  default['portal']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Portal'
-  default['portal']['local_content_dir'] = 'C:\\arcgisportal\\content'
-  default['portal']['content_dir'] = node['portal']['local_content_dir']
+  default['arcgis']['portal']['authorization_tool'] = ENV['ProgramW6432'] +'\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
+  default['arcgis']['portal']['authorization_file'] = ''
+  default['arcgis']['portal']['setup'] = 'C:\\Temp\\ArcGISPortal\\Setup.exe'
+  default['arcgis']['portal']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Portal'
+  default['arcgis']['portal']['data_dir'] = 'C:\\arcgisportal'
+  default['arcgis']['portal']['local_content_dir'] = node['arcgis']['portal']['data_dir'] + '\\content'
+  default['arcgis']['portal']['content_dir'] = node['arcgis']['portal']['local_content_dir']
 
-  default['web_adaptor']['setup'] = 'C:\\Temp\\WebAdaptorIIS\\Setup.exe'
-  default['web_adaptor']['install_dir'] = ''
+  default['arcgis']['web_adaptor']['setup'] = 'C:\\Temp\\WebAdaptorIIS\\Setup.exe'
+  default['arcgis']['web_adaptor']['install_dir'] = ''
 
-  default['data_store']['setup'] = 'C:\\Temp\\ArcGISDataStore\\Setup.exe'
-  default['data_store']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\DataStore'
-  default['data_store']['data_dir'] = 'C:\\arcgisdatastore\\data'
-  default['data_store']['local_backup_dir'] = 'C:\\arcgisdatastore\\data\\backup'
-  default['data_store']['backup_dir'] = node['data_store']['local_backup_dir']
+  default['arcgis']['data_store']['setup'] = 'C:\\Temp\\ArcGISDataStore\\Setup.exe'
+  default['arcgis']['data_store']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\DataStore'
+  default['arcgis']['data_store']['data_dir'] = 'C:\\arcgisdatastore'
+  default['arcgis']['data_store']['local_backup_dir'] = node['arcgis']['data_store']['data_dir'] + '\\backup'
+  default['arcgis']['data_store']['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
 
-  default['desktop']['setup'] = 'C:\\Temp\\ArcGISDesktop\\Setup.exe'
-  default['desktop']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
-  default['desktop']['install_features'] = 'ALL'
-  default['desktop']['authorization_file'] = 'C:\\Temp\\license.ecp'
-  default['desktop']['authorization_file_version'] = '10.3'
-  default['desktop']['authorization_tool'] = ENV['ProgramFiles(x86)'] + '\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
-  default['desktop']['esri_license_host'] = ENV['COMPUTERNAME']
-  default['desktop']['software_class'] = 'Viewer'
-  default['desktop']['seat_preference'] = 'Fixed'
+  default['arcgis']['desktop']['setup'] = 'C:\\Temp\\ArcGISDesktop\\Setup.exe'
+  default['arcgis']['desktop']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
+  default['arcgis']['desktop']['install_features'] = 'ALL'
+  default['arcgis']['desktop']['authorization_file'] = ''
+  default['arcgis']['desktop']['authorization_tool'] = ENV['ProgramFiles(x86)'] + '\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
+  default['arcgis']['desktop']['esri_license_host'] = ENV['COMPUTERNAME']
+  default['arcgis']['desktop']['software_class'] = 'Viewer'
+  default['arcgis']['desktop']['seat_preference'] = 'Fixed'
+  default['arcgis']['desktop']['desktop_config'] = true
+  default['arcgis']['desktop']['modifyflexdacl'] = false
 
-  default['licensemanager']['setup'] = 'C:\\Temp\\ArcGISLicenseManager\\Setup.exe'
-  default['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
+  default['arcgis']['pro']['setup'] = 'C:\\Temp\\ArcGISPro\\ArcGISPro.msi'
+  default['arcgis']['pro']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
+  default['arcgis']['pro']['blockaddins'] = '#0'
+  default['arcgis']['pro']['allusers'] = 2
 
-  default['geoevent']['authorization_file'] = ''
-  default['geoevent']['authorization_file_version'] = node['server']['authorization_file_version']
-  default['geoevent']['setup'] = 'C:\\Temp\\ArcGIS_GeoEventExtension\\setup.exe'
-    
-  default['dotnetframework']['3.5.1']['url'] = 'http://download.microsoft.com/download/2/0/e/20e90413-712f-438c-988e-fdaa79a8ac3d/dotnetfx35.exe'
+  default['arcgis']['licensemanager']['setup'] = 'C:\\Temp\\ArcGISLicenseManager\\Setup.exe'
+  default['arcgis']['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
+
+  default['arcgis']['geoevent']['authorization_file'] = ''
+  default['arcgis']['geoevent']['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  default['arcgis']['geoevent']['setup'] = 'C:\\Temp\\ArcGIS_GeoEventExtension\\setup.exe'
+
   if node['platform_version'].to_f < 6.1
-    #Windows Server 2008
-    default['iis']['features'] = ["Web-Server", "Web-Mgmt-Tools", "Web-Mgmt-Console", "Web-Mgmt-Service",
-        "Web-Mgmt-Service", "Web-Mgmt-Compat", "Web-Scripting-Tools", "Web-Static-Content",
-        "Web-ISAPI-Filter", "Web-ISAPI-Ext", "Web-Basic-Auth", "Web-Windows-Auth", "Web-Net-Ext",
-        "Web-Asp-Net", "Web-Metabase"]
+    # Windows Server 2008
+    default['arcgis']['iis']['features'] = ['Web-Server', 'Web-Mgmt-Tools', 'Web-Mgmt-Console',
+      'Web-Mgmt-Service', 'Web-Mgmt-Service', 'Web-Mgmt-Compat', 'Web-Scripting-Tools',
+      'Web-Static-Content', 'Web-ISAPI-Filter', 'Web-ISAPI-Ext', 'Web-Basic-Auth',
+      'Web-Windows-Auth', 'Web-Net-Ext', 'Web-Asp-Net', 'Web-Metabase']
   elsif node['platform_version'].to_f < 6.2
-    #Windows Server 2008 R2, Windows 7
-    default['iis']['features'] = ["IIS-WebServerRole", "IIS-ISAPIFilter", "IIS-ISAPIExtensions",
-        "IIS-WebServerManagementTools", "IIS-ManagementConsole", "IIS-ManagementService",
-        "IIS-IIS6ManagementCompatibility", "IIS-ManagementScriptingTools", "IIS-StaticContent",
-        "IIS-BasicAuthentication", "IIS-WindowsAuthentication", "IIS-NetFxExtensibility",
-        "IIS-ASPNET", "IIS-Metabase"]
+    # Windows Server 2008 R2, Windows 7
+    default['arcgis']['iis']['features'] = ['IIS-WebServerRole', 'IIS-ISAPIFilter',
+      'IIS-ISAPIExtensions', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
+      'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility', 'IIS-ManagementScriptingTools',
+      'IIS-StaticContent', 'IIS-BasicAuthentication', 'IIS-WindowsAuthentication',
+      'IIS-NetFxExtensibility', 'IIS-ASPNET', 'IIS-Metabase']
   else
-    default['iis']['features'] = ["IIS-WebServerRole", "IIS-ISAPIFilter", "IIS-ISAPIExtensions",
-        "NetFx4Extended-ASPNET45", "IIS-NetFxExtensibility45", "IIS-ASPNET45",
-        "IIS-WebServerManagementTools", "IIS-ManagementConsole", "IIS-ManagementService",
-        "IIS-IIS6ManagementCompatibility", "IIS-ManagementScriptingTools", "IIS-StaticContent",
-        "IIS-BasicAuthentication", "IIS-WindowsAuthentication", "IIS-NetFxExtensibility",
-        "IIS-ASPNET", "IIS-Metabase"]
+    if node['kernel']['os_info']['product_type'] != Chef::ReservedNames::Win32::API::System::VER_NT_WORKSTATION
+      default['arcgis']['iis']['features'] = ['NetFx3ServerFeatures', 
+        'IIS-WebServerRole', 'IIS-ApplicationDevelopment', 'IIS-ISAPIFilter',
+        'IIS-ISAPIExtensions', 'NetFx4Extended-ASPNET45', 'IIS-NetFxExtensibility45',
+        'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
+        'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
+        'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
+        'IIS-WindowsAuthentication', 'IIS-NetFxExtensibility', 'IIS-ASPNET', 'IIS-Metabase']
+    elsif
+      default['arcgis']['iis']['features'] = ['IIS-WebServerRole', 'IIS-ISAPIFilter',
+        'IIS-ISAPIExtensions', 'NetFx4Extended-ASPNET45', 'IIS-NetFxExtensibility45',
+        'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
+        'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
+        'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
+        'IIS-WindowsAuthentication', 'IIS-NetFxExtensibility', 'IIS-ASPNET', 'IIS-Metabase']
+    end
   end
-  default['iis']['appid'] = '{00112233-4455-6677-8899-AABBCCDDEEFF}'
-  #default['iis']['keystore_file'] = nil
-  #default['iis']['keystore_password'] = nil
-else
-  default['server']['install_dir'] = '/'
-  default['server']['install_subdir'] = 'arcgis/server'
-  default['server']['authorization_tool'] = ::File.join(node['server']['install_dir'], node['server']['install_subdir'], '/tools/authorizeSoftware')
-  default['server']['authorization_file'] = '/tmp/server_license.prvc'
-  default['server']['setup'] = '/tmp/server-cd/Setup'
-  default['server']['local_directories_root'] = '/mnt/arcgisserver'
-  default['server']['directories_root'] = node['server']['local_directories_root']
-  
-  default['python']['install_dir'] = '' #Not needed on Linux.
-  
-  default['portal']['install_dir'] = '/'
-  default['portal']['install_subdir'] = 'arcgis/portal'
-  default['portal']['authorization_tool'] = ::File.join(node['portal']['install_dir'], node['portal']['install_subdir'],'/tools/authorizeSoftware')
-  default['portal']['authorization_file'] = '/tmp/portal_license.prvc'
-  default['portal']['setup'] = '/tmp/portal-cd/Setup'
-  default['portal']['local_content_dir'] = ::File.join(node['portal']['install_dir'], node['portal']['install_subdir'], 'usr/arcgisportal/content')
-  default['portal']['content_dir'] = node['portal']['local_content_dir']
+  default['arcgis']['iis']['appid'] = '{00112233-4455-6677-8899-AABBCCDDEEFF}'
+  default['arcgis']['iis']['wwwroot'] = 'C:\\inetpub\\wwwroot\\'
+  default['arcgis']['iis']['domain_name'] = node['arcgis']['portal']['domain_name']
+  # default['arcgis']['iis']['keystore_file'] = nil
+  # default['arcgis']['iis']['keystore_password'] = nil
 
-  default['web_adaptor']['setup'] = '/tmp/web-adaptor-cd/Setup'
-  default['web_adaptor']['install_dir'] = '/'
-  default['web_adaptor']['install_subdir'] = 'arcgis/webadaptor10.3.1'
+  default['arcgis']['server']['product_code'] = '{687897C7-4795-4B17-8AD0-CB8C364778AD}'
+  default['arcgis']['geoevent']['product_code'] = '{188191AE-5A83-49E8-88CB-1F1DB05F030D}'
+  default['arcgis']['portal']['product_code'] = '{FA6FCD2D-114C-4C04-A8DF-C2E43979560E}'
+  default['arcgis']['web_adaptor']['product_code'] = '{B83D9E06-B57C-4B26-BF7A-004BE10AB2D5}'
+  default['arcgis']['web_adaptor']['product_code2'] = '{E2C783F3-6F85-4B49-BFCD-6D6A57A2CFCE}'
+  default['arcgis']['data_store']['product_code'] = '{C351BC6D-BF25-487D-99AB-C963D590A8E8}'
+  default['arcgis']['desktop']['product_code'] = '{72E7DF0D-FFEE-43CE-A5FA-43DFC25DC087}'
+  default['arcgis']['licensemanager']['product_code'] = '{E1393226-725C-42F8-A672-4E5AC55EFBDE}'
 
-  default['data_store']['setup'] = '/tmp/data-store-cd/Setup'
-  default['data_store']['install_dir'] = '/'
-  default['data_store']['install_subdir'] = 'arcgis/datastore'
-  default['data_store']['data_dir'] = ::File.join(node['data_store']['install_dir'], node['data_store']['install_subdir'],'/usr/arcgisdatastore')
-  default['data_store']['local_backup_dir'] = node['data_store']['data_dir'] + '/backup'
-  default['data_store']['backup_dir'] = node['data_store']['local_backup_dir']
+  default['arcgis']['server']['authorization_file_version'] = node['arcgis']['version']
+  default['arcgis']['portal']['authorization_file_version'] = node['arcgis']['version']
+  default['arcgis']['desktop']['authorization_file_version'] = node['arcgis']['version']
 
-  default['licensemanager']['setup'] = '/tmp/licensemanager-cd/Setup'
-  default['licensemanager']['install_dir'] = '/'
-  default['licensemanager']['install_subdir'] = 'arcgis/license10.3'
-    
-  default['geoevent']['authorization_file'] = ''
-  default['geoevent']['authorization_file_version'] = node['server']['authorization_file_version']
-  default['geoevent']['setup'] = '/tmp/geo-event-cd/Setup.sh'
+else # node['platform'] == 'linux'
+  default['arcgis']['web_adaptor']['install_subdir'] = 'arcgis/webadaptor' + node['arcgis']['version']
+  default['arcgis']['licensemanager']['install_subdir'] = 'arcgis/license' + node['arcgis']['version']
+
+  default['arcgis']['server']['install_dir'] = '/'
+  default['arcgis']['server']['install_subdir'] = 'arcgis/server'
+  default['arcgis']['server']['authorization_tool'] = ::File.join(node['arcgis']['server']['install_dir'],
+                                                                  node['arcgis']['server']['install_subdir'],
+                                                                  '/tools/authorizeSoftware')
+  default['arcgis']['server']['authorization_file'] = ''
+  default['arcgis']['server']['setup'] = '/tmp/server-cd/Setup'
+  default['arcgis']['server']['local_directories_root'] = '/mnt/arcgisserver'
+  default['arcgis']['server']['directories_root'] = node['arcgis']['server']['local_directories_root']
+  default['arcgis']['server']['config_store_type'] = 'FILESYSTEM'
+  default['arcgis']['server']['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], "config-store")
+  default['arcgis']['server']['config_store_connection_secret'] = nil
+
+  default['arcgis']['python']['install_dir'] = '' # Not needed on Linux.
+
+  default['arcgis']['portal']['install_dir'] = '/'
+  default['arcgis']['portal']['install_subdir'] = 'arcgis/portal'
+  default['arcgis']['portal']['authorization_tool'] = ::File.join(node['arcgis']['portal']['install_dir'],
+                                                                  node['arcgis']['portal']['install_subdir'],
+                                                                  '/tools/authorizeSoftware')
+  default['arcgis']['portal']['authorization_file'] = ''
+  default['arcgis']['portal']['setup'] = '/tmp/portal-cd/Setup'
+  default['arcgis']['portal']['data_dir'] = ::File.join(node['arcgis']['portal']['install_dir'],
+                                                        node['arcgis']['portal']['install_subdir'],
+                                                        'usr/arcgisportal')
+  default['arcgis']['portal']['local_content_dir'] = ::File.join(node['arcgis']['portal']['data_dir'], 'content')
+  default['arcgis']['portal']['content_dir'] = node['arcgis']['portal']['local_content_dir']
+
+  default['arcgis']['web_adaptor']['setup'] = '/tmp/web-adaptor-cd/Setup'
+  default['arcgis']['web_adaptor']['install_dir'] = '/'
+
+  default['arcgis']['data_store']['setup'] = '/tmp/data-store-cd/Setup'
+  default['arcgis']['data_store']['install_dir'] = '/'
+  default['arcgis']['data_store']['install_subdir'] = 'arcgis/datastore'
+  default['arcgis']['data_store']['data_dir'] = ::File.join(node['arcgis']['data_store']['install_dir'],
+                                                            node['arcgis']['data_store']['install_subdir'],
+                                                            '/usr/arcgisdatastore')
+  default['arcgis']['data_store']['local_backup_dir'] = node['arcgis']['data_store']['data_dir'] + '/backup'
+  default['arcgis']['data_store']['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
+
+  default['arcgis']['licensemanager']['setup'] = '/tmp/licensemanager-cd/Setup'
+  default['arcgis']['licensemanager']['install_dir'] = '/'
+
+  default['arcgis']['geoevent']['authorization_file'] = ''
+  default['arcgis']['geoevent']['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  default['arcgis']['geoevent']['setup'] = '/tmp/geo-event-cd/Setup.sh'
 end

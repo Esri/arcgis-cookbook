@@ -16,6 +16,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+action :system do
+  if node['platform'] == 'windows'
+    # TODO: Ensure Desktop system requirements 
+  end
+  
+  new_resource.updated_by_last_action(true)
+end
+
 action :install do
   cmd = @new_resource.setup
   if @new_resource.seat_preference == 'Fixed'
@@ -29,15 +37,31 @@ action :install do
 
   execute "Install ArcGIS for Desktop" do
     command "\"#{cmd}\" #{args}"
-    only_if {::Dir.glob("#{install_dir2}/Desktop*").empty?}
+    only_if { ::Dir.glob("#{install_dir2}/Desktop*").empty? }
   end
 
   new_resource.updated_by_last_action(true)
 end
 
+action :uninstall do
+  if node['platform'] == 'windows'
+    install_dir = @new_resource.install_dir
+    cmd = 'msiexec'
+    product_code = @new_resource.product_code
+    args = "/qb /x #{product_code}"
+
+    execute 'Uninstall ArcGIS for Desktop' do
+      command "\"#{cmd}\" #{args}"
+      only_if { Utils.product_installed?(product_code) }
+    end
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
 action :authorize do
   if @new_resource.seat_preference == 'Fixed'
-    cmd = node['desktop']['authorization_tool']
+    cmd = node['arcgis']['desktop']['authorization_tool']
     args = "/S /VER \"#{@new_resource.authorization_file_version}\" /LIF \"#{@new_resource.authorization_file}\""
   end
 

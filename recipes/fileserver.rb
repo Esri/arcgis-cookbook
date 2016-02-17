@@ -17,34 +17,43 @@
 # limitations under the License.
 #
 
-directory node['data_store']['local_backup_dir'] do
+directory node['arcgis']['data_store']['local_backup_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    group 'root'    
+    group 'root'
     mode '0755'
   end
   recursive true
   action :create
 end
 
-directory node['server']['local_directories_root'] do
+directory node['arcgis']['server']['local_directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    group 'root'    
+    group 'root'
     mode '0755'
   end
   recursive true
   action :create
 end
 
-directory node['portal']['local_content_dir'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    group 'root'    
-    mode '0755'
+if node['platform'] == 'windows'
+  directory node['arcgis']['portal']['local_content_dir'] do
+    owner node['arcgis']['run_as_user']
+    recursive true
+    action :create
   end
-  recursive true
-  action :create
+else
+  subdir = '/'
+  node['arcgis']['portal']['local_content_dir'].split('/').each do |path|
+    subdir = ::File.join(subdir, path)
+    directory subdir do
+      owner node['arcgis']['run_as_user']
+      group 'root'
+      mode '0755'
+      action :create
+    end
+  end
 end
 
-#TODO: share the directories
+# TODO: share the directories

@@ -17,71 +17,60 @@
 # limitations under the License.
 #
 
-arcgis_server "Setup ArcGIS for Server" do
-  setup node['server']['setup']
-  install_dir node['server']['install_dir']
-  python_dir node['python']['install_dir']
+arcgis_server 'ArcGIS for Server system requirements' do
+  action :system
+end
+
+arcgis_server 'Setup ArcGIS for Server' do
+  setup node['arcgis']['server']['setup']
+  install_dir node['arcgis']['server']['install_dir']
+  python_dir node['arcgis']['python']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
   action :install
 end
 
-arcgis_server "Authorize ArcGIS for Server" do
-  authorization_file node['server']['authorization_file']
-  authorization_file_version node['server']['authorization_file_version']
+arcgis_server 'Authorize ArcGIS for Server' do
+  authorization_file node['arcgis']['server']['authorization_file']
+  authorization_file_version node['arcgis']['server']['authorization_file_version']
   action :authorize
 end
 
-directory node['server']['directories_root'] do
+directory node['arcgis']['server']['directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    group 'root'    
+    group 'root'
     mode '0755'
   end
   recursive true
-  not_if { node['server']['directories_root'].start_with?("\\\\") }
+  not_if { node['arcgis']['server']['directories_root'].start_with?('\\\\') || 
+           node['arcgis']['server']['directories_root'].start_with?('/net') }
   action :create
 end
 
-if node['server']['primary_server_url'].nil?
-  #Create Site
-  arcgis_server "Create ArcGIS for Server Site" do
-    server_url node['server']['local_url']
-    username node['server']['admin_username']
-    password node['server']['admin_password']
-    server_directories_root node['server']['directories_root']
-    retries 5
-    retry_delay 30
-    action :create_site
-  end
-  
-  arcgis_server "Enable SSL on ArcGIS Server Site" do
-    server_url node['server']['local_url']
-    username node['server']['admin_username']
-    password node['server']['admin_password']
-    retries 5
-    retry_delay 30
-    action :enable_ssl
-  end
-else
-  #Join Site
-  arcgis_server "Join ArcGIS for Server Site" do
-    server_url node['server']['local_url']
-    username node['server']['admin_username']
-    password node['server']['admin_password']
-    primary_server_url node['server']['primary_server_url']
-    retries 10
-    retry_delay 30
-    action :join_site
-  end
-  
-  arcgis_server "Add machine to default cluster" do
-    server_url node['server']['local_url']
-    username node['server']['admin_username']
-    password node['server']['admin_password']
-    cluster 'default'
-    retries 10
-    retry_delay 30
-    action :join_cluster
-  end
+arcgis_server 'Create ArcGIS for Server Site' do
+  server_url node['arcgis']['server']['local_url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  server_directories_root node['arcgis']['server']['directories_root']
+  system_properties node['arcgis']['server']['system_properties']
+  config_store_connection_string node['arcgis']['server']['config_store_connection_string']
+  config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
+  config_store_type node['arcgis']['server']['config_store_type']
+  retries 5
+  retry_delay 30
+  action :create_site
+end
+
+arcgis_server 'Configure HTTPS' do
+  server_url node['arcgis']['server']['local_url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  keystore_file node['arcgis']['server']['keystore_file']
+  keystore_password node['arcgis']['server']['keystore_password']
+  cert_alias node['arcgis']['server']['cert_alias']
+  retries 5
+  retry_delay 30
+  not_if { node['arcgis']['server']['keystore_file'].nil? }
+  action :configure_https
 end

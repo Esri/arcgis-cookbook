@@ -17,21 +17,25 @@
 # limitations under the License.
 #
 
-arcgis_desktop "Install ArcGIS for Desktop" do
-  setup node['desktop']['setup']
-  install_dir node['desktop']['install_dir']
-  python_dir node['python']['install_dir']
-  install_features node['desktop']['install_features']
-  esri_license_host node['desktop']['esri_license_host']
-  software_class node['desktop']['software_class']
-  seat_preference node['desktop']['seat_preference']
-  desktop_config node['desktop']['desktop_config']
-  modifyflexdacl node['desktop']['modifyflexdacl']
+arcgis_desktop 'Verify ArcGIS for Desktop system requirements' do
+  action :system
+end
+
+arcgis_desktop 'Install ArcGIS for Desktop' do
+  setup node['arcgis']['desktop']['setup']
+  install_dir node['arcgis']['desktop']['install_dir']
+  python_dir node['arcgis']['python']['install_dir']
+  install_features node['arcgis']['desktop']['install_features']
+  esri_license_host node['arcgis']['desktop']['esri_license_host']
+  software_class node['arcgis']['desktop']['software_class']
+  seat_preference node['arcgis']['desktop']['seat_preference']
+  desktop_config node['arcgis']['desktop']['desktop_config']
+  modifyflexdacl node['arcgis']['desktop']['modifyflexdacl']
   action :install
 end
 
-arcgis_desktop "Authorize ArcGIS for Desktop" do
-  authorization_file node['desktop']['authorization_file']
-  authorization_file_version node['desktop']['authorization_file_version']
+arcgis_desktop 'Authorize ArcGIS for Desktop' do
+  authorization_file node['arcgis']['desktop']['authorization_file']
+  authorization_file_version node['arcgis']['desktop']['authorization_file_version']
   action :authorize
 end

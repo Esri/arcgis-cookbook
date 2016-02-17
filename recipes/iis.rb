@@ -17,16 +17,17 @@
 # limitations under the License.
 #
 
-arcgis_iis "Enable IIS Features" do
+arcgis_iis 'Enable IIS Features' do
   action :enable
 end
 
-arcgis_iis "Configure HTTPS Binding" do
-  keystore_file node['iis']['keystore_file']
-  keystore_password node['iis']['keystore_password']
+arcgis_iis 'Configure HTTPS Binding' do
+  keystore_file node['arcgis']['iis']['keystore_file']
+  keystore_password node['arcgis']['iis']['keystore_password']
+  domain_name node['arcgis']['iis']['domain_name']
   action :configure_https
 end
 
-arcgis_iis "Start IIS" do
+arcgis_iis 'Start IIS' do
   action :start
 end

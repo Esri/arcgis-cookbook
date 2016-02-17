@@ -17,44 +17,56 @@
 # limitations under the License.
 #
 
-arcgis_datastore "Setup ArcGIS DataStore" do
-  setup node['data_store']['setup']
-  install_dir node['data_store']['install_dir']
+arcgis_datastore 'ArcGIS DataStore system requirements' do
+  action :system
+end
+
+directory node['arcgis']['data_store']['data_dir'] do
+  owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    group 'root'
+    mode '0755'
+  end
+  recursive true
+  action :create
+end
+
+directory node['arcgis']['data_store']['backup_dir'] do
+  owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    group 'root'
+    mode '0755'
+  end
+  recursive true
+  not_if { node['arcgis']['data_store']['backup_dir'].start_with?('\\\\') ||
+           node['arcgis']['data_store']['backup_dir'].start_with?('/net/') }
+  action :create
+end
+
+arcgis_datastore 'Setup ArcGIS DataStore' do
+  setup node['arcgis']['data_store']['setup']
+  install_dir node['arcgis']['data_store']['install_dir']
+  data_dir node['arcgis']['data_store']['data_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
   action :install
 end
 
-directory node['data_store']['data_dir'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    group 'root'    
-    mode '0755'
-  end
-  recursive true
-  not_if {node['data_store']['data_dir'].start_with?("\\\\")}
-  action :create
-end
-
-directory node['data_store']['backup_dir'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    group 'root'    
-    mode '0755'
-  end
-  recursive true
-  not_if {node['data_store']['backup_dir'].start_with?("\\\\")}
-  action :create
-end
-
-arcgis_datastore "Configure ArcGIS DataStore" do
-  install_dir node['data_store']['install_dir']
-  data_dir node['data_store']['data_dir']
-  backup_dir node['data_store']['backup_dir']
+arcgis_datastore 'Configure ArcGIS DataStore' do
+  install_dir node['arcgis']['data_store']['install_dir']
+  data_dir node['arcgis']['data_store']['data_dir']
+  types node['arcgis']['data_store']['types']
   run_as_user node['arcgis']['run_as_user']
-  run_as_password node['arcgis']['run_as_password']
-  server_url "https://" + node['server']['domain_name'] + ":6443/arcgis"
-  username node['server']['admin_username']
-  password node['server']['admin_password']
+  server_url node['arcgis']['server']['private_url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
   action :configure
+end
+
+arcgis_datastore 'Configure ArcGIS DataStore' do
+  install_dir node['arcgis']['data_store']['install_dir']
+  backup_dir node['arcgis']['data_store']['backup_dir']
+  run_as_user node['arcgis']['run_as_user']
+  only_if { node['arcgis']['data_store']['types'].include? 'relational' }
+  action :change_backup_location
 end

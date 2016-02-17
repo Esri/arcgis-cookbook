@@ -17,15 +17,19 @@
 # limitations under the License.
 #
 
-arcgis_geoevent "Authorize ArcGIS GeoEvent Extension for Server" do
-  authorization_file node['geoevent']['authorization_file']
-  authorization_file_version node['geoevent']['authorization_file_version']
+arcgis_geoevent 'Validate ArcGIS GeoEvent Extension for Server system requirements' do
+  action :system
+end
+
+arcgis_geoevent 'Authorize ArcGIS GeoEvent Extension for Server' do
+  authorization_file node['arcgis']['geoevent']['authorization_file']
+  authorization_file_version node['arcgis']['geoevent']['authorization_file_version']
   action :authorize
 end
 
-arcgis_geoevent "Setup ArcGIS GeoEvent Extension for Server" do
-  setup node['geoevent']['setup']
-  install_dir node['server']['install_dir']
+arcgis_geoevent 'Setup ArcGIS GeoEvent Extension for Server' do
+  setup node['arcgis']['geoevent']['setup']
+  install_dir node['arcgis']['server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
   action :install
