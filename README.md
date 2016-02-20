@@ -7,14 +7,15 @@ Requirements
 ------------
 
 ### Supported ArcGIS software
-* ArcGIS Pro 1.1/1.2 (Windows only)
 * ArcGIS 10.4 Server
 * ArcGIS 10.4 Data Store
 * Portal for ArcGIS 10.4
 * ArcGIS 10.4 Web Adaptor (IIS/Java) 
+* ArcGIS 10.4 GeoEvent Extension for Server
+* ArcGIS Pro 1.1/1.2 (Windows only)
 * ArcGIS 10.4 for Desktop (Windows only)
 * ArcGIS 10.4 License Manager 
-* ArcGIS 10.4 GeoEvent Extension for Server
+
 
 ### Platforms
 * Windows 7
