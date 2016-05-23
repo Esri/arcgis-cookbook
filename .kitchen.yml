@@ -28,7 +28,8 @@ suites:
         - ["/windows_setups/ArcGIS_DataStore", "C:/temp/setups/ArcGIS_DataStore"]
         - ["/windows_setups/Portal_for_ArcGIS", "C:/temp/setups/Portal_for_ArcGIS"]
         - ["/windows_setups/WebAdaptorIIS", "C:/temp/setups/WebAdaptorIIS"]
-        - ["/windows_setups/Authorization_Files", "C:/temp/auth_files"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/ArcGIS_Server/Advanced", "C:/temp/auth_files/ArcGIS_Server"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/Portal_for_ArcGIS", "C:/temp/auth_files/Portal_for_ArcGIS"]
     run_list:
       - recipe[arcgis::system]
       - recipe[arcgis::iis]
@@ -70,11 +71,12 @@ suites:
         - ["forwarded_port", {guest: 6443, host: 26443}]
         - ["forwarded_port", {guest: 7443, host: 27443}]
       synced_folders:
-        - ["/net/linux_setups/ArcGISServer/CD_Linux", "/tmp/server-cd"]
-        - ["/net/linux_setups/ArcGISDataStore/CD_Linux", "/tmp/data-store-cd"]
-        - ["/net/linux_setups/ArcGISPortal/CD_Linux", "/tmp/portal-cd"]
-        - ["/net/linux_setups/WebAdaptor/CD_Linux", "/tmp/web-adaptor-cd"]
-        - ["/net/linux_setups/Authorization_Files", "/tmp/auth_files"]
+        - ["/net/twoball/twoball3/daily/ArcGISServer/CD_Linux", "/tmp/server-cd"]
+        - ["/net/twoball/twoball3/daily/ArcGISDataStore/CD_Linux", "/tmp/data-store-cd"]
+        - ["/net/twoball/twoball3/daily/ArcGISPortal/CD_Linux", "/tmp/portal-cd"]
+        - ["/net/twoball/twoball3/daily/WebAdaptor/CD_Linux", "/tmp/web-adaptor-cd"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/ArcGIS_Server/Advanced", "/tmp/auth_files/ArcGISServer"]
+        - ["/net/metro/Released/Authorization_Files/Version10.4/Portal_for_ArcGIS", "/tmp/auth_files/ArcGISPortal"]
     run_list:
       - recipe[arcgis::system]
       - recipe[java]

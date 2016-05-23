@@ -128,10 +128,6 @@ when 'windows'
   default['arcgis']['licensemanager']['setup'] = 'C:\\Temp\\ArcGISLicenseManager\\Setup.exe'
   default['arcgis']['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
-  default['arcgis']['geoevent']['authorization_file'] = ''
-  default['arcgis']['geoevent']['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
-  default['arcgis']['geoevent']['setup'] = 'C:\\Temp\\ArcGIS_GeoEventExtension\\setup.exe'
-
   if node['platform_version'].to_f < 6.1
     # Windows Server 2008
     default['arcgis']['iis']['features'] = ['Web-Server', 'Web-Mgmt-Tools', 'Web-Mgmt-Console',
@@ -169,19 +165,40 @@ when 'windows'
   # default['arcgis']['iis']['keystore_file'] = nil
   # default['arcgis']['iis']['keystore_password'] = nil
 
-  default['arcgis']['server']['product_code'] = '{687897C7-4795-4B17-8AD0-CB8C364778AD}'
-  default['arcgis']['geoevent']['product_code'] = '{188191AE-5A83-49E8-88CB-1F1DB05F030D}'
-  default['arcgis']['portal']['product_code'] = '{FA6FCD2D-114C-4C04-A8DF-C2E43979560E}'
-  default['arcgis']['web_adaptor']['product_code'] = '{B83D9E06-B57C-4B26-BF7A-004BE10AB2D5}'
-  default['arcgis']['web_adaptor']['product_code2'] = '{E2C783F3-6F85-4B49-BFCD-6D6A57A2CFCE}'
-  default['arcgis']['data_store']['product_code'] = '{C351BC6D-BF25-487D-99AB-C963D590A8E8}'
-  default['arcgis']['desktop']['product_code'] = '{72E7DF0D-FFEE-43CE-A5FA-43DFC25DC087}'
-  default['arcgis']['licensemanager']['product_code'] = '{E1393226-725C-42F8-A672-4E5AC55EFBDE}'
+  case node['arcgis']['version']
+  when '10.4.1'
+    default['arcgis']['server']['product_code'] = '{88A617EF-89AC-418E-92E1-926908C4D50F}'
+    default['arcgis']['geoevent']['product_code'] = '{D71379AF-A72B-4B10-A7BA-64BC6AF6841B}'
+    default['arcgis']['portal']['product_code'] = '{31373E04-9B5A-4CD7-B668-0B1DE7F0D45F}'
+    default['arcgis']['web_adaptor']['product_code'] = '{F53FEE2B-54DD-4A6F-8545-6865F4FBF6DC}'
+    default['arcgis']['web_adaptor']['product_code2'] = '{475ACDE5-D140-4F10-9006-C804CA93D2EF}'
+    default['arcgis']['data_store']['product_code'] = '{A944E0A7-D268-41CA-B96E-8434457B051B}'
+    default['arcgis']['desktop']['product_code'] = '{CB0C9578-75CB-45E5-BD81-A600BA33B0C3}'
+    default['arcgis']['licensemanager']['product_code'] = '{D71379AF-A72B-4B10-A7BA-64BC6AF6841B}'
 
-  default['arcgis']['server']['authorization_file_version'] = node['arcgis']['version']
-  default['arcgis']['portal']['authorization_file_version'] = node['arcgis']['version']
-  default['arcgis']['desktop']['authorization_file_version'] = node['arcgis']['version']
+    default['arcgis']['server']['authorization_file_version'] = '10.4'
+    default['arcgis']['portal']['authorization_file_version'] = '10.4'
+    default['arcgis']['desktop']['authorization_file_version'] = '10.4'
+  when '10.4'
+    default['arcgis']['server']['product_code'] = '{687897C7-4795-4B17-8AD0-CB8C364778AD}'
+    default['arcgis']['geoevent']['product_code'] = '{188191AE-5A83-49E8-88CB-1F1DB05F030D}'
+    default['arcgis']['portal']['product_code'] = '{FA6FCD2D-114C-4C04-A8DF-C2E43979560E}'
+    default['arcgis']['web_adaptor']['product_code'] = '{B83D9E06-B57C-4B26-BF7A-004BE10AB2D5}'
+    default['arcgis']['web_adaptor']['product_code2'] = '{E2C783F3-6F85-4B49-BFCD-6D6A57A2CFCE}'
+    default['arcgis']['data_store']['product_code'] = '{C351BC6D-BF25-487D-99AB-C963D590A8E8}'
+    default['arcgis']['desktop']['product_code'] = '{72E7DF0D-FFEE-43CE-A5FA-43DFC25DC087}'
+    default['arcgis']['licensemanager']['product_code'] = '{E1393226-725C-42F8-A672-4E5AC55EFBDE}'
 
+    default['arcgis']['server']['authorization_file_version'] = node['arcgis']['version']
+    default['arcgis']['portal']['authorization_file_version'] = node['arcgis']['version']
+    default['arcgis']['desktop']['authorization_file_version'] = node['arcgis']['version']
+  else
+    throw 'Unsupported ArcGIS version'
+  end
+
+  default['arcgis']['geoevent']['authorization_file'] = ''
+  default['arcgis']['geoevent']['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  default['arcgis']['geoevent']['setup'] = 'C:\\Temp\\ArcGIS_GeoEventExtension\\setup.exe'
 else # node['platform'] == 'linux'
   default['arcgis']['web_adaptor']['install_subdir'] = 'arcgis/webadaptor' + node['arcgis']['version']
   default['arcgis']['licensemanager']['install_subdir'] = 'arcgis/license' + node['arcgis']['version']

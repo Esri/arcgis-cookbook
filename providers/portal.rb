@@ -71,7 +71,16 @@ action :install do
     execute 'Install Portal for ArcGIS' do
       command "\"#{cmd}\" #{args}"
       timeout 7200
+      notifies :run, 'ruby_block[Wait for Portal installation to finish]', :immediately
       not_if { installed }
+    end
+
+    # After setup is completed Portal still copies data to content directory
+    ruby_block 'Wait for Portal installation to finish' do
+      block do
+        sleep(600.0)  
+      end
+      action :nothing
     end
 
     configureserviceaccount = ::File.join(@new_resource.install_dir,
@@ -97,14 +106,6 @@ action :install do
     service 'Portal for ArcGIS' do
       action [:enable, :start]
     end
-
-    ruby_block 'Wait for Portal installation to finish' do
-      block do
-        sleep(180.0)
-      end
-      # action :nothing
-      # subscribes :run, 'execute[Install Portal for ArcGIS]', :immediately
-    end
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
@@ -128,6 +129,15 @@ action :install do
     execute 'Install Portal for ArcGIS' do
       command "su - #{run_as_user} -c \"#{cmd} #{args}\""
       only_if { !::File.exist?(start_portal_path) }
+      notifies :run, 'ruby_block[Wait for Portal installation to finish]', :immediately
+    end
+
+    # After setup is completed Portal still copies data to content directory
+    ruby_block 'Wait for Portal installation to finish' do
+      block do
+        sleep(600.0)  
+      end
+      action :nothing
     end
 
     ruby_block 'Set dir.data property' do
@@ -347,7 +357,7 @@ action :federate_server do
       @new_resource.server_password)
 
     if @new_resource.is_hosting
-      sleep(120.0)
+      sleep(300.0)
       portal_admin_client.update_server(server_id, 'HOSTING_SERVER')
     end
 
