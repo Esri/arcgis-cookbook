@@ -21,15 +21,15 @@ require 'digest/md5'
 
 action :enable do
   # Install .Net Framework 3.5 for Windows Server 2012r2
-  if node['platform_version'].to_f >= 6.3
-    if node['kernel']['os_info']['product_type'] != Chef::ReservedNames::Win32::API::System::VER_NT_WORKSTATION
-      windows_feature 'Net-Framework-Core' do
-        provider Chef::Provider::WindowsFeaturePowershell
-        all true
-        action :install
-      end
-    end
-  end
+#  if node['platform_version'].to_f >= 6.3
+#    if node['kernel']['os_info']['product_type'] != Chef::ReservedNames::Win32::API::System::VER_NT_WORKSTATION
+#      windows_feature 'Net-Framework-Core' do
+#        provider Chef::Provider::WindowsFeaturePowershell
+#        all true
+#        action :install
+#      end
+#    end
+#  end
 
   node['arcgis']['iis']['features'].each do |feature|
     windows_feature feature do

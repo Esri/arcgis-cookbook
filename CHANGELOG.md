@@ -3,6 +3,10 @@ arcgis cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis cookbook.
 
+2.2.1
+-----
+- ArcGIS 10.4.1 support.
+
 2.2.0
 -----
 - This version supports only ArcGIS 10.4 release software. (Use 1.1.3 version with ArcGIS software 10.3.1 release.)
@@ -29,4 +33,4 @@ This file is used to list changes made in each version of the arcgis cookbook.
 
 1.1.1
 -----
-- Initial release of arcgis cookbook
+- Initial release of arcgis cookbook 
