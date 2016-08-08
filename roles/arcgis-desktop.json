@@ -1,0 +1,20 @@
+{
+  "ms_dotnet" : {
+    "v4" : {
+      "version" : "4.5.1"
+    }
+  },
+  "arcgis":{
+    "version":"10.5",
+    "desktop":{
+      "setup":"C:\\ArcGIS\\10.5\\Desktop\\Setup.exe",
+      "software_class":"Viewer",
+      "seat_preference":"Fixed",
+      "desktop_config":true
+    }
+  },
+  "run_list":[
+    "recipe[ms_dotnet::ms_dotnet4]",
+    "recipe[arcgis-desktop]"
+  ]
+}

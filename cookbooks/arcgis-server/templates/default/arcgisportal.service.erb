@@ -1,0 +1,39 @@
+# ------------------------------------------------------------------
+# Portal for ArcGIS systemd unit file
+# ------------------------------------------------------------------
+#
+# Configure Portal for ArcGIS to be started at boot on RHEL 7.x by
+# following these instructions:
+#
+# 1.) Switch to the root user.
+#
+# 2.) Copy this file to /etc/systemd/system
+#
+# 3.) Enable the service to start at boot:
+#
+#     # systemctl enable arcgisportal.service
+#
+# 4.) Verify systemd service is setup correctly:
+#
+#    # systemctl stop arcgisportal.service
+#    # systemctl start arcgisportal.service
+#    # systemctl status arcgisportal.service
+#
+# 5.) Reboot the system and verify that Server restarts properly.
+#
+# ------------------------------------------------------------------
+
+[Unit]
+Description=Portal for ArcGIS Service
+After=network.target
+
+[Service]
+Type=forking
+User=<%=@agsuser%>
+GuessMainPID=false
+ExecStart=<%=@portalhome%>/startportal.sh
+ExecStop=<%=@portalhome%>/stopportal.sh
+
+[Install]
+WantedBy=multi-user.target
+
