@@ -7,8 +7,13 @@ Requirements
 ------------
 
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 for Desktop (Windows only)
-* ArcGIS 10.4/10.4.1/10.5 License Manager 
+* ArcGIS for Desktop (Windows only)
+* ArcGIS License Manager 
+
+### Supported ArcGIS software versions
+* ArcGIS 10.4
+* ArcGIS 10.4.1
+* ArcGIS 10.5 Beta
 
 ### Platforms
 * Windows 7

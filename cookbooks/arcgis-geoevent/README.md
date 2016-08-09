@@ -8,7 +8,12 @@ Requirements
 
 ### Supported ArcGIS software
 
-* ArcGIS 10.4/10.4.1/10.5 GeoEvent Extension for Server
+* ArcGIS GeoEvent Extension for Server
+
+### Supported ArcGIS software versions
+* ArcGIS 10.4
+* ArcGIS 10.4.1
+* ArcGIS 10.5 Beta
 
 ### Platforms
 

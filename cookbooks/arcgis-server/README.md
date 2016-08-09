@@ -7,10 +7,15 @@ Requirements
 ------------
 
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 Server
-* ArcGIS 10.4/10.4.1/10.5 Data Store
-* Portal for ArcGIS 10.4/10.4.1/10.5
-* ArcGIS 10.4/10.4.1/10.5 Web Adaptor (IIS/Java) 
+* ArcGIS Server
+* ArcGIS Data Store
+* Portal for ArcGIS
+* ArcGIS Web Adaptor (IIS/Java) 
+
+### Supported ArcGIS software versions
+* ArcGIS 10.4
+* ArcGIS 10.4.1
+* ArcGIS 10.5 Beta
 
 ### Platforms
 * Windows 7
