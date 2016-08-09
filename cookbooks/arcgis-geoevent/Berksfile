@@ -1,0 +1,7 @@
+source "https://supermarket.getchef.com"
+
+
+
+metadata
+
+cookbook  "arcgis-server", path: "../arcgis-server"

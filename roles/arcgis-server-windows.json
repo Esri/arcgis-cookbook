@@ -1,0 +1,37 @@
+{
+  "arcgis":{
+    "run_as_password":"Run_As_Pa$$w0rd",
+    "run_as_user":"arcgis",
+    "version":"10.5",
+    "server":{
+      "admin_username":"admin",
+      "admin_password":"changeit",
+      "keystore_file":"C:\\keystore\\mydomain_com.pfx",
+      "keystore_password":"changeit",
+      "directories_root":"C:\\arcgisserver",
+      "setup":"C:\\ArcGIS\\10.5\\ArcGIS_Server\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Server_Ent_Adv.prvc",
+      "services" : [
+        {
+          "folder" : "",
+          "name" : "map_bv",
+          "type" : "MapServer",
+          "definition_file" : "C:\\ArcGIS\\SDs\\map_bv.sd",
+          "properties" : {
+            "maxInstancesPerNode" : 4
+          }
+        }, {
+          "folder" : "mymaps",
+          "name" : "map_br",
+          "type" : "MapServer",
+          "definition_file" : "C:\\ArcGIS\\SDs\\map_br.sd"
+        }
+      ]
+    }
+  },
+  "run_list":[
+    "recipe[arcgis-server::system]",
+    "recipe[arcgis-server::server]",
+    "recipe[arcgis-server::services]"
+  ]
+}
