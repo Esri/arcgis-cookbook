@@ -28,6 +28,7 @@ attribute :python_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
 attribute :server_url, :kind_of => String
+attribute :server_admin_url, :kind_of => String
 attribute :wa_url, :kind_of => String
 attribute :primary_server_url, :kind_of => String
 attribute :keystore_file, :kind_of => [String, nil]
@@ -52,7 +53,9 @@ attribute :connection_string, :kind_of => String
 attribute :is_managed, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :system_properties, :kind_of => Hash, :default => {}
 attribute :log_level, :kind_of => String, :default => 'WARNING'
-
+attribute :log_dir, :kind_of => String
+attribute :max_log_file_age, :kind_of => Integer, :default => 90
+attribute :use_join_site_tool, :kind_of => [TrueClass, FalseClass], :default => false
 def initialize(*args)
   super
   @action = :install

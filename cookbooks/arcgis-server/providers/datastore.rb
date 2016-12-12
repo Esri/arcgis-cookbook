@@ -42,7 +42,7 @@ action :system do
     end
   else
     # NOTE: ArcGIS products are not officially supported on debian platform family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'libfontconfig1', 'libxfont1',
+    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
      'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
      'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
      'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs',
@@ -68,16 +68,11 @@ action :install do
     cmd.run_command
     cmd.error!
 
-    properties_filename = ::File.join(@new_resource.install_dir,
-                                      'framework', 'etc',
-                                      'arcgis-data-store-config.properties')
-
-    hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
-                                                 'framework',
-                                                 'etc',
-                                                 'hostidentifier.properties')
-
     if @new_resource.data_dir != node.default['arcgis']['data_store']['data_dir']
+      properties_filename = ::File.join(@new_resource.install_dir,
+                                        'framework',
+                                        'arcgis-data-store-config.properties')
+
       if ::File.exist?(properties_filename)
         file = Chef::Util::FileEdit.new(properties_filename)
         file.search_file_replace(/dir.data.*/, "dir.data=#{@new_resource.data_dir}")
@@ -88,6 +83,11 @@ action :install do
     end
 
     if  !node['arcgis']['data_store']['preferredidentifier'].nil?
+      hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
+                                                   'framework',
+                                                   'etc',
+                                                   'hostidentifier.properties')
+
       file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
       file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
       file.write_file
@@ -118,7 +118,6 @@ action :install do
     if @new_resource.data_dir != node.default['arcgis']['data_store']['data_dir']
       properties_filename = ::File.join(install_subdir,
                                         'framework',
-                                        'etc',
                                         'arcgis-data-store-config.properties')
 
       if ::File.exist?(properties_filename)
@@ -223,6 +222,7 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
+      not_if { ::File.exists?(arcgisdatastore_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -326,33 +326,38 @@ action :start do
 end
 
 action :configure do
-  server_admin_url = "#{@new_resource.server_url}/admin"
+  begin
+    server_admin_url = "#{@new_resource.server_url}/admin"
 
-  Utils.wait_until_url_available(server_admin_url)
+    Utils.wait_until_url_available(server_admin_url)
 
-  if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools\\configuredatastore')
-    args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
-    env = { 'AGSDATASTORE' => @new_resource.install_dir }
+    if node['platform'] == 'windows'
+      cmd = ::File.join(@new_resource.install_dir, 'tools\\configuredatastore')
+      args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
+      env = { 'AGSDATASTORE' => @new_resource.install_dir }
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :timeout => 1200, :environment => env })
-    cmd.run_command
-    cmd.error!
-  else
-    install_subdir = ::File.join(@new_resource.install_dir,
-                                 node['arcgis']['data_store']['install_subdir'])
-    cmd = ::File.join(install_subdir, 'tools/configuredatastore.sh')
-    args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
-    run_as_user = @new_resource.run_as_user
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+            { :timeout => 1200, :environment => env })
+      cmd.run_command
+      cmd.error!
+    else
+      install_subdir = ::File.join(@new_resource.install_dir,
+                                   node['arcgis']['data_store']['install_subdir'])
+      cmd = ::File.join(install_subdir, 'tools/configuredatastore.sh')
+      args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
+      run_as_user = @new_resource.run_as_user
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :timeout => 1200, :user => run_as_user })
-    cmd.run_command
-    cmd.error!
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+            { :timeout => 1200, :user => run_as_user })
+      cmd.run_command
+      cmd.error!
+    end
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to configure ArcGIS Data Store. " + e.message
+    raise e
   end
-
-  new_resource.updated_by_last_action(true)
 end
 
 action :change_backup_location do

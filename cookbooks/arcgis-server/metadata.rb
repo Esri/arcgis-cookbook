@@ -4,7 +4,7 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Web GIS and Server GIS'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.3.0'
+version          '2.3.1'
 chef_version     '>= 12.5.1', '< 13.0' if defined? chef_version
 
 depends          'hostsfile'
@@ -42,4 +42,6 @@ recipe 'arcgis-server::system', 'System requirements'
 recipe 'arcgis-server::webgis_installed', 'Installs Server, Data Store, Portal, and Web Adaptors for Server and Portals'
 recipe 'arcgis-server::webgis_uninstalled', 'Uninstalls all ArcGIS software of the specified version'
 recipe 'arcgis-server::webgis_validate', 'Checks if ArcGIS for Server setups and authorization files exist'
+recipe 'arcgis-server::rds_egdb', 'Creates managed and replicated GeoDatabases in Amazon RDS database'
+recipe 'arcgis-server::sql_alias', 'Creates EGDBHOST alias for Amazon RDS endpoint'
 

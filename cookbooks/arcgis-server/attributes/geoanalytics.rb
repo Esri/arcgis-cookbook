@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis-server
-# Recipe:: iptables
+# Attributes:: geoanalytics
 #
 # Copyright 2015 Esri
 #
@@ -15,9 +15,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-iptables_rule 'arcgis.iptables' do
-  variables  ({ :network_interface => node['network']['default_interface'] })
-  action :enable
+default['arcgis']['geoanalytics'].tap do |geoanalytics|
+
+  # authorization_file_version must be <major>.<minor> ('10.4.1' -> '10.4')
+  geoanalytics['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
+  geoanalytics['authorization_file'] = ''
+
 end

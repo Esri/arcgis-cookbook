@@ -41,9 +41,12 @@ default['arcgis']['server'].tap do |server|
   server['cert_alias'] = node['arcgis']['server']['domain_name']
   server['system_properties'] = {}
   server['log_level'] = 'WARNING'
+  server['max_log_file_age'] = 90
   server['is_hosting'] = true
   server['configure_autostart'] = true
   server['install_system_requirements'] = true
+  server['use_join_site_tool'] = false
+
   unless node['arcgis']['server']['authorization_file'].nil?
     server['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
                                                       ::File.basename(node['arcgis']['server']['authorization_file']))
@@ -55,15 +58,19 @@ default['arcgis']['server'].tap do |server|
   server['publisher_username'] = node['arcgis']['server']['admin_username']
   server['publisher_password'] = node['arcgis']['server']['admin_password']
 
+  server['authorization_retries'] = 10
+
   case node['platform']
   when 'windows'
     server['authorization_tool'] = ENV['ProgramW6432'] + '\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
     server['authorization_file'] = ''
+    server['keycodes'] = ENV['ProgramW6432'] + "\\ESRI\\License#{node['arcgis']['server']['authorization_file_version']}\\sysgen\\keycodes"
     server['setup'] = 'C:\\Temp\\ArcGISServer\\Setup.exe'
     server['lp-setup'] = 'C:\\Temp\\ArcGISServer\\SetupFile\\Setup.msi'
     server['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Server'
     server['local_directories_root'] = 'C:\\arcgisserver'
     server['directories_root'] = node['arcgis']['server']['local_directories_root']
+    server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs')
     server['config_store_type'] = 'FILESYSTEM'
     server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], 'config-store')
     server['config_store_connection_secret'] = ''
@@ -78,7 +85,6 @@ default['arcgis']['server'].tap do |server|
     else
       throw 'Unsupported ArcGIS version'
     end
-
   else # node['platform'] == 'linux'
     server['install_dir'] = '/'
     server['install_subdir'] = 'arcgis/server'
@@ -98,9 +104,9 @@ default['arcgis']['server'].tap do |server|
                                                    node['arcgis']['server']['install_subdir'],
                                                    'usr')
     server['directories_root'] = node['arcgis']['server']['local_directories_root']
+    server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs')
     server['config_store_type'] = 'FILESYSTEM'
     server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], "config-store")
     server['config_store_connection_secret'] = nil
   end
-
 end

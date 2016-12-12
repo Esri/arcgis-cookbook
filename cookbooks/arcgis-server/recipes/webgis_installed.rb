@@ -99,7 +99,7 @@ arcgis_server_webadaptor 'Install Web Adaptor for Server' do
                                 node['arcgis']['server']['wa_name'] + '.war'))
     }
   end
-  action [:system, :install]
+  action :install
 end
 
 arcgis_server_webadaptor 'Install Web Adaptor for Portal' do

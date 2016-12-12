@@ -17,6 +17,7 @@
 # limitations under the License.
 require 'fileutils'
 require 'pathname'
+require 'json'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
@@ -44,7 +45,7 @@ action :system do
     end
   else
     # NOTE: ArcGIS products are not officially supported on debian platform family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'libfontconfig1', 'libxfont1',
+    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
      'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
      'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
      'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs', 'libxkbfile1',
@@ -70,6 +71,20 @@ action :install do
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
     cmd.run_command
     cmd.error!
+
+    if  !node['arcgis']['portal']['preferredidentifier'].nil?
+      hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
+                                                   'framework', 'runtime', 'ds', 'framework', 'etc',
+                                                   'hostidentifier.properties')
+      if ::File.exists?(hostidentifier_properties_path)
+        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
+        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
+        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
+        file.write_file
+      else
+        ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+      end
+    end
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
@@ -107,6 +122,20 @@ action :install do
         ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{dir_data}") }
       end
     end
+
+    if !node['arcgis']['portal']['preferredidentifier'].nil?
+        hostidentifier_properties_path = ::File.join(install_subdir,
+                                                     'framework', 'runtime', 'ds', 'framework', 'etc',
+                                                     'hostidentifier.properties')
+      if ::File.exists?(hostidentifier_properties_path)
+        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
+        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
+        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
+        file.write_file
+      else
+        ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+      end
+    end
   end
 
   # Wait for Portal installation to finish
@@ -120,7 +149,7 @@ action :uninstall do
     cmd = 'msiexec'
     args = "/qb /x #{@new_resource.product_code}"
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 10800})
     cmd.run_command
     cmd.error!
   else
@@ -174,6 +203,7 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
+      not_if { ::File.exists?(arcgisportal_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -245,12 +275,19 @@ action :create_site do
   else
     Chef::Log.info('Creating portal site...')
 
+    content_store = {
+      'type' => @new_resource.content_store_type,
+      'provider' => @new_resource.content_store_provider,
+      'connectionString' => @new_resource.content_store_connection_string,
+      'objectStore' => @new_resource.object_store
+    }
+
     portal_admin_client.create_site(@new_resource.email,
                                     @new_resource.full_name,
                                     @new_resource.description,
                                     @new_resource.security_question,
                                     @new_resource.security_question_answer,
-                                    @new_resource.content_dir)
+                                    content_store.to_json)
 
     sleep(120.0)
 
@@ -418,7 +455,8 @@ action :enable_geoanalytics do
       Chef::Log.info("Server #{@new_resource.server_url} was not federated with the portal")
     else
       Chef::Log.info("Enabling GeoAnalytics on Server (#{server['id']})...")
-      result = portal_admin_client.update_server(server['id'], "HOSTING_SERVER", "GeoAnalytics")
+      server_role = @new_resource.is_hosting ? "HOSTING_SERVER" : "FEDERATED_SERVER"
+      result = portal_admin_client.update_server(server['id'], server_role, "GeoAnalytics")
       Chef::Log.info("Result of update: (#{result})")
     end
   else

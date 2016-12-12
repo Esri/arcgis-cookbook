@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 require 'fileutils'
+require 'json'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
@@ -49,7 +50,7 @@ action :system do
     end
   else
     # NOTE: ArcGIS products are not officially supported on debian linux family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'libfontconfig1', 'libxfont1',
+    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
      'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
      'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
      'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs',
@@ -129,21 +130,16 @@ end
 
 action :update_account do
   if node['platform'] == 'windows'
-    service_name = 'ArcGIS Server'
-    run_as_user = @new_resource.run_as_user
-    run_as_password = @new_resource.run_as_password
-    if run_as_user.include? '\\'
-      service_logon_user = run_as_user
-    else
-      service_logon_user = ".\\#{run_as_user}"
-    end
+    configureserviceaccount = ::File.join(@new_resource.install_dir,
+                                          'bin', 'ServerConfigurationUtility.exe')
 
-    Utils.retry_ShellOut("net stop \"#{service_name}\" /yes", 5, 60, {:timeout => 600})
-    Utils.retry_ShellOut("sc.exe config \"#{service_name}\" obj= \"#{service_logon_user}\" password= \"#{run_as_password}\"",
-                         1, 60, {:timeout => 600})
-    Utils.retry_ShellOut("net start \"#{service_name}\" /yes", 5, 60, {:timeout => 600})
+    args = "/username #{@new_resource.run_as_user} "\
+           "/password \"#{@new_resource.run_as_password}\""
 
-    sleep(120.0)
+    cmd = Mixlib::ShellOut.new("\"#{configureserviceaccount}\" #{args}",
+                               {:timeout => 3600})
+    cmd.run_command
+    cmd.error!
 
     new_resource.updated_by_last_action(true)
   end
@@ -151,116 +147,233 @@ end
 
 action :authorize do
   cmd = node['arcgis']['server']['authorization_tool']
-
   if node['platform'] == 'windows'
     args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+    sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
+    sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time 
+    sa_cmd.run_command
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
-    cmd.run_command
-    cmd.error!
+    # Retry authorization five times with random intervals between 120 and 300 seconds.
+    # Check if 'keycodes' file exists after each retry.
+    # This is required to get around the problem with simultaneous authorization from 
+    # multiple machines using the same license.
+    node['arcgis']['server']['authorization_retries'].times do
+      if sa_cmd.error?
+        Chef::Log.error sa_cmd.format_for_exception + ' Retrying software authorization.'
+        sleep(rand(120..300))
+      else
+        sleep(30)
+        break if ::File.exists?(node['arcgis']['server']['keycodes'])
+        Chef::Log.error "'#{node['arcgis']['server']['keycodes']}' file not found. Retrying software authorization."
+        sleep(rand(90..270))
+      end
+      sa_cmd.run_command
+    end
+
+    sa_cmd.error!
   else
-    args = "-f \"#{@new_resource.authorization_file}\""
-
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+    sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -f \"#{@new_resource.authorization_file}\"",
           { :user => node['arcgis']['run_as_user'], :timeout => 600 })
-    cmd.run_command
-    cmd.error!
+    sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
+    sa_cmd.run_command
+
+    # Retry authorization five times with random intervals between 120 and 300 seconds.
+    # Check if softwareAuthorization stdout does not contain 'Not Authorized' after each retry.
+    # This is required to get around the problem with simultaneous authorization from 
+    # multiple machines using the same license.
+    sa_status_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -s",
+          { :user => node['arcgis']['run_as_user'], :timeout => 600 })
+
+    node['arcgis']['server']['authorization_retries'].times do
+      if sa_cmd.error?
+        Chef::Log.error format_for_exception + '  Retrying software authorization...'
+        sleep(rand(120..300))
+      else
+        sleep(30)
+        sa_status_cmd.run_command
+        break if !sa_status_cmd.error? && !sa_status_cmd.stdout.include?('Not Authorized')
+        Chef::Log.error sa_status_cmd.stdout
+        Chef::Log.error "ArcGIS Server is not authorized. Retrying software authorization..."
+        sleep(rand(90..270))
+      end
+      sa_cmd.run_command
+    end
+
+    sa_cmd.error!
   end
 
   new_resource.updated_by_last_action(true)
 end
 
 action :create_site do
-  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
-
-  admin_client.wait_until_available
-
-  if admin_client.site_exist?
-    Chef::Log.warn('ArcGIS Server site already exists.')
-  else
-    Chef::Log.info('Creating ArcGIS Server site...')
-
-    admin_client.create_site(@new_resource.server_directories_root,
-                             @new_resource.config_store_type,
-                             @new_resource.config_store_connection_string,
-                             @new_resource.config_store_connection_secret,
-                             @new_resource.log_level)
-
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+  
     admin_client.wait_until_available
+  
+    if admin_client.site_exist?
+      Chef::Log.warn('ArcGIS Server site already exists.')
+    else
+      Chef::Log.info('Creating ArcGIS Server site...')
+  
+      admin_client.create_site(@new_resource.server_directories_root,
+                               @new_resource.config_store_type,
+                               @new_resource.config_store_connection_string,
+                               @new_resource.config_store_connection_secret,
+                               @new_resource.log_level,
+                               @new_resource.log_dir,
+                               @new_resource.max_log_file_age)
+  
+      admin_client.wait_until_available
 
-    if !@new_resource.system_properties.empty?
-      Chef::Log.info('Updating ArcGIS Server system properties...')
-      sleep(120.0)
-      admin_client.update_system_properties(@new_resource.system_properties)
+      #Restart ArcGIS Server on Linux to make sure the server machine SSL certificate is updated
+      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
+        service 'arcgisserver' do
+          action :restart
+        end
+
+        admin_client.wait_until_available
+      end
+
+      if !@new_resource.system_properties.empty?
+        Chef::Log.info('Updating ArcGIS Server system properties...')
+        sleep(120.0)
+        admin_client.update_system_properties(@new_resource.system_properties)
+      end
+  
+      new_resource.updated_by_last_action(true)
     end
-
-    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to create ArcGIS Server site. " + e.message
+    raise e
   end
 end
 
 action :join_site do
-  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
-
-  admin_client.wait_until_available
-
-  if admin_client.site_exist?
-    Chef::Log.warn('Machine is already connected to an ArcGIS Server site.')
-  else
-    primary_admin_client = ArcGIS::ServerAdminClient.new(
-      @new_resource.primary_server_url,
-      @new_resource.username,
-      @new_resource.password)
-
-    primary_admin_client.wait_until_site_exist
-
-    admin_client.join_site(@new_resource.primary_server_url)
-
-    new_resource.updated_by_last_action(true)
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+  
+    admin_client.wait_until_available
+  
+    if admin_client.site_exist?
+      Chef::Log.warn('Machine is already connected to an ArcGIS Server site.')
+    else
+      if @new_resource.use_join_site_tool
+        config_store_connection = {
+          'type' => @new_resource.config_store_type,
+          'connectionString' => @new_resource.config_store_connection_string,
+          'connectionSecret' => @new_resource.config_store_connection_secret
+        }
+  
+        if node['platform'] == 'windows'
+          config_store_connection_file = ::File.join(@new_resource.install_dir, 'framework','etc','config-store-connection.json')
+          ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
+  
+          join_site_tool_cmd = [
+            '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
+            '-f', '"' + config_store_connection_file + '"', '-c', 'default'].join(' ')
+  
+          cmd = Mixlib::ShellOut.new(join_site_tool_cmd, 
+            { :user => node['arcgis']['run_as_user'],
+              :password => node['arcgis']['run_as_password'],
+              :timeout => 1800 })
+          cmd.run_command
+          cmd.error!
+        else
+          install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['server']['install_subdir'])
+    
+          config_store_connection_file = ::File.join(install_dir, 'framework','etc','config-store-connection.json')
+          ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
+  
+          join_site_tool_cmd = [
+            ::File.join(install_dir, 'tools','joinsite','join-site.sh'),
+            '-f', config_store_connection_file, '-c', 'default'].join(' ')
+  
+          cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
+                { :user => node['arcgis']['run_as_user'], 
+                  :timeout => 1800 })
+          cmd.run_command
+          cmd.error!
+        end
+      else
+        primary_admin_client = ArcGIS::ServerAdminClient.new(
+          @new_resource.primary_server_url,
+          @new_resource.username,
+          @new_resource.password)
+  
+        primary_admin_client.wait_until_site_exist
+  
+        admin_client.join_site(@new_resource.primary_server_url)
+      end
+  
+      new_resource.updated_by_last_action(true)
+    end
+  rescue Exception => e
+    Chef::Log.error "Failed to join ArcGIS Server site. " + e.message
+    raise e
   end
 end
 
 action :join_cluster do
-  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
-
-  admin_client.wait_until_available
-
-  machine_name = admin_client.local_machine_name
-
-  admin_client.add_machine_to_cluster(machine_name, @new_resource.cluster)
-
-  new_resource.updated_by_last_action(true)
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+  
+    admin_client.wait_until_available
+  
+    machine_name = admin_client.local_machine_name
+  
+    admin_client.add_machine_to_cluster(machine_name, @new_resource.cluster)
+  
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to join ArcGIS Server cluster. " + e.message
+    raise e
+  end
 end
 
 action :configure_https do
-  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
 
-  machine_name = admin_client.local_machine_name
-
-  cert_alias = admin_client.get_server_ssl_certificate(machine_name)
-
-  unless cert_alias == @new_resource.cert_alias
-    unless admin_client.ssl_certificate_exist?(machine_name, @new_resource.cert_alias)
-      admin_client.import_server_ssl_certificate(machine_name,
-                                                 @new_resource.keystore_file,
-                                                 @new_resource.keystore_password,
-                                                 @new_resource.cert_alias)
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
     end
 
-    admin_client.set_server_ssl_certificate(machine_name, @new_resource.cert_alias)
+    machine_name = admin_client.local_machine_name
 
-    sleep(60.0)
+    cert_alias = admin_client.get_server_ssl_certificate(machine_name)
 
-    admin_client.wait_until_available
+    unless cert_alias == @new_resource.cert_alias
+      unless admin_client.ssl_certificate_exist?(machine_name, @new_resource.cert_alias)
+        admin_client.import_server_ssl_certificate(machine_name,
+                                                   @new_resource.keystore_file,
+                                                   @new_resource.keystore_password,
+                                                   @new_resource.cert_alias)
+      end
 
-    new_resource.updated_by_last_action(true)
+      admin_client.set_server_admin_url(machine_name, @new_resource.server_admin_url)
+      admin_client.set_server_ssl_certificate(machine_name, @new_resource.cert_alias)
+
+      sleep(60.0)
+
+      admin_client.wait_until_available
+
+      new_resource.updated_by_last_action(true)
+    end
+  rescue Exception => e
+    Chef::Log.error "Failed to configure SSL certificates in ArcGIS Server. " + e.message
+    raise e
   end
 end
 
@@ -399,6 +512,7 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
+      not_if { ::File.exists?(arcgisserver_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -416,3 +530,37 @@ action :configure_autostart do
     new_resource.updated_by_last_action(true)
   end
 end
+
+private
+
+def generate_admin_token(install_dir, expiration)
+  if node['platform'] == 'windows'
+    generate_admin_token_cmd = [
+      '"' + ::File.join(install_dir, 'tools', 'GenerateAdminToken', 'generate-admin-token.bat') + '"',
+      '-e', expiration.to_s].join(' ')
+
+    cmd = Mixlib::ShellOut.new(generate_admin_token_cmd, 
+      { :user => node['arcgis']['run_as_user'],
+        :password => node['arcgis']['run_as_password'],
+        :timeout => 1800 })
+    cmd.run_command
+    cmd.error!
+
+    JSON.parse(cmd.stdout)['token']
+  else
+    install_dir = ::File.join(install_dir, node['arcgis']['server']['install_subdir'])
+
+    generate_admin_token_cmd = [
+      ::File.join(install_dir, 'tools','generateadmintoken','generate-admin-token.sh'),
+      '-e', expiration.to_s].join(' ')
+
+    cmd = Mixlib::ShellOut.new(generate_admin_token_cmd,
+          { :user => node['arcgis']['run_as_user'], 
+            :timeout => 1800 })
+    cmd.run_command
+    cmd.error!
+
+    JSON.parse(cmd.stdout)['token']
+  end
+end
+

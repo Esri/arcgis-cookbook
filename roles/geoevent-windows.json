@@ -6,14 +6,13 @@
     "server":{
       "admin_username":"admin",
       "admin_password":"changeit",
-      "keystore_file":"C:\\keystore\\mydomain_com.pfx",
-      "keystore_password":"changeit",
       "directories_root":"C:\\arcgisserver",
       "setup":"C:\\ArcGIS\\10.5\\ArcGIS_Server\\Setup.exe",
-      "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Server_Ent_Adv.prvc"
+      "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\geoevent.prvc"
     },
     "geoevent":{
-      "setup":"C:\\ArcGIS\\10.5\\GeoEvent\\setup.exe"
+      "setup":"C:\\ArcGIS\\10.5\\GeoEvent\\setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\geoevent.prvc"
     }
   },
   "run_list":[

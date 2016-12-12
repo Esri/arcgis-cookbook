@@ -7,15 +7,10 @@ Requirements
 ------------
 
 ### Supported ArcGIS software
-* ArcGIS Server
-* ArcGIS Data Store
-* Portal for ArcGIS
-* ArcGIS Web Adaptor (IIS/Java) 
-
-### Supported ArcGIS software versions
-* ArcGIS 10.4
-* ArcGIS 10.4.1
-* ArcGIS 10.5 Beta
+* ArcGIS 10.4/10.4.1/10.5 Server
+* ArcGIS 10.4/10.4.1/10.5 Data Store
+* Portal for ArcGIS 10.4/10.4.1/10.5
+* ArcGIS 10.4/10.4.1/10.5 Web Adaptor (IIS/Java) 
 
 ### Platforms
 * Windows 7
@@ -55,8 +50,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['wa_url']` = URL of the Web Adaptor used for ArcGIS Server. Default name is `https://<FQDN of the machine>/<Server Web Adaptor name>`.
 * `node['arcgis']['server']['domain_name']` = ArcGIS Server domain name. By default, `<node FQDN>` is used.
 * `node['arcgis']['server']['url']` = ArcGIS Server URL. Default URL is `https://<FQDN of the machine>:6443/arcgis`.
+* `node['arcgis']['server']['private_url']` = ArcGIS Server URL without Web Adaptor. Default URL is `https://<server domain name>:6443/arcgis`.
 * `node['arcgis']['server']['primary_server_url']` = URL of ArcGIS Server site to join. Default is `nil`.
 * `node['arcgis']['server']['web_context_url']` = ArcGIS server web context URL. By default, this is `'https://<Domain name>/<WA name>`.
+* `node['arcgis']['server']['use_join_site_tool']` = Is set to true, join-site command line tool is used to add machine to the site and the default cluster. Default value is `false`.
 * `node['arcgis']['server']['admin_username']` = Primary ArcGIS Server administrator user name. Default user name is `admin`.
 * `node['arcgis']['server']['admin_password']` = Primary ArcGIS Server administrator password. Default value is `changeit`.
 * `node['arcgis']['server']['publisher_username']` = ArcGIS Server publisher user name. Default user name is `node['arcgis']['server']['admin_username']`.
@@ -65,6 +62,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['setup']` = The location of the ArcGIS Server setup executable. Default location on Windows is `C:\Temp\ArcGISServer\Setup.exe`; default location on Linux is `/tmp/server-cd/Setup`.
 * `node['arcgis']['server']['lp-setup']` = The location of language pack for ArcGIS Server. Default location is `nil`.
 * `node['arcgis']['server']['install_dir']` = ArcGIS Server installation directory. By default, ArcGIS Server is installed to  `%ProgramW6432%\ArcGIS\Server` on Windows machines and `/` on Linux machines.
+* `node['arcgis']['server']['is_hosting']` = Must be set to true for hosting server. Default value is `true`.
 * `node['arcgis']['server']['install_system_requirements']` = If set to true, the required third party libraries are installed on the machine before running ArcGIS Server setup. Default value is `true`.
 * `node['arcgis']['server']['configure_autostart']` = If set to true, on Linux the ArcGIS Server is configured to start with the operating system. Default value is `true`.
 * `node['arcgis']['server']['authorization_file']` = ArcGIS Server authorization file path. Default location and authorization file is `C:\Temp\server_license.prvc` on Windows and `/tmp/server_license.prvc` on Linux.
@@ -76,6 +74,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['cert_alias']` = SSL certificate alias for ArcGIS Server. Default alias is composed of these values: `node['arcgis']['server']['domain_name']`.
 * `node['arcgis']['server']['system_properties']` = ArcGIS Server system properties. Default value is `{}`. 
 * `node['arcgis']['server']['log_level']` = ArcGIS Server log level. Default value is `WARNING`.
+* `node['arcgis']['server']['log_dir']` = ArcGIS Server log directory. Default value is `C:\arcgisserver\logs` on Windows and `/arcgis/server/usr/logs` on Linux.
+* `node['arcgis']['server']['max_log_file_age']` = ArcGIS Server maximul log file age. Default value is 90.
 * `node['arcgis']['server']['config_store_type']` = ArcGIS Server config store type. Default value is `FILESYSTEM`.
 * `node['arcgis']['server']['config_store_connection_string']` = ArcGIS Server config store type. Default value is `C:\arcgisserver\config-store` on Windows and `/arcgis/server/usr/config-store` on Linux.
 * `node['arcgis']['server']['config_store_connection_secret']` = ArcGIS Server config store type secret. Default value is `nil`.
@@ -115,6 +115,11 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['keystore_password']` = Keystore file password for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['cert_alias']` = SSL certificate alias for Portal for ArcGIS. Default alias is composed of these values:`node['arcgis']['portal']['domain_name']`.
+* `node['arcgis']['portal']['preferredidentifier']` = Portal for ArcGIS preferred identifier method <hostname|ip>. Default method used is `hostname`.
+* `node['arcgis']['portal']['content_store_type']` = Portal for ArcGIS content store type <FileStore|CloudStore>. Default value is `FileStore`.
+* `node['arcgis']['portal']['content_store_provider']` = Portal for ArcGIS content store provider <Amazon|FileSystem>. Default value is `FileSystem`.
+* `node['arcgis']['portal']['content_store_connection_string']` = Portal for ArcGIS content store connection string. Default connection string is `node['arcgis']['portal']['content_dir']`.
+* `node['arcgis']['portal']['object_store']` = Portal for ArcGIS content store container such as S3 bucket name. Default value is `nil`.
 
 #### Data Store
 
@@ -128,6 +133,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, <relational|tileCache|spatiotemporal>. By default, `tileCache,relational` is used.
 
+#### GeoAnalytics
+
+* `node['arcgis']['geoanalytics']['authorization_file']` = File path to the license file for authorizing GeoAnalytics
+
 #### IIS
 
 * `node['arcgis']['iis']['domain_name']` = Domain name used for generating self-signed SSL certificate. By default, `<node FQDN>` is used.
@@ -136,6 +145,12 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['iis']['web_site']` = IIS web site to configure. Dafault value is `Default Web Site`.
 * `node['arcgis']['iis']['replace_https_binding']` = If false, the current HTTPS binding is not changed if it is already configured. Default value is `false`.
 * `node['arcgis']['iis']['features']` = An array of windows features to be installed with IIS. Default value depends on Windows version.
+
+#### RDS
+* `node['arcgis']['rds']['engine']` = RDS DB engine <nil|postgres|sqlserver-se>. Default DB engine is `nil`.
+* `node['arcgis']['rds']['endpoint']` = RDS DB instance endpoint. Default endpoint is `nil`.
+* `node['arcgis']['rds']['username']` = RDS DB instance master username. Default username is `nil`.
+* `node['arcgis']['rds']['password']` = RDS DB instance master user password. Default password is `nil`.
 
 #### Linux Web Server
 * `node['arcgis']['web_server']['webapp_dir']` = Path to web server's web application directory (eg. /opt/tomcat/webapps). Default value is `''`
@@ -191,6 +206,9 @@ Installs and configures Portal for ArcGIS on standby machine
 ### arcgis-server::portal_wa
 Installs ArcGIS Web Adaptor and configures it with Portal for ArcGIS. IIS or Java application server such as Tomcat must be installed and configured before installing ArcGIS Web Adaptor.
 
+### arcgis-server::rds_egdb 
+Creates EGDBs in Amazon AWS RDS instance and registers the EGDBs with ArcGIS Server.
+
 ### arcgis-server::server
 Installs and configures ArcGIS Server site.
 
@@ -202,6 +220,9 @@ Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. IIS or Java ap
 
 ### arcgis-server::services
 Publishes services to ArcGIS Server.
+
+### arcgis-server::sql_alias 
+Creates 'egdbhost' alias for SQL Server RDS instance endpoint domain name.
 
 ### arcgis-server::system
 Configures system requirements for web GIS software by invoking ':system' actions for ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, and ArcGIS Web Adaptor resources, includes arcgis::hosts recipe.

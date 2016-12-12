@@ -17,6 +17,14 @@
 # limitations under the License.
 #
 
+arcgis_server_portal 'Authorize GeoAnalytics for ArcGIS' do
+  authorization_file node['arcgis']['geoanalytics']['authorization_file']
+  authorization_file_version node['arcgis']['geoanalytics']['authorization_file_version']
+  retries 5
+  retry_delay 60
+  action :authorize
+end
+
 arcgis_server_portal "Enable GeoAnalytics" do
   portal_url node['arcgis']['portal']['wa_url']
   username node['arcgis']['portal']['admin_username']

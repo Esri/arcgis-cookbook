@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-actions :system, :install, :uninstall, :deploy, :configure_with_server, :configure_with_portal
+actions :install, :uninstall, :deploy, :configure_with_server, :configure_with_portal
 
 attribute :install_dir, :kind_of => String
 attribute :product_code, :kind_of => String

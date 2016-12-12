@@ -20,7 +20,7 @@
 directory node['arcgis']['data_store']['local_backup_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0755'
   end
   recursive true
   action :create
@@ -29,7 +29,7 @@ end
 directory node['arcgis']['server']['local_directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0755'
   end
   recursive true
   action :create
@@ -45,10 +45,12 @@ else
   subdir = '/'
   node['arcgis']['portal']['local_content_dir'].split('/').each do |path|
     subdir = ::File.join(subdir, path)
-    directory subdir do
-      owner node['arcgis']['run_as_user']
-      mode '0700'
-      action :create
+    if subdir != '/'
+      directory subdir do
+        owner node['arcgis']['run_as_user']
+        mode '0755'
+        action :create
+      end
     end
   end
 end

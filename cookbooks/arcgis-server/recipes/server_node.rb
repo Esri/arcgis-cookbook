@@ -19,6 +19,7 @@
 
 if node['platform'] == 'windows'
   arcgis_server_server 'Update ArcGIS Server service logon account' do
+    install_dir node['arcgis']['server']['install_dir']
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
     only_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
@@ -57,8 +58,8 @@ end
 arcgis_server_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
-  retries 5
-  retry_delay 60
+#  retries 5
+#  retry_delay 60
   not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
@@ -79,9 +80,17 @@ end
 
 arcgis_server_server 'Join ArcGIS Server Site' do
   server_url node['arcgis']['server']['url']
-  username node['arcgis']['server']['admin_username']
-  password node['arcgis']['server']['admin_password']
-  primary_server_url node['arcgis']['server']['primary_server_url']
+  install_dir node['arcgis']['server']['install_dir']
+  use_join_site_tool node['arcgis']['server']['use_join_site_tool']
+  if node['arcgis']['server']['use_join_site_tool']
+    config_store_connection_string node['arcgis']['server']['config_store_connection_string']
+    config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
+    config_store_type node['arcgis']['server']['config_store_type']
+  else
+    username node['arcgis']['server']['admin_username']
+    password node['arcgis']['server']['admin_password']
+    primary_server_url node['arcgis']['server']['primary_server_url']
+  end
   retries 10
   retry_delay 30
   action :join_site
@@ -94,16 +103,20 @@ arcgis_server_server 'Add machine to default cluster' do
   cluster 'default'
   retries 10
   retry_delay 30
+  not_if { node['arcgis']['server']['use_join_site_tool'] }
   action :join_cluster
 end
 
 arcgis_server_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
+  server_admin_url node['arcgis']['server']['private_url'] + '/admin'
+  install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   keystore_file node['arcgis']['server']['keystore_file']
   keystore_password node['arcgis']['server']['keystore_password']
   cert_alias node['arcgis']['server']['cert_alias']
+  use_join_site_tool node['arcgis']['server']['use_join_site_tool']
   retries 5
   retry_delay 30
   not_if { node['arcgis']['server']['keystore_file'].empty? }

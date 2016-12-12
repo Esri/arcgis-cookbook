@@ -60,16 +60,13 @@ arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Extension for Server' do
     not_if { ::File.exists?(::File.join(node['arcgis']['server']['install_dir'],
                                         node['arcgis']['server']['install_subdir'],
                                         'GeoEvent/bin/ArcGISGeoEvent-service')) }
-    notifies :configure_autostart, 'arcgis_geoevent_geoevent[Configure ArcGISGeoEvent service]', :immediately
   end
   action :install
 end
 
-if node['platform'] != 'windows'
-  arcgis_geoevent_geoevent 'Configure ArcGISGeoEvent service' do
-    install_dir node['arcgis']['server']['install_dir']
-    action :nothing
-  end
+arcgis_geoevent_geoevent 'Configure ArcGISGeoEvent service' do
+  install_dir node['arcgis']['server']['install_dir']
+  action :configure_autostart
 end
 
 arcgis_geoevent_geoevent 'Start ArcGIS GeoEvent' do
