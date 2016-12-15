@@ -112,6 +112,54 @@ module ArcGIS
       end
     end
 
+    def get_database_connection_string(uploaded_connection_file_id)
+      tool = '/rest/services/System/PublishingTools/GPServer/Get%20Database%20Connection%20String'
+      request = Net::HTTP::Post.new(URI.parse(@server_url + tool + '/submitJob').request_uri)
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('in_connDataType' => 'UPLOADED_CONNECTION_FILE_ID',
+                            'in_inputData' => uploaded_connection_file_id,
+                            'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      job_id = JSON.parse(response.body)['jobId']
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url + tool + '/jobs/' + job_id).request_uri)
+      request.add_field('Referer', 'referer')
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      while true do
+        response = send_request(request, @server_url)
+  
+        validate_response(response)
+  
+        job_status = JSON.parse(response.body)['jobStatus']
+
+        break if job_status != 'esriJobExecuting' && job_status != 'esriJobSubmitted'
+
+        raise 'Failed to get database connection string.' if job_status == 'esriJobFailed'
+
+        sleep(10)
+      end
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url + tool + '/jobs/' +
+                                    job_id + '/results/out_connectionString').request_uri)
+      request.add_field('Referer', 'referer')
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)['value']
+    end
+
     def generate_token()
       generate_token_url = info['authInfo']['tokenServicesUrl']
 

@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: arcgis-server
-# Recipe:: iptables
+# Recipe:: sql_alias
 #
-# Copyright 2015 Esri
+# Copyright 2016 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,14 @@
 # limitations under the License.
 #
 
-iptables_rule 'arcgis.iptables' do
-  variables  ({ :network_interface => node['network']['default_interface'] })
-  action :enable
+execute 'Create SQL Aliases' do
+  command ['C:\\Windows\\SysNative\\WindowsPowerShell\\v1.0\\PowerShell.exe',
+           '-file',
+           "\"#{::File.join(node['arcgis']['server']['install_dir'],
+                            "framework", "etc", "Create-SQLAliases.ps1")}\"",
+           '-server',
+           node['arcgis']['rds']['endpoint']].join(' ')
+  only_if { node['arcgis']['rds']['engine'] == 'sqlserver-se' &&
+           !node['arcgis']['rds']['endpoint'].nil? &&
+           !node['arcgis']['rds']['endpoint'].empty? }
 end

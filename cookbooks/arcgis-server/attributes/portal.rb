@@ -18,15 +18,22 @@
 
 default['arcgis']['portal'].tap do |portal|
 
+  case ENV['arcgis_cloud_platform']
+  when 'aws'
+    portal['preferredidentifier'] = 'ip'
+  else
+    portal['preferredidentifier'] = 'hostname'
+  end
+
   portal['wa_name'] = 'portal'
 
   if node['fqdn'].nil? || ENV['arcgis_cloud_platform'] == 'aws'
-    default['arcgis']['portal']['domain_name'] = node['ipaddress']
+    portal['domain_name'] = node['ipaddress']
     portal['url'] = 'https://' + node['ipaddress'] + ':7443/arcgis'
     # Portal configuration requires fully qualified domain name in the WebAdaptor URL
     portal['wa_url'] = 'https://' + node['arcgis']['portal']['domain_name'] + '/' + node['arcgis']['portal']['wa_name']
   else
-    default['arcgis']['portal']['domain_name'] = node['fqdn']
+    portal['domain_name'] = node['fqdn']
     portal['url'] = 'https://' + node['fqdn'] + ':7443/arcgis'
     portal['wa_url'] = 'https://' + node['fqdn'] + '/' + node['arcgis']['portal']['wa_name']
   end
@@ -96,4 +103,8 @@ default['arcgis']['portal'].tap do |portal|
     portal['content_dir'] = node['arcgis']['portal']['local_content_dir']
   end
 
+  portal['content_store_type'] = 'fileStore'
+  portal['content_store_provider'] = 'FileSystem'
+  portal['content_store_connection_string'] = node['arcgis']['portal']['content_dir']
+  portal['object_store'] = nil
 end

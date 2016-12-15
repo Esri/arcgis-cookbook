@@ -26,7 +26,7 @@ end
 # Utilities used by various arcgis cookbook resources.
 #
 module Utils
-  MAX_RETRIES = 30
+  MAX_RETRIES = 100
   SLEEP_TIME = 10.0
 
   def self.url_available?(url)

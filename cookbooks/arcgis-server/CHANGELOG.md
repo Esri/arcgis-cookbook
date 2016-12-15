@@ -3,6 +3,17 @@ arcgis-server cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-server cookbook.
 
+2.3.1
+-----
+- Support creating EGDBs in Amazon RDS DB instances.
+- Honor is_hosting attribute in enable_geoanalytics recipe.
+- Support changing ArcGIS Server machine admnin URL.
+- Support using join-site tool to add machine to ArcGIS Server site and the default cluster.
+- Support configuring Portal for ArcGIS content store in Amazon S3.
+- Keep ArcGIS Server log files on the local machines instead of using shared directories.
+- Added max_log_file_age attribute to configure ArcGIS Server logs retention period.
+ 
+
 2.3.0
 -----
 - Initial release of arcgis-server cookbook. arcgis 2.2.1 cookbook was split into arcgis-server, arcgis-desktop, arcgis-geoevent, and arcgis-pro cookbooks.

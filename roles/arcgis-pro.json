@@ -6,7 +6,7 @@
   },
   "arcgis":{
     "pro":{
-      "setup":"C:\\ArcGIS\\1.2\\ArcGISPro\\ArcGISPro.msi",
+      "setup":"C:\\ArcGIS\\1.3\\ArcGISPro\\ArcGISPro.msi",
       "seat_preference":"Fixed"
     }
   },

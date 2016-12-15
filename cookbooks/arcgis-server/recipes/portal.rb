@@ -103,7 +103,10 @@ arcgis_server_portal 'Create Portal Site' do
   security_question node['arcgis']['portal']['security_question']
   security_question_answer node['arcgis']['portal']['security_question_answer']
   install_dir node['arcgis']['portal']['install_dir']
-  content_dir node['arcgis']['portal']['content_dir']
+  content_store_type node['arcgis']['portal']['content_store_type']
+  content_store_provider node['arcgis']['portal']['content_store_provider']
+  content_store_connection_string node['arcgis']['portal']['content_store_connection_string']
+  object_store node['arcgis']['portal']['object_store']
   action :create_site
 end
 

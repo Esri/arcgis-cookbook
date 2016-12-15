@@ -19,6 +19,7 @@
 
 if node['platform'] == 'windows'
   arcgis_server_server 'Update ArcGIS Server service logon account' do
+    install_dir node['arcgis']['server']['install_dir']
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
     only_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
@@ -57,8 +58,6 @@ end
 arcgis_server_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
-  retries 5
-  retry_delay 60
   not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
@@ -96,6 +95,8 @@ arcgis_server_server 'Create ArcGIS Server site' do
   server_directories_root node['arcgis']['server']['directories_root']
   system_properties node['arcgis']['server']['system_properties']
   log_level node['arcgis']['server']['log_level']
+  log_dir node['arcgis']['server']['log_dir']
+  max_log_file_age node['arcgis']['server']['max_log_file_age']
   config_store_connection_string node['arcgis']['server']['config_store_connection_string']
   config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
   config_store_type node['arcgis']['server']['config_store_type']
@@ -104,6 +105,7 @@ end
 
 arcgis_server_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
+  server_admin_url node['arcgis']['server']['private_url'] + '/admin'
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   keystore_file node['arcgis']['server']['keystore_file']

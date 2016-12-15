@@ -71,7 +71,7 @@ module ArcGIS
                     admin_description,
                     security_question,
                     security_question_answer,
-                    content_dir)
+                    content_store)
       create_site_uri = URI.parse(@portal_url + '/portaladmin/createNewSite')
 
       request = Net::HTTP::Post.new(create_site_uri.request_uri)
@@ -83,7 +83,7 @@ module ArcGIS
                             'description' => admin_description,
                             'securityQuestion' => security_question,
                             'securityQuestionAns' => security_question_answer,
-                            'contentDir' => content_dir,
+                            'contentStore' => content_store,
                             'f' => 'json')
 
       response = send_request(request)

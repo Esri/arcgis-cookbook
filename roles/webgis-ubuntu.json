@@ -27,9 +27,7 @@
       "admin_password":"changeit",
       "directories_root":"/home/arcgis/server/directories",
       "setup":"/arcgis/10.5/ArcGISServer/CD_Linux/Setup",
-      "authorization_file":"/arcgis/10.5/Authorization_Files/Server_Ent_Adv.prvc",
-      "keystore_file":"/keystore/mydomain_com.pfx",
-      "keystore_password":"changeit"
+      "authorization_file":"/arcgis/10.5/Authorization_Files/Server_Ent_Adv.prvc"
     },
     "portal":{
       "domain_name":"mydomain.com",
@@ -39,9 +37,7 @@
       "security_question":"Your favorite ice cream flavor?",
       "security_question_answer":"vanilla",
       "setup":"/arcgis/10.5/ArcGISPortal/CD_Linux/Setup",
-      "authorization_file":"/arcgis/10.5/Authorization_Files/Portal.prvc",
-      "keystore_file":"/keystore/mydomain_com.pfx",
-      "keystore_password":"changeit"
+      "authorization_file":"/arcgis/10.5/Authorization_Files/Portal.prvc"
     }
   },
   "run_list":[

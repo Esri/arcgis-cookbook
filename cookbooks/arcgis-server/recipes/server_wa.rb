@@ -17,11 +17,6 @@
 # limitations under the License.
 #
 
-arcgis_server_webadaptor "Install System Requirements:#{recipe_name}" do
-  action :system
-  only_if { node['arcgis']['web_adaptor']['install_system_requirements'] }
-end
-
 arcgis_server_webadaptor 'Install Web Adaptor for Server' do
   install_dir node['arcgis']['web_adaptor']['install_dir']
   setup node['arcgis']['web_adaptor']['setup']

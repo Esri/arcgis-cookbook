@@ -2,7 +2,7 @@
 ### BEGIN INIT INFO
 # Provides: arcgisserver
 # Required-Start: $ALL
-# Required-Stop: 
+# Required-Stop:
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
 # Description: ArcGIS Server Service
@@ -10,7 +10,7 @@
 ### END INIT INFO
 
 invoker=`id | cut -f 2 -d '(' | cut -f 1 -d ')'`
-agsfilecheck=framework/etc/arcgis-server-framework.properties
+agsfilecheck=framework/etc/arcgis-framework.properties
 
 rwd=`dirname $0`/../../..
 if [ -L "$0" ]; then

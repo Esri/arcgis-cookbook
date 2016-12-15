@@ -18,12 +18,14 @@
 #
 
 action :system do
-  powershell_script 'Open Ports required by GeoEvent Extension' do
-    code <<-EOH
-      netsh advfirewall firewall add rule name="Allow_ArcGISGeoEvent_Ports2" dir=in action=allow protocol=TCP localport="2181,2182,2190,27271,27272,27273,6143,6180,5565,5570,5575" description="Allows connections through all ports used by ArcGIS GeoEvent"
-    EOH
-    only_if { node['platform'] == 'windows' && ENV['arcgis_cloud_platform'] == 'aws'}
-    ignore_failure true
+  if node['platform'] == 'windows'  
+    powershell_script 'Open Ports required by GeoEvent Extension' do
+      code <<-EOH
+        netsh advfirewall firewall add rule name="Allow_ArcGISGeoEvent_Ports2" dir=in action=allow protocol=TCP localport="2181,2182,2190,27271,27272,27273,6143,6180,5565,5570,5575" description="Allows connections through all ports used by ArcGIS GeoEvent"
+      EOH
+      only_if { node['platform'] == 'windows' && ENV['arcgis_cloud_platform'] == 'aws'}
+      ignore_failure true
+    end
   end
 end
 
@@ -43,18 +45,12 @@ action :install do
   else
     cmd = @new_resource.setup
     run_as_user = @new_resource.run_as_user
-    arcgisgeoevent = ::File.join(@new_resource.install_dir, 
-                                 node['arcgis']['server']['install_subdir'],
-                                 'GeoEvent/bin/ArcGISGeoEvent-service')
 
     cmd = Mixlib::ShellOut.new("su - #{run_as_user} -c \"#{cmd}\"",
                                { :timeout => 3600 })
     cmd.run_command
     cmd.error!
-
-    configure_autostart(arcgisgeoevent)
   end
-
   new_resource.updated_by_last_action(true)
 end
 
@@ -91,12 +87,10 @@ action :update_account do
       service_logon_user = ".\\#{@new_resource.run_as_user}"
     end
     service_name = 'ArcGISGeoEvent'
-    Utils.retry_ShellOut("net stop \"#{service_name}\" /yes",
-                         10, 60, {:timeout => 600})
-    Utils.retry_ShellOut("sc.exe config \"#{service_name}\" obj= \"#{service_logon_user}\" password= \"#{@new_resource.run_as_password}\"", 
+    #Utils.retry_ShellOut("net stop \"#{service_name}\" /yes", 10, 60, {:timeout => 600})
+    Utils.retry_ShellOut("sc.exe config \"#{service_name}\" obj= \"#{service_logon_user}\" password= \"#{@new_resource.run_as_password}\"",
                          1, 60, {:timeout => 600})
-    Utils.retry_ShellOut("net start \"#{service_name}\" /yes",
-                         5, 60, {:timeout => 600})
+    #Utils.retry_ShellOut("net start \"#{service_name}\" /yes", 5, 60, {:timeout => 600})
   end
 end
 
@@ -106,8 +100,8 @@ action :stop do
       supports :status => true, :restart => true, :reload => true
       action :stop
     end
-  else  
-    service "ArcGISGeoEvent-service" do
+  else
+    service "arcgisgeoevent" do
       supports :status => true, :restart => true, :reload => true
       action :stop
     end
@@ -120,8 +114,8 @@ action :start  do
       supports :status => true, :restart => true, :reload => true
       action [:enable, :start]
     end
-  else  
-    service "ArcGISGeoEvent-service" do
+  else
+    service "arcgisgeoevent" do
       supports :status => true, :restart => true, :reload => true
       action [:enable, :start]
     end
@@ -129,21 +123,56 @@ action :start  do
 end
 
 action :configure_autostart do
-  Chef::Log.info('Configure ArcGIS GeoEvent Extension for Server to be started with the operating system.')
-
-  arcgisgeoevent = ::File.join(@new_resource.install_dir, 
-                               node['arcgis']['server']['install_subdir'],
-                               'GeoEvent/bin/ArcGISGeoEvent-service')
-  if ['rhel', 'centos'].include?(node['platform_family'])
-    init_d = '/etc/rc.d/init.d/'
+  if node['platform'] == 'windows'
+    service "ArcGISGeoEvent" do
+      supports :status => true, :restart => true, :reload => true
+      action :enable
+    end
   else
-    init_d = '/etc/init.d/'
-  end
+    Chef::Log.info('Configure ArcGIS GeoEvent Extension for Server to be started with the operating system.')
 
-  cmd = Mixlib::ShellOut.new("ln -s #{arcgisgeoevent} #{init_d}",
-                             { :timeout => 3600 })
-  cmd.run_command
-  cmd.error!
+    agsuser = node['arcgis']['run_as_user']
+    geehome = ::File.join(@new_resource.install_dir,
+                          node['arcgis']['server']['install_subdir'],
+                          'GeoEvent')
+
+    arcgisgeoevent = ::File.join(geehome, 'bin/ArcGISGeoEvent-service')
+
+    if node['init_package'] == 'init' # SysV
+      arcgisgeoevent_path = '/etc/init.d/arcgisgeoevent'
+      service_file = 'ArcGISGeoEvent-service.erb'
+      template_variables = ({ :geehome => geehome, :agsuser => agsuser })
+    else # node['init_package'] == 'systemd'
+      arcgisgeoevent_path = '/etc/systemd/system/arcgisgeoevent.service'
+      service_file = 'geoevent.service.erb'
+      template_variables = ({ :geehome => geehome, :agsuser => agsuser })
+    end
+
+    template arcgisgeoevent_path do
+      source service_file
+      cookbook 'arcgis-geoevent'
+      variables template_variables
+      owner agsuser
+      group 'root'
+      mode '0755'
+      notifies :run, 'execute[Load systemd unit file]', :immediately
+      not_if { ::File.exists?(arcgisgeoevent_path) }
+    end
+
+    execute 'Load systemd unit file' do
+      command 'systemctl daemon-reload'
+      action :nothing
+      only_if {( node['init_package'] == 'systemd' )}
+      notifies :restart, 'service[arcgisgeoevent]', :immediately
+    end
+
+    service 'arcgisgeoevent' do
+      supports :status => true, :restart => true, :reload => true
+      action :enable
+    end
+
+    new_resource.updated_by_last_action(true)
+  end
 end
 
 action :authorize do
@@ -159,7 +188,7 @@ action :authorize do
     else
       args = "-f \"#{@new_resource.authorization_file}\""
 
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", 
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
             { :timeout => 600, :user => node['arcgis']['run_as_user'] })
       cmd.run_command
       cmd.error!

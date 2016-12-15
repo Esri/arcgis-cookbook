@@ -32,12 +32,14 @@ module ArcGIS
     @admin_username = nil
     @admin_password = nil
     @generate_token_url = nil
+    @token = nil
 
-    def initialize(server_url, admin_username, admin_password)
+    def initialize(server_url, admin_username, admin_password, token = nil)
       @server_url = server_url
-      @generate_token_url = server_url + '/admin/generateToken'
       @admin_username = admin_username
       @admin_password = admin_password
+      @generate_token_url = server_url + '/admin/generateToken'
+      @token = token
     end
 
     def generate_token_url=(generate_token_url)
@@ -124,7 +126,9 @@ module ArcGIS
                     config_store_type,
                     config_store_connection_string,
                     config_store_connection_secret,
-                    log_level)
+                    log_level,
+                    log_dir,
+                    max_log_file_age)
       config_store_connection = {
         'type' => config_store_type,
         'connectionString' => config_store_connection_string,
@@ -163,9 +167,9 @@ module ArcGIS
 
       log_settings = {
         'logLevel' => log_level,
-        'logDir' => ::File.join(server_directories_root, 'logs'),
+        'logDir' => log_dir,
         'maxErrorReportsCount' => 10,
-        'maxLogFileAge' => 90 }
+        'maxLogFileAge' => max_log_file_age }
 
       request = Net::HTTP::Post.new(URI.parse(
         @server_url + '/admin/createNewSite').request_uri)
@@ -227,7 +231,7 @@ module ArcGIS
 
       response = send_request(request, @server_url)
 
-      JSON.parse(response.body)['code'] == 200
+      JSON.parse(response.body)['Alias name'] == cert_alias
     end
 
     def import_server_ssl_certificate(machine_name, cert_file, cert_password, cert_alias)
@@ -292,6 +296,39 @@ module ArcGIS
         'adminURL' => machine['adminURL'],
         'webServerMaxHeapSize' => machine['webServerMaxHeapSize'],
         'webServerCertificateAlias' => cert_alias,
+        'appServerMaxHeapSize' => machine['appServerMaxHeapSize'],
+        'socMaxHeapSize' => machine['socMaxHeapSize'],
+        'OpenEJBPort' => machine['ports']['OpenEJBPort'],
+        'JMXPort' => machine['ports']['JMXPort'],
+        'NamingPort' => machine['ports']['NamingPort'],
+        'DerbyPort' => machine['ports']['DerbyPort'],
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def get_server_admin_url(machine_name)
+      machine_info(machine_name)['adminURL']
+    end
+
+    def set_server_admin_url(machine_name, admin_url)
+      machine = machine_info(machine_name)
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines/#{machine_name}/edit").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data(
+        'machineName' => machine_name,
+        'adminURL' => admin_url,
+        'webServerMaxHeapSize' => machine['webServerMaxHeapSize'],
+        'webServerCertificateAlias' => machine['webServerCertificateAlias'],
         'appServerMaxHeapSize' => machine['appServerMaxHeapSize'],
         'socMaxHeapSize' => machine['socMaxHeapSize'],
         'OpenEJBPort' => machine['ports']['OpenEJBPort'],
@@ -389,6 +426,8 @@ module ArcGIS
     end
 
     def generate_token()
+      return @token if !@token.nil?
+
       request = Net::HTTP::Post.new(URI.parse(@generate_token_url).request_uri)
 
       request.set_form_data('username' => @admin_username,
