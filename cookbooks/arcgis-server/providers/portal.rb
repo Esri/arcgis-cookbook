@@ -72,7 +72,7 @@ action :install do
     cmd.run_command
     cmd.error!
 
-    if  !node['arcgis']['portal']['preferredidentifier'].nil?
+    if node['arcgis']['portal']['preferredidentifier'] != 'hostname'
       hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
                                                    'framework', 'runtime', 'ds', 'framework', 'etc',
                                                    'hostidentifier.properties')
@@ -82,7 +82,11 @@ action :install do
         file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
         file.write_file
       else
-        ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+        begin
+          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+        rescue Exception => e
+          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
+        end
       end
     end
   else
@@ -123,7 +127,7 @@ action :install do
       end
     end
 
-    if !node['arcgis']['portal']['preferredidentifier'].nil?
+    if node['arcgis']['portal']['preferredidentifier'] != 'hostname'
         hostidentifier_properties_path = ::File.join(install_subdir,
                                                      'framework', 'runtime', 'ds', 'framework', 'etc',
                                                      'hostidentifier.properties')
@@ -133,7 +137,11 @@ action :install do
         file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
         file.write_file
       else
-        ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+        begin
+          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
+        rescue Exception => e
+          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
+        end
       end
     end
   end
