@@ -17,6 +17,9 @@
     "server":{
       "admin_username":"admin",
       "admin_password":"changeit",
+      "configure_active_directory":true,
+      "active_directory_groups_administer":["MyDomain\\AGS-Admins1", "MyDomain\\AGS-Admins2"],
+      "active_directory_groups_publisher":["MyDomain\\AGS-Users1", "MyDomain\\AGS-Users2"],
       "setup":"C:\\ArcGIS\\10.5\\Server\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Server.prvc",
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",

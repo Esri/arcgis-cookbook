@@ -577,6 +577,56 @@ module ArcGIS
 
       validate_response(response)
     end
+    
+    def set_identity_store_to_windows(admin_user, admin_user_password)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/config/updateIdentityStore').request_uri)
+      
+      request.add_field('Referer', 'referer')
+      
+      token = generate_token()
+      
+      userStoreConfig = {
+        'type' => "WINDOWS",
+        'properties' => {
+          'adminUser' => admin_user,
+          'adminUserPassword' => admin_user_password
+        }
+      }
+      
+      roleStoreConfig = {
+        'type' => "WINDOWS",
+        'properties' => {
+          'adminUser' => admin_user,
+          'adminUserPassword' => admin_user_password
+        }
+      }
+
+      request.set_form_data('userStoreConfig' => userStoreConfig.to_json,
+                            'roleStoreConfig' => roleStoreConfig.to_json,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+    
+    def assign_privileges(rolename, privilege)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/roles/assignPrivilege').request_uri)
+      
+      request.add_field('Referer', 'referer')
+      
+      token = generate_token()
+      
+      request.set_form_data('rolename' => rolename,
+                            'privilege' => privilege,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
 
     private
 
