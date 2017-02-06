@@ -19,7 +19,8 @@
 
 actions :system, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
-        :join_cluster, :configure_https, :register_database, :federate
+        :join_cluster, :configure_https, :register_database, :federate,
+        :set_identity_store_to_windows, :assign_privileges
 
 attribute :setup, :kind_of => String
 attribute :product_code, :kind_of => String
@@ -42,6 +43,11 @@ attribute :portal_username, :kind_of => String
 attribute :portal_password, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
+attribute :active_directory_username, :kind_of => String
+attribute :active_directory_password, :kind_of => String
+attribute :roles_administer, :kind_of => Array
+attribute :roles_publisher, :kind_of => Array
+attribute :configure_active_directory, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_directories_root, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
 attribute :config_store_connection_secret, :kind_of => String
