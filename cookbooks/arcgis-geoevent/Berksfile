@@ -4,4 +4,4 @@ source "https://supermarket.getchef.com"
 
 metadata
 
-cookbook  "arcgis-server", path: "../arcgis-server"
+cookbook  "arcgis-enterprise", path: "../arcgis-enterprise"
