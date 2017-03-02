@@ -167,15 +167,24 @@ action :install do
       end
     end
 
-    if !node['arcgis']['data_store']['preferredidentifier'].nil?
+    if node['arcgis']['data_store']['preferredidentifier'] != 'hostname'
       hostidentifier_properties_path = ::File.join(install_subdir,
                                                    'framework',
                                                    'etc',
                                                    'hostidentifier.properties')
 
-      file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
-      file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
-      file.write_file
+      if ::File.exists?(hostidentifier_properties_path)
+        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
+        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
+        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
+        file.write_file
+      else
+        begin
+          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}") }
+        rescue Exception => e
+          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
+        end
+      end
     end
   end
 
