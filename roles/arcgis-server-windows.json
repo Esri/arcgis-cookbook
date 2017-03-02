@@ -30,8 +30,8 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-server::system]",
-    "recipe[arcgis-server::server]",
-    "recipe[arcgis-server::services]"
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::services]"
   ]
 }

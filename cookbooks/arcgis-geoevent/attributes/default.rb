@@ -28,6 +28,8 @@ when 'windows'
   default['arcgis']['geoevent']['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
   case node['arcgis']['version']
+  when '10.5.1'
+    default['arcgis']['geoevent']['product_code'] = '{F11BBE3B-B78F-4E5D-AE45-E3B29063335F}'
   when '10.5'
     default['arcgis']['geoevent']['product_code'] = '{4375BD31-BD98-4166-84D9-E944D77103E8}'
   when '10.4.1'

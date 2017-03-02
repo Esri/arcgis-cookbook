@@ -1,13 +1,13 @@
 arcgis-desktop cookbook
 ===============
 
-This cookbook installs and configures ArcGIS for Desktop.
+This cookbook installs and configures ArcGIS Desktop.
 
 Requirements
 ------------
 
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 for Desktop (Windows only)
+* ArcGIS 10.4/10.4.1/10.5 Desktop (Windows only)
 * ArcGIS 10.4/10.4.1/10.5 License Manager 
 
 ### Platforms
@@ -24,15 +24,15 @@ The following cookbooks are required:
 Attributes
 ----------
 * `node['arcgis']['version']` = ArcGIS version. Default value is `10.5`.
-* `node['arcgis']['desktop']['setup']` = The location of ArcGIS for Desktop setup executable. Default location is `C:\Temp\ArcGISDesktop\Setup.exe`.
-* `node['arcgis']['desktop']['lp-setup']` = The location of language pack for ArcGIS for Desktop. Default location is `nil`.
-* `node['arcgis']['desktop']['install_dir']` = ArcGIS for Desktop installation directory. By default, ArcGIS for Desktop is installed to `%ProgramFiles(x86)%\ArcGIS`.
-* `node['arcgis']['desktop']['install_features']` = Comma-separated list of ArcGIS for Desktop features to install. Default value is `ALL`.
-* `node['arcgis']['desktop']['authorization_file']` = ArcGIS for Desktop authorization file path. Default location and file name are `C:\\Temp\\license.ecp`.
-* `node['arcgis']['desktop']['authorization_file_version']` = ArcGIS for Desktop authorization file version. Default value is `10.4`.
+* `node['arcgis']['desktop']['setup']` = The location of ArcGIS Desktop setup executable. Default location is `C:\Temp\ArcGISDesktop\Setup.exe`.
+* `node['arcgis']['desktop']['lp-setup']` = The location of language pack for ArcGIS Desktop. Default location is `nil`.
+* `node['arcgis']['desktop']['install_dir']` = ArcGIS Desktop installation directory. By default, ArcGIS Desktop is installed to `%ProgramFiles(x86)%\ArcGIS`.
+* `node['arcgis']['desktop']['install_features']` = Comma-separated list of ArcGIS Desktop features to install. Default value is `ALL`.
+* `node['arcgis']['desktop']['authorization_file']` = ArcGIS Desktop authorization file path. Default location and file name are `C:\\Temp\\license.ecp`.
+* `node['arcgis']['desktop']['authorization_file_version']` = ArcGIS Desktop authorization file version. Default value is `10.4`.
 * `node['arcgis']['desktop']['esri_license_host']` = Hostname of ArcGIS License Manager. Default hostname is `%COMPUTERNAME%`.
-* `node['arcgis']['desktop']['software_class']` = ArcGIS for Desktop software class <Viewer|Editor|Professional>. Default value is `Viewer`.
-* `node['arcgis']['desktop']['seat_preference']` = ArcGIS for Desktop license seat preference <Fixed|Float>. Default value is `Fixed`.
+* `node['arcgis']['desktop']['software_class']` = ArcGIS Desktop software class <Viewer|Editor|Professional>. Default value is `Viewer`.
+* `node['arcgis']['desktop']['seat_preference']` = ArcGIS Desktop license seat preference <Fixed|Float>. Default value is `Fixed`.
 * `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `C:\Temp\ArcGISLicenseManager\Setup.exe` on Windows, `/tmp/licensemanager-cd/Setup` on Linux.
 * `node['arcgis']['licensemanager']['lp-setup']` = The location of language pack for ArcGIS License Manager. Default location is `nil`.
 * `node['arcgis']['licensemanager']['install_dir']` = ArcGIS License Manager installation directory. By default, the license manager is installed to `%ProgramFiles(x86)%\ArcGIS` on Windows and `/` on Linux.
@@ -67,7 +67,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2017 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -82,5 +82,5 @@ limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
 
-[](Esri Tags: ArcGIS Chef Cookbook)
+[](Esri Tags: ArcGIS Desktop Chef Cookbook)
 [](Esri Language: Ruby)

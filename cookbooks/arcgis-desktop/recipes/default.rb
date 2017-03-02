@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-arcgis_desktop_desktop 'Verify ArcGIS for Desktop system requirements' do
+arcgis_desktop_desktop 'Verify ArcGIS Desktop system requirements' do
   action :system
 end
 
-arcgis_desktop_desktop 'Install ArcGIS for Desktop' do
+arcgis_desktop_desktop 'Install ArcGIS Desktop' do
   setup node['arcgis']['desktop']['setup']
   product_code node['arcgis']['desktop']['product_code']
   install_dir node['arcgis']['desktop']['install_dir']
@@ -36,7 +36,7 @@ arcgis_desktop_desktop 'Install ArcGIS for Desktop' do
   action :install
 end
 
-arcgis_desktop_desktop 'Authorize ArcGIS for Desktop' do
+arcgis_desktop_desktop 'Authorize ArcGIS Desktop' do
   authorization_file node['arcgis']['desktop']['authorization_file']
   authorization_file_version node['arcgis']['desktop']['authorization_file_version']
   action :authorize

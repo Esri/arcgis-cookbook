@@ -1,14 +1,14 @@
 arcgis-geoevent cookbook
 ===============
 
-This cookbook installs and configures ArcGIS GeoEvent Extension for Server.
+This cookbook installs and configures ArcGIS GeoEvent Server.
 
 Requirements
 ------------
 
 ### Supported ArcGIS software
 
-* ArcGIS 10.4/10.4.1/10.5 GeoEvent Extension for Server
+* ArcGIS 10.4/10.4.1/10.5 GeoEvent Server
 
 ### Platforms
 
@@ -17,33 +17,34 @@ Requirements
 * Windows 10
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
-* Ubuntu 14.04 (when deploying ArcGIS Enterprise on Amazon Web Services)
+* Windows Server 2016
+* Ubuntu 14.04/16.04 
 * Rhel 6.5, 7.0
 
 ### Dependencies
 The following cookbooks are required:
 
-* arcgis-server
+* arcgis-enterprise
 
 Attributes
 ----------
 
-* `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Extension for Server authorization file path. Default value is ``.
-* `node['arcgis']['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Extension for Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
-* `node['arcgis']['geoevent']['setup']` = The location of ArcGIS GeoEvent Extension for Server setup executable. Default location is `C:\ArcGIS\GeoEvent\setup.exe` on Windows and `/arcgis/geo-event-cd/Setup.sh` on Linux.
+* `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Server authorization file path. Default value is ``.
+* `node['arcgis']['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
+* `node['arcgis']['geoevent']['setup']` = The location of ArcGIS GeoEvent Server setup executable. Default location is `C:\ArcGIS\GeoEvent\setup.exe` on Windows and `/arcgis/geo-event-cd/Setup.sh` on Linux.
 
 
 Recipes
 -------
 
 ### arcgis-geoevent::default
-Installs and configures ArcGIS GeoEvent Extension for Server.
+Installs and configures ArcGIS GeoEvent Server.
 
 ### arcgis-geoevent::lp-install
-Installs language pack for ArcGIS GeoEvent Extension for Server.
+Installs language pack for ArcGIS GeoEvent Server.
 
 ### arcgis-geoevent::uninstall
-Uninstalls ArcGIS GeoEvent Extension for Server.
+Uninstalls ArcGIS GeoEvent Server.
 
 
 Usage
@@ -62,7 +63,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2017 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -77,5 +78,5 @@ limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
 
-[](Esri Tags: ArcGIS Chef Cookbook GeoEvent)
+[](Esri Tags: ArcGIS Enterprise GeoEvent Server Chef Cookbook)
 [](Esri Language: Ruby)

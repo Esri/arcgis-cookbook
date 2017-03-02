@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_desktop_desktop 'Uninstall ArcGIS for Desktop' do
+arcgis_desktop_desktop 'Uninstall ArcGIS Desktop' do
   product_code node['arcgis']['desktop']['product_code']
   install_dir node['arcgis']['desktop']['install_dir']
   only_if { Utils.product_installed?(node['arcgis']['desktop']['product_code']) }

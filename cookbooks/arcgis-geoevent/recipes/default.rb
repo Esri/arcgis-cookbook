@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-arcgis_geoevent_geoevent 'Validate ArcGIS GeoEvent Extension for Server system requirements' do
+arcgis_geoevent_geoevent 'Validate ArcGIS GeoEvent Server system requirements' do
   action :system
 end
 
-arcgis_geoevent_geoevent 'Authorize ArcGIS GeoEvent Extension for Server' do
+arcgis_geoevent_geoevent 'Authorize ArcGIS GeoEvent Server' do
   authorization_file node['arcgis']['geoevent']['authorization_file']
   authorization_file_version node['arcgis']['geoevent']['authorization_file_version']
   retries 5
@@ -35,7 +35,7 @@ end
 file node['arcgis']['geoevent']['cached_authorization_file'] do
   content File.open(node['arcgis']['geoevent']['authorization_file'], 'rb') { |file| file.read }
   sensitive true
-  subscribes :create, 'arcgis_geoevent_geoevent[Authorize ArcGIS GeoEvent Extension for Server]', :immediately
+  subscribes :create, 'arcgis_geoevent_geoevent[Authorize ArcGIS GeoEvent Server]', :immediately
   action :nothing
 end
 
@@ -48,7 +48,7 @@ if node['platform'] == 'windows'
   end
 end
 
-arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Extension for Server' do
+arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Server' do
   setup node['arcgis']['geoevent']['setup']
   product_code node['arcgis']['geoevent']['product_code']
   install_dir node['arcgis']['server']['install_dir']

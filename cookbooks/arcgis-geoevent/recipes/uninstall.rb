@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-arcgis_geoevent_geoevent 'Uninstall ArcGIS GeoEvent Extension for Server' do
+arcgis_geoevent_geoevent 'Uninstall ArcGIS GeoEvent Server' do
   product_code node['arcgis']['geoevent']['product_code']
   install_dir node['arcgis']['server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
-    not_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
+    only_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
   else
-    not_if { ::File.exists?(::File.join(node['arcgis']['server']['install_dir'],
+    only_if { ::File.exists?(::File.join(node['arcgis']['server']['install_dir'],
                                         node['arcgis']['server']['install_subdir'],
                                         'GeoEvent/bin/ArcGISGeoEvent-service')) }
   end

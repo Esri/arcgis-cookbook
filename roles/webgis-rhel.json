@@ -38,15 +38,15 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-server::system]",
+    "recipe[arcgis-enterprise::system]",
     "recipe[esri-tomcat]",
     "recipe[iptables]",
-    "recipe[arcgis-server::iptables]",
-    "recipe[arcgis-server::server]",
-    "recipe[arcgis-server::server_wa]",
-    "recipe[arcgis-server::datastore]",
-    "recipe[arcgis-server::portal]",
-    "recipe[arcgis-server::portal_wa]",
-    "recipe[arcgis-server::federation]"
+    "recipe[arcgis-enterprise::iptables]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datastore]",
+    "recipe[arcgis-enterprise::portal]",
+    "recipe[arcgis-enterprise::portal_wa]",
+    "recipe[arcgis-enterprise::federation]"
   ]
 }
