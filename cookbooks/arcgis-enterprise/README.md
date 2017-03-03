@@ -191,9 +191,6 @@ Creates and shares directories on file server machine.
 ### arcgis-enterprise::hosts
 Creates entries in /etc/hosts file for the specified hostname to IP address map.
 
-### arcgis-enterprise::iis
-Enables IIS, installs features required by ArcGIS Web Adaptor IIS, configures HTTPS, and starts IIS.
-
 ### arcgis-enterprise::iptables
 Configures iptables to forward ports 80/443 to 8080/8443.
 
