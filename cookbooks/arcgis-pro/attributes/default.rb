@@ -16,18 +16,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['arcgis']['pro']['version'] = '1.3'
+default['arcgis']['pro']['version'] = '1.4'
 
 default['arcgis']['pro']['setup'] = 'C:\\ArcGIS\\Pro\\ArcGISPro.msi'
 default['arcgis']['pro']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
 default['arcgis']['pro']['blockaddins'] = '#0'
 default['arcgis']['pro']['allusers'] = 2
 
+
 case node['arcgis']['pro']['version']
 when '1.2'
   default['arcgis']['pro']['product_code'] = '{44DED296-4D84-427B-9A5A-EC4D8C7A893B}'
 when '1.3'
   default['arcgis']['pro']['product_code'] = '{6822F02D-F3CF-48C7-B6F5-EF9DA5841C88}'
+when '1.4'
+  default['arcgis']['pro']['product_code'] = '{639CDBC3-54D9-4218-B967-0191575CE3B6}'
 else
   throw 'Unsupported ArcGIS version'
 end

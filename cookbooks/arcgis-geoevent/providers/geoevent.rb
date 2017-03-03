@@ -129,7 +129,7 @@ action :configure_autostart do
       action :enable
     end
   else
-    Chef::Log.info('Configure ArcGIS GeoEvent Extension for Server to be started with the operating system.')
+    Chef::Log.info('Configure ArcGIS GeoEvent Server to be started with the operating system.')
 
     agsuser = node['arcgis']['run_as_user']
     geehome = ::File.join(@new_resource.install_dir,

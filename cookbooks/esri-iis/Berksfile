@@ -1,0 +1,8 @@
+source "https://supermarket.getchef.com"
+
+
+
+metadata
+
+cookbook  'openssl', '~> 4.0'
+cookbook  'windows', '~> 1.39'

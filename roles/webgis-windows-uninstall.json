@@ -12,7 +12,7 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-server::webgis_uninstalled]",
-    "recipe[arcgis-server::clean]"
+    "recipe[arcgis-enterprise::webgis_uninstalled]",
+    "recipe[arcgis-enterprise::clean]"
   ]
 }

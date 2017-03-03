@@ -42,6 +42,9 @@ when 'windows'
   default['arcgis']['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
   case node['arcgis']['desktop']['version']
+  when '10.5.1'
+    default['arcgis']['desktop']['product_code'] = '{4740FC57-60FE-45BB-B513-3309F6B73183}'
+    default['arcgis']['licensemanager']['product_code'] = '{DF06C3DC-54B5-49A1-9756-B68FD65A0AD0}'
   when '10.5'
     default['arcgis']['desktop']['product_code'] = '{76B58799-3448-4DE4-BA71-0FDFAA2A2E9A}'
     default['arcgis']['licensemanager']['product_code'] = '{3A024FEA-3E14-4257-87D0-8FCA03257560}'

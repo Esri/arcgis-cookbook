@@ -36,13 +36,13 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-server::system]",
-    "recipe[arcgis-server::iis]",
-    "recipe[arcgis-server::server]",
-    "recipe[arcgis-server::server_wa]",
-    "recipe[arcgis-server::datastore]",
-    "recipe[arcgis-server::portal]",
-    "recipe[arcgis-server::portal_wa]",
-    "recipe[arcgis-server::federation]"
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::iis]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datastore]",
+    "recipe[arcgis-enterprise::portal]",
+    "recipe[arcgis-enterprise::portal_wa]",
+    "recipe[arcgis-enterprise::federation]"
   ]
 }

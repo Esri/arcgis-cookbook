@@ -5,13 +5,16 @@ This repository contains ArcGIS Chef cookbooks used to help simplify and automat
 
 Included cookbooks:
 
-* [arcgis-server](cookbooks/arcgis-server) (installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor)
-* [arcgis-geoevent](cookbooks/arcgis-geoevent) (installs and configures ArcGIS GeoEvent Extension for Server)
-* [arcgis-desktop](cookbooks/arcgis-desktop) (installs and configures ArcGIS for Desktop)
+* [arcgis-enterprise](cookbooks/arcgis-enterprise) (installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor)
+* [arcgis-geoevent](cookbooks/arcgis-geoevent) (installs and configures ArcGIS GeoEvent Server)
+* [arcgis-insights](cookbooks/arcgis-insights) (installs and configures Insights for ArcGIS)
+* [arcgis-desktop](cookbooks/arcgis-desktop) (installs and configures ArcGIS Desktop)
 * [arcgis-pro](cookbooks/arcgis-pro) (installs and configures ArcGIS Pro)
 * [esri-tomcat](cookbooks/esri-tomcat) (installs and configures Apache Tomcat for using with ArcGIS Web Adaptor)
+* [esri-iis](cookbooks/esri-iis) (enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding.)
 
-Sample JSON attribute files for different ArcGIS deployment patterns (Web GIS, Server GIS) are available at [roles](roles) folder.
+
+Sample JSON attribute files for different ArcGIS deployment patterns are available at [roles](roles) folder.
 
 See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages and cookbooks' README.md files for more information about using ArcGIS cookbooks.
 

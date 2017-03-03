@@ -12,7 +12,7 @@
     "data_store":{
       "setup":"C:\\ArcGIS\\10.5\\DataStore\\Setup.exe",
       "data_dir":"C:\\arcgisdatastore\\data",
-      "backup_dir":"\\\\fileserver\\arcgisdatastore\\ds_backups"
+      "backup_dir":"\\\\fileserver\\arcgisdatastore\\backup"
     },
     "server":{
       "domain_name":"mydomain.com",
@@ -39,12 +39,12 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-server::system]",
-    "recipe[arcgis-server::iis]",
-    "recipe[arcgis-server::server]",
-    "recipe[arcgis-server::server_wa]",
-    "recipe[arcgis-server::datastore]",
-    "recipe[arcgis-server::portal]",
-    "recipe[arcgis-server::portal_wa]"
+    "recipe[arcgis-enterprise::system]",
+    "recipe[esri-iis]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datastore]",
+    "recipe[arcgis-enterprise::portal]",
+    "recipe[arcgis-enterprise::portal_wa]"
   ]
 }
