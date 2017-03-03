@@ -18,7 +18,7 @@
 
 default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.5.1'
+default['arcgis']['version'] = '10.5'
 default['arcgis']['desktop']['version'] = node['arcgis']['version']
 
 case node['platform']

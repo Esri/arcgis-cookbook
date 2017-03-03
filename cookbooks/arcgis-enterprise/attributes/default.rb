@@ -18,7 +18,7 @@
 
 default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.5.1'
+default['arcgis']['version'] = '10.5'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
