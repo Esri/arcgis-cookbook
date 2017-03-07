@@ -1,3 +1,5 @@
+[![Gitter chat](https://badges.gitter.im/gitterHQ/services.png)](https://gitter.im/arcgis-cookbook/Lobby)
+
 Chef Cookbooks for ArcGIS
 =========================
 
