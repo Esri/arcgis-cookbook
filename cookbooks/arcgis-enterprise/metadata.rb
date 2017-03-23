@@ -46,3 +46,5 @@ recipe 'arcgis-enterprise::webgis_validate', 'Checks if ArcGIS for Server setups
 recipe 'arcgis-enterprise::rds_egdb', 'Creates managed and replicated GeoDatabases in Amazon RDS database'
 recipe 'arcgis-enterprise::sql_alias', 'Creates EGDBHOST alias for Amazon RDS endpoint'
 
+issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)
+source_url 'https://github.com/Esri/arcgis-cookbook' if respond_to?(:source_url)
