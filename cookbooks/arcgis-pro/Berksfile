@@ -1,7 +1,5 @@
-source "https://supermarket.getchef.com"
-
-
+source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook  "windows", "~> 1.38"
+cookbook 'windows', '~> 1.38'

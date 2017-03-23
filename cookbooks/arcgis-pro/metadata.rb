@@ -12,3 +12,6 @@ supports         'windows'
 
 recipe 'arcgis-pro::default', 'Installs ArcGIS Pro'
 recipe 'arcgis-pro::uninstall', 'Uninstalls ArcGIS Pro'
+
+issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)
+source_url 'https://github.com/Esri/arcgis-cookbook' if respond_to?(:source_url)

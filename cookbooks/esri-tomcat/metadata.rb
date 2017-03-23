@@ -9,3 +9,6 @@ version '0.1.0'
 depends 'tomcat', '>= 2.3.0'
 depends 'java'
 depends 'openssl'
+
+issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)
+source_url 'https://github.com/Esri/arcgis-cookbook' if respond_to?(:source_url)
