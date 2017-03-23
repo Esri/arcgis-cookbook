@@ -33,7 +33,7 @@ attribute :content_dir, :kind_of => String
 attribute :content_store_type, :kind_of => String, :default => 'fileStore'
 attribute :content_store_provider, :kind_of => String, :default => 'FileSystem'
 attribute :content_store_connection_string, :kind_of => [String, Hash]
-attribute :object_store, :kind_of => [String, nil]
+attribute :object_store, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
 attribute :authorization_file, :kind_of => String
