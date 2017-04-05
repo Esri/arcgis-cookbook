@@ -22,6 +22,10 @@
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
       "keystore_password":"changeit"
     },
+    "backups":{
+      "site_backup_dir":"\\\\Change\\Me",
+      "webgis_backup_dir":"\\\\Change\\Me"
+    },
     "portal":{
       "admin_username":"admin",
       "admin_password":"changeit",
@@ -43,6 +47,7 @@
     "recipe[arcgis-enterprise::datastore]",
     "recipe[arcgis-enterprise::portal]",
     "recipe[arcgis-enterprise::portal_wa]",
-    "recipe[arcgis-enterprise::federation]"
+    "recipe[arcgis-enterprise::federation]",
+    "recipe[arcgis-enterprise::backups]"
   ]
 }
