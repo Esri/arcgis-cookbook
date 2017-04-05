@@ -22,6 +22,9 @@
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
       "keystore_password":"changeit"
     },
+    "patches":{
+      "local_patch_folder":"D:\\AutomatedDeployment\\ArcGIS\\Patches"
+    },
     "portal":{
       "admin_username":"admin",
       "admin_password":"changeit",
@@ -43,6 +46,7 @@
     "recipe[arcgis-enterprise::datastore]",
     "recipe[arcgis-enterprise::portal]",
     "recipe[arcgis-enterprise::portal_wa]",
-    "recipe[arcgis-enterprise::federation]"
+    "recipe[arcgis-enterprise::federation]",
+    "recipe[arcgis-enterprise::patches]"
   ]
 }
