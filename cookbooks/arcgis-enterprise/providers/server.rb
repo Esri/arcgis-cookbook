@@ -695,6 +695,77 @@ action :configure_autostart do
   end
 end
 
+action :set_identity_store_to_windows do
+  if node['platform'] == 'windows'
+    begin
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    
+      admin_client.wait_until_available
+      
+      Chef::Log.info('Setting ArcGIS Server Identity Store to Windows (Active Directory)...')
+    
+      admin_client.set_identity_store_to_windows(@new_resource.active_directory_username,
+                               @new_resource.active_directory_password)
+
+      admin_client.wait_until_available
+    rescue Exception => e
+      Chef::Log.error "Failed to set ArcGIS Server Identity Store to Windows (Active Directory). " + e.message
+      raise e
+    end
+  end
+end
+
+action :set_identity_store_to_asp_net do
+  if node['platform'] == 'windows'
+    begin
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    
+      admin_client.wait_until_available
+      
+      Chef::Log.info('Setting ArcGIS Server Identity Store to ASP.NET (Active Directory)...')
+    
+      admin_client.set_identity_store_to_asp_net(@new_resource.active_directory_username,
+                               @new_resource.active_directory_password)
+
+      admin_client.wait_until_available
+    rescue Exception => e
+      Chef::Log.error "Failed to set ArcGIS Server Identity Store to Windows (Active Directory). " + e.message
+      raise e
+    end
+  end
+end
+
+action :assign_privileges do
+  if node['platform'] == 'windows'
+    begin
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    
+      admin_client.wait_until_available
+      
+      Chef::Log.info('Assigning privileges to Active Directory groups...')
+      
+      @new_resource.roles_administer.each do |admin_role|
+        admin_client.assign_privileges(admin_role,"ADMINISTER")
+      end
+      
+      @new_resource.roles_publisher.each do |publisher_role|
+        admin_client.assign_privileges(publisher_role,"PUBLISH")
+      end
+      
+      admin_client.wait_until_available
+    rescue Exception => e
+      Chef::Log.error "Failed to set ArcGIS Server Identity Store to Windows (Active Directory). " + e.message
+      raise e
+    end
+  end
+end
+
 private
 
 def generate_admin_token(install_dir, expiration)
