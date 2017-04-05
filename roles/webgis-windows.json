@@ -20,7 +20,8 @@
       "setup":"C:\\ArcGIS\\10.5\\Server\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Server.prvc",
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
-      "keystore_password":"changeit"
+      "keystore_password":"changeit",
+      "overwriteSocMaxHeapSize":256
     },
     "portal":{
       "admin_username":"admin",
@@ -40,6 +41,7 @@
     "recipe[esri-iis]",
     "recipe[arcgis-enterprise::server]",
     "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::server_machines]",
     "recipe[arcgis-enterprise::datastore]",
     "recipe[arcgis-enterprise::portal]",
     "recipe[arcgis-enterprise::portal_wa]",

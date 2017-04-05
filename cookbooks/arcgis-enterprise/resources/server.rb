@@ -19,7 +19,8 @@
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
-        :join_cluster, :configure_https, :register_database, :federate
+        :join_cluster, :configure_https, :register_database, :federate,
+        :set_soc_max_heap_size
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String

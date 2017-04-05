@@ -695,6 +695,25 @@ action :configure_autostart do
   end
 end
 
+action :set_soc_max_heap_size do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+  
+    admin_client.wait_until_available
+    
+    Chef::Log.info('Setting SOC Maximum Heap Size...')
+    
+    machines = admin_client.set_soc_max_heap_size(node['arcgis']['server']['overwriteSocMaxHeapSize'])
+    
+    admin_client.wait_until_available
+  rescue Exception => e
+    Chef::Log.error "Failed to set SOC Maximum Heap Size. " + e.message
+    raise e
+  end
+end
+
 private
 
 def generate_admin_token(install_dir, expiration)

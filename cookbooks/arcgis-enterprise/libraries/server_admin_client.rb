@@ -610,6 +610,48 @@ module ArcGIS
 
       validate_response(response)
     end
+    
+    def set_soc_max_heap_size(soc_max_heap_size)
+      # for updating SOC Max Heap Size, all configuration parameters (ports, etc.) have to be
+      # passed to the corresponding REST interface. Though, the current configuration is
+      # retrieved first to pass it later together with the new SOC Max Heap Size.
+      
+      token = generate_token()
+      
+      uri = URI.parse(@server_url + '/admin/local')
+      uri.query = URI.encode_www_form('token' => token,
+                                      'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+      current_machine_config = JSON.parse(response.body)
+      
+      # pass the new SOC Max Heap Size and the current configuration parameters
+      # to the appropriate REST interface
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/local/edit').request_uri)
+      request.add_field('Referer', 'referer')
+      request.set_form_data('machineName' => current_machine_config['machineName'],
+                            'platform' => current_machine_config['platform'],
+                            'webServerMaxHeapSize' => current_machine_config['webServerMaxHeapSize'],
+                            'appServerMaxHeapSize' => current_machine_config['appServerMaxHeapSize'],
+                            'webServerSSLEnabled' => current_machine_config['webServerSSLEnabled'],
+                            'webServerCertificateAlias' => current_machine_config['webServerCertificateAlias'],
+                            'JMXPort' => current_machine_config['ports']['JMXPort'],
+                            'OpenEJBPort' => current_machine_config['ports']['OpenEJBPort'],
+                            'NamingPort' => current_machine_config['ports']['NamingPort'],
+                            'DerbyPort' => current_machine_config['ports']['DerbyPort'],
+                            'socMaxHeapSize' => soc_max_heap_size,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
 
     private
 
