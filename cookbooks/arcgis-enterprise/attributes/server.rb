@@ -34,6 +34,10 @@ default['arcgis']['server'].tap do |server|
   server['web_context_url'] = 'https://' + node['arcgis']['server']['domain_name'] + '/' + node['arcgis']['server']['wa_name']
   server['admin_username'] = 'admin'
   server['admin_password'] = 'changeit'
+  server['active_directory_username'] = node['arcgis']['run_as_user']
+  server['active_directory_password'] = node['arcgis']['run_as_password']
+  server['active_directory_groups_administer'] = 'changeit'
+  server['active_directory_groups_publisher'] = 'changeit'
   server['managed_database'] = ''
   server['replicated_database'] = ''
   server['keystore_file'] = ''
@@ -46,6 +50,7 @@ default['arcgis']['server'].tap do |server|
   server['configure_autostart'] = true
   server['install_system_requirements'] = true
   server['use_join_site_tool'] = false
+  server['configure_active_directory'] = false
 
   unless node['arcgis']['server']['authorization_file'].nil?
     server['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
