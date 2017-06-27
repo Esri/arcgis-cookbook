@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+use_inline_resources if defined?(use_inline_resources)
+
 action :create do
   if platform?('windows')
     user node['arcgis']['run_as_user'] do

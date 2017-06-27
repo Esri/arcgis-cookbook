@@ -31,6 +31,8 @@ when '1.3'
   default['arcgis']['pro']['product_code'] = '{6822F02D-F3CF-48C7-B6F5-EF9DA5841C88}'
 when '1.4'
   default['arcgis']['pro']['product_code'] = '{639CDBC3-54D9-4218-B967-0191575CE3B6}'
+when '2.0'
+  default['arcgis']['pro']['product_code'] = '{28A4967F-DE0D-4076-B62D-A1A9EA62FF0A}'
 else
   throw 'Unsupported ArcGIS version'
 end

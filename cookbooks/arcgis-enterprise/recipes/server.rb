@@ -74,6 +74,8 @@ end
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
+  retries 2
+  retry_delay 30
   not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
@@ -116,6 +118,8 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   config_store_connection_string node['arcgis']['server']['config_store_connection_string']
   config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
   config_store_type node['arcgis']['server']['config_store_type']
+  retries 5
+  retry_delay 30
   action :create_site
 end
 

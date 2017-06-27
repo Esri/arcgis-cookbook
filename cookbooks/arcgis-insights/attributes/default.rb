@@ -26,6 +26,10 @@ when 'windows'
                                            node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
   case node['arcgis']['insights']['version']
+  when '1.2'
+    default['arcgis']['insights']['product_code'] = '{7C00C004-6379-4B0C-856A-987A7A43CD71}'
+    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                 'Insights_for_ArcGIS_Windows_12_156050.exe')
   when '1.1'
     default['arcgis']['insights']['product_code'] = '{7C00C004-6379-4B0C-856A-987A7A43CD71}'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -43,6 +47,9 @@ else # node['platform'] == 'linux'
                                                        'Insights/Insights-Setup.sh')
 
   case node['arcgis']['insights']['version']
+  when '1.2'
+    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                 'Insights_for_ArcGIS_Linux_12_156062.tar.gz')
   when '1.1'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Linux_11_155242.tar.gz')

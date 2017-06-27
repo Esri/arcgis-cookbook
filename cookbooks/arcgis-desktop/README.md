@@ -5,10 +5,15 @@ This cookbook installs and configures ArcGIS Desktop.
 
 Requirements
 ------------
+### Supported ArcGIS versions
+* 10.4
+* 10.4.1
+* 10.5
+* 10.5.1
 
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 Desktop (Windows only)
-* ArcGIS 10.4/10.4.1/10.5 License Manager 
+* ArcGIS Desktop (Windows only)
+* ArcGIS License Manager 
 
 ### Platforms
 * Windows 7
@@ -16,6 +21,7 @@ Requirements
 * Windows 10
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
+* Windows Server 2016
 
 ### Dependencies
 The following cookbooks are required:

@@ -6,9 +6,16 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 Requirements
 ------------
 
+### Supported ArcGIS versions
+
+* 10.4
+* 10.4.1
+* 10.5
+* 10.5.1
+ 
 ### Supported ArcGIS software
 
-* ArcGIS 10.4/10.4.1/10.5 GeoEvent Server
+* ArcGIS GeoEvent Server
 
 ### Platforms
 

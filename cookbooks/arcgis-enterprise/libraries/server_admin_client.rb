@@ -611,6 +611,40 @@ module ArcGIS
       validate_response(response)
     end
 
+    def set_identity_store(user_store_config, role_store_config)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/config/updateIdentityStore').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('userStoreConfig' => user_store_config.to_json,
+                            'roleStoreConfig' => role_store_config.to_json,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def assign_privileges(rolename, privilege)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/roles/assignPrivilege').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('rolename' => rolename,
+                            'privilege' => privilege,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
     private
 
     def send_request(request, url)

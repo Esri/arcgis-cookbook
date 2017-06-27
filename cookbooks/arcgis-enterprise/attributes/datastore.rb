@@ -43,7 +43,7 @@ default['arcgis']['data_store'].tap do |data_store|
     case node['arcgis']['version']
     when '10.5.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Windows_1051_XXXXXX.exe')
+                                            'ArcGIS_DataStore_Windows_1051_156366.exe')
       data_store['product_code'] = '{75276C83-E88C-43F6-B481-100DA4D64F71}'
     when '10.5'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -69,7 +69,7 @@ default['arcgis']['data_store'].tap do |data_store|
     case node['arcgis']['version']
     when '10.5.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Linux_1051_XXXXXX.tar.gz')
+                                            'ArcGIS_DataStore_Linux_1051_156441.tar.gz')
     when '10.5'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_DataStore_Linux_105_154054.tar.gz')

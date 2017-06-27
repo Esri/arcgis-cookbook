@@ -23,7 +23,7 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
 end
 
-use_inline_resources
+use_inline_resources if defined?(use_inline_resources)
 
 action :system do
   case node['platform']
@@ -31,7 +31,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'Portal for ArcGIS' do
       description 'Allows connections through all ports used by Portal for ArcGIS'
-      localport '7080,7443,7005,7099,7199,7120,7220,7654'
+      localport '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
       dir :in
       protocol 'TCP'
       firewall_action :allow
@@ -272,6 +272,9 @@ action :update_account do
                                {:timeout => 3600})
     cmd.run_command
     cmd.error!
+
+    # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
+    Utils.sc_config('Portal for ArcGIS', @new_resource.run_as_user, @new_resource.run_as_password)  
 
     new_resource.updated_by_last_action(true)
   end

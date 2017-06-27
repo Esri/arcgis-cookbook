@@ -47,7 +47,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS GeoAnalytics Server' do
       description 'Allows connections through all ports used by ArcGIS GeoAnalytics Server'
-      localport '2181,2182,2190,7077'
+      localport '2181,2182,2190,7077,56540-56545'
       dir :in
       protocol 'TCP'
       firewall_action :allow
@@ -301,6 +301,11 @@ action :update_account do
     cmd.run_command
     cmd.error!
 
+    # Chef::Log.info "ServerConfigurationUtility.exe output: #{cmd.stdout}"
+
+    # Update logon account of the windows service directly in addition to running ServerConfigurationUtility.exe
+    Utils.sc_config('ArcGIS Server', @new_resource.run_as_user, @new_resource.run_as_password)
+
     new_resource.updated_by_last_action(true)
   end
 end
@@ -379,7 +384,7 @@ action :create_site do
       Chef::Log.warn('ArcGIS Server site already exists.')
     else
       Chef::Log.info('Creating ArcGIS Server site...')
-  
+
       admin_client.create_site(@new_resource.server_directories_root,
                                @new_resource.config_store_type,
                                @new_resource.config_store_connection_string,
@@ -634,9 +639,9 @@ action :start do
       cmd = node['arcgis']['server']['start_tool']
 
       if node['arcgis']['run_as_superuser']
-        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 120})
       else
-        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 120})
       end
       cmd.run_command
       cmd.error!
@@ -689,11 +694,61 @@ action :configure_autostart do
     service 'arcgisserver' do
       supports :status => true, :restart => true, :reload => true
       action :enable
+      retries 5
+      retry_delay 60
     end
 
     new_resource.updated_by_last_action(true)
   end
 end
+
+action :set_identity_store do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Setting ArcGIS Server identity stores...')
+
+    admin_client.set_identity_store(@new_resource.user_store_config,
+                                     @new_resource.role_store_config)
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to configure ArcGIS Server identity stores. " + e.message
+    raise e
+  end
+end
+
+action :assign_privileges do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Assigning privileges to user roles...')
+
+    @new_resource.privileges.keys.each do |privilege|
+      @new_resource.privileges[privilege].each do |role|
+        admin_client.assign_privileges(role, privilege)
+      end
+    end
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to assign privilege to user role. " + e.message
+    raise e
+  end
+end
+
 
 private
 

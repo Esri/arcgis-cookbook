@@ -33,11 +33,19 @@ default['arcgis']['server'].tap do |server|
   server['private_url'] = 'https://' + node['arcgis']['server']['domain_name'] + ':6443/arcgis'
   server['web_context_url'] = 'https://' + node['arcgis']['server']['domain_name'] + '/' + node['arcgis']['server']['wa_name']
   server['admin_username'] = 'admin'
-  server['admin_password'] = 'changeit'
+  if ENV['ARCGIS_SERVER_ADMIN_PASSWORD'].nil?
+    server['admin_password'] = 'changeit'
+  else
+    server['admin_password'] = ENV['ARCGIS_SERVER_ADMIN_PASSWORD']
+  end
   server['managed_database'] = ''
   server['replicated_database'] = ''
   server['keystore_file'] = ''
-  server['keystore_password'] = ''
+  if ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD'].nil?
+    server['keystore_password'] = ''
+  else
+    server['keystore_password'] = ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD']
+  end
   server['cert_alias'] = node['arcgis']['server']['domain_name']
   server['system_properties'] = {}
   server['log_level'] = 'WARNING'
@@ -60,6 +68,10 @@ default['arcgis']['server'].tap do |server|
 
   server['authorization_retries'] = 10
 
+  server['security']['user_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
+  server['security']['role_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
+  server['security']['privileges'] = {'PUBLISH' => [], 'ADMINISTER' => []}
+
   case node['platform']
   when 'windows'
     server['authorization_tool'] = ENV['ProgramW6432'] + '\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
@@ -80,7 +92,7 @@ default['arcgis']['server'].tap do |server|
     case node['arcgis']['version']
     when '10.5.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_XXXXXX.exe')
+                                            'ArcGIS_Server_Windows_1051_156124.exe')
       server['product_code'] = '{40CC6E89-93A4-4D87-A3FB-11413C218D2C}'
     when '10.5'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -118,7 +130,7 @@ default['arcgis']['server'].tap do |server|
     case node['arcgis']['version']
     when '10.5.1'
         server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_Server_Linux_1051_XXXXXX.tar.gz')
+                                              'ArcGIS_Server_Linux_1051_156429.tar.gz')
     when '10.5'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_105_154052.tar.gz')

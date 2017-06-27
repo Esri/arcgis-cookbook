@@ -6,11 +6,17 @@ This cookbook installs and configures ArcGIS Enterprise products, components, an
 Requirements
 ------------
 
+### Supported ArcGIS versions
+* 10.4
+* 10.4.1
+* 10.5
+* 10.5.1
+
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 Server
-* ArcGIS 10.4/10.4.1/10.5 Data Store
-* Portal for ArcGIS 10.4/10.4.1/10.5
-* ArcGIS 10.4/10.4.1/10.5 Web Adaptor (IIS/Java) 
+* ArcGIS Server
+* ArcGIS Data Store
+* Portal for ArcGIS
+* ArcGIS Web Adaptor (IIS/Java) 
 
 ### Platforms
 * Windows 7
@@ -47,6 +53,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['python']['install_dir']` = Python installation directory. By default Python is installed at `C:\Python27`.
 * `node['arcgis']['repository']['setups']` = Path to folder with ArcGIS software setups. Default path is `%USERPROFILE%\Documents` on Windows and `~/arcgis` on Linux.
 * `node['arcgis']['repository']['archives']` = Path to folder with ArcGIS software setup archives. Default path is `%USERPROFILE%\Software\Esri` on Windows and `~/software/esri` on Linux.
+* `node['arcgis']['repository']['patches']` = Path to folder with hot fixes and patches for ArcGIS Enterprise software. The default path on Windows is `%USERPROFILE%\Software\Esri\Patches`,   on Linux is `~/software/esri/patches`.
 * `node['arcgis']['post_install_script']` = Custom post-installation script path. The default path on Windows is `C:\imageryscripts\deploy.bat`, on Linux is `/arcgis/imageryscripts/deploy.sh`.
 
 #### File Server
@@ -89,6 +96,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['config_store_connection_string']` = ArcGIS Server config store type. Default value is `C:\arcgisserver\config-store` on Windows and `/arcgis/server/usr/config-store` on Linux.
 * `node['arcgis']['server']['config_store_connection_secret']` = ArcGIS Server config store type secret. Default value is `nil`.
 * `node['arcgis']['server']['services']` = An array of ArcGIS Server services to be published. Default value is `{}`.
+* `node['arcgis']['server']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['server']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['server']['security']['privileges']` = Privileges to user roles assignments `{'PUBLISH' => [], 'ADMINISTER' => []}`
+
 
 #### Web Adaptor
 
@@ -197,6 +208,9 @@ Configures iptables to forward ports 80/443 to 8080/8443.
 ### arcgis-enterprise::lp-install
 Installs language packs for ArcGIS for Server software.
 
+### arcgis-enterprise::patches
+Installs hot fixes and patches for ArcGIS Enterprise software.
+
 ### arcgis-enterprise::portal
 Installs and configures Portal for ArcGIS.
 
@@ -217,6 +231,9 @@ Installs and configures ArcGIS Server site.
 
 ### arcgis-enterprise::server_node
 Installs ArcGIS Server on the machine and joins an existing site.
+
+### arcgis-enterprise::server_security
+Configures ArcGIS Server identity stores and assigns privileges to roles.
 
 ### arcgis-enterprise::server_wa
 Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. IIS or Java application server such as Tomcat must be installed and configured before installing ArcGIS Web Adaptor.

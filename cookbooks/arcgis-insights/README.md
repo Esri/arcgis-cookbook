@@ -6,9 +6,11 @@ This cookbook installs and configures Insights for ArcGIS.
 Requirements
 ------------
 
-### Supported ArcGIS software
+### Supported Insights for ArcGIS versions
 
-* Insights for ArcGIS 1.0/1.1
+* 1.0
+* 1.1
+* 1.2
 
 ### Platforms
 

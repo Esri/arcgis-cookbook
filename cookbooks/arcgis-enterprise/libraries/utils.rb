@@ -107,4 +107,91 @@ module Utils
     end
   end
 
+  # Tests if the specified directory is read/write accessible for the specified user
+  def self.directory_accessible?(dir, user, password)
+    return false if dir.nil? || dir == '' || user.nil? || user == ''
+
+    begin
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        cmd = Mixlib::ShellOut.new("dir \"#{dir}\"", {:user => user, :password => password, :timeout => 60})
+        cmd.run_command
+        exists = !cmd.error?
+
+       if !exists
+         cmd = Mixlib::ShellOut.new("mkdir \"#{dir}\"", {:user => user, :password => password, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+
+         cmd = Mixlib::ShellOut.new("rmdir \"#{dir}\"", {:user => user, :password => password, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+       else
+         test_file = ::File.join(dir, "test.tmp")
+
+         cmd = Mixlib::ShellOut.new("echo.>\"#{test_file}\"", {:user => user, :password => password, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+
+         cmd = Mixlib::ShellOut.new("del \"#{test_file}\"", {:user => user, :password => password, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+       end
+      else
+        cmd = Mixlib::ShellOut.new("ls #{dir}", {:user => user, :timeout => 60})
+        cmd.run_command
+        exists = !cmd.error?
+
+       if !exists
+         cmd = Mixlib::ShellOut.new("mkdir #{dir}", {:user => user, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+
+         cmd = Mixlib::ShellOut.new("rm #{dir}", {:user => user, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+       else
+         test_file = ::File.join(dir, "test.tmp")
+
+         cmd = Mixlib::ShellOut.new("touch #{test_file}", {:user => user, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+
+         cmd = Mixlib::ShellOut.new("rm #{test_file}", {:user => user, :timeout => 60})
+         cmd.run_command
+         cmd.error!
+       end
+      end
+    rescue Exception => e
+      Chef::Log.warn "Directory '#{dir}' is not accessible to user '#{user}'. " + e.message
+      return false
+    end
+
+    Chef::Log.debug "Directory '#{dir}' is accessible to user '#{user}'. "
+    return true
+  end
+
+  def self.wait_until_directory_accessible?(dir, user, password)
+    MAX_RETRIES.times do
+      break if self.directory_accessible?(dir, user, password)
+      sleep(SLEEP_TIME)
+    end
+  end
+  
+  # Update windows service logon account
+  def self.sc_config(service, user, password)
+    if user.include? "\\"
+      service_logon_user = user
+    else
+      service_logon_user = ".\\#{user}"
+    end
+
+    self.retry_ShellOut("sc.exe config \"#{service}\" obj= \"#{service_logon_user}\" password= \"#{password}\"",
+                        1, 60, {:timeout => 600})
+
+    if ::Win32::Service.status(service).current_state == 'running'
+      self.retry_ShellOut("net stop \"#{service}\" /yes",  5, 60, {:timeout => 3600})
+      self.retry_ShellOut("net start \"#{service}\" /yes", 5, 60, {:timeout => 600})
+    end
+  end
+
 end

@@ -29,7 +29,8 @@ end
 if node['platform'] == 'windows'
   directory node['arcgis']['server']['install_dir'] do
     recursive true
-    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
+    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) ||
+             node['arcgis']['server']['install_dir'] == 'C:\\ArcGIS' }
     action :delete
   end
 

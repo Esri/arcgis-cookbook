@@ -23,7 +23,8 @@ unless node['arcgis']['hosts'].nil?
     hostsfile_entry "Map #{host} to #{ip}" do
       hostname host
       ip_address ip
-      action :append
+      unique true
+      action :create
     end
   end
 end
