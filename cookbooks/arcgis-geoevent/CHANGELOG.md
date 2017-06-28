@@ -3,6 +3,10 @@ arcgis-geoevent cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+3.1.0
+-----
+- Added support for ArcGIS 10.5.1
+
 3.0.0
 -----
 - Changed dependency from 'arcgis-server' cookbook to 'arcgis-enterprise'

@@ -1,5 +1,7 @@
-source 'https://supermarket.chef.io'
+source "https://supermarket.getchef.com"
+
+
 
 metadata
 
-cookbook  'arcgis-enterprise', path: '../arcgis-enterprise'
+cookbook  "arcgis-enterprise", path: "../arcgis-enterprise"

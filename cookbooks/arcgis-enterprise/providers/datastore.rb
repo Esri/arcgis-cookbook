@@ -233,6 +233,9 @@ action :update_account do
     cmd.run_command
     cmd.error!
 
+    # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
+    Utils.sc_config('ArcGIS Data Store', @new_resource.run_as_user, @new_resource.run_as_password)
+
     new_resource.updated_by_last_action(true)
   end
 end

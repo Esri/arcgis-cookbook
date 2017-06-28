@@ -54,7 +54,7 @@ ruby_block 'Copy license' do
 end
 
 execute 'Create EGDB in SQL Server RDS' do
-  command ['C:\\Windows\\SysNative\\WindowsPowerShell\\v1.0\\PowerShell.exe', '-file',
+  command ['PowerShell.exe', '-file',
            "\"#{::File.join(node['arcgis']['server']['install_dir'],
                             'framework\\etc\RDS_Creation.ps1')}\"",
            node['arcgis']['rds']['username'],

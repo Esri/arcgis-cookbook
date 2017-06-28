@@ -4,8 +4,8 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.0.0'
-chef_version     '>= 12.5.1', '< 13.0' if defined? chef_version
+version          '3.1.0'
+chef_version     '>= 12.6', '< 13.0' if defined? chef_version
 
 depends          'hostsfile'
 depends          'limits'
@@ -31,12 +31,14 @@ recipe 'arcgis-enterprise::fileserver', 'Configures shared directories on file s
 recipe 'arcgis-enterprise::hosts', 'Creates entries in /etc/hosts file for the specified hostname to IP address map'
 recipe 'arcgis-enterprise::iptables', 'Configures ports for products'
 recipe 'arcgis-enterprise::ip-install', 'Installs language packs for ArcGIS Enterprise software'
+recipe 'arcgis-enterprise::patches', 'Installs hot fixes and patches for ArcGIS Enterprise software'
 recipe 'arcgis-enterprise::portal', 'Installs and configures Portal for ArcGIS on primary machine'
 recipe 'arcgis-enterprise::portal_stanby', 'Installs and configures Portal for ArcGIS on standby machine'
 recipe 'arcgis-enterprise::portal_wa', 'Installs Web Adaptor and configures it with Portal for ArcGIS'
 recipe 'arcgis-enterprise::post_install', 'Executes custom post-installation script if it exists.'
 recipe 'arcgis-enterprise::server', 'Installs and configures ArcGIS Server'
 recipe 'arcgis-enterprise::server_node', 'Installs ArcGIS Server on the machine and joins an existing site'
+recipe 'arcgis-enterprise::server_security', 'Configures ArcGIS Server identity stores and assigns privileges to roles.'
 recipe 'arcgis-enterprise::server_wa', 'Installs Web Adaptor and configures it with ArcGIS Server'
 recipe 'arcgis-enterprise::services', 'Publishes services to ArcGIS Server'
 recipe 'arcgis-enterprise::system', 'System requirements'

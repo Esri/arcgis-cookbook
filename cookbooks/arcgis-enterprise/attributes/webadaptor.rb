@@ -32,7 +32,7 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     case node['arcgis']['version']
     when '10.5.1'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Web_Adaptor_for_Microsoft_IIS_1051_XXXXXX.exe')
+                                            'Web_Adaptor_Java_Windows_1051_156379.exe')
       web_adaptor['product_code'] = '{0A9DA130-E764-485F-8C1A-AD78B04AA7A4}'
       web_adaptor['product_code2'] = '{B8A6A873-ED78-47CE-A9B4-AB3192C47604}'
     when '10.5'
@@ -69,7 +69,7 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     case node['arcgis']['version']
     when '10.5.1'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'Web_Adaptor_Java_Linux_1051_XXXXXX.tar.gz')
+                                                 'Web_Adaptor_Java_Linux_1051_156442.tar.gz')
     when '10.5'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'Web_Adaptor_Java_Linux_105_154055.tar.gz')

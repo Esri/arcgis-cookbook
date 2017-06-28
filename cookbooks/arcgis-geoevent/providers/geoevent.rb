@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+use_inline_resources if defined?(use_inline_resources)
+
 action :system do
   if node['platform'] == 'windows'  
     powershell_script 'Open Ports required by GeoEvent Extension' do
@@ -26,6 +28,8 @@ action :system do
       only_if { node['platform'] == 'windows' && ENV['arcgis_cloud_platform'] == 'aws'}
       ignore_failure true
     end
+
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -51,6 +55,7 @@ action :install do
     cmd.run_command
     cmd.error!
   end
+
   new_resource.updated_by_last_action(true)
 end
 
@@ -81,16 +86,9 @@ end
 
 action :update_account do
   if node['platform'] == 'windows'
-    if @new_resource.run_as_user.include? "\\"
-      service_logon_user = @new_resource.run_as_user
-    else
-      service_logon_user = ".\\#{@new_resource.run_as_user}"
-    end
-    service_name = 'ArcGISGeoEvent'
-    #Utils.retry_ShellOut("net stop \"#{service_name}\" /yes", 10, 60, {:timeout => 600})
-    Utils.retry_ShellOut("sc.exe config \"#{service_name}\" obj= \"#{service_logon_user}\" password= \"#{@new_resource.run_as_password}\"",
-                         1, 60, {:timeout => 600})
-    #Utils.retry_ShellOut("net start \"#{service_name}\" /yes", 5, 60, {:timeout => 600})
+    Utils.sc_config('ArcGISGeoEvent', @new_resource.run_as_user, @new_resource.run_as_password)
+
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -106,6 +104,8 @@ action :stop do
       action :stop
     end
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :start  do

@@ -3,6 +3,13 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.1.0
+-----
+- Added support for ArcGIS Enterprise 10.5.1.
+- Added support for configuring ArcGIS Server identity stores and assigns privileges to roles.
+- Added support for installing ArcGIS Enterprise patches.
+- Set default values for sensitive attributes using environmental variables.
+
 3.0.0
 -----
 - 'iis' recipe moved to new 'esri-iis' cookbook.

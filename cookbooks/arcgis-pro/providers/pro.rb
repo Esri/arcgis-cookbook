@@ -16,16 +16,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+use_inline_resources if defined?(use_inline_resources)
+
 action :system do
   if node['platform'] == 'windows'
     # TODO: Ensure Pro system requirements
     #new_resource.updated_by_last_action(true)
   end
+
+  new_resource.updated_by_last_action(false)
 end
 
 action :install do
-  cmd = node[:arcgis][:pro][:setup]
-  args = "ALLUSERS=#{node[:arcgis][:pro][:allusers]} BLOCKADDINS=#{node[:arcgis][:pro][:blockaddins]} INSTALLDIR=\"#{node[:arcgis][:pro][:install_dir]}\" /qb"
+  cmd = node['arcgis']['pro']['setup']
+  args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
 
   cmd = Mixlib::ShellOut.new("msiexec.exe /i \"#{cmd}\" #{args}",
                              { :timeout => 3600 })
@@ -37,7 +41,7 @@ end
 
 action :uninstall do
   cmd = 'msiexec'
-  args = "/qb /x #{product_code}"
+  args = "/qb /x #{@new_resource.product_code}"
 
   cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
                              { :timeout => 3600 })
