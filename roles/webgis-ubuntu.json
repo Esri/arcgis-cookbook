@@ -1,7 +1,7 @@
 {
   "java":{
     "install_flavor":"oracle",
-    "jdk_version":"7",
+    "jdk_version":"8",
     "oracle":{
       "accept_oracle_download_terms":true
     }
