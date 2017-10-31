@@ -6,6 +6,9 @@
       "accept_oracle_download_terms":true
     }
   },
+  "tomcat":{
+    "instance_name":"arcgis"
+  },
   "arcgis":{
     "run_as_user":"arcgis",
     "version":"10.5",
@@ -43,6 +46,7 @@
   "run_list":[
     "recipe[arcgis-enterprise::system]",
     "recipe[java]",
+    "recipe[esri-tomcat]",
     "recipe[iptables]",
     "recipe[arcgis-enterprise::iptables]",
     "recipe[arcgis-enterprise::server]",
