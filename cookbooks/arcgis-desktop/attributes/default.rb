@@ -18,7 +18,7 @@
 
 default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.5.1'
+default['arcgis']['version'] = '10.6'
 default['arcgis']['desktop']['version'] = node['arcgis']['version']
 
 case node['platform']
@@ -42,6 +42,9 @@ when 'windows'
   default['arcgis']['licensemanager']['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
   case node['arcgis']['desktop']['version']
+  when '10.6'
+    default['arcgis']['desktop']['product_code'] = '{F8206086-367E-44E4-9E24-92E9E057A63D}'
+    default['arcgis']['licensemanager']['product_code'] = '{D6AF20B5-825F-44A9-915D-C2868CBD59F3}'
   when '10.5.1'
     default['arcgis']['desktop']['product_code'] = '{4740FC57-60FE-45BB-B513-3309F6B73183}'
     default['arcgis']['licensemanager']['product_code'] = '{DF06C3DC-54B5-49A1-9756-B68FD65A0AD0}'

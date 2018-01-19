@@ -17,29 +17,34 @@
 # limitations under the License.
 # ------------------------------------------------------------------------
 
-# If require, set the JAVA_HOME to launch the wrapper
 #
-#JAVA_HOME=
+# This script is an Unix SystemV script
 #
 
 # Application
-APP_NAME="ArcGISGeoEvent"
-APP_LONG_NAME="ArcGIS GeoEvent Server"
-GEOEVENT_INSTALL_DIR=<%=@agshome%>/GeoEvent
+APP_NAME="ArcGISGeoEventGateway"
+APP_LONG_NAME="ArcGIS GeoEvent Gateway"
+AGS_INSTALL_DIR=<%=@agshome%>
+GEOEVENT_INSTALL_DIR=${AGS_INSTALL_DIR}/GeoEvent
+GATEWAY_INSTALL_DIR=${GEOEVENT_INSTALL_DIR}/gateway
+
+# set the JAVA_HOME to launch the wrapper
+JAVA_HOME="${AGS_INSTALL_DIR}/framework/runtime/jre"
 
 # Wrapper
-WRAPPER_CMD="${GEOEVENT_INSTALL_DIR}/bin/${APP_NAME}-wrapper"
-WRAPPER_CONF="${GEOEVENT_INSTALL_DIR}/etc/${APP_NAME}-wrapper.cfg"
+WRAPPER_CMD="${GATEWAY_INSTALL_DIR}/bin/${APP_NAME}-wrapper"
+WRAPPER_CONF="${GATEWAY_INSTALL_DIR}/etc/${APP_NAME}-wrapper.cfg"
 
 # Priority at which to run the wrapper.  See "man nice" for valid priorities.
 #  nice is only used if a priority is specified.
 PRIORITY=
 
-# Location of the data folder.
-DATADIR="${GEOEVENT_INSTALL_DIR}/data"
+# Location of the log folder.
+LOGDIR="${GATEWAY_INSTALL_DIR}/log"
+
 
 # Location of the pid file.
-PIDDIR="${GEOEVENT_INSTALL_DIR}/data"
+PIDDIR="${GATEWAY_INSTALL_DIR}"
 
 # If uncommented, causes the Wrapper to be shutdown using an anchor file.
 #  When launched with the 'start' command, it will also ignore all INT and
@@ -59,7 +64,7 @@ RUN_AS_USER=<%=@agsuser%>
 # The following two lines are used by the chkconfig command. Change as is
 #  appropriate for your application.  They should remain commented.
 # chkconfig: 2345 20 80
-# description: Testing 3.0.3 Karaf service
+# description: ArcGIS GeoEvent Server
 
 # Do not modify anything beyond this point
 #-----------------------------------------------------------------------------
@@ -133,7 +138,7 @@ fi
 
 # Process ID
 ANCHORFILE="$PIDDIR/$APP_NAME.anchor"
-PIDFILE="$PIDDIR/$APP_NAME.pid"
+PIDFILE="$PIDDIR/$APP_NAME.wrapper.pid"
 LOCKDIR="/var/lock/subsys"
 LOCKFILE="$LOCKDIR/$APP_NAME"
 pid=""
@@ -411,17 +416,14 @@ start() {
     getpid
     if [ "X$pid" = "X" ]
     then
-        if [ ! -d $DATADIR ]; then
-            mkdir $DATADIR
-        fi
-        if [ ! -d $DATADIR/log ]; then
-            mkdir $DATADIR/log
+        if [ ! -d $LOGDIR/log ]; then
+            mkdir $LOGDIR/log
         fi
         COMMAND_LINE="$CMDNICE $WRAPPER_CMD $WRAPPER_CONF wrapper.syslog.ident=$APP_NAME wrapper.pidfile=$PIDFILE wrapper.daemonize=TRUE $ANCHORPROP $IGNOREPROP $LOCKPROP"
         exec $COMMAND_LINE
     else
         echo "$APP_LONG_NAME is already running."
-        exit 1
+        exit 0
     fi
 }
 

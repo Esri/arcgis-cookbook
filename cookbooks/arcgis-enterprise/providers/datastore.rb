@@ -61,6 +61,35 @@ action :system do
         action :install
       end
     end
+
+    ruby_block 'Set sysctl vm.max_map_count' do
+      block do
+        Utils.update_file_key_value(node['arcgis']['data_store']['sysctl_conf'],
+                                    'vm.max_map_count',
+                                    node['arcgis']['data_store']['vm_max_map_count'])
+      end
+      notifies :run, 'execute[Reload sysctl settings]', :immediately
+      not_if { Utils.file_key_value_updated?(node['arcgis']['data_store']['sysctl_conf'],
+                                             'vm.max_map_count',
+                                             node['arcgis']['data_store']['vm_max_map_count']) }
+    end
+
+    ruby_block 'Set sysctl vm.swappiness' do
+      block do
+        Utils.update_file_key_value(node['arcgis']['data_store']['sysctl_conf'],
+                                    'vm.swappiness',
+                                    node['arcgis']['data_store']['vm_swappiness'])
+      end
+      notifies :run, 'execute[Reload sysctl settings]', :immediately
+      not_if { Utils.file_key_value_updated?(node['arcgis']['data_store']['sysctl_conf'],
+                                             'vm.swappiness',
+                                             node['arcgis']['data_store']['vm_swappiness']) }
+    end
+
+    execute 'Reload sysctl settings' do
+      command 'sysctl -p'
+      action :nothing
+    end
   end
 
   new_resource.updated_by_last_action(true)
@@ -84,6 +113,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do

@@ -37,10 +37,24 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
     data_store['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\DataStore'
     data_store['data_dir'] = 'C:\\arcgisdatastore'
-    data_store['local_backup_dir'] = node['arcgis']['data_store']['data_dir'] + '\\backup'
-    data_store['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
+
+    if node['arcgis']['data_store']['data_dir'].nil?
+      data_store['local_backup_dir'] = data_store['data_dir'] + '\\backup'
+    else
+      data_store['local_backup_dir'] = node['arcgis']['data_store']['data_dir'] + '\\backup'
+    end
+
+    if node['arcgis']['data_store']['local_backup_dir'].nil?
+      data_store['backup_dir'] = data_store['local_backup_dir']
+    else
+      data_store['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
+    end
 
     case node['arcgis']['version']
+    when '10.6'
+        data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_DataStore_Windows_106_161832.exe')
+        data_store['product_code'] = '{846636C1-53BB-459D-B66D-524F79E40396}'
     when '10.5.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_DataStore_Windows_1051_156366.exe')
@@ -67,6 +81,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '10.6'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_DataStore_Linux_106_161810.tar.gz')
     when '10.5.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_DataStore_Linux_1051_156441.tar.gz')
@@ -96,6 +113,9 @@ default['arcgis']['data_store'].tap do |data_store|
                                          '/usr/arcgisdatastore')
     data_store['local_backup_dir'] = node['arcgis']['data_store']['data_dir'] + '/backup'
     data_store['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
+    data_store['sysctl_conf'] = '/etc/sysctl.conf'
+    data_store['vm_max_map_count'] = 262144
+    data_store['vm_swappiness'] = 1
   end
 
 end

@@ -77,7 +77,7 @@ module Utils
   def self.wa_instance(product_code)
     begin
       key = Win32::Registry::HKEY_LOCAL_MACHINE.open(
-        'SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code, 
+        'SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code,
         ::Win32::Registry::KEY_READ | 0x100)
       install_location = Pathname.new(key['InstallLocation'])
       key.close()
@@ -176,7 +176,7 @@ module Utils
       sleep(SLEEP_TIME)
     end
   end
-  
+
   # Update windows service logon account
   def self.sc_config(service, user, password)
     if user.include? "\\"
@@ -192,6 +192,35 @@ module Utils
       self.retry_ShellOut("net stop \"#{service}\" /yes",  5, 60, {:timeout => 3600})
       self.retry_ShellOut("net start \"#{service}\" /yes", 5, 60, {:timeout => 600})
     end
+  end
+
+  def self.update_file_key_value(file, key, value)
+    ##
+    # Edit/update a config file with key=value settings
+    # Remove all keys that are commented out
+    # Remove all keys that do not match the specified value
+    # Assumes there are no spaces between '=' sign
+    ##
+    fe = Chef::Util::FileEdit.new(file)
+
+    # Different Value
+    escaped_regex_key = Regexp.quote(key)
+    fe.search_file_delete_line(/#{escaped_regex_key}=((?!#{value}).)*/)
+
+    # Commented
+    fe.search_file_delete_line("#(\s)*#{key}=")
+
+    # Does not exist
+    fe.insert_line_if_no_match("#{key}=#{value}", "#{key}=#{value}")
+
+    fe.write_file
+  end
+
+  def self.file_key_value_updated?(file, key, value)
+    ##
+    # Should be used with update_file_key_value(file,key,value) as a guard for idempotency
+    ##
+    return ::File.open(file).each_line.any? { |line| line.chomp == "#{key}=#{value}" }
   end
 
 end

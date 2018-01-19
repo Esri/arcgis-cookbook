@@ -36,7 +36,8 @@ data_items = [{
 ruby_block 'Copy license' do
   block do
     if node['platform'] == 'windows'
-      FileUtils.cp('C:\\Program Files\\ESRI\\License10.5\\sysgen\\keycodes',
+      FileUtils.cp('C:\\Program Files\\ESRI\\License' +
+                   node['arcgis']['server']['authorization_file_version'] + '\\sysgen\\keycodes',
                    ::File.join(node['arcgis']['server']['install_dir'], 'framework\\etc\\license.ecp'))
     else
       license_ecp = ::File.join(node['arcgis']['server']['install_dir'], 
@@ -44,7 +45,8 @@ ruby_block 'Copy license' do
                                 'framework/etc/license.ecp')
       FileUtils.cp(::File.join(node['arcgis']['server']['install_dir'], 
                                node['arcgis']['server']['install_subdir'], 
-                               'framework/runtime/.wine/drive_c/Program Files/ESRI/License10.5/sysgen/keycodes'),
+                               'framework/runtime/.wine/drive_c/Program Files/ESRI/License' +
+                               node['arcgis']['server']['authorization_file_version'] + '/sysgen/keycodes'),
                    license_ecp)
       FileUtils.chown(node['arcgis']['run_as_user'], node['arcgis']['run_as_user'], license_ecp)
     end

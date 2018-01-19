@@ -1,0 +1,81 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
+  gui: false
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 13.3
+
+platforms:
+  - name: windows-2016
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: windows-7
+  - name: windows-81
+  - name: centos-6.7
+  - name: centos-7.2
+  - name: ubuntu-16.04
+
+suites:
+  - name: desktop
+    driver:
+      synced_folders:
+        - ["/arcgis/setups/windows/ArcGIS_Desktop", "C:/temp/setups/ArcGIS_Desktop"]
+        - ["/arcgis/setups/authorization_files/Version10.6/ArcGIS_Desktop_Advanced_SU", "C:/temp/auth_files/ArcGIS_Desktop"]
+    run_list:
+      #- recipe[ms_dotnet::ms_dotnet4]
+      - recipe[arcgis-desktop]
+    attributes:
+      #ms_dotnet:
+        #v4:
+          #version: "4.5.1"
+      arcgis:
+        version: "10.6"
+        desktop:
+          setup: "C:\\temp\\setups\\ArcGIS_Desktop\\Setup.exe"
+          authorization_file: "C:\\temp\\auth_files\\ArcGIS_Desktop\\DTAdvanced.prvc"
+          software_class: "Viewer"
+          seat_preference: "Fixed"
+          desktop_config: true
+    excludes:
+      - centos-6.7
+      - centos-7.2
+      - ubuntu-16.04
+
+  - name: licensemanager
+    driver:
+      synced_folders:
+        - ["/arcgis/setups/windows/LicenseManager", "C:/temp/setups/LicenseManager"]
+    run_list:
+        - recipe[arcgis-desktop::licensemanager]
+    attributes:
+      arcgis:
+        version: "10.6"
+        licensemanager:
+          setup: "C:\\temp\\setups\\LicenseManager\\Setup.exe"
+    excludes:
+      - centos-6.7
+      - centos-7.2
+      - ubuntu-16.04
+
+  - name: licensemanager-linux
+    driver:
+      synced_folders:
+        - ["/arcgis/setups/linux/LicenseManager", "/tmp/licensemanager-cd"]
+    run_list:
+        - recipe[arcgis-desktop::licensemanager]
+    attributes:
+      arcgis:
+        version: "10.6"
+        licensemanager:
+          setup: "/tmp/licensemanager-cd/Setup"
+    excludes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+      - windows-7
+      - windows-81

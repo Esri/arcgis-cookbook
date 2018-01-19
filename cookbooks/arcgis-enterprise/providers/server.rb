@@ -223,6 +223,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do
@@ -396,13 +398,13 @@ action :create_site do
       admin_client.wait_until_available
 
       #Restart ArcGIS Server on Linux to make sure the server machine SSL certificate is updated
-      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
-        service 'arcgisserver' do
-          action :restart
-        end
-
-        admin_client.wait_until_available
-      end
+#      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
+#        service 'arcgisserver' do
+#          action :restart
+#        end
+#
+#        admin_client.wait_until_available
+#      end
 
       if !@new_resource.system_properties.empty?
         Chef::Log.info('Updating ArcGIS Server system properties...')
@@ -656,7 +658,7 @@ action :configure_autostart do
       action :enable
     end
   else
-    Chef::Log.info('Configure ArcGIS for Server to be started with the operating system.')
+    Chef::Log.info('Configure ArcGIS Server to be started with the operating system.')
     agsuser = node['arcgis']['run_as_user']
     agshome = ::File.join(@new_resource.install_dir,
                           node['arcgis']['server']['install_subdir'])
@@ -749,6 +751,35 @@ action :assign_privileges do
   end
 end
 
+action :set_machine_properties do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Setting server machine properties...')
+
+    machine_name = admin_client.local_machine_name
+
+    updated = admin_client.set_machine_properties(machine_name, @new_resource.soc_max_heap_size)
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(updated)
+  rescue Exception => e
+    Chef::Log.error "Failed to set server machine properties. " + e.message
+    raise e
+  end
+end
 
 private
 

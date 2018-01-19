@@ -55,10 +55,7 @@ end
 arcgis_enterprise_webadaptor 'Deploy Web Adaptor for Server' do
   install_dir node['arcgis']['web_adaptor']['install_dir']
   instance_name node['arcgis']['server']['wa_name']
-  if node['platform'] != 'windows'
-    not_if { ::File.exist?(::File.join(node['arcgis']['web_server']['webapp_dir'],
-                                       node['arcgis']['server']['wa_name'] + '.war')) }
-  end
+  not_if { node['platform'] == 'windows' }
   action :deploy
 end
 

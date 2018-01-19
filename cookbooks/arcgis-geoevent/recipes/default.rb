@@ -57,9 +57,10 @@ arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Server' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
   else
-    not_if { ::File.exists?(::File.join(node['arcgis']['server']['install_dir'],
-                                        node['arcgis']['server']['install_subdir'],
-                                        'GeoEvent/bin/ArcGISGeoEvent-service')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                node['arcgis']['version'],
+                                                :ArcGISGeoEvent) }
   end
   action :install
 end
@@ -67,6 +68,7 @@ end
 arcgis_geoevent_geoevent 'Configure ArcGISGeoEvent service' do
   install_dir node['arcgis']['server']['install_dir']
   action :configure_autostart
+  only_if { node['arcgis']['geoevent']['configure_autostart'] }
 end
 
 arcgis_geoevent_geoevent 'Start ArcGIS GeoEvent' do

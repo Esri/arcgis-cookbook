@@ -42,6 +42,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do
@@ -130,6 +132,7 @@ action :deploy do
     begin
       FileUtils.cp(src_path, dst_path)
       FileUtils.chmod(0755, dst_path, :verbose => true)
+      sleep(30.0)
     rescue Exception
       Chef::Log.warn("Skipping Deployment: #{$!}")
     end

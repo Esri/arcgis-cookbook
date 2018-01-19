@@ -11,6 +11,7 @@ Requirements
 * 10.4.1
 * 10.5
 * 10.5.1
+* 10.6
 
 ### Supported ArcGIS software
 * ArcGIS Server
@@ -99,7 +100,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['server']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['server']['security']['privileges']` = Privileges to user roles assignments `{'PUBLISH' => [], 'ADMINISTER' => []}`
-
+* `node['arcgis']['server']['soc_max_heap_size']` = SOC maximum heap size in megabytes. Default value is `64`.
 
 #### Web Adaptor
 
@@ -145,6 +146,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['log_level']` = Portal for ArcGIS log level. Default value is `WARNING`.
 * `node['arcgis']['portal']['log_dir']` = Portal for ArcGIS log directory. Default value is `C:\arcgisportal\logs` on Windows and `/arcgis/portal/usr/arcgisportal/logs` on Linux.
 * `node['arcgis']['portal']['max_log_file_age']` = Portal for ArcGIS  maximum log file age. Default value is `90`.
+* `node['arcgis']['portal']['upgrade_backup']` = Backup Portal for ArcGIS content during upgrade. Default value is `true`.
+* `node['arcgis']['portal']['upgrade_rollback']` = Rollback Portal for ArcGIS upgrade in case of failure. Default value is `true`.
+* `node['arcgis']['portal']['root_cert']` = Portal for ArcGIS root certificate. Default value is `''`.
+* `node['arcgis']['portal']['root_cert_alias']` = Portal for ArcGIS root certificate alias. Default value is `''`.
 
 
 #### Data Store
@@ -206,7 +211,7 @@ Creates entries in /etc/hosts file for the specified hostname to IP address map.
 Configures iptables to forward ports 80/443 to 8080/8443.
 
 ### arcgis-enterprise::lp-install
-Installs language packs for ArcGIS for Server software.
+Installs language packs for ArcGIS Server software.
 
 ### arcgis-enterprise::patches
 Installs hot fixes and patches for ArcGIS Enterprise software.
@@ -247,14 +252,14 @@ Creates 'egdbhost' alias for SQL Server RDS instance endpoint domain name.
 ### arcgis-enterprise::system
 Configures system requirements for ArcGIS Enterprise software by invoking ':system' actions for ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, and ArcGIS Web Adaptor resources, includes arcgis::hosts recipe.
 
-### arcgis-enterprise::webgis_installed
+### arcgis-enterprise::enterprise_installed
 Installs ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
-### arcgis-enterprise::webgis_uninstalled
+### arcgis-enterprise::enterprise_uninstalled
 Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
-### arcgis-enterprise::webgis_validate
-Checks if ArcGIS for Server setups and authorization files exist.
+### arcgis-enterprise::enterprise_validate
+Checks if ArcGIS Enterprise setups and authorization files exist.
 
 
 Usage
@@ -272,7 +277,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

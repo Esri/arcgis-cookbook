@@ -25,7 +25,7 @@ end
 if platform?('windows')
   user node['arcgis']['run_as_user'] do
     comment 'ArcGIS user account'
-    supports :manage_home => true
+    manage_home true
     password node['arcgis']['run_as_password']
     not_if { node['arcgis']['run_as_user'].include? '\\' } # do not try to create domain accounts
     action :create
@@ -33,7 +33,7 @@ if platform?('windows')
 else
   user node['arcgis']['run_as_user'] do
     comment 'ArcGIS user account'
-    supports :manage_home => true
+    manage_home true
     home '/home/' + node['arcgis']['run_as_user']
     shell '/bin/bash'
     action :create
@@ -43,13 +43,31 @@ else
     set_limit node['arcgis']['run_as_user'] do
       type t
       item 'nofile'
-      value 65535
+      value 65536
     end
 
     set_limit node['arcgis']['run_as_user'] do
       type t
       item 'nproc'
       value 25059
+    end
+
+    set_limit node['arcgis']['run_as_user'] do
+      type t
+      item 'memlock'
+      value 'unlimited'
+    end
+
+    set_limit node['arcgis']['run_as_user'] do
+      type t
+      item 'fsize'
+      value 'unlimited'
+    end
+
+    set_limit node['arcgis']['run_as_user'] do
+      type t
+      item 'as'
+      value 'unlimited'
     end
   end
 end

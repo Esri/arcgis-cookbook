@@ -1,0 +1,80 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
+  gui: false
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 13.3
+
+platforms:
+  - name: windows-2016
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: windows-7
+  - name: windows-81
+  - name: centos-6.7
+  - name: centos-7.2
+  - name: ubuntu-16.04
+
+suites:
+  - name: geoevent
+    driver:
+      network:
+      synced_folders:
+        - ["/arcgis/setups/windows/ArcGIS_Server", "C:/temp/setups/ArcGIS_Server"]
+        - ["/arcgis/setups/windows/GeoEvent", "C:/temp/setups/GeoEvent"]
+        - ["/arcgis/setups/authorization_files/Version10.6/ArcGIS_Server/Advanced", "C:/temp/auth_files/ArcGIS_Server"]
+    run_list:
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-geoevent]
+    attributes:
+      arcgis:
+        version: "10.6"
+        hosts:
+          test.com: ""
+        configure_windows_firewall: true
+        server:
+          setup: "C:\\temp\\setups\\ArcGIS_Server\\Setup.exe"
+          authorization_file: "C:\\temp\\auth_files\\ArcGIS_Server\\Server_Ent_Adv.ecp"
+          url: "http://test.com:6080/arcgis"
+          domain_name: "test.com"
+        geoevent:
+          setup: "C:\\temp\\setups\\GeoEvent\\Setup.exe"
+    excludes:
+      - centos-6.7
+      - centos-7.2
+      - ubuntu-16.04
+  - name: geoevent-linux
+    driver:
+      synced_folders:
+        - ["/arcgis/setups/linux/ArcGISServer", "/tmp/server-cd"]
+        - ["/arcgis/setups/linux/GeoEvent", "/tmp/geoevent-cd"]
+        - ["/arcgis/setups/authorization_files/Version10.6/ArcGIS_Server/Advanced", "/tmp/auth_files/ArcGISServer"]
+    run_list:
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-geoevent]
+    attributes:
+      arcgis:
+        version: "10.6"
+        hosts:
+          test.com: ""
+        configure_windows_firewall: true
+        server:
+          setup: "/tmp/server-cd/Setup"
+          authorization_file: "/tmp/auth_files/ArcGISServer/Server_Ent_Adv.ecp"
+          url: "http://test.com:6080/arcgis"
+          domain_name: "test.com"
+        geoevent:
+          setup: "/tmp/geoevent-cd/Setup.sh"
+    excludes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+      - windows-7
+      - windows-81

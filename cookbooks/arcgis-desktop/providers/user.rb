@@ -23,7 +23,7 @@ action :create do
   if platform?('windows')
     user node['arcgis']['run_as_user'] do
       comment 'ArcGIS user account'
-      supports :manage_home => true
+      manage_home true
       password node['arcgis']['run_as_password']
       not_if { node['arcgis']['run_as_user'].include? '\\' } # do not try to create domain accounts
       action :create
@@ -32,7 +32,7 @@ action :create do
     user @new_resource.name do
       username node['arcgis']['run_as_user']
       comment 'ArcGIS user account'
-      supports :manage_home => true
+      manage_home true
       home '/home/' + node['arcgis']['run_as_user']
       action :create
     end

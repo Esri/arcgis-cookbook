@@ -1,0 +1,37 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
+  gui: false
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 13.3
+
+platforms:
+  - name: windows-2016
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: windows-7
+  - name: windows-81
+
+suites:
+  - name: pro
+    driver:
+      synced_folders:
+        - ["/arcgis/setups/windows/ArcGISPro", "C:/temp/setups/ArcGISPro"]
+        - ["/arcgis/setups/authorization_files/ArcGISPro2.1/Single\ Use", "C:/temp/auth_files/ArcGISPro"]
+    run_list:
+      #- recipe[ms_dotnet::ms_dotnet4]
+      - recipe[arcgis-pro]
+    attributes:
+      #ms_dotnet:
+        #v4:
+          #version: "4.5.1"
+      arcgis:
+        pro:
+          setup: "C:\\temp\\setups\\ArcGISPro\\ArcGISPro.msi"
+          authorization_file: "C:\\temp\\auth_files\\ArcGISPro\\Pro_AdvancedSU.prvc"
+          seat_preference: "Fixed"

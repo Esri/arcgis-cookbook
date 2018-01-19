@@ -10,6 +10,7 @@ Requirements
 * 10.4.1
 * 10.5
 * 10.5.1
+* 10.6
 
 ### Supported ArcGIS software
 * ArcGIS Desktop (Windows only)
@@ -73,7 +74,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2017 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

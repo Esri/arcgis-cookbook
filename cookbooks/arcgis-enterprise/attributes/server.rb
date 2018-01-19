@@ -54,6 +54,7 @@ default['arcgis']['server'].tap do |server|
   server['configure_autostart'] = true
   server['install_system_requirements'] = true
   server['use_join_site_tool'] = false
+  server['soc_max_heap_size'] = 64
 
   unless node['arcgis']['server']['authorization_file'].nil?
     server['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
@@ -82,14 +83,34 @@ default['arcgis']['server'].tap do |server|
                                   'ArcGISServer', 'Setup.exe')
     server['lp-setup'] = node['arcgis']['server']['setup']
     server['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Server'
+
     server['local_directories_root'] = 'C:\\arcgisserver'
-    server['directories_root'] = node['arcgis']['server']['local_directories_root']
-    server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs')
+
+    if node['arcgis']['server']['local_directories_root'].nil?
+      server['directories_root'] = server['local_directories_root']
+    else
+      server['directories_root'] = node['arcgis']['server']['local_directories_root']
+    end
+
+    if node['arcgis']['server']['local_directories_root'].nil?
+      server['log_dir'] = ::File.join(server['local_directories_root'], 'logs')
+    else
+      server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs') 
+    end
+
     server['config_store_type'] = 'FILESYSTEM'
-    server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], 'config-store')
+    if node['arcgis']['server']['directories_root'].nil?
+      server['config_store_connection_string'] = ::File.join(server['directories_root'], 'config-store')
+    else
+      server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], 'config-store')
+    end
     server['config_store_connection_secret'] = ''
 
     case node['arcgis']['version']
+    when '10.6'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_106_159940.exe')
+      server['product_code'] = '{07606F78-D997-43AE-A9DC-0738D91E8D02}'
     when '10.5.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1051_156124.exe')
@@ -128,6 +149,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.6'
+        server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Server_Linux_106_159989.tar.gz')
     when '10.5.1'
         server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Server_Linux_1051_156429.tar.gz')

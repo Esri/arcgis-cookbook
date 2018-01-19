@@ -26,15 +26,18 @@
 
 [Unit]
 Description=ArcGIS GeoEvent Server
-Wants=arcgisserver.service
-After=network.target arcgisserver.service
+Wants=arcgisserver.service geoeventGateway.service
+After=network.target arcgisserver.service geoeventGateway.service
 
 [Service]
 Type=forking
 User=<%=@agsuser%>
+#PIDFile=<%=@agshome%>/GeoEvent/ArcGISGeoEvent.wrapper.pid
 GuessMainPID=false
-ExecStart=<%=@geehome%>/bin/ArcGISGeoEvent-service start
-ExecStop=<%=@geehome%>/bin/ArcGISGeoEvent-service stop
+ExecStart=<%=@agshome%>/GeoEvent/bin/ArcGISGeoEvent-service start
+ExecReload=<%=@agshome%>/GeoEvent/bin/ArcGISGeoEvent-service restart
+ExecStop=<%=@agshome%>/GeoEvent/bin/ArcGISGeoEvent-service stop
 
 [Install]
+Alias=ArcGISGeoEvent
 WantedBy=multi-user.target

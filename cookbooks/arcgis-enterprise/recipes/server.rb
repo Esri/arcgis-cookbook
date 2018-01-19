@@ -42,9 +42,10 @@ arcgis_enterprise_server 'Unpack ArcGIS Server Setup' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
-                                       node['arcgis']['server']['install_subdir'],
-                                       'startserver.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISServer) }
   end
   action :unpack
 end
@@ -58,9 +59,10 @@ arcgis_enterprise_server 'Setup ArcGIS Server' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
-                                       node['arcgis']['server']['install_subdir'],
-                                       'startserver.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISServer) }
   end
   action :install
 end
@@ -82,8 +84,12 @@ arcgis_enterprise_server 'Authorize ArcGIS Server' do
   action :authorize
 end
 
-file node['arcgis']['server']['cached_authorization_file'] do
-  content File.open(node['arcgis']['server']['authorization_file'], 'rb') { |file| file.read }
+# Copy server authorization file to the machine to indicate that server is already authorized
+file 'Cache server authorization file' do
+  path node['arcgis']['server']['cached_authorization_file']
+  if ::File.exists?(node['arcgis']['server']['authorization_file'])
+    content File.open(node['arcgis']['server']['authorization_file'], 'rb') { |file| file.read }
+  end
   sensitive true
   subscribes :create, 'arcgis_enterprise_server[Authorize ArcGIS Server]', :immediately
   only_if { node['arcgis']['cache_authorization_files'] }
@@ -123,6 +129,16 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   action :create_site
 end
 
+arcgis_enterprise_server 'Set server machine properties' do
+  server_url node['arcgis']['server']['url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  soc_max_heap_size node['arcgis']['server']['soc_max_heap_size']
+  retries 5
+  retry_delay 30
+  action :set_machine_properties
+end
+
 arcgis_enterprise_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
   server_admin_url node['arcgis']['server']['private_url'] + '/admin'
@@ -135,4 +151,13 @@ arcgis_enterprise_server 'Configure HTTPS' do
   retry_delay 30
   not_if { node['arcgis']['server']['keystore_file'].empty? }
   action :configure_https
+end
+
+# Restart ArcGIS Server
+arcgis_enterprise_server 'Start ArcGIS Server' do
+  action :stop
+end
+
+arcgis_enterprise_server 'Start ArcGIS Server' do
+  action :start
 end

@@ -11,6 +11,8 @@ Requirements
 * 1.0
 * 1.1
 * 1.2
+* 2.0
+* 2.1
 
 ### Platforms
 
@@ -19,7 +21,9 @@ Requirements
 * Windows 10
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
-* Ubuntu 14.04 (when deploying ArcGIS Enterprise on Amazon Web Services)
+* Windows Server 2016
+* Ubuntu 14.04 
+* Ubuntu 16.04
 * Rhel 6.5, 7.0
 
 ### Dependencies
@@ -60,7 +64,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2017 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

@@ -20,23 +20,24 @@
 use_inline_resources if defined?(use_inline_resources)
 
 action :system do
-  if node['platform'] == 'windows'  
-    powershell_script 'Open Ports required by GeoEvent Extension' do
-      code <<-EOH
-        netsh advfirewall firewall add rule name="Allow_ArcGISGeoEvent_Ports2" dir=in action=allow protocol=TCP localport="2181,2182,2190,27271,27272,27273,6143,6180,5565,5570,5575" description="Allows connections through all ports used by ArcGIS GeoEvent"
-      EOH
-      only_if { node['platform'] == 'windows' && ENV['arcgis_cloud_platform'] == 'aws'}
-      ignore_failure true
+  case node['platform']
+  when 'windows'
+    # Configure Windows firewall
+    windows_firewall_rule 'ArcGIS GeoEvent Server' do
+      description 'Allows connections through all ports used by ArcGIS GeoEvent Server'
+      localport node['arcgis']['geoevent']['ports']
+      dir :in
+      protocol 'TCP'
+      firewall_action :allow
+      only_if { node['arcgis']['configure_windows_firewall'] }
     end
-
-    new_resource.updated_by_last_action(true)
   end
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do
   if node['platform'] == 'windows'
     run_as_password = @new_resource.run_as_password
-    install_dir = @new_resource.install_dir
 
     cmd = @new_resource.setup
     args = "/qb PASSWORD=\"#{run_as_password}\""
@@ -87,6 +88,7 @@ end
 action :update_account do
   if node['platform'] == 'windows'
     Utils.sc_config('ArcGISGeoEvent', @new_resource.run_as_user, @new_resource.run_as_password)
+    Utils.sc_config('ArcGISGeoEventGateway', @new_resource.run_as_user, @new_resource.run_as_password)
 
     new_resource.updated_by_last_action(true)
   end
@@ -112,9 +114,18 @@ action :start  do
   if node['platform'] == 'windows'
     service "ArcGISGeoEvent" do
       supports :status => true, :restart => true, :reload => true
+      timeout 180
       action [:enable, :start]
     end
   else
+    directory ::File.join(@new_resource.install_dir,
+                          node['arcgis']['server']['install_subdir'],
+                          'GeoEvent/data') do
+      recursive true
+      owner node['arcgis']['run_as_user']
+      action [:delete, :create]
+    end
+
     service "arcgisgeoevent" do
       supports :status => true, :restart => true, :reload => true
       action [:enable, :start]
@@ -132,34 +143,65 @@ action :configure_autostart do
     Chef::Log.info('Configure ArcGIS GeoEvent Server to be started with the operating system.')
 
     agsuser = node['arcgis']['run_as_user']
-    geehome = ::File.join(@new_resource.install_dir,
-                          node['arcgis']['server']['install_subdir'],
-                          'GeoEvent')
-
-    arcgisgeoevent = ::File.join(geehome, 'bin/ArcGISGeoEvent-service')
+    agshome = ::File.join(@new_resource.install_dir,
+                          node['arcgis']['server']['install_subdir'])
 
     if node['init_package'] == 'init' # SysV
-      arcgisgeoevent_path = '/etc/init.d/arcgisgeoevent'
-      service_file = 'ArcGISGeoEvent-service.erb'
-      template_variables = ({ :geehome => geehome, :agsuser => agsuser })
+      gateway_path = '/etc/init.d/geoeventGateway'
+      gateway_service_file = 'ArcGISGeoEventGateway-service.erb'
+      gateway_template_variables = ({ :agshome => agshome, :agsuser => agsuser })
+
+      geoevent_path = '/etc/init.d/arcgisgeoevent'
+      geoevent_service_file = 'ArcGISGeoEvent-service.erb'
+      geoevent_template_variables = ({ :agshome => agshome, :agsuser => agsuser })
     else # node['init_package'] == 'systemd'
-      arcgisgeoevent_path = '/etc/systemd/system/arcgisgeoevent.service'
-      service_file = 'geoevent.service.erb'
-      template_variables = ({ :geehome => geehome, :agsuser => agsuser })
+      gateway_path = '/etc/systemd/system/geoeventGateway.service'
+      gateway_service_file = 'geoeventGateway.service.erb'
+      gateway_template_variables = ({ :agshome => agshome, :agsuser => agsuser })
+
+      geoevent_path = '/etc/systemd/system/arcgisgeoevent.service'
+      geoevent_service_file = 'geoevent.service.erb'
+      geoevent_template_variables = ({ :agshome => agshome, :agsuser => agsuser })
     end
 
-    template arcgisgeoevent_path do
-      source service_file
+    template gateway_path do
+      source gateway_service_file
       cookbook 'arcgis-geoevent'
-      variables template_variables
+      variables gateway_template_variables
       owner agsuser
       group 'root'
       mode '0755'
-      notifies :run, 'execute[Load systemd unit file]', :immediately
-      not_if { ::File.exists?(arcgisgeoevent_path) }
+      notifies :run, 'execute[Load gateway systemd unit file]', :immediately
+      not_if { ::File.exists?(gateway_path) }
+      only_if { node['arcgis']['geoevent']['configure_gateway_service'] }
     end
 
-    execute 'Load systemd unit file' do
+    execute 'Load gateway systemd unit file' do
+      command 'systemctl daemon-reload'
+      action :nothing
+      only_if { ( node['init_package'] == 'systemd' ) &&
+                  node['arcgis']['geoevent']['configure_gateway_service'] }
+      notifies :restart, 'service[geoeventGateway]', :immediately
+    end
+
+    service 'geoeventGateway' do
+      supports :status => true, :restart => true, :reload => true
+      action :enable
+      only_if { node['arcgis']['geoevent']['configure_gateway_service'] }
+    end
+
+    template geoevent_path do
+      source geoevent_service_file
+      cookbook 'arcgis-geoevent'
+      variables geoevent_template_variables
+      owner agsuser
+      group 'root'
+      mode '0755'
+      notifies :run, 'execute[Load geoevent systemd unit file]', :immediately
+      not_if { ::File.exists?(geoevent_path) }
+    end
+
+    execute 'Load geoevent systemd unit file' do
       command 'systemctl daemon-reload'
       action :nothing
       only_if {( node['init_package'] == 'systemd' )}

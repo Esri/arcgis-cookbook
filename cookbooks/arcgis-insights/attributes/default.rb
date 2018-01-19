@@ -18,7 +18,7 @@
 
 include_attribute 'arcgis-enterprise'
 
-default['arcgis']['insights']['version'] = '1.0'
+default['arcgis']['insights']['version'] = '2.1'
 
 case node['platform']
 when 'windows'
@@ -26,6 +26,14 @@ when 'windows'
                                            node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
   case node['arcgis']['insights']['version']
+  when '2.1'
+      default['arcgis']['insights']['product_code'] = '{0FDA7094-6094-49B9-94C9-F06D6B22954F}'
+      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                     'Insights_for_ArcGIS_Windows_21_159479.exe')
+  when '2.0'
+      default['arcgis']['insights']['product_code'] = '{C7CDC991-B121-4A94-85AF-31688E61F415}'
+      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                   'Insights_for_ArcGIS_Windows_20_157378.exe')
   when '1.2'
     default['arcgis']['insights']['product_code'] = '{7C00C004-6379-4B0C-856A-987A7A43CD71}'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -39,7 +47,7 @@ when 'windows'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Windows_10_154047.exe')
   else
-    throw 'Unsupported Insight for ArcGIS version'
+    throw 'Unsupported Insights for ArcGIS version'
   end
 else # node['platform'] == 'linux'
   default['arcgis']['insights']['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -47,6 +55,12 @@ else # node['platform'] == 'linux'
                                                        'Insights/Insights-Setup.sh')
 
   case node['arcgis']['insights']['version']
+  when '2.1'
+    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                 'Insights_for_ArcGIS_Linux_21_159551.tar.gz')
+  when '2.0'
+    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                 'Insights_for_ArcGIS_Linux_20_157380.tar.gz')
   when '1.2'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Linux_12_156062.tar.gz')
@@ -57,6 +71,6 @@ else # node['platform'] == 'linux'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Linux_10_154060.tar.gz')
   else
-    throw 'Unsupported Insight for ArcGIS version'
+    throw 'Unsupported Insights for ArcGIS version'
   end
 end

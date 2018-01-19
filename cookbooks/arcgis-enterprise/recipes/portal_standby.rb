@@ -42,9 +42,10 @@ arcgis_enterprise_portal 'Unpack Portal for ArcGIS' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['portal']['install_dir'],
-                                       node['arcgis']['portal']['install_subdir'],
-                                       'startportal.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISPortal) }
   end
   action :unpack
 end
@@ -59,9 +60,10 @@ arcgis_enterprise_portal 'Install Portal for ArcGIS' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['portal']['install_dir'],
-                                       node['arcgis']['portal']['install_subdir'],
-                                       'startportal.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISPortal) }
   end
   action :install
 end
@@ -83,13 +85,18 @@ arcgis_enterprise_portal 'Authorize Portal for ArcGIS' do
   action :authorize
 end
 
-file node['arcgis']['portal']['cached_authorization_file'] do
-  content File.open(node['arcgis']['portal']['authorization_file'], 'rb') { |file| file.read }
+# Copy portal authorization file to the machine to indicate that portal is already authorized
+file 'Cache portal authorization file' do
+  path node['arcgis']['portal']['cached_authorization_file']
+  if ::File.exists?(node['arcgis']['portal']['authorization_file'])
+    content File.open(node['arcgis']['portal']['authorization_file'], 'rb') { |file| file.read }
+  end
   sensitive true
   subscribes :create, 'arcgis_enterprise_portal[Authorize Portal for ArcGIS]', :immediately
   only_if { node['arcgis']['cache_authorization_files'] }
   action :nothing
 end
+
 
 arcgis_enterprise_portal 'Start Portal for ArcGIS' do
   action :start
@@ -100,5 +107,7 @@ arcgis_enterprise_portal 'Join Portal Site' do
   primary_machine_url node['arcgis']['portal']['primary_machine_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
+  upgrade_backup node['arcgis']['portal']['upgrade_backup']
+  upgrade_rollback node['arcgis']['portal']['upgrade_rollback']
   action :join_site
 end

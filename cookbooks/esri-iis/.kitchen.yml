@@ -1,0 +1,37 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 12.6
+
+platforms:
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: windows-7
+  - name: windows-81
+  - name: windows-10
+
+suites:
+  - name: iis
+    driver:
+      network:
+        - ["forwarded_port", {guest: 80, host: 16080}]
+        - ["forwarded_port", {guest: 443, host: 16443}]
+    run_list:
+      - recipe[esri-iis]
+    attributes:
+      chef_client:
+        config:
+          log_level: ":debug"
+    excludes:
+      - centos-6.7
+      - centos-7.1
+      - centos-7.2
+      - ubuntu-14.04
+      - ubuntu-16.04
+      - opensuse-13.2
