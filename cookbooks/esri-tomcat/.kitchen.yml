@@ -1,0 +1,37 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 6144
+    cpuexecutioncap: 50
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 13.3
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: centos-6.7
+  - name: centos-7.1
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+
+suites:
+  - name: esri-tomcat-default
+    driver:
+      network:
+        - ["forwarded_port", {guest: 8080, host: 38080}]
+        - ["forwarded_port", {guest: 8443, host: 38443}]
+    run_list:
+      - recipe[esri-tomcat]
+    verifier:
+      inspec_tests:
+        - test/smoke/default/install.rb
+    attributes:
+      java:
+        install_flavor: "oracle"
+        jdk_version: "8"
+        oracle:
+          accept_oracle_download_terms: true

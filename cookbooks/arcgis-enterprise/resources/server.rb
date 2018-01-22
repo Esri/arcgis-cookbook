@@ -20,7 +20,7 @@
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
         :join_cluster, :configure_https, :register_database, :federate,
-        :set_identity_store, :assign_privileges
+        :set_identity_store, :assign_privileges, :set_machine_properties
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -62,6 +62,7 @@ attribute :use_join_site_tool, :kind_of => [TrueClass, FalseClass], :default => 
 attribute :user_store_config, :kind_of => Hash, :default => {}
 attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :privileges, :kind_of => Hash, :default => {}
+attribute :soc_max_heap_size, :kind_of => Integer, :default => 64
 
 def initialize(*args)
   super

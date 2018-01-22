@@ -51,9 +51,10 @@ arcgis_enterprise_datastore 'Unpack ArcGIS Data Store' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['data_store']['install_dir'],
-                                       node['arcgis']['data_store']['install_subdir'],
-                                       'startdatastore.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISDataStore) }
   end
   action :unpack
 end
@@ -68,9 +69,10 @@ arcgis_enterprise_datastore 'Install ArcGIS Data Store' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
   else
-    not_if { ::File.exist?(::File.join(node['arcgis']['data_store']['install_dir'],
-                                       node['arcgis']['data_store']['install_subdir'],
-                                       'startdatastore.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISDataStore) }
   end
   action :install
 end

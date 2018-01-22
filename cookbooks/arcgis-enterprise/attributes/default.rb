@@ -23,7 +23,7 @@ else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
-default['arcgis']['version'] = '10.5.1'
+default['arcgis']['version'] = '10.6'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false

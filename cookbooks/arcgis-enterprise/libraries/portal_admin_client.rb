@@ -66,6 +66,94 @@ module ArcGIS
       false
     end
 
+    def upgrade_required?
+      uri = URI.parse(@portal_url + '/portaladmin/?f=json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.read_timeout = 3600
+
+      if uri.scheme == 'https'
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+
+      Chef::Log.debug("Request: #{request.method} #{uri.scheme}://#{uri.host}:#{uri.port}#{request.path}")
+
+      response = http.request(request)
+
+      Chef::Log.debug("Response: #{response.code} #{response.body}")
+
+      if response.code.to_i == 200
+        return JSON.parse(response.body)['isUpgrade'] == true
+      end
+
+      false
+    end
+
+    def complete_upgrade(is_backup_required, is_rollback_required)
+      if upgrade_required?
+        Chef::Log.info("Completing portal upgrade...")
+
+        request = Net::HTTP::Post.new(URI.parse(@portal_url +
+                                      '/portaladmin/upgrade').request_uri)
+  
+        request.set_form_data('f' => 'json',
+                              'isBackupRequired' => is_backup_required,
+                              'isRollbackRequired' =>is_rollback_required)
+  
+        response = send_request(request)
+  
+        validate_response(response)
+
+        Chef::Log.info("Portal upgrade completed successfully.")
+
+        true
+      end
+
+      false
+    end
+
+    def post_upgrade_required?
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      uri = URI.parse(@portal_url + "/portaladmin")
+
+      uri.query = URI.encode_www_form('token' => token, 'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      validate_response(response)
+
+      JSON.parse(response.body)['isPostUpgrade']
+    end
+
+    def post_upgrade
+      if post_upgrade_required?
+        Chef::Log.info("Portal post-upgrade...")
+
+        request = Net::HTTP::Post.new(URI.parse(@portal_url +
+          "/portaladmin/postUpgrade").request_uri)
+
+        request.add_field('Referer', 'referer')
+
+        token = generate_token(@portal_url + '/sharing/generateToken')
+
+        request.set_form_data(
+          'token' => token,
+          'f' => 'json')
+
+        response = send_request(request)
+
+        validate_response(response)
+      end
+    end
+
     def create_site(admin_email,
                     admin_full_name,
                     admin_description,
@@ -442,6 +530,34 @@ module ArcGIS
       response = send_request(request)
 
       validate_response(response)
+    end
+
+    def add_root_cert(cert_location, cert_alias, norestart)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      url = URI.parse(@portal_url + 
+        '/portaladmin/security/sslCertificates/importRootOrIntermediate')
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      request = Net::HTTP::Post::Multipart.new(url.path,
+        'file' => UploadIO.new(cert_location, 'application/x-x509-ca-cert'),
+        'alias' => cert_alias,
+        'norestart' => norestart,
+        'token' => token,
+        'f' => 'json')
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      if response.code.to_i == 200
+        error_info = JSON.parse(response.body)
+        raise error_info['error']['message'] unless error_info['error'].nil?
+      end
     end
 
     private

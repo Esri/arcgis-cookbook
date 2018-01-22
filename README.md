@@ -31,7 +31,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2017 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -46,5 +46,5 @@ limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
 
-[](Esri Tags: ArcGIS Chef Cookbook)
+[](Esri Tags: ArcGIS Chef Cookbooks)
 [](Esri Language: Ruby)

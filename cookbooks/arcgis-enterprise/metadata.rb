@@ -4,8 +4,8 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.1.0'
-chef_version     '>= 12.6', '< 13.0' if defined? chef_version
+version          '3.2.0'
+chef_version     '>= 12.6', '< 14.0' if defined? chef_version
 
 depends          'hostsfile'
 depends          'limits'
@@ -15,6 +15,7 @@ depends          'windows'
 depends          'windows_firewall'
 depends          'ms_dotnet'
 depends          'nfs'
+depends          'java_properties'
 
 supports         'windows'
 supports         'ubuntu'
@@ -42,9 +43,9 @@ recipe 'arcgis-enterprise::server_security', 'Configures ArcGIS Server identity 
 recipe 'arcgis-enterprise::server_wa', 'Installs Web Adaptor and configures it with ArcGIS Server'
 recipe 'arcgis-enterprise::services', 'Publishes services to ArcGIS Server'
 recipe 'arcgis-enterprise::system', 'System requirements'
-recipe 'arcgis-enterprise::webgis_installed', 'Installs Server, Data Store, Portal, and Web Adaptors for Server and Portals'
-recipe 'arcgis-enterprise::webgis_uninstalled', 'Uninstalls all ArcGIS software of the specified version'
-recipe 'arcgis-enterprise::webgis_validate', 'Checks if ArcGIS for Server setups and authorization files exist'
+recipe 'arcgis-enterprise::enterprise_installed', 'Installs ArcGIS Server, Data Store, Portal, and Web Adaptors for Server and Portals'
+recipe 'arcgis-enterprise::enterprise_uninstalled', 'Uninstalls all ArcGIS software of the specified version'
+recipe 'arcgis-enterprise::enterprise_validate', 'Checks if ArcGIS Server setups and authorization files exist'
 recipe 'arcgis-enterprise::rds_egdb', 'Creates managed and replicated GeoDatabases in Amazon RDS database'
 recipe 'arcgis-enterprise::sql_alias', 'Creates EGDBHOST alias for Amazon RDS endpoint'
 
