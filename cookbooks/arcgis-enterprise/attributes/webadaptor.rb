@@ -66,7 +66,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
                                     '{87B4BD93-A5E5-469E-9224-8A289C6B2F10}',
                                     '{604CF558-B7E1-4271-8543-75E260080DFA}',
                                     '{0A9DA130-E764-485F-8C1A-AD78B04AA7A4}',
-                                    '{B8A6A873-ED78-47CE-A9B4-AB3192C47604}']
+                                    '{B8A6A873-ED78-47CE-A9B4-AB3192C47604}',
+                                    '{4FB9D475-9A23-478D-B9F7-05EBA2073FC7}',
+                                    '{38DBD944-7F0E-48EB-9DCB-98A0567FB062}']
   else # node['platform'] == 'linux'
     web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                        node['arcgis']['version'],
