@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 arcgis_enterprise_portal 'Configure Portal identity store' do
-  server_url node['arcgis']['portal']['url']
+  portal_url node['arcgis']['portal']['url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   user_store_config node['arcgis']['portal']['security']['user_store_config']

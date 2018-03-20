@@ -394,7 +394,7 @@ end
 
 action :set_identity_store do
   begin
-    portal_admin_client= ArcGIS::PortalAdminClient.new(@new_resource.server_url,
+    portal_admin_client= ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
                                                  @new_resource.username,
                                                  @new_resource.password)
 
