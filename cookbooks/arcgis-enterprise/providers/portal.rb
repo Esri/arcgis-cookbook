@@ -392,6 +392,27 @@ action :join_site do
   end
 end
 
+action :set_identity_store do
+  begin
+    portal_admin_client= ArcGIS::PortalAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    portal_admin_client.wait_until_available
+
+    Chef::Log.info('Setting Portal identity stores...')
+
+    portal_admin_client.set_identity_store(@new_resource.user_store_config,@new_resource.role_store_config)
+
+    portal_admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to configure Portal identity stores. " + e.message
+    raise e
+  end
+end
+
 action :unregister_standby do
   portal_admin_client = ArcGIS::PortalAdminClient.new(
     @new_resource.portal_url,

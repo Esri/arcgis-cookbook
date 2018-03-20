@@ -21,7 +21,7 @@ actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
         :create_site, :join_site, :configure_https,
         :unregister_standby, :register_server, :federate_server,
-        :enable_geoanalytics, :disable_geoanalytics
+        :set_identity_store, :enable_geoanalytics, :disable_geoanalytics
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -66,6 +66,8 @@ attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
 attribute :upgrade_backup, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :upgrade_rollback, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :user_store_config, :kind_of => Hash, :default => {}
+attribute :role_store_config, :kind_of => Hash, :default => {}													  
 
 def initialize(*args)
   super
