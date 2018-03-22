@@ -22,6 +22,58 @@
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
       "keystore_password":"changeit"
     },
+    "datasources":{
+      "block_data_copy":true,
+      "folders":[
+        {
+          "server_path":"D:\\Mapfiles",
+          "create_folder":true,
+          "security_permissions":{
+            "authorize_arcgis_service_account":true
+          },
+          "share_folder":true,
+          "share_name":"Mapfiles",
+          "sharing_permissions":{
+            "full_control_members":["MyDomain\\MyUser", "MyDomain\\MyGroup"]
+          },
+          "publish_folder":{
+            "identifier":"Mapfiles",
+            "publish_with_hostname":true
+          }
+        },{
+          "server_path":"D:\\Data",
+          "create_folder":true,
+          "security_permissions":{
+            "authorize_arcgis_service_account":true,
+            "full_control_members":["MyDomain\\MyUser", "MyDomain\\MyGroup"]
+          },
+          "share_folder":true,
+          "share_name":"Data",
+          "sharing_permissions":{
+            "full_control_members":["MyDomain\\MyUser", "MyDomain\\MyGroup"]
+          },
+          "publish_folder":{
+            "identifier":"Data",
+            "publish_with_hostname":true
+          }
+        },{
+          "server_path":"D:\\Data",
+          "publish_folder":{
+            "identifier":"Data_With_Alias",
+            "publish_alternative_path":"\\\\<<DNS-Alias>>\\Data"
+          }
+        },{
+          "publish_folder":{
+            "identifier":"OtherData",
+            "publish_alternative_path":"\\\\Path\\To\\Other\\Data"
+          }
+        }
+      ],
+      "sde_files":{
+        "folder":"\\\\Folder\\With\\SDE\\Files",
+        "files":["\\\\AnotherFolder\\With\\SDE\\Files\\File1.sde", "\\\\AnotherFolder\\With\\SDE\\Files\\File2.sde"]
+      }
+    },
     "portal":{
       "admin_username":"admin",
       "admin_password":"changeit",
@@ -40,6 +92,7 @@
     "recipe[esri-iis]",
     "recipe[arcgis-enterprise::server]",
     "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datasources]",
     "recipe[arcgis-enterprise::datastore]",
     "recipe[arcgis-enterprise::portal]",
     "recipe[arcgis-enterprise::portal_wa]",

@@ -612,6 +612,26 @@ module ArcGIS
       validate_response(response)
     end
 
+    def block_data_copy()
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/data/config/update').request_uri)
+      
+      request.add_field('Referer', 'referer')
+      
+      token = generate_token()
+      
+      dataStoreConfig = {
+        'blockDataCopy' => true
+      }
+      
+      request.set_form_data('datastoreConfig' => dataStoreConfig.to_json,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+    
     def set_identity_store(user_store_config, role_store_config)
       request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/config/updateIdentityStore').request_uri)
 
