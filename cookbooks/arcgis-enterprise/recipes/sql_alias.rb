@@ -18,7 +18,7 @@
 #
 
 execute 'Create SQL Aliases' do
-  command ['C:\\Windows\\SysNative\\WindowsPowerShell\\v1.0\\PowerShell.exe',
+  command ['PowerShell.exe',
            '-file',
            "\"#{::File.join(node['arcgis']['server']['install_dir'],
                             "framework", "etc", "Create-SQLAliases.ps1")}\"",

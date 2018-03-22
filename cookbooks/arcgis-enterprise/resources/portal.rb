@@ -46,6 +46,9 @@ attribute :web_context_url, :kind_of => String
 attribute :keystore_file, :kind_of => String
 attribute :keystore_password, :kind_of => String
 attribute :cert_alias, :kind_of => String
+attribute :root_cert, :kind_of => String
+attribute :root_cert_alias, :kind_of => String
+attribute :tomcat_java_opts, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
 attribute :email, :kind_of => String
@@ -61,7 +64,8 @@ attribute :is_hosting, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
-
+attribute :upgrade_backup, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :upgrade_rollback, :kind_of => [TrueClass, FalseClass], :default => true
 
 def initialize(*args)
   super

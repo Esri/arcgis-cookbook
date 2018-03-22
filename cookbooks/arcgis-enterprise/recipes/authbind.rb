@@ -24,7 +24,7 @@ unless platform_family?('windows')
 
   user tomcat_user do
     comment 'Tomcat user account'
-    supports :manage_home => true
+    manage_home true
     home '/home/' + tomcat_user
     action :create
   end

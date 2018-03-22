@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: arcgis-enterprise
-# Recipe:: webgis_installed
+# Recipe:: enterprise_installed
 #
-# Copyright 2015 Esri
+# Copyright 2017 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_enterprise_server 'Install ArcGIS for Server' do
+arcgis_enterprise_server 'Install ArcGIS Server' do
   setup node['arcgis']['server']['setup']
   install_dir node['arcgis']['server']['install_dir']
   product_code node['arcgis']['server']['product_code']
@@ -25,15 +25,12 @@ arcgis_enterprise_server 'Install ArcGIS for Server' do
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
   if node['platform'] == 'windows'
-    not_if {
-      Utils.product_installed?(node['arcgis']['server']['product_code'])
-    }
+    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
   else
-    not_if {
-      ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
-                                node['arcgis']['server']['install_subdir'],
-                                'startserver.sh'))
-    }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISServer) }
     notifies :configure_autostart, 'arcgis_enterprise_server[Configure arcgisserver service]', :immediately
   end
   action [:system, :install]
@@ -46,15 +43,12 @@ arcgis_enterprise_datastore 'Install ArcGIS DataStore' do
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
   if node['platform'] == 'windows'
-    not_if {
-      Utils.product_installed?(node['arcgis']['data_store']['product_code'])
-    }
+    not_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
   else
-    not_if {
-      ::File.exist?(::File.join(node['arcgis']['data_store']['install_dir'],
-                                node['arcgis']['data_store']['install_subdir'],
-                                'startdatastore.sh'))
-    }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISDataStore) }
     notifies :configure_autostart, 'arcgis_enterprise_datastore[Configure arcgisdatastore service]', :immediately
   end
   action [:system, :install]
@@ -72,11 +66,10 @@ arcgis_enterprise_portal 'Install Portal for ArcGIS' do
       Utils.product_installed?(node['arcgis']['portal']['product_code'])
     }
   else
-    not_if {
-      ::File.exist?(::File.join(node['arcgis']['portal']['install_dir'],
-                                node['arcgis']['portal']['install_subdir'],
-                                'startportal.sh'))
-    }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISPortal) }
     notifies :configure_autostart, 'arcgis_enterprise_portal[Configure arcgisportal service]', :immediately
   end
   action [:system, :install]

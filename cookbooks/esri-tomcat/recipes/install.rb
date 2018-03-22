@@ -13,6 +13,7 @@ tomcat_install instance_name do
   install_path node['tomcat']['install_path']
   tomcat_user node['tomcat']['user']
   tomcat_group node['tomcat']['group']
+  not_if { ::File.exist?(::File.join(node['tomcat']['install_path'], 'LICENSE')) }
 end
 
 directory node['tomcat']['install_path'] do
@@ -23,11 +24,13 @@ directory '/home/' + node['tomcat']['user'] do
   owner node['tomcat']['user']
   group node['tomcat']['group']
   mode '0700'
-  not_if { ::Dir.exists?('/home/' + node['tomcat']['user']) }
+  not_if { ::Dir.exist?('/home/' + node['tomcat']['user']) }
 end
 
 tomcat_service instance_name do
   action [:start, :enable]
   tomcat_user node['tomcat']['user']
   tomcat_group node['tomcat']['group']
+  retries 5
+  retry_delay 60
 end

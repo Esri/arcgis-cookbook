@@ -29,9 +29,10 @@ arcgis_enterprise_portal "Disable GeoAnalytics" do
   if node['platform'] == 'windows'
     only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
   else
-    only_if { ::File.exist?(::File.join(node['arcgis']['portal']['install_dir'],
-                                       node['arcgis']['portal']['install_subdir'],
-                                       'startportal.sh')) }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISPortal) }
     notifies :configure_autostart, 'arcgis_enterprise_portal[Configure arcgisportal service]', :immediately
   end
   action :disable_geoanalytics
