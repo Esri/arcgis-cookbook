@@ -70,6 +70,9 @@ default['arcgis']['portal'].tap do |portal|
 
   # authorization_file_version must be <major>.<minor> ('10.4.1' -> '10.4')
   portal['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
+  
+  portal['security']['user_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
+  portal['security']['role_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
 
   portal['log_level'] = 'WARNING'
   portal['max_log_file_age'] = 90

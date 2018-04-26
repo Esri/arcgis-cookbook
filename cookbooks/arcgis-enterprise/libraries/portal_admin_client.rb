@@ -532,6 +532,23 @@ module ArcGIS
       validate_response(response)
     end
 
+    def set_identity_store(user_store_config, role_store_config)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url + '/portaladmin/security/config/updateIdentityStore').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      request.set_form_data('userStoreConfig' => user_store_config.to_json,
+                            'groupStoreConfig' => role_store_config.to_json,
+                            'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+    end		
+	
     def add_root_cert(cert_location, cert_alias, norestart)
       begin
         require 'net/http/post/multipart'
