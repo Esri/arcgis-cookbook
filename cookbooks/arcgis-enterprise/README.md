@@ -6,11 +6,18 @@ This cookbook installs and configures ArcGIS Enterprise products, components, an
 Requirements
 ------------
 
+### Supported ArcGIS versions
+* 10.4
+* 10.4.1
+* 10.5
+* 10.5.1
+* 10.6
+
 ### Supported ArcGIS software
-* ArcGIS 10.4/10.4.1/10.5 Server
-* ArcGIS 10.4/10.4.1/10.5 Data Store
-* Portal for ArcGIS 10.4/10.4.1/10.5
-* ArcGIS 10.4/10.4.1/10.5 Web Adaptor (IIS/Java) 
+* ArcGIS Server
+* ArcGIS Data Store
+* Portal for ArcGIS
+* ArcGIS Web Adaptor (IIS/Java) 
 
 ### Platforms
 * Windows 7
@@ -47,6 +54,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['python']['install_dir']` = Python installation directory. By default Python is installed at `C:\Python27`.
 * `node['arcgis']['repository']['setups']` = Path to folder with ArcGIS software setups. Default path is `%USERPROFILE%\Documents` on Windows and `~/arcgis` on Linux.
 * `node['arcgis']['repository']['archives']` = Path to folder with ArcGIS software setup archives. Default path is `%USERPROFILE%\Software\Esri` on Windows and `~/software/esri` on Linux.
+* `node['arcgis']['repository']['patches']` = Path to folder with hot fixes and patches for ArcGIS Enterprise software. The default path on Windows is `%USERPROFILE%\Software\Esri\Patches`,   on Linux is `~/software/esri/patches`.
 * `node['arcgis']['post_install_script']` = Custom post-installation script path. The default path on Windows is `C:\imageryscripts\deploy.bat`, on Linux is `/arcgis/imageryscripts/deploy.sh`.
 
 #### File Server
@@ -89,6 +97,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['config_store_connection_string']` = ArcGIS Server config store type. Default value is `C:\arcgisserver\config-store` on Windows and `/arcgis/server/usr/config-store` on Linux.
 * `node['arcgis']['server']['config_store_connection_secret']` = ArcGIS Server config store type secret. Default value is `nil`.
 * `node['arcgis']['server']['services']` = An array of ArcGIS Server services to be published. Default value is `{}`.
+* `node['arcgis']['server']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['server']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['server']['security']['privileges']` = Privileges to user roles assignments `{'PUBLISH' => [], 'ADMINISTER' => []}`
+* `node['arcgis']['server']['soc_max_heap_size']` = SOC maximum heap size in megabytes. Default value is `64`.
 
 #### Web Adaptor
 
@@ -134,6 +146,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['log_level']` = Portal for ArcGIS log level. Default value is `WARNING`.
 * `node['arcgis']['portal']['log_dir']` = Portal for ArcGIS log directory. Default value is `C:\arcgisportal\logs` on Windows and `/arcgis/portal/usr/arcgisportal/logs` on Linux.
 * `node['arcgis']['portal']['max_log_file_age']` = Portal for ArcGIS  maximum log file age. Default value is `90`.
+* `node['arcgis']['portal']['upgrade_backup']` = Backup Portal for ArcGIS content during upgrade. Default value is `true`.
+* `node['arcgis']['portal']['upgrade_rollback']` = Rollback Portal for ArcGIS upgrade in case of failure. Default value is `true`.
+* `node['arcgis']['portal']['root_cert']` = Portal for ArcGIS root certificate. Default value is `''`.
+* `node['arcgis']['portal']['root_cert_alias']` = Portal for ArcGIS root certificate alias. Default value is `''`.
 
 
 #### Data Store
@@ -195,7 +211,10 @@ Creates entries in /etc/hosts file for the specified hostname to IP address map.
 Configures iptables to forward ports 80/443 to 8080/8443.
 
 ### arcgis-enterprise::lp-install
-Installs language packs for ArcGIS for Server software.
+Installs language packs for ArcGIS Server software.
+
+### arcgis-enterprise::patches
+Installs hot fixes and patches for ArcGIS Enterprise software.
 
 ### arcgis-enterprise::portal
 Installs and configures Portal for ArcGIS.
@@ -218,6 +237,9 @@ Installs and configures ArcGIS Server site.
 ### arcgis-enterprise::server_node
 Installs ArcGIS Server on the machine and joins an existing site.
 
+### arcgis-enterprise::server_security
+Configures ArcGIS Server identity stores and assigns privileges to roles.
+
 ### arcgis-enterprise::server_wa
 Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. IIS or Java application server such as Tomcat must be installed and configured before installing ArcGIS Web Adaptor.
 
@@ -230,14 +252,14 @@ Creates 'egdbhost' alias for SQL Server RDS instance endpoint domain name.
 ### arcgis-enterprise::system
 Configures system requirements for ArcGIS Enterprise software by invoking ':system' actions for ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, and ArcGIS Web Adaptor resources, includes arcgis::hosts recipe.
 
-### arcgis-enterprise::webgis_installed
+### arcgis-enterprise::enterprise_installed
 Installs ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
-### arcgis-enterprise::webgis_uninstalled
+### arcgis-enterprise::enterprise_uninstalled
 Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
-### arcgis-enterprise::webgis_validate
-Checks if ArcGIS for Server setups and authorization files exist.
+### arcgis-enterprise::enterprise_validate
+Checks if ArcGIS Enterprise setups and authorization files exist.
 
 
 Usage
@@ -255,7 +277,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+use_inline_resources if defined?(use_inline_resources)
+
 action :unpack do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup_archive
@@ -35,6 +37,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do

@@ -138,7 +138,8 @@ module ArcGIS
       response = http.request(request)
 
       if response.code.to_i == 200
-        return JSON.parse(response.body)['upgradeStatus'] == 'UPGRADE_REQUIRED'
+        return JSON.parse(response.body)['upgradeStatus'] == 'UPGRADE_REQUIRED' ||
+               JSON.parse(response.body)['upgradeStatus'] == 'LAST_ATTEMPT_FAILED'
       end
 
       false
@@ -609,6 +610,101 @@ module ArcGIS
       response = send_request(request, @server_url)
 
       validate_response(response)
+    end
+
+    def block_data_copy()
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/data/config/update').request_uri)
+      
+      request.add_field('Referer', 'referer')
+      
+      token = generate_token()
+      
+      dataStoreConfig = {
+        'blockDataCopy' => true
+      }
+      
+      request.set_form_data('datastoreConfig' => dataStoreConfig.to_json,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+    
+    def set_identity_store(user_store_config, role_store_config)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/config/updateIdentityStore').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('userStoreConfig' => user_store_config.to_json,
+                            'roleStoreConfig' => role_store_config.to_json,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def assign_privileges(rolename, privilege)
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/roles/assignPrivilege').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('rolename' => rolename,
+                            'privilege' => privilege,
+                            'token' => token, 
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    # TODO: Support setting webServerMaxHeapSize, appServerMaxHeapSize, and 
+    # other machine properties here.
+    def set_machine_properties(machine_name, soc_max_heap_size)
+      # for updating SOC Max Heap Size, all configuration parameters (ports, etc.) have to be
+      # passed to the corresponding REST interface. Though, the current configuration is
+      # retrieved first to pass it later together with the new SOC Max Heap Size.
+
+      machine = machine_info(machine_name)
+
+      if machine['socMaxHeapSize'].to_i != soc_max_heap_size
+        request = Net::HTTP::Post.new(URI.parse(@server_url +
+          "/admin/machines/#{machine_name}/edit").request_uri)
+
+        request.add_field('Referer', 'referer')
+
+        token = generate_token()
+
+        request.set_form_data(
+          'machineName' => machine_name,
+          'adminURL' => machine['adminURL'],
+          'webServerMaxHeapSize' => machine['webServerMaxHeapSize'],
+          'webServerCertificateAlias' => machine['webServerCertificateAlias'],
+          'appServerMaxHeapSize' => machine['appServerMaxHeapSize'],
+          'socMaxHeapSize' => soc_max_heap_size,
+          'OpenEJBPort' => machine['ports']['OpenEJBPort'],
+          'JMXPort' => machine['ports']['JMXPort'],
+          'NamingPort' => machine['ports']['NamingPort'],
+          'DerbyPort' => machine['ports']['DerbyPort'],
+          'token' => token,
+          'f' => 'json')
+
+        response = send_request(request, @server_url)
+
+        validate_response(response)
+
+        return true
+      end
+
+      return false
     end
 
     private

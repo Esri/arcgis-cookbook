@@ -31,6 +31,11 @@ After=network.target
 Type=forking
 User=<%=@agsuser%>
 GuessMainPID=false
+# Configuration for spatiotemporal big data store
+LimitNOFILE=65536
+LimitNPROC=25059
+LimitAS=infinity
+LimitFSIZE=infinity
 ExecStart=<%=@datastorehome%>/startdatastore.sh
 ExecStop=<%=@datastorehome%>/stopdatastore.sh
 

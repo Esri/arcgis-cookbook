@@ -23,7 +23,7 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
 end
 
-use_inline_resources
+use_inline_resources if defined?(use_inline_resources)
 
 action :system do
   case node['platform']
@@ -31,7 +31,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'Portal for ArcGIS' do
       description 'Allows connections through all ports used by Portal for ArcGIS'
-      localport '7080,7443,7005,7099,7199,7120,7220,7654'
+      localport '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
       dir :in
       protocol 'TCP'
       firewall_action :allow
@@ -87,6 +87,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do
@@ -273,6 +275,9 @@ action :update_account do
     cmd.run_command
     cmd.error!
 
+    # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
+    Utils.sc_config('Portal for ArcGIS', @new_resource.run_as_user, @new_resource.run_as_password)  
+
     new_resource.updated_by_last_action(true)
   end
 end
@@ -306,6 +311,11 @@ action :create_site do
     @new_resource.password)
 
   portal_admin_client.wait_until_available
+
+  # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
+  if portal_admin_client.complete_upgrade(@new_resource.upgrade_backup, @new_resource.upgrade_rollback)
+    portal_admin_client.post_upgrade()
+  end
 
   if portal_admin_client.site_exist?
     Chef::Log.info('Portal site already exists.')
@@ -346,6 +356,12 @@ action :create_site do
                                           @new_resource.log_dir,
                                           @new_resource.max_log_file_age)
 
+    unless (@new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?)
+      portal_admin_client.add_root_cert(@new_resource.root_cert, @new_resource.root_cert_alias, 'false')
+    end
+
+    sleep(60.0) # wait for portal restart
+
     new_resource.updated_by_last_action(true)
   end
 end
@@ -357,6 +373,9 @@ action :join_site do
     @new_resource.password)
 
   portal_admin_client.wait_until_available
+
+  # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
+  portal_admin_client.complete_upgrade(@new_resource.upgrade_backup, @new_resource.upgrade_rollback)
 
   if portal_admin_client.site_exist?
     Chef::Log.info('Portal site already exists.')
@@ -370,6 +389,27 @@ action :join_site do
     portal_admin_client.wait_until_available
 
     new_resource.updated_by_last_action(true)
+  end
+end
+
+action :set_identity_store do
+  begin
+    portal_admin_client= ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    portal_admin_client.wait_until_available
+
+    Chef::Log.info('Setting Portal identity stores...')
+
+    portal_admin_client.set_identity_store(@new_resource.user_store_config,@new_resource.role_store_config)
+
+    portal_admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to configure Portal identity stores. " + e.message
+    raise e
   end
 end
 
@@ -568,6 +608,17 @@ action :start do
       new_resource.updated_by_last_action(true)
     end
   else
+    tomcat_java_opts = node['arcgis']['portal']['tomcat_java_opts']
+    unless (tomcat_java_opts.empty?)
+      replace = "indexserver"
+      pattern = "#{replace} #{tomcat_java_opts}"
+      catalina_file = ::File.join(node['arcgis']['portal']['install_dir'], node['arcgis']['portal']['install_subdir'], '/framework/runtime/tomcat/bin/catalina.sh')
+      sed_cmd = "sed -i \"s/#{replace}/#{pattern}/g\" #{catalina_file}"
+      sed_cmd = Mixlib::ShellOut.new(sed_cmd, {:timeout => 30})
+      sed_cmd.run_command
+      sed_cmd.error!
+    end
+    
     if node['arcgis']['portal']['configure_autostart']
       service 'arcgisportal' do
         supports :status => true, :restart => true, :reload => true

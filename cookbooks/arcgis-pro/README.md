@@ -6,8 +6,12 @@ This cookbook installs and configures ArcGIS Pro.
 Requirements
 ------------
 
-### Supported ArcGIS software
-* ArcGIS Pro 1.2/1.3 (Windows only)
+### Supported ArcGIS Pro versions
+* 1.2
+* 1.3
+* 1.4
+* 2.0
+* 2.1
 
 ### Platforms
 * Windows 7
@@ -15,6 +19,7 @@ Requirements
 * Windows 10
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
+* Windows Server 2016
 
 ### Dependencies
 The following cookbooks are required:

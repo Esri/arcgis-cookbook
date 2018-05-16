@@ -47,7 +47,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS GeoAnalytics Server' do
       description 'Allows connections through all ports used by ArcGIS GeoAnalytics Server'
-      localport '2181,2182,2190,7077'
+      localport '2181,2182,2190,7077,56540-56545'
       dir :in
       protocol 'TCP'
       firewall_action :allow
@@ -223,6 +223,8 @@ action :unpack do
 
     FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :install do
@@ -300,6 +302,11 @@ action :update_account do
                                {:timeout => 3600})
     cmd.run_command
     cmd.error!
+
+    # Chef::Log.info "ServerConfigurationUtility.exe output: #{cmd.stdout}"
+
+    # Update logon account of the windows service directly in addition to running ServerConfigurationUtility.exe
+    Utils.sc_config('ArcGIS Server', @new_resource.run_as_user, @new_resource.run_as_password)
 
     new_resource.updated_by_last_action(true)
   end
@@ -379,7 +386,7 @@ action :create_site do
       Chef::Log.warn('ArcGIS Server site already exists.')
     else
       Chef::Log.info('Creating ArcGIS Server site...')
-  
+
       admin_client.create_site(@new_resource.server_directories_root,
                                @new_resource.config_store_type,
                                @new_resource.config_store_connection_string,
@@ -391,13 +398,13 @@ action :create_site do
       admin_client.wait_until_available
 
       #Restart ArcGIS Server on Linux to make sure the server machine SSL certificate is updated
-      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
-        service 'arcgisserver' do
-          action :restart
-        end
-
-        admin_client.wait_until_available
-      end
+#      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
+#        service 'arcgisserver' do
+#          action :restart
+#        end
+#
+#        admin_client.wait_until_available
+#      end
 
       if !@new_resource.system_properties.empty?
         Chef::Log.info('Updating ArcGIS Server system properties...')
@@ -634,9 +641,9 @@ action :start do
       cmd = node['arcgis']['server']['start_tool']
 
       if node['arcgis']['run_as_superuser']
-        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 120})
       else
-        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 120})
       end
       cmd.run_command
       cmd.error!
@@ -651,7 +658,7 @@ action :configure_autostart do
       action :enable
     end
   else
-    Chef::Log.info('Configure ArcGIS for Server to be started with the operating system.')
+    Chef::Log.info('Configure ArcGIS Server to be started with the operating system.')
     agsuser = node['arcgis']['run_as_user']
     agshome = ::File.join(@new_resource.install_dir,
                           node['arcgis']['server']['install_subdir'])
@@ -689,9 +696,88 @@ action :configure_autostart do
     service 'arcgisserver' do
       supports :status => true, :restart => true, :reload => true
       action :enable
+      retries 5
+      retry_delay 60
     end
 
     new_resource.updated_by_last_action(true)
+  end
+end
+
+action :set_identity_store do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Setting ArcGIS Server identity stores...')
+
+    admin_client.set_identity_store(@new_resource.user_store_config,
+                                     @new_resource.role_store_config)
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to configure ArcGIS Server identity stores. " + e.message
+    raise e
+  end
+end
+
+action :assign_privileges do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Assigning privileges to user roles...')
+
+    @new_resource.privileges.keys.each do |privilege|
+      @new_resource.privileges[privilege].each do |role|
+        admin_client.assign_privileges(role, privilege)
+      end
+    end
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to assign privilege to user role. " + e.message
+    raise e
+  end
+end
+
+action :set_machine_properties do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Setting server machine properties...')
+
+    machine_name = admin_client.local_machine_name
+
+    updated = admin_client.set_machine_properties(machine_name, @new_resource.soc_max_heap_size)
+
+    admin_client.wait_until_available
+
+    new_resource.updated_by_last_action(updated)
+  rescue Exception => e
+    Chef::Log.error "Failed to set server machine properties. " + e.message
+    raise e
   end
 end
 

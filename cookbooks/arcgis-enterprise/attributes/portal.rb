@@ -41,15 +41,26 @@ default['arcgis']['portal'].tap do |portal|
   portal['private_url'] = 'https://' + node['arcgis']['portal']['domain_name'] + ':7443/arcgis'
   portal['web_context_url'] = ''
   portal['admin_username'] = 'admin'
-  portal['admin_password'] = 'changeit'
+  if ENV['ARCGIS_PORTAL_ADMIN_PASSWORD'].nil?
+    portal['admin_password'] = 'changeit'
+  else
+    portal['admin_password'] = ENV['ARCGIS_PORTAL_ADMIN_PASSWORD']
+  end
   portal['admin_email'] = 'admin@mydomain.com'
   portal['admin_full_name'] = 'Administrator'
   portal['admin_description'] = 'Initial account administrator'
   portal['security_question'] = 'Your favorite ice cream flavor?'
   portal['security_question_answer'] = 'bacon'
   portal['keystore_file'] = ''
-  portal['keystore_password'] = ''
+  if ENV['ARCGIS_PORTAL_KEYSTORE_PASSWORD'].nil?
+    portal['keystore_password'] = ''
+  else
+    portal['keystore_password'] = ENV['ARCGIS_PORTAL_KEYSTORE_PASSWORD']
+  end
   portal['cert_alias'] = node['arcgis']['portal']['domain_name']
+  portal['root_cert'] = ''
+  portal['root_cert_alias'] = ''
+  portal['tomcat_java_opts'] = ''
   portal['configure_autostart'] = true
   portal['install_system_requirements'] = true
   unless node['arcgis']['portal']['authorization_file'].nil?
@@ -59,6 +70,9 @@ default['arcgis']['portal'].tap do |portal|
 
   # authorization_file_version must be <major>.<minor> ('10.4.1' -> '10.4')
   portal['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
+  
+  portal['security']['user_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
+  portal['security']['role_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
 
   portal['log_level'] = 'WARNING'
   portal['max_log_file_age'] = 90
@@ -73,14 +87,29 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
     portal['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Portal'
     portal['data_dir'] = 'C:\\arcgisportal'
-    portal['local_content_dir'] = node['arcgis']['portal']['data_dir'] + '\\content'
-    portal['content_dir'] = node['arcgis']['portal']['local_content_dir']
-    portal['log_dir'] = node['arcgis']['portal']['data_dir'] + '\\logs'
+
+    if node['arcgis']['portal']['data_dir'].nil?
+      portal['local_content_dir'] = portal['data_dir'] + '\\content'
+      portal['log_dir'] = portal['data_dir'] + '\\logs'
+    else
+      portal['local_content_dir'] = node['arcgis']['portal']['data_dir'] + '\\content'
+      portal['log_dir'] = node['arcgis']['portal']['data_dir'] + '\\logs'
+    end
+
+    if node['arcgis']['portal']['local_content_dir'].nil?
+      portal['content_dir'] = portal['local_content_dir']
+    else
+      portal['content_dir'] = node['arcgis']['portal']['local_content_dir']
+    end
 
     case node['arcgis']['version']
+    when '10.6'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_106_161831.exe')
+      portal['product_code'] = '{FFE4808A-1AD2-41A6-B5AD-2BA312BE6AAA}'
     when '10.5.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_1051_XXXXXX.exe')
+                                            'Portal_for_ArcGIS_Windows_1051_156365.exe')
       portal['product_code'] = '{C7E44FBE-DFA6-4A95-8779-B6C40F3947B7}'
     when '10.5'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -116,9 +145,12 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.6'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_106_161809.tar.gz')
     when '10.5.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_1051_XXXXXX.tar.gz')
+                                            'Portal_for_ArcGIS_Linux_1051_156440.tar.gz')
     when '10.5'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_105_154053.tar.gz')
@@ -144,4 +176,6 @@ default['arcgis']['portal'].tap do |portal|
   portal['content_store_provider'] = 'FileSystem'
   portal['content_store_connection_string'] = node['arcgis']['portal']['content_dir']
   portal['object_store'] = nil
+  portal['upgrade_backup'] = true
+  portal['upgrade_rollback'] = true
 end

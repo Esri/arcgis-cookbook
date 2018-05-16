@@ -21,6 +21,17 @@ unless node['arcgis']['geoevent']['authorization_file'].nil?
   default['arcgis']['geoevent']['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
                                                                            ::File.basename(node['arcgis']['geoevent']['authorization_file']))
 end
+default['arcgis']['geoevent']['configure_autostart'] = true
+
+case
+when ['10.6'].include?(node['arcgis']['version'])
+  default['arcgis']['geoevent']['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273'
+  default['arcgis']['geoevent']['configure_gateway_service'] = true
+when ['10.4', '10.4.1', '10.5', '10.5.1'].include?(node['arcgis']['version'])
+  default['arcgis']['geoevent']['ports'] = '6180,6143,9220,9320,5565,5575,27271,27272,27273'
+  default['arcgis']['geoevent']['configure_gateway_service'] = false
+end
+
 
 case node['platform']
 when 'windows'
@@ -28,6 +39,8 @@ when 'windows'
   default['arcgis']['geoevent']['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
   case node['arcgis']['version']
+  when '10.6'
+    default['arcgis']['geoevent']['product_code'] = '{723742C8-6633-4C85-87AC-503507FE222B}'
   when '10.5.1'
     default['arcgis']['geoevent']['product_code'] = '{F11BBE3B-B78F-4E5D-AE45-E3B29063335F}'
   when '10.5'

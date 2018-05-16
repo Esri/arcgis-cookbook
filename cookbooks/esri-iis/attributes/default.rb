@@ -55,7 +55,11 @@ default['arcgis']['iis'].tap do |iis|
     iis['domain_name'] = node['fqdn']
     iis['keystore_file'] = ::File.join(Chef::Config[:file_cache_path],
                                        node['arcgis']['iis']['domain_name'] + '.pfx')
-    iis['keystore_password'] = 'test'
+    if ENV['ARCGIS_IIS_KEYSTORE_PASSWORD'].nil?
+      iis['keystore_password'] = 'test'
+    else
+      iis['keystore_password'] = ENV['ARCGIS_IIS_KEYSTORE_PASSWORD']
+    end
     iis['web_site'] = 'Default Web Site'
     iis['replace_https_binding'] = false
   end

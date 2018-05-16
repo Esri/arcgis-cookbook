@@ -24,9 +24,10 @@ arcgis_geoevent_geoevent 'Uninstall ArcGIS GeoEvent Server' do
   if node['platform'] == 'windows'
     only_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
   else
-    only_if { ::File.exists?(::File.join(node['arcgis']['server']['install_dir'],
-                                        node['arcgis']['server']['install_subdir'],
-                                        'GeoEvent/bin/ArcGISGeoEvent-service')) }
+    only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                node['arcgis']['version'],
+                                                :ArcGISGeoEvent) }
   end
   action [:stop, :uninstall]
 end

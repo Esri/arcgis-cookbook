@@ -26,5 +26,7 @@ arcgis_enterprise_portal 'Federate Server' do
   server_username node['arcgis']['server']['admin_username']
   server_password node['arcgis']['server']['admin_password']
   is_hosting node['arcgis']['server']['is_hosting']
+  retries 5
+  retry_delay 30
   action :federate_server
 end

@@ -17,8 +17,13 @@
 # limitations under the License.
 
 default['arcgis']['run_as_user'] = 'arcgis'
-default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.5'
+if ENV['ARCGIS_RUN_AS_PASSWORD'].nil?
+  default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
+else
+  default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
+end
+
+default['arcgis']['version'] = '10.6'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
@@ -28,6 +33,8 @@ when 'windows'
   default['arcgis']['python']['install_dir'] = 'C:\\Python27'
   default['arcgis']['repository']['setups'] = ENV['USERPROFILE'] + '\\Documents'
   default['arcgis']['repository']['archives'] = ENV['USERPROFILE'] + '\\Software\\Esri'
+  default['arcgis']['repository']['patches'] = node['arcgis']['repository']['archives'] + '\\Patches' 
+  default['arcgis']['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
   default['arcgis']['post_install_script'] = 'C:\\imageryscripts\\deploy.bat'
 else # node['platform'] == 'linux'
   if node['current_user'] != node['arcgis']['run_as_user']
@@ -42,6 +49,8 @@ else # node['platform'] == 'linux'
   default['arcgis']['web_server']['webapp_dir'] = '' # Depends on type of web server
   default['arcgis']['repository']['setups'] = '/opt/arcgis'
   default['arcgis']['repository']['archives'] = '/tmp/software/esri'
+  default['arcgis']['repository']['patches'] = node['arcgis']['repository']['archives'] + '/patches'
+  default["arcgis"]['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
   default['arcgis']['post_install_script'] = '/arcgis/imageryscripts/deploy.sh'
 end
 
