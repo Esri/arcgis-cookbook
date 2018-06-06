@@ -29,14 +29,35 @@ end
 
 action :install do
   cmd = node['arcgis']['pro']['setup']
-  args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
-
+  if node['arcgis']['pro']['authorization_type'] == 'SINGLE_USE'
+	args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
+  else
+	args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} ESRI_LICENSE_HOST=#{node['arcgis']['pro']['esri_license_host']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"  
+  end
   cmd = Mixlib::ShellOut.new("msiexec.exe /i \"#{cmd}\" #{args}",
                              { :timeout => 3600 })
   cmd.run_command
   cmd.error!
 
   new_resource.updated_by_last_action(true)
+end
+
+
+action :patches do
+	# Dir.glob() doesn't support backslashes within a path, so they will be replaces on Windows
+	patch_folder = node['arcgis']['patches']['local_patch_folder'].gsub('\\','/')
+
+	# get all patches  within the specified folder and register them
+	Dir.glob("#{patch_folder}/**/*").each do |patch|
+	  windows_package "Install #{patch}" do
+		action :install
+		source patch
+		installer_type :custom
+		options '/qn'
+	  end
+	end
+
+	new_resource.updated_by_last_action(true)
 end
 
 action :uninstall do
@@ -50,3 +71,17 @@ action :uninstall do
 
   new_resource.updated_by_last_action(true)
 end
+
+action :authorize do
+  cmd = node['arcgis']['pro']['authorization_tool']
+  if node['arcgis']['pro']['authorization_type'] == 'SINGLE_USE'
+    args = "/LIF \"#{@new_resource.authorization_file}\" /S /VER \"#{@new_resource.authorization_file_version}\""
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
+    cmd.run_command
+    cmd.error!
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+

@@ -17,12 +17,19 @@
 # limitations under the License.
 #
 
-actions :system, :install, :uninstall
+actions :system, :install, :uninstall, :patches, :authorize
 
 attribute :setup, kind_of: String
 attribute :product_code, kind_of: String
 attribute :install_dir, kind_of: String
-attribute :seat_preference, kind_of: String
+attribute :software_class, kind_of: String
+attribute :esri_license_host, kind_of: String
+attribute :authorization_type, kind_of: String
+attribute :authorization_file, :kind_of => String
+attribute :authorization_file_version, :kind_of => String
+attribute :portal_list, kind_of: String
+attribute :allusers, :kind_of => Integer
+
 
 def initialize(*args)
   super
