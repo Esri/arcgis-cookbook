@@ -29,9 +29,13 @@ end
 
 action :install do
   cmd = node['arcgis']['pro']['setup']
+  if node['arcgis']['pro']['authorization_type'] == 'NAMED_USER'
+	args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
+  end
   if node['arcgis']['pro']['authorization_type'] == 'SINGLE_USE'
 	args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
-  else
+  end
+  if node['arcgis']['pro']['authorization_type'] == 'CONCURRENT_USE'
 	args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} ESRI_LICENSE_HOST=#{node['arcgis']['pro']['esri_license_host']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"  
   end
   cmd = Mixlib::ShellOut.new("msiexec.exe /i \"#{cmd}\" #{args}",
