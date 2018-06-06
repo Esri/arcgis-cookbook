@@ -22,7 +22,16 @@ default['arcgis']['pro']['setup'] = 'C:\\ArcGIS\\Pro\\ArcGISPro.msi'
 default['arcgis']['pro']['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
 default['arcgis']['pro']['blockaddins'] = '#0'
 default['arcgis']['pro']['allusers'] = 2
+default['arcgis']['pro']['software_class'] = 'Viewer'
+default['arcgis']['pro']['authorization_type'] = 'NAMED_USER'
+default['arcgis']['pro']['esri_license_host'] = ENV['COMPUTERNAME']
+default['arcgis']['pro']['authorization_file'] = ''
+default['arcgis']['pro']['authorization_tool'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro\\bin\\SoftwareAuthorizationPro.exe'
 
+default['arcgis']['repository']['archives'] = ENV['USERPROFILE'] + '\\Software\\Esri'
+
+default['arcgis']['repository']['patches'] = node['arcgis']['repository']['archives'] + '\\Patches' 
+default['arcgis']['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
 
 case node['arcgis']['pro']['version']
 when '1.2'
@@ -38,4 +47,7 @@ when '2.1'
 else
   throw 'Unsupported ArcGIS version'
 end
+
+default['arcgis']['pro']['authorization_file_version'] = node['arcgis']['pro']['version'].to_f.to_s
+
 

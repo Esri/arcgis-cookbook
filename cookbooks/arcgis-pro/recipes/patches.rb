@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: arcgis-pro
-# Recipe:: pro
+# Recipe:: patches
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_pro_pro 'Verify ArcGIS Pro system requirements' do
-  action :system
-end
-
-arcgis_pro_pro 'Install ArcGIS Pro' do
-  setup node['arcgis']['pro']['setup']
-  install_dir node['arcgis']['pro']['install_dir']
-  not_if { Utils.product_installed?(node['arcgis']['pro']['product_code']) }
-  action :install
-end
-
-arcgis_pro_pro 'Authorize ArcGIS Pro' do
-  authorization_file node['arcgis']['pro']['authorization_file']
-  authorization_file_version node['arcgis']['pro']['authorization_file_version']
-  action :authorize
+arcgis_pro_pro 'Install ArcGIS Pro Patches' do
+  only_if { ::File.exists?(node['arcgis']['patches']['local_patch_folder']) }
+  action :patches
 end
