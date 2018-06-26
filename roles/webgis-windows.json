@@ -84,7 +84,12 @@
       "setup":"C:\\ArcGIS\\10.5\\Portal\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Portal.prvc",
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
-      "keystore_password":"changeit"
+      "keystore_password":"changeit",
+      "authentication":{
+        "disable_signup":true,
+        "enable_single_sign_on":true,
+        "configure_active_directory_users":true
+      }
     }
   },
   "run_list":[
@@ -96,6 +101,7 @@
     "recipe[arcgis-enterprise::datastore]",
     "recipe[arcgis-enterprise::portal]",
     "recipe[arcgis-enterprise::portal_wa]",
-    "recipe[arcgis-enterprise::federation]"
+    "recipe[arcgis-enterprise::federation]",
+    "recipe[arcgis-enterprise::portal_authentication]"
   ]
 }

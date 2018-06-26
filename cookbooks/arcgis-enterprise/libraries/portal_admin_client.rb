@@ -325,6 +325,24 @@ module ArcGIS
 
       validate_response(response)
     end
+    
+    def set_all_ssl(https_only)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url +
+        "/sharing/rest/portals/self/update").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      request.set_form_data(
+        'allSSL' => https_only,
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+    end
 
     def content_dir
       token = generate_token(@portal_url + '/sharing/generateToken')
@@ -459,6 +477,24 @@ module ArcGIS
 
       validate_response(response)
     end
+    
+    def get_system_properties
+      token = generate_token(@portal_url + '/sharing/generateToken')
+      
+      uri = URI.parse(@portal_url + '/portaladmin/system/properties')
+      uri.query = URI.encode_www_form('token' => token,
+                                      'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      validate_response(response)
+      system_properties = JSON.parse(response.body)
+      
+      return system_properties
+    end
 
     def webadaptors_shared_key
       uri = URI.parse(@portal_url + '/portaladmin/system/webadaptors/config/')
@@ -525,6 +561,41 @@ module ArcGIS
                             'logDir' => log_dir,
                             'maxLogFileAge' => max_log_file_age,
                             'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+    end
+    
+    def get_security_configuration
+      token = generate_token(@portal_url + '/sharing/generateToken')
+      
+      uri = URI.parse(@portal_url + '/portaladmin/security/config')
+      uri.query = URI.encode_www_form('token' => token,
+                                      'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      validate_response(response)
+      security_configuration = JSON.parse(response.body)
+      
+      return security_configuration
+    end
+    
+    def set_identity_store(user_store_config, group_store_config)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url + '/portaladmin/security/config/updateIdentityStore').request_uri)
+      
+      request.add_field('Referer', 'referer')
+      
+      token = generate_token(@portal_url + '/sharing/generateToken')
+      
+      request.set_form_data('userStoreConfig' => user_store_config.to_json,
+                            'groupStoreConfig' => group_store_config.to_json,
+                            'token' => token, 
                             'f' => 'json')
 
       response = send_request(request)
