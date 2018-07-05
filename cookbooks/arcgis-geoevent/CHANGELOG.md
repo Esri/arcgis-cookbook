@@ -3,6 +3,11 @@ arcgis-geoevent cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-geoevent cookbook.
 
+3.2.1
+-----
+- Added support for ArcGIS Enterprise 10.6.1
+- Added ec2 test kitchen.
+
 3.2.0
 -----
 - Added support for ArcGIS Enterprise 10.6

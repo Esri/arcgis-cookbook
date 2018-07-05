@@ -36,6 +36,8 @@ action :publish do
                                                @new_resource.username,
                                                @new_resource.password)
 
+  admin_client.wait_until_available
+
   generate_token_url = admin_client.info['authInfo']['tokenServicesUrl']
 
   if !generate_token_url.nil? && !generate_token_url.empty?

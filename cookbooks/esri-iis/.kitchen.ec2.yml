@@ -1,0 +1,34 @@
+driver:
+  name: ec2
+  region: us-west-2
+  instance_type: t2.micro
+  aws_ssh_key_id: test-kitchen
+  subnet_id: subnet-74de082e
+  iam_profile_name: s3-test-kitchen
+  security_group_ids: ['sg-9abe55e5']
+  associate_public_ip: true
+  interface: dns
+  tags:
+    created-by: 'test-kitchen'
+
+transport:
+  ssh_key: /keys/test-kitchen.pem
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: 13.3
+
+platforms:
+  - name: windows-2016
+  - name: windows-2012r2
+  - name: windows-2008r2
+
+suites:
+  - name: esri-iis
+    driver:
+      tags:
+        Name: 'esri-iis'
+    run_list:
+      - recipe[esri-iis]
+

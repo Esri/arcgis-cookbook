@@ -1,0 +1,47 @@
+driver:
+  name: ec2
+  region: us-west-2
+  instance_type: t2.micro
+  aws_ssh_key_id: test-kitchen
+  subnet_id: subnet-74de082e
+  iam_profile_name: s3-test-kitchen
+  security_group_ids: ['sg-9abe55e5']
+  associate_public_ip: true
+  interface: dns
+  tags:
+    created-by: 'test-kitchen'
+
+transport:
+  ssh_key: /keys/test-kitchen.pem
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: 13.3
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-16.04
+  - name: ubuntu-14.04
+  - name: centos-7
+  - name: centos-6
+
+suites:
+  - name: esri-tomcat
+    driver:
+      tags:
+        Name: 'esri-tomcat'
+    run_list:
+      - recipe[esri-tomcat]
+    verifier:
+      inspec_tests:
+        - test/smoke/default/install.rb
+    attributes:
+      java:
+        install_flavor: "oracle"
+        jdk_version: "8"
+        oracle:
+          accept_oracle_download_terms: true
+

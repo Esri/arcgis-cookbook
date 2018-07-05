@@ -13,6 +13,7 @@ Requirements
 * 1.2
 * 2.0
 * 2.1
+* 2.2
 
 ### Platforms
 
@@ -22,8 +23,7 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04 
-* Ubuntu 16.04
+* Ubuntu 14.04, 16.04
 * Rhel 6.5, 7.0
 
 ### Dependencies

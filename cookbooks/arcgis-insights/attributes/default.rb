@@ -26,6 +26,10 @@ when 'windows'
                                            node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
   case node['arcgis']['insights']['version']
+  when '2.2'
+      default['arcgis']['insights']['product_code'] = '{00BA08F3-B462-43AF-BFFA-9E17C1B9667D}'
+      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                     '')
   when '2.1'
       default['arcgis']['insights']['product_code'] = '{0FDA7094-6094-49B9-94C9-F06D6B22954F}'
       default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -47,7 +51,7 @@ when 'windows'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Windows_10_154047.exe')
   else
-    throw 'Unsupported Insights for ArcGIS version'
+    Chef::Log.warn "Unsupported Insights for ArcGIS version"
   end
 else # node['platform'] == 'linux'
   default['arcgis']['insights']['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -55,6 +59,9 @@ else # node['platform'] == 'linux'
                                                        'Insights/Insights-Setup.sh')
 
   case node['arcgis']['insights']['version']
+  when '2.2'
+    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                                 '')
   when '2.1'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Linux_21_159551.tar.gz')
@@ -71,6 +78,6 @@ else # node['platform'] == 'linux'
     default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                                  'Insights_for_ArcGIS_Linux_10_154060.tar.gz')
   else
-    throw 'Unsupported Insights for ArcGIS version'
+    Chef::Log.warn "Unsupported Insights for ArcGIS version"
   end
 end

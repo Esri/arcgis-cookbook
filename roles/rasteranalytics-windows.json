@@ -1,0 +1,28 @@
+{
+  "arcgis":{
+    "run_as_password":"Run_As_Pa$$w0rd",
+    "run_as_user":"arcgis",
+    "version":"10.6",
+    "repository":{
+      "archives":"\\\\repo\\Software\\Esri"
+    },
+    "server":{
+      "admin_username":"admin",
+      "admin_password":"changeit",
+      "authorization_file":"\\\\repo\\Authorization_Files\\ImageServer106.prvc",
+      "web_context_url": "https://image.server.com:6443/arcgis",
+      "is_hosting": false
+    },
+    "portal":{
+      "wa_url": "https://my.portal.com/portal",
+      "admin_username": "admin",
+      "admin_password": "changeit"
+    }
+  },
+  "run_list":[
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::federation]",
+    "recipe[arcgis-enterprise::enable_rasteranalytics]"
+  ]
+}

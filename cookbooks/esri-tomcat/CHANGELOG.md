@@ -3,6 +3,10 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.1.3
+-----
+- Add ec2 test kitchen.
+
 0.1.2
 -----
 - Update tomcat dependency version > 2.5.2

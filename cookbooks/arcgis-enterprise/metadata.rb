@@ -4,7 +4,7 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.2.0'
+version          '3.2.1'
 chef_version     '>= 12.6', '< 14.0' if defined? chef_version
 
 depends          'hostsfile'
@@ -24,9 +24,11 @@ supports         'redhat'
 recipe 'arcgis-enterprise::clean', 'Deletes local directories created by ArcGIS software'
 recipe 'arcgis-enterprise::datastore', 'Installs and configures ArcGIS Data Store on primary machine'
 recipe 'arcgis-enterprise::datastore_standby', 'Installs and configures ArcGIS Data Store on standby machine'
-recipe 'arcgis-enterprise::disable_geoanalytics', 'Resets the big data analytics configuration on ArcGIS Portal'
+recipe 'arcgis-enterprise::disable_geoanalytics', 'Resets the big data analytics configuration on Portal for ArcGIS'
+recipe 'arcgis-enterprise::disable_rasteranalytics', 'Resets raster analytics configuration on Portal for ArcGIS'
 recipe 'arcgis-enterprise::egdb', 'Registers GeoDatabases with server'
 recipe 'arcgis-enterprise::enable_geoanalytics', 'Configures the ArcGIS Portal to perform big data analytics'
+recipe 'arcgis-enterprise::enable_rasteranalytics', 'Configures the ArcGIS Portal to raster analytics'
 recipe 'arcgis-enterprise::federation', 'Federates ArcGIS Server with Portal for ArcGIS'
 recipe 'arcgis-enterprise::fileserver', 'Configures shared directories on file server machine'
 recipe 'arcgis-enterprise::hosts', 'Creates entries in /etc/hosts file for the specified hostname to IP address map'
@@ -42,12 +44,14 @@ recipe 'arcgis-enterprise::server_node', 'Installs ArcGIS Server on the machine 
 recipe 'arcgis-enterprise::server_security', 'Configures ArcGIS Server identity stores and assigns privileges to roles.'
 recipe 'arcgis-enterprise::server_wa', 'Installs Web Adaptor and configures it with ArcGIS Server'
 recipe 'arcgis-enterprise::services', 'Publishes services to ArcGIS Server'
+recipe 'arcgis-enterprise::stop_machine', 'Stops server machine in the ArcGIS Server site'
 recipe 'arcgis-enterprise::system', 'System requirements'
 recipe 'arcgis-enterprise::enterprise_installed', 'Installs ArcGIS Server, Data Store, Portal, and Web Adaptors for Server and Portals'
 recipe 'arcgis-enterprise::enterprise_uninstalled', 'Uninstalls all ArcGIS software of the specified version'
 recipe 'arcgis-enterprise::enterprise_validate', 'Checks if ArcGIS Server setups and authorization files exist'
 recipe 'arcgis-enterprise::rds_egdb', 'Creates managed and replicated GeoDatabases in Amazon RDS database'
 recipe 'arcgis-enterprise::sql_alias', 'Creates EGDBHOST alias for Amazon RDS endpoint'
+recipe 'arcgis-enterprise::unregister_machine', 'Unregister server machine from the ArcGIS Server site'
 
 issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)
 source_url 'https://github.com/Esri/arcgis-cookbook' if respond_to?(:source_url)

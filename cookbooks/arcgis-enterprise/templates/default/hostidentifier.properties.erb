@@ -1,0 +1,23 @@
+#Set the host identifier.
+#If this property is set, it will be used to identify the current host.
+#It can be a host name or IP address. But you need to make sure this name
+#or IP is well-known in the network.
+#Syntax: hostidentifier=<host-identifier>
+
+<% if @hostidentifier.nil? || @hostidentifier.empty? %>
+#hostidentifier=<%=node['ipaddress']%>
+<% else %>
+hostidentifier=<%=@hostidentifier%>
+<% end %>
+
+#Set the preferred host identifier when hostidentifier is not set.
+#You can set it to 'ip' or 'hostname'. default is hostname.
+#WARNING: you should NOT set it to "ip if the ip address
+#of your machine will ever change.
+#Syntax preferredidentifier=ip | hostname
+
+<% if @preferredidentifier.nil? || @preferredidentifier.empty? %>
+#preferredidentifier=ip
+<% else %>
+preferredidentifier=<%=@preferredidentifier%>
+<% end %>

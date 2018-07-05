@@ -1,5 +1,13 @@
+def fixture(name)
+  cookbook name, path: "test/fixtures/cookbooks/#{name}"
+end
+
 source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook 'windows', '~> 1.38'
+group :integration do
+  cookbook 'aws'
+  cookbook 'seven_zip'
+  fixture 'download-setups-s3'
+end

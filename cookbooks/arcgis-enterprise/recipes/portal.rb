@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: portal
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,73 +17,7 @@
 # limitations under the License.
 #
 
-if node['platform'] == 'windows'
-  arcgis_enterprise_portal 'Update Portal for ArcGIS service logon account' do
-    install_dir node['arcgis']['portal']['install_dir']
-    run_as_user node['arcgis']['run_as_user']
-    run_as_password node['arcgis']['run_as_password']
-    only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-    subscribes :update_account, "user[#{node['arcgis']['run_as_user']}]", :immediately
-    action :nothing
-  end
-end
-
-# Unregister stanby machine before upgrading portal
-if node['platform'] == 'windows'
-  arcgis_enterprise_portal 'Unregister Standby Machine' do
-    portal_url node['arcgis']['portal']['url']
-    username node['arcgis']['portal']['admin_username']
-    password node['arcgis']['portal']['admin_password']
-    not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-    action :unregister_standby
-  end
-end
-
-arcgis_enterprise_portal "Install System Requirements:#{recipe_name}" do
-  action :system
-  only_if { node['arcgis']['portal']['install_system_requirements'] }
-end
-
-arcgis_enterprise_portal 'Unpack Portal for ArcGIS' do
-  setup_archive node['arcgis']['portal']['setup_archive']
-  setups_repo node['arcgis']['repository']['setups']
-  run_as_user node['arcgis']['run_as_user']
-  only_if { ::File.exist?(node['arcgis']['portal']['setup_archive']) &&
-            !::File.exist?(node['arcgis']['portal']['setup']) }
-  if node['platform'] == 'windows'
-    not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-  else
-    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                               node['hostname'],
-                                               node['arcgis']['version'],
-                                               :ArcGISPortal) }
-  end
-  action :unpack
-end
-
-arcgis_enterprise_portal 'Install Portal for ArcGIS' do
-  install_dir node['arcgis']['portal']['install_dir']
-  product_code node['arcgis']['portal']['product_code']
-  data_dir node['arcgis']['portal']['data_dir']
-  setup node['arcgis']['portal']['setup']
-  run_as_user node['arcgis']['run_as_user']
-  run_as_password node['arcgis']['run_as_password']
-  if node['platform'] == 'windows'
-    not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-  else
-    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                               node['hostname'],
-                                               node['arcgis']['version'],
-                                               :ArcGISPortal) }
-  end
-  action :install
-end
-
-arcgis_enterprise_portal 'Configure arcgisportal service' do
-  install_dir node['arcgis']['portal']['install_dir']
-  only_if { node['arcgis']['portal']['configure_autostart'] }
-  action :configure_autostart
-end
+include_recipe 'arcgis-enterprise::install_portal'
 
 arcgis_enterprise_portal 'Authorize Portal for ArcGIS' do
   authorization_file node['arcgis']['portal']['authorization_file']
@@ -105,6 +39,31 @@ file 'Cache portal authorization file' do
   sensitive true
   subscribes :create, 'arcgis_enterprise_portal[Authorize Portal for ArcGIS]', :immediately
   only_if { node['arcgis']['cache_authorization_files'] }
+  action :nothing
+end
+
+# Set hostname in hostname.properties file.
+template ::File.join(node['arcgis']['portal']['install_dir'],
+                     node['arcgis']['portal']['install_subdir'],
+                     'framework', 'etc', 'hostname.properties') do
+  source 'hostname.properties.erb'
+  variables ( {:hostname => node['arcgis']['portal']['hostname']} )
+  notifies :stop, 'arcgis_enterprise_portal[Stop Portal for ArcGIS]', :immediately
+  not_if { node['arcgis']['portal']['hostname'].empty? }
+end
+
+# Set hostidentifier and preferredidentifier in hostidentifier.properties file.
+template ::File.join(node['arcgis']['portal']['install_dir'],
+                     node['arcgis']['portal']['install_subdir'],
+                     'framework', 'runtime', 'ds', 'framework', 'etc',
+                     'hostidentifier.properties') do
+  source 'hostidentifier.properties.erb'
+  variables ( {:hostidentifier => node['arcgis']['portal']['hostidentifier'],
+               :preferredidentifier => node['arcgis']['portal']['preferredidentifier']} )
+end
+
+arcgis_enterprise_portal 'Stop Portal for ArcGIS' do
+  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
   action :nothing
 end
 
@@ -149,5 +108,17 @@ arcgis_enterprise_portal 'Configure HTTPS' do
   keystore_password node['arcgis']['portal']['keystore_password']
   cert_alias node['arcgis']['portal']['cert_alias']
   not_if { node['arcgis']['portal']['keystore_file'].empty? }
+  retries 5
+  retry_delay 30
   action :configure_https
+end
+
+arcgis_enterprise_portal 'Configure All SSL' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  allssl node['arcgis']['portal']['allssl']
+  retries 5
+  retry_delay 30
+  action :set_allssl
 end

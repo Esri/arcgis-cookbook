@@ -1,5 +1,17 @@
+def fixture(name)
+  cookbook name, path: "test/fixtures/cookbooks/#{name}"
+end
+
 source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook  'arcgis-enterprise', path: '../arcgis-enterprise'
+group :integration do
+  cookbook 'apt'
+  cookbook 'aws'
+  cookbook  "arcgis-enterprise", path: "../arcgis-enterprise"
+  cookbook 'seven_zip'
+  cookbook 'tar'
+  fixture 'download-setups-s3'
+end
+

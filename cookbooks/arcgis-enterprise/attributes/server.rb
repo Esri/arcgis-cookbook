@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: server
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,20 +18,32 @@
 
 default['arcgis']['server'].tap do |server|
 
-  server['wa_name'] = 'server'
-
-  if node['fqdn'].nil? || ENV['arcgis_cloud_platform'] == 'aws'
-    server['domain_name'] = node['ipaddress']
-    server['url'] = 'https://' + node['ipaddress'] + ':6443/arcgis'
-    server['wa_url'] = 'https://' + node['ipaddress'] + '/' + node['arcgis']['server']['wa_name']
-  else
-    server['domain_name'] = node['fqdn']
-    server['url'] = 'https://' + node['fqdn'] + ':6443/arcgis'
-    server['wa_url'] = 'https://' + node['fqdn'] + '/' + node['arcgis']['server']['wa_name']
+  server_wa_name = 'server'
+  server['wa_name'] = server_wa_name
+    
+  unless node['arcgis']['server']['wa_name'].nil?
+    server_wa_name = node['arcgis']['server']['wa_name']
   end
 
-  server['private_url'] = 'https://' + node['arcgis']['server']['domain_name'] + ':6443/arcgis'
-  server['web_context_url'] = 'https://' + node['arcgis']['server']['domain_name'] + '/' + node['arcgis']['server']['wa_name']
+  if node['fqdn'].nil? || node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
+    server_domain_name = node['ipaddress']
+    server['domain_name'] = server_domain_name
+    server['url'] = "https://#{node['ipaddress']}:6443/arcgis"
+    server['wa_url'] = "https://#{node['ipaddress']}/#{server_wa_name}"
+  else
+    server_domain_name = node['fqdn']
+    server['domain_name'] = server_domain_name
+    server['url'] = "https://#{node['fqdn']}:6443/arcgis"
+    server['wa_url'] = "https://#{node['fqdn']}/#{server_wa_name}"
+  end
+
+  unless node['arcgis']['server']['domain_name'].nil?
+    server_domain_name = node['arcgis']['server']['domain_name']
+  end
+
+  server['hostname'] = '' # Use the default server machine hostname 
+  server['private_url'] = "https://#{server_domain_name}:6443/arcgis"
+  server['web_context_url'] = "https://#{server_domain_name}/#{server_wa_name}"
   server['admin_username'] = 'admin'
   if ENV['ARCGIS_SERVER_ADMIN_PASSWORD'].nil?
     server['admin_password'] = 'changeit'
@@ -46,7 +58,7 @@ default['arcgis']['server'].tap do |server|
   else
     server['keystore_password'] = ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD']
   end
-  server['cert_alias'] = node['arcgis']['server']['domain_name']
+  server['cert_alias'] = server_domain_name
   server['system_properties'] = {}
   server['log_level'] = 'WARNING'
   server['max_log_file_age'] = 90
@@ -72,76 +84,94 @@ default['arcgis']['server'].tap do |server|
   server['security']['user_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
   server['security']['role_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
   server['security']['privileges'] = {'PUBLISH' => [], 'ADMINISTER' => []}
+  server['setup_archive'] = ''
+  server['product_code'] = ''
 
   case node['platform']
   when 'windows'
-    server['authorization_tool'] = ENV['ProgramW6432'] + '\\Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe'
+    server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                               'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     server['authorization_file'] = ''
-    server['keycodes'] = ENV['ProgramW6432'] + "\\ESRI\\License#{node['arcgis']['server']['authorization_file_version']}\\sysgen\\keycodes"
+    server['keycodes'] = ::File.join(ENV['ProgramW6432'],
+                                     "ESRI\\License#{node['arcgis']['server']['authorization_file_version']}\\sysgen\\keycodes").gsub('/', '\\')
     server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
-                                  'ArcGIS ' + node['arcgis']['version'],
-                                  'ArcGISServer', 'Setup.exe')
+                                  "ArcGIS #{node['arcgis']['version']}",
+                                  'ArcGISServer', 'Setup.exe').gsub('/', '\\')
     server['lp-setup'] = node['arcgis']['server']['setup']
-    server['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Server'
+    server['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\Server').gsub('/', '\\')
+    server['install_subdir'] = ''
 
     server['local_directories_root'] = 'C:\\arcgisserver'
 
-    if node['arcgis']['server']['local_directories_root'].nil?
-      server['directories_root'] = server['local_directories_root']
-    else
-      server['directories_root'] = node['arcgis']['server']['local_directories_root']
-    end
-
-    if node['arcgis']['server']['local_directories_root'].nil?
-      server['log_dir'] = ::File.join(server['local_directories_root'], 'logs')
-    else
-      server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs') 
-    end
-
-    server['config_store_type'] = 'FILESYSTEM'
-    if node['arcgis']['server']['directories_root'].nil?
-      server['config_store_connection_string'] = ::File.join(server['directories_root'], 'config-store')
-    else
-      server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], 'config-store')
-    end
-    server['config_store_connection_secret'] = ''
-
     case node['arcgis']['version']
+    when '10.6.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_1061_163968.exe').gsub('/', '\\')
+      server['product_code'] = '{F62B418D-E9E4-41CE-9E02-167BE4276105}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.6").gsub('/', '\\')
     when '10.6'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_106_159940.exe')
+                                            'ArcGIS_Server_Windows_106_159940.exe').gsub('/', '\\')
       server['product_code'] = '{07606F78-D997-43AE-A9DC-0738D91E8D02}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
+                                                                     "ArcGISx6410.6").gsub('/', '\\')
     when '10.5.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_1051_156124.exe')
+                                            'ArcGIS_Server_Windows_1051_156124.exe').gsub('/', '\\')
       server['product_code'] = '{40CC6E89-93A4-4D87-A3FB-11413C218D2C}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
+                                                                     "ArcGISx6410.5").gsub('/', '\\')
     when '10.5'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_105_154004.exe')
+                                            'ArcGIS_Server_Windows_105_154004.exe').gsub('/', '\\')
       server['product_code'] = '{CD87013B-6559-4804-89F6-B6F1A7B31CBC}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
+                                                                     "ArcGISx6410.5").gsub('/', '\\')
     when '10.4.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_for_Server_Windows_1041_151921.exe')
+                                            'ArcGIS_for_Server_Windows_1041_151921.exe').gsub('/', '\\')
       server['product_code'] = '{88A617EF-89AC-418E-92E1-926908C4D50F}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
+                                                                     "ArcGISx6410.4").gsub('/', '\\')
     when '10.4'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_for_Server_Windows_104_149433.exe')
+                                            'ArcGIS_for_Server_Windows_104_149433.exe').gsub('/', '\\')
       server['product_code'] = '{687897C7-4795-4B17-8AD0-CB8C364778AD}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.4").gsub('/', '\\')
     else
-      throw 'Unsupported ArcGIS version'
+      Chef::Log.warn "Unsupported ArcGIS version"
     end
   else # node['platform'] == 'linux'
     server['install_dir'] = '/'
     server['install_subdir'] = 'arcgis/server'
-    server['start_tool'] = ::File.join(node['arcgis']['server']['install_dir'],
-                                       node['arcgis']['server']['install_subdir'],
+
+    if !node['arcgis']['server']['install_dir'].nil?
+      server_install_dir = server['install_dir']
+    else
+      server_install_dir = node['arcgis']['server']['install_dir']
+    end
+
+    if node['arcgis']['server']['install_subdir'].nil?
+      server_install_subdir = server['install_subdir']
+    else
+      server_install_subdir = node['arcgis']['server']['install_subdir']
+    end
+
+    server['start_tool'] = ::File.join(server_install_dir,
+                                       server_install_subdir,
                                        '/startserver.sh')
-    server['stop_tool'] = ::File.join(node['arcgis']['server']['install_dir'],
-                                      node['arcgis']['server']['install_subdir'],
+    server['stop_tool'] = ::File.join(server_install_dir,
+                                      server_install_subdir,
                                       '/stopserver.sh')
-    server['authorization_tool'] = ::File.join(node['arcgis']['server']['install_dir'],
-                                               node['arcgis']['server']['install_subdir'],
+    server['authorization_tool'] = ::File.join(server_install_dir,
+                                               server_install_subdir,
                                                '/tools/authorizeSoftware')
+    server['local_directories_root'] = ::File.join(server_install_dir,
+                                                   server_install_subdir,
+                                                   'usr')
+
     server['authorization_file'] = ''
     server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                   node['arcgis']['version'],
@@ -149,6 +179,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.6.1'
+        server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Server_Linux_1061_164044.tar.gz')
     when '10.6'
         server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Server_Linux_106_159989.tar.gz')
@@ -158,23 +191,36 @@ default['arcgis']['server'].tap do |server|
     when '10.5'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_105_154052.tar.gz')
-    when '10.4.1'                                            
+    when '10.4.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_for_Server_Linux_1041_151978.tar.gz')
-    when '10.4'                                            
+    when '10.4'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_for_Server_Linux_104_149446.tar.gz')
     else
-      throw 'Unsupported ArcGIS version'
+      Chef::Log.warn "Unsupported ArcGIS version"
     end
-
-    server['local_directories_root'] = ::File.join(node['arcgis']['server']['install_dir'],
-                                                   node['arcgis']['server']['install_subdir'],
-                                                   'usr')
-    server['directories_root'] = node['arcgis']['server']['local_directories_root']
-    server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs')
-    server['config_store_type'] = 'FILESYSTEM'
-    server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], "config-store")
-    server['config_store_connection_secret'] = nil
   end
+
+  if node['arcgis']['server']['local_directories_root'].nil?
+    server['directories_root'] = server['local_directories_root']
+  else
+    server['directories_root'] = node['arcgis']['server']['local_directories_root']
+  end
+
+  if node['arcgis']['server']['local_directories_root'].nil?
+    server['log_dir'] = ::File.join(server['local_directories_root'], 'logs')
+  else
+    server['log_dir'] = ::File.join(node['arcgis']['server']['local_directories_root'], 'logs')
+  end
+
+  server['config_store_type'] = 'FILESYSTEM'
+
+  if node['arcgis']['server']['directories_root'].nil?
+    server['config_store_connection_string'] = ::File.join(server['directories_root'], 'config-store')
+  else
+    server['config_store_connection_string'] = ::File.join(node['arcgis']['server']['directories_root'], 'config-store')
+  end
+
+  server['config_store_connection_secret'] = ''
 end

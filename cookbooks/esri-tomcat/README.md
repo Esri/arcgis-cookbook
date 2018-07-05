@@ -8,11 +8,11 @@ Requirements
 
 ### Platforms
 * Rhel 6, 7
-* Ubuntu 14.04
+* Ubuntu 14.04, 16.04
 
 ### Dependencies
 The following cookbooks are required:
-* Tomcat v 2.1
+* Tomcat v 2.5
 * Java v 1.31
 * OpenSSL v 4.0
 

@@ -16,18 +16,18 @@
       "keystore_password":"changeit",
       "security": {
         "user_store_config": {
-          "type": "WINDOWS", 
+          "type": "WINDOWS",
           "properties": {
-			"userPassword": "changeit",
-			"isPasswordEncrypted": "false",
-			"user": "DOMAIN\\user",
-			"userFullnameAttribute": "cn",
-			"userEmailAttribute": "mail",
-			"caseSensitive": "false"
+            "userPassword": "changeit",
+            "isPasswordEncrypted": "false",
+            "user": "DOMAIN\\user",
+            "userFullnameAttribute": "cn",
+            "userEmailAttribute": "mail",
+            "caseSensitive": "false"
           }
         },
         "role_store_config": {
-          "type": "WINDOWS", 
+          "type": "WINDOWS",
           "properties": {
             "user": "DOMAIN\\user",
             "userPassword": "changeit"

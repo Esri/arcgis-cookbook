@@ -13,6 +13,7 @@ Requirements
   - requires .Net Framework 3.5 (See ms_dotnet cookbook README)
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
+* Windows Server 2016
 
 ### Dependencies
 The following cookbooks are required:
@@ -44,7 +45,7 @@ Include `esri-iis` in your node's `run_list`:
     }
   },
   "run_list": [
-    "recipe[arcgis-iis]"
+    "recipe[esri-iis]"
   ]
 }
 ```

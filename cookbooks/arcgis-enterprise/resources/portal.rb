@@ -21,7 +21,7 @@ actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
         :create_site, :join_site, :configure_https,
         :unregister_standby, :register_server, :federate_server,
-        :set_identity_store, :enable_geoanalytics, :disable_geoanalytics
+        :enable_server_function, :set_allssl, :set_identity_store
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -56,6 +56,7 @@ attribute :full_name, :kind_of => String
 attribute :description, :kind_of => String
 attribute :security_question, :kind_of => String
 attribute :security_question_answer, :kind_of => String
+attribute :allssl, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :server_admin_url, :kind_of => String
 attribute :server_username, :kind_of => String
@@ -67,7 +68,8 @@ attribute :max_log_file_age, :kind_of => Integer, :default => 90
 attribute :upgrade_backup, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :upgrade_rollback, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :user_store_config, :kind_of => Hash, :default => {}
-attribute :role_store_config, :kind_of => Hash, :default => {}													  
+attribute :role_store_config, :kind_of => Hash, :default => {}
+attribute :server_function, :kind_of => String
 
 def initialize(*args)
   super

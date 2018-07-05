@@ -1,0 +1,206 @@
+driver:
+  name: ec2
+  region: us-west-2
+  instance_type: m4.large
+  aws_ssh_key_id: test-kitchen
+  subnet_id: subnet-74de082e
+  iam_profile_name: s3-test-kitchen
+  security_group_ids: ['sg-9abe55e5']
+  associate_public_ip: true
+  interface: dns
+  block_device_mappings:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: 100
+        delete_on_termination: true
+  tags:
+    created-by: 'test-kitchen'
+
+transport:
+  ssh_key: /keys/test-kitchen.pem
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: 13.3
+
+platforms:
+  - name: windows-2016
+  - name: windows-2012r2
+  - name: windows-2008r2
+  - name: ubuntu-16.04
+  - name: centos-7
+
+suites:
+  - name: server
+    driver:
+      tags:
+        Name: 'server'
+    run_list:
+      - recipe[download-setups-s3::server]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::server]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        server:
+          authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
+
+  - name: portal
+    driver:
+      tags:
+        Name: 'portal'
+    run_list:
+      - recipe[download-setups-s3::portal]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::portal]
+      - recipe[arcgis-enterprise::portal_security]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        portal:
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+
+  - name: datastore
+    driver:
+      tags:
+        Name: 'datastore'
+    run_list:
+      - recipe[download-setups-s3::server]
+      - recipe[download-setups-s3::datastore]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-enterprise::datastore]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        server:
+          authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
+
+  - name: webadaptor-iis-server
+    driver:
+      tags:
+        Name: 'webadaptor-iis-server'
+    includes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+    run_list:
+      - recipe[download-setups-s3::server]
+      - recipe[download-setups-s3::webadaptor]
+      - recipe[arcgis-enterprise::system]
+      - recipe[esri-iis]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-enterprise::server_wa]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        hosts:
+          test.com: ''
+        server:
+          authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
+          wa_url: 'http://test.com/server'
+          url: 'http://test.com:6080/arcgis'
+          domain_name: 'test.com'
+
+  - name: webadaptor-iis-portal
+    driver:
+      tags:
+        Name: 'webadaptor-iis-portal'
+    includes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+    run_list:
+      - recipe[download-setups-s3::portal]
+      - recipe[download-setups-s3::webadaptor]
+      - recipe[arcgis-enterprise::system]
+      - recipe[esri-iis]
+      - recipe[arcgis-enterprise::portal]
+      - recipe[arcgis-enterprise::portal_wa]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        hosts:
+          test.com: ''
+        portal:
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+          wa_url: 'http://test.com/server'
+          url: 'http://test.com:6080/arcgis'
+          domain_name: 'test.com'
+
+  - name: webadaptor-java-server
+    driver:
+      tags:
+        Name: 'webadaptor-java-server'
+    excludes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+    run_list:
+      - recipe[download-setups-s3::server]
+      - recipe[download-setups-s3::webadaptor]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[esri-tomcat]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-enterprise::server_wa]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        web_server:
+          webapp_dir: "/opt/tomcat_arcgis/webapps"
+        server:
+          authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
+      java:
+        install_flavor: 'oracle'
+        jdk_version: 8
+        oracle:
+          accept_oracle_download_terms: true
+
+  - name: webadaptor-java-portal
+    driver:
+      tags:
+        Name: 'webadaptor-java-portal'
+    excludes:
+      - windows-2016
+      - windows-2012r2
+      - windows-2008r2
+    run_list:
+      - recipe[download-setups-s3::portal]
+      - recipe[download-setups-s3::webadaptor]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[esri-tomcat]
+      - recipe[arcgis-enterprise::portal]
+      - recipe[arcgis-enterprise::portal_wa]
+    attributes:
+      arcgis:
+        version: '10.6.1'
+        configure_windows_firewall: true
+        cache_authorization_files: true
+        web_server:
+          webapp_dir: "/opt/tomcat_arcgis/webapps"
+        portal:
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+      java:
+        install_flavor: 'oracle'
+        jdk_version: 8
+        oracle:
+          accept_oracle_download_terms: true
+

@@ -1,0 +1,5 @@
+name 'download-setups-s3'
+depends 'arcgis-pro'
+depends 'aws'
+depends 'seven_zip'
+depends 'tar'

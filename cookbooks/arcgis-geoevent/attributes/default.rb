@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Attributes:: default
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,21 +24,27 @@ end
 default['arcgis']['geoevent']['configure_autostart'] = true
 
 case
-when ['10.6'].include?(node['arcgis']['version'])
-  default['arcgis']['geoevent']['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273'
+when ['10.6', '10.6.1'].include?(node['arcgis']['version'])
+  default['arcgis']['geoevent']['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273,2181,2182,2190'
   default['arcgis']['geoevent']['configure_gateway_service'] = true
 when ['10.4', '10.4.1', '10.5', '10.5.1'].include?(node['arcgis']['version'])
   default['arcgis']['geoevent']['ports'] = '6180,6143,9220,9320,5565,5575,27271,27272,27273'
   default['arcgis']['geoevent']['configure_gateway_service'] = false
 end
 
+default['arcgis']['geoevent']['setup_archive'] = ''
 
 case node['platform']
 when 'windows'
-  default['arcgis']['geoevent']['setup'] = 'C:\\ArcGIS\\GeoEvent\\setup.exe'
+  default['arcgis']['repository']['setups'] = ENV['USERPROFILE'] + '\\Documents'
+  default['arcgis']['geoevent']['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                  'ArcGIS ' + node['arcgis']['version'],
+                                  'ArcGISGeoEventServer', 'Setup.exe')
   default['arcgis']['geoevent']['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
   case node['arcgis']['version']
+  when '10.6.1'
+    default['arcgis']['geoevent']['product_code'] = '{D0586C08-E589-4942-BC9B-E83B2E8B95C2}'
   when '10.6'
     default['arcgis']['geoevent']['product_code'] = '{723742C8-6633-4C85-87AC-503507FE222B}'
   when '10.5.1'
@@ -50,9 +56,12 @@ when 'windows'
   when '10.4'
     default['arcgis']['geoevent']['product_code'] = '{188191AE-5A83-49E8-88CB-1F1DB05F030D}'
   else
-    throw 'Unsupported ArcGIS version'
+    Chef::Log.warn 'Unsupported ArcGIS version'
   end
 else # node['platform'] == 'linux'
-  default['arcgis']['geoevent']['setup'] = '/arcgis/geo-event-cd/Setup.sh'
+  default['arcgis']['repository']['setups'] = '/opt/arcgis'
+  default['arcgis']['geoevent']['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                  node['arcgis']['version'],
+                                  'geoevent', 'Setup.sh')
   default['arcgis']['geoevent']['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 end

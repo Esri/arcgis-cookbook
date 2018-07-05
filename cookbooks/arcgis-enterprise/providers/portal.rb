@@ -102,24 +102,6 @@ action :install do
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
     cmd.run_command
     cmd.error!
-
-    if node['arcgis']['portal']['preferredidentifier'] != 'hostname'
-      hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
-                                                   'framework', 'runtime', 'ds', 'framework', 'etc',
-                                                   'hostidentifier.properties')
-      if ::File.exists?(hostidentifier_properties_path)
-        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
-        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
-        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
-        file.write_file
-      else
-        begin
-          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
-        rescue Exception => e
-          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
-        end
-      end
-    end
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
@@ -155,24 +137,6 @@ action :install do
         file.write_file
       else
         ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{dir_data}") }
-      end
-    end
-
-    if node['arcgis']['portal']['preferredidentifier'] != 'hostname'
-        hostidentifier_properties_path = ::File.join(install_subdir,
-                                                     'framework', 'runtime', 'ds', 'framework', 'etc',
-                                                     'hostidentifier.properties')
-      if ::File.exists?(hostidentifier_properties_path)
-        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
-        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
-        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}")
-        file.write_file
-      else
-        begin
-          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['portal']['preferredidentifier']}") }
-        rescue Exception => e
-          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
-        end
       end
     end
   end
@@ -314,7 +278,29 @@ action :create_site do
 
   # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
   if portal_admin_client.complete_upgrade(@new_resource.upgrade_backup, @new_resource.upgrade_rollback)
-    portal_admin_client.post_upgrade()
+    sleep(60.0)
+    portal_admin_client.wait_until_available
+
+    # Post upgrade portal
+    begin
+      portal_admin_client.post_upgrade()
+    rescue Exception => e
+      Chef::Log.error "Portal post upgrade failed. " + e.message
+    end
+
+    # Reindex portal content
+    begin
+      portal_admin_client.reindex()
+    rescue Exception => e
+      Chef::Log.error "Portal content reindex failed. " + e.message
+    end
+
+    # Upgrade Living Atlas
+    begin
+      portal_admin_client.upgrade_livingatlas(node['arcgis']['portal']['living_atlas']['group_ids'])
+    rescue Exception => e
+      Chef::Log.error "Living Atlas upgrade failed. " + e.message
+    end
   end
 
   if portal_admin_client.site_exist?
@@ -486,6 +472,18 @@ action :register_server do
   end
 end
 
+action :set_allssl do
+  portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
+                                                      @new_resource.username,
+                                                      @new_resource.password)
+
+  portal_admin_client.wait_until_available
+  
+  json = portal_admin_client.set_allssl(@new_resource.allssl)
+
+  Chef::Log.info("Result of allssl update: (#{json})")
+end
+
 action :federate_server do
   portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
                                                       @new_resource.username,
@@ -519,7 +517,7 @@ action :federate_server do
   end
 end
 
-action :enable_geoanalytics do
+action :enable_server_function do
   portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
                                                       @new_resource.username,
                                                       @new_resource.password)
@@ -535,34 +533,9 @@ action :enable_geoanalytics do
     if server.nil?
       Chef::Log.info("Server #{@new_resource.server_url} was not federated with the portal")
     else
-      Chef::Log.info("Enabling GeoAnalytics on Server (#{server['id']})...")
+      Chef::Log.info("Enabling '#{@new_resource.server_function}' on Server (#{server['id']})...")
       server_role = @new_resource.is_hosting ? "HOSTING_SERVER" : "FEDERATED_SERVER"
-      result = portal_admin_client.update_server(server['id'], server_role, "GeoAnalytics")
-      Chef::Log.info("Result of update: (#{result})")
-    end
-  else
-    Chef::Log.warn("Portal Admin not available")
-  end
-end
-
-action :disable_geoanalytics do
-  portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
-                                                      @new_resource.username,
-                                                      @new_resource.password)
-
-  portal_admin_client.wait_until_available()
-
-  if portal_admin_client.site_exist?
-
-    servers = portal_admin_client.servers
-
-    server = servers.detect { |s| s['url'] == @new_resource.server_url }
-
-    if server.nil?
-      Chef::Log.info("Server #{@new_resource.server_url} was not federated with the portal")
-    else
-      Chef::Log.info("Enabling GeoAnalytics on Server (#{server['id']})...")
-      result = portal_admin_client.update_server(server['id'], "HOSTING_SERVER", "")
+      result = portal_admin_client.update_server(server['id'], server_role, @new_resource.server_function)
       Chef::Log.info("Result of update: (#{result})")
     end
   else

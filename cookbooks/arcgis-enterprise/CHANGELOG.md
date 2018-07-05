@@ -3,6 +3,17 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.2.1
+-----
+- Support for ArcGIS Enterprise 10.6.1.
+- Enabling raster analytics and image hosting server roles.
+- Added install_datastore, install_portal_wa, install_portal, install_server_wa, and install_server recipes that just install the applications without configuring them.
+- Added stop_machine, stop_server, and unregister_machine recipes.
+- Use configurebackup location Data Store tool instead of deprecated changebackuplocation.
+- Added portal_security recipe.
+- Improved configuring preferred host identifiers for Portal and Data Store.
+- Added datasources recipe to support registering data sources to ArcGIS Server.
+
 3.2.0
 -----
 - Support for ArcGIS Enterprise 10.6.
