@@ -11,6 +11,7 @@ Requirements
 * 10.5
 * 10.5.1
 * 10.6
+* 10.6.1
 
 ### Supported ArcGIS software
 * ArcGIS Desktop (Windows only)

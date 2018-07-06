@@ -35,6 +35,28 @@ action :system do
   new_resource.updated_by_last_action(true)
 end
 
+action :unpack do
+  if node['platform'] == 'windows'
+    cmd = @new_resource.setup_archive
+    args = "/s /d \"#{@new_resource.setups_repo}\""
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
+    cmd.run_command
+    cmd.error!
+  else
+    cmd = 'tar'
+    args = "xzvf \"#{@new_resource.setup_archive}\""
+    repo = ::File.join(@new_resource.setups_repo, node['arcgis']['version'])
+    FileUtils.mkdir_p(repo) unless ::File.directory?(repo)
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600, :cwd => repo })
+    cmd.run_command
+    cmd.error!
+
+    FileUtils.chown_R @new_resource.run_as_user, nil, repo
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
 action :install do
   if node['platform'] == 'windows'
     run_as_password = @new_resource.run_as_password
@@ -118,13 +140,13 @@ action :start  do
       action [:enable, :start]
     end
   else
-    directory ::File.join(@new_resource.install_dir,
-                          node['arcgis']['server']['install_subdir'],
-                          'GeoEvent/data') do
-      recursive true
-      owner node['arcgis']['run_as_user']
-      action [:delete, :create]
-    end
+#    directory ::File.join(@new_resource.install_dir,
+#                          node['arcgis']['server']['install_subdir'],
+#                          'GeoEvent/data') do
+#      recursive true
+#      owner node['arcgis']['run_as_user']
+#      action [:delete, :create]
+#    end
 
     service "arcgisgeoevent" do
       supports :status => true, :restart => true, :reload => true

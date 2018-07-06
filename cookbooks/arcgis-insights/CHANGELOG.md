@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the arcgis-insights cookbook.
 
+## 3.2.1
+- Added support for Insights for ArcGIS 2.2
+- Add ec2 test kitchen.
+
 ## 3.2.0
 - Added support for Insights for ArcGIS 2.0/2.1
 

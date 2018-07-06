@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: arcgis
-# Recipe:: portal
+# Cookbook Name:: arcgis-enterprise
+# Recipe:: enable_geoanalytics
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ arcgis_enterprise_portal "Enable GeoAnalytics" do
   server_username node['arcgis']['server']['admin_username']
   server_password node['arcgis']['server']['admin_password']
   is_hosting node['arcgis']['server']['is_hosting']
-  action :enable_geoanalytics
+  server_function 'GeoAnalytics'
+  action :enable_server_function
 end
 
 

@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: arcgis-enterprise
-# Attributes:: geoanalytics
+# Recipe:: unregister_machine
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-default['arcgis']['geoanalytics'].tap do |geoanalytics|
-
-  # authorization_file_version must be <major>.<minor> ('10.4.1' -> '10.4')
-  geoanalytics['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
-  geoanalytics['authorization_file'] = ''
-
+arcgis_enterprise_server 'Unregister server machine' do
+  server_url node['arcgis']['server']['url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  retries 5
+  retry_delay 30
+  action :unregister_machine
 end

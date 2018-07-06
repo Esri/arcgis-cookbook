@@ -781,6 +781,83 @@ action :set_machine_properties do
   end
 end
 
+action :stop_machine do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Stopping server machine...')
+
+    machine_name = admin_client.local_machine_name
+
+    admin_client.stop_machine(machine_name)
+
+    admin_client.remove_machine_from_cluster(machine_name)
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to stop server machine. " + e.message
+    raise e
+  end
+end
+
+action :unregister_machine do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering server machine...')
+
+    machine_name = admin_client.local_machine_name
+
+    admin_client.unregister_machine(machine_name)
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister server machine. " + e.message
+    raise e
+  end
+end
+
+action :block_data_copy do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Block automatic copying of data to the server at publishing.')
+
+    admin_client.block_data_copy()
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to block automatic copying of data. " + e.message
+    raise e
+  end
+end
+
 private
 
 def generate_admin_token(install_dir, expiration)

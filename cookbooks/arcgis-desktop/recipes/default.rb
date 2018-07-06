@@ -21,6 +21,15 @@ arcgis_desktop_desktop 'Verify ArcGIS Desktop system requirements' do
   action :system
 end
 
+arcgis_desktop_desktop 'Unpack ArcGIS Desktop Setup' do
+  setup_archive node['arcgis']['desktop']['setup_archive']
+  setups_repo node['arcgis']['repository']['setups']
+  only_if { ::File.exist?(node['arcgis']['desktop']['setup_archive']) &&
+            !::File.exist?(node['arcgis']['desktop']['setup']) }
+  not_if { Utils.product_installed?(node['arcgis']['desktop']['product_code']) }
+  action :unpack
+end
+
 arcgis_desktop_desktop 'Install ArcGIS Desktop' do
   setup node['arcgis']['desktop']['setup']
   product_code node['arcgis']['desktop']['product_code']

@@ -20,9 +20,19 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :system do
   if node['platform'] == 'windows'
-    # TODO: Ensure Desktop system requirements 
+    # TODO: Ensure Desktop system requirements
   end
-  
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :unpack do
+  cmd = @new_resource.setup_archive
+  args = "/s /d \"#{@new_resource.setups_repo}\""
+  cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
+  cmd.run_command
+  cmd.error!
+
   new_resource.updated_by_last_action(true)
 end
 

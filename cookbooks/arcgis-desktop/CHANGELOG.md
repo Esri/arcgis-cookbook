@@ -3,6 +3,14 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+3.2.1
+-----
+- Added support for ArcGIS 10.6.1.
+- Add ec2 test kitchen
+- Split attributes into multiples files.
+- Update default attributes of desktop and licensemanager setups.
+- Remove unnecessary attributes.
+
 3.2.0
 -----
 - Added support for ArcGIS 10.6.

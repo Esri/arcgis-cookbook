@@ -377,7 +377,7 @@ module ArcGIS
       validate_response(response)
     end
 
-    def register_database(data_item_path, connection_string, is_managed)
+    def register_database(data_item_path, connection_string, is_managed, connection_type)
       return if connection_string.nil? || connection_string.empty?
 
       request = Net::HTTP::Post.new(
@@ -393,7 +393,7 @@ module ArcGIS
         'clientPath' => nil,
         'info' => {
           'isManaged' => is_managed,
-          'dataStoreConnectionType' => 'serverOnly',
+          'dataStoreConnectionType' => connection_type,
           'connectionString' => connection_string
         }
       }
@@ -614,15 +614,15 @@ module ArcGIS
 
     def block_data_copy()
       request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/data/config/update').request_uri)
-      
+
       request.add_field('Referer', 'referer')
-      
+
       token = generate_token()
-      
+
       dataStoreConfig = {
         'blockDataCopy' => true
       }
-      
+
       request.set_form_data('datastoreConfig' => dataStoreConfig.to_json,
                             'token' => token, 
                             'f' => 'json')
@@ -631,7 +631,7 @@ module ArcGIS
 
       validate_response(response)
     end
-    
+
     def set_identity_store(user_store_config, role_store_config)
       request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/security/config/updateIdentityStore').request_uri)
 
@@ -705,6 +705,58 @@ module ArcGIS
       end
 
       return false
+    end
+
+    def unregister_machine(machine_name)
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines/#{machine_name}/unregister").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data(
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def stop_machine(machine_name)
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines/#{machine_name}/stop").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data(
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def remove_machine_from_cluster(machine_name, cluster = 'default')
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/clusters/#{cluster}/machines/remove").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data(
+        'machineNames' => machine_name,
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
     end
 
     private

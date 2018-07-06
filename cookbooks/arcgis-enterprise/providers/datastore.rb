@@ -141,26 +141,6 @@ action :install do
         ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{@new_resource.data_dir}") }
       end
     end
-
-    if node['arcgis']['data_store']['preferredidentifier'] != 'hostname'
-      hostidentifier_properties_path = ::File.join(@new_resource.install_dir,
-                                                   'framework',
-                                                   'etc',
-                                                   'hostidentifier.properties')
-
-      if ::File.exists?(hostidentifier_properties_path)
-        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
-        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
-        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
-        file.write_file
-      else
-        begin
-          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}") }
-        rescue Exception => e
-          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
-        end
-      end
-    end
   else
     install_subdir = ::File.join(@new_resource.install_dir,
                                  node['arcgis']['data_store']['install_subdir'])
@@ -195,26 +175,6 @@ action :install do
         file.write_file
       else
         ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{@new_resource.data_dir}") }
-      end
-    end
-
-    if node['arcgis']['data_store']['preferredidentifier'] != 'hostname'
-      hostidentifier_properties_path = ::File.join(install_subdir,
-                                                   'framework',
-                                                   'etc',
-                                                   'hostidentifier.properties')
-
-      if ::File.exists?(hostidentifier_properties_path)
-        file = Chef::Util::FileEdit.new(hostidentifier_properties_path)
-        file.search_file_replace(/^#preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
-        file.search_file_replace(/^preferredidentifier.*/, "preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}")
-        file.write_file
-      else
-        begin
-          ::File.open(hostidentifier_properties_path, 'w') { |f| f.write("preferredidentifier=#{node['arcgis']['data_store']['preferredidentifier']}") }
-        rescue Exception => e
-          Chef::Log.warn "Failed to set preferredidentifier property. " + e.message
-        end
       end
     end
   end
@@ -443,27 +403,38 @@ end
 
 action :change_backup_location do
   if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools\\changebackuplocation')
-    is_shared_folder = @new_resource.backup_dir.start_with?('\\\\')? 'true' : 'false'
-    args = "\"#{@new_resource.backup_dir}\" --is-shared-folder #{is_shared_folder} --prompt no"
-    env = { 'AGSDATASTORE' => @new_resource.install_dir }
+    cmd = ::File.join(@new_resource.install_dir, 'tools\\configurebackuplocation')
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                               { :timeout => 600, :environment => env })
-    cmd.run_command
-    cmd.error!
+    # Use configurebackuplocation tool if it exists (the tool is available since 10.5).
+    if ::File.exists?(cmd)
+      args = "--location \"#{@new_resource.backup_dir}\" --prompt no"
+    else
+      cmd = ::File.join(@new_resource.install_dir, 'tools\\changebackuplocation')
+      is_shared_folder = @new_resource.backup_dir.start_with?('\\\\')? 'true' : 'false'
+      args = "\"#{@new_resource.backup_dir}\" --is-shared-folder #{is_shared_folder} --prompt no"
+    end
+
+    env = { 'AGSDATASTORE' => @new_resource.install_dir }
   else
     install_subdir = ::File.join(@new_resource.install_dir,
                                  node['arcgis']['data_store']['install_subdir'])
-    cmd = ::File.join(install_subdir, 'tools/changebackuplocation.sh')
-    args = "\"#{@new_resource.backup_dir}\" --is-shared-folder true --prompt no"
-    run_as_user = @new_resource.run_as_user
+    cmd = ::File.join(install_subdir, 'tools/configurebackuplocation.sh')
+    if ::File.exists?(cmd)
+      args = "--location \"#{@new_resource.backup_dir}\" --prompt no"
+    else
+      cmd = ::File.join(install_subdir, 'tools/changebackuplocation.sh')
+      args = "\"#{@new_resource.backup_dir}\" --is-shared-folder true --prompt no"
+    end
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                               { :timeout => 600, :user => run_as_user })
-    cmd.run_command
-    cmd.error!
+    run_as_user = @new_resource.run_as_user
   end
+
+  cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                             { :timeout => 600,
+                               :user => run_as_user,
+                               :environment => env})
+  cmd.run_command
+  cmd.error!
 
   new_resource.updated_by_last_action(true)
 end

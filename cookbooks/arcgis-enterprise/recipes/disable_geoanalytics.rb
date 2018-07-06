@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis
 # Recipe:: disable_geoanalytics
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,16 +26,7 @@ arcgis_enterprise_portal "Disable GeoAnalytics" do
   server_username node['arcgis']['server']['admin_username']
   server_password node['arcgis']['server']['admin_password']
   is_hosting node['arcgis']['server']['is_hosting']
-  if node['platform'] == 'windows'
-    only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-  else
-    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                               node['hostname'],
-                                               node['arcgis']['version'],
-                                               :ArcGISPortal) }
-    notifies :configure_autostart, 'arcgis_enterprise_portal[Configure arcgisportal service]', :immediately
-  end
-  action :disable_geoanalytics
+  server_function ''
+  action :enable_server_function
 end
-
 

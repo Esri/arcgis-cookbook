@@ -40,7 +40,7 @@ action :system do
       # NOTE: ArcGIS products are not officially supported on debian linux family
     end
   end
-  
+
   new_resource.updated_by_last_action(true)
 end
 
@@ -91,7 +91,7 @@ action :uninstall do
     cmd.run_command
     cmd.error!
   else
-    install_subdir = ::File.join(@new_resource.install_dir, node['arcgis']['licensemanager']['install_subdir']) 
+    install_subdir = ::File.join(@new_resource.install_dir, node['arcgis']['licensemanager']['install_subdir'])
     cmd = ::File.join(install_subdir, 'uninstallLicenseManager')
     args = "-s"
 

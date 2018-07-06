@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: server
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,67 +17,14 @@
 # limitations under the License.
 #
 
-if node['platform'] == 'windows'
-  arcgis_enterprise_server 'Update ArcGIS Server service logon account' do
-    install_dir node['arcgis']['server']['install_dir']
-    run_as_user node['arcgis']['run_as_user']
-    run_as_password node['arcgis']['run_as_password']
-    only_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
-    subscribes :update_account, "user[#{node['arcgis']['run_as_user']}]", :immediately
-    action :nothing
-  end
-end
-
-arcgis_enterprise_server "Install System Requirements:#{recipe_name}" do
-  action :system
-  only_if { node['arcgis']['server']['install_system_requirements'] }
-end
-
-arcgis_enterprise_server 'Unpack ArcGIS Server Setup' do
-  setup_archive node['arcgis']['server']['setup_archive']
-  setups_repo node['arcgis']['repository']['setups']
-  run_as_user node['arcgis']['run_as_user']
-  only_if { ::File.exist?(node['arcgis']['server']['setup_archive']) &&
-            !::File.exist?(node['arcgis']['server']['setup']) }
-  if node['platform'] == 'windows'
-    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
-  else
-    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                               node['hostname'],
-                                               node['arcgis']['version'],
-                                               :ArcGISServer) }
-  end
-  action :unpack
-end
-
-arcgis_enterprise_server 'Setup ArcGIS Server' do
-  setup node['arcgis']['server']['setup']
-  install_dir node['arcgis']['server']['install_dir']
-  python_dir node['arcgis']['python']['install_dir']
-  run_as_user node['arcgis']['run_as_user']
-  run_as_password node['arcgis']['run_as_password']
-  if node['platform'] == 'windows'
-    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
-  else
-    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                               node['hostname'],
-                                               node['arcgis']['version'],
-                                               :ArcGISServer) }
-  end
-  action :install
-end
-
-arcgis_enterprise_server 'Configure arcgisserver service' do
-  install_dir node['arcgis']['server']['install_dir']
-  only_if { node['arcgis']['server']['configure_autostart'] }
-  action :configure_autostart
-end
+include_recipe 'arcgis-enterprise::install_server'
 
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
   retries 2
   retry_delay 30
+  notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
   not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
@@ -93,6 +40,21 @@ file 'Cache server authorization file' do
   sensitive true
   subscribes :create, 'arcgis_enterprise_server[Authorize ArcGIS Server]', :immediately
   only_if { node['arcgis']['cache_authorization_files'] }
+  action :nothing
+end
+
+# Set hostname in hostname.properties file
+template ::File.join(node['arcgis']['server']['install_dir'],
+                     node['arcgis']['server']['install_subdir'],
+                     'framework', 'etc', 'hostname.properties') do
+  source 'hostname.properties.erb'
+  variables ( {:hostname => node['arcgis']['server']['hostname']} )
+  notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
+  not_if { node['arcgis']['server']['hostname'].empty? }
+end
+
+# Restart ArcGIS Server
+arcgis_enterprise_server 'Stop ArcGIS Server' do
   action :nothing
 end
 
@@ -154,10 +116,10 @@ arcgis_enterprise_server 'Configure HTTPS' do
 end
 
 # Restart ArcGIS Server
-arcgis_enterprise_server 'Start ArcGIS Server' do
-  action :stop
-end
+#arcgis_enterprise_server 'Stop ArcGIS Server' do
+#  action :stop
+#end
 
-arcgis_enterprise_server 'Start ArcGIS Server' do
-  action :start
-end
+#arcgis_enterprise_server 'Start ArcGIS Server' do
+#  action :start
+#end

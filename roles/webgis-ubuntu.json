@@ -1,13 +1,10 @@
 {
   "java":{
     "install_flavor":"oracle",
-    "jdk_version":"8",
+    "jdk_version":"7",
     "oracle":{
       "accept_oracle_download_terms":true
     }
-  },
-  "tomcat":{
-    "instance_name":"arcgis"
   },
   "arcgis":{
     "run_as_user":"arcgis",
@@ -46,7 +43,6 @@
   "run_list":[
     "recipe[arcgis-enterprise::system]",
     "recipe[java]",
-    "recipe[esri-tomcat]",
     "recipe[iptables]",
     "recipe[arcgis-enterprise::iptables]",
     "recipe[arcgis-enterprise::server]",

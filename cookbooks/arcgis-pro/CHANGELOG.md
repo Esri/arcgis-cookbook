@@ -3,6 +3,14 @@ arcgis-pro cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-pro cookbook.
 
+3.2.1
+-----
+- Added support for ArcGIS Pro 2.2.
+- Added patches recipe
+- Added 3 installation modes for ArcGIS Pro : SINGLE_USE | CONCURRENT_USE | NAMED_USER
+- Add ec2 test kitchen
+- Update default attributes of pro setup.
+
 3.2.0
 -----
 - Added support for ArcGIS Pro 2.1.

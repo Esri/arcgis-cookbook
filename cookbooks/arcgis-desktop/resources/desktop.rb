@@ -17,8 +17,10 @@
 # limitations under the License.
 #
 
-actions :system, :install, :uninstall, :authorize
+actions :system, :unpack, :install, :uninstall, :authorize
 
+attribute :setup_archive, :kind_of => String
+attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String

@@ -24,7 +24,7 @@ unless node['arcgis']['hosts'].nil?
       hostname host
       ip_address ip
       unique true
-      action :create
+      action :append
     end
   end
 end

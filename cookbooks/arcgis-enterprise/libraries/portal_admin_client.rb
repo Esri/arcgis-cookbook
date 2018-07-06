@@ -109,10 +109,10 @@ module ArcGIS
 
         Chef::Log.info("Portal upgrade completed successfully.")
 
-        true
+        return true
       end
 
-      false
+      return false
     end
 
     def post_upgrade_required?
@@ -146,6 +146,49 @@ module ArcGIS
 
         request.set_form_data(
           'token' => token,
+          'f' => 'json')
+
+        response = send_request(request)
+
+        validate_response(response)
+      end
+    end
+
+    def reindex(mode='FULL_MODE', includes='')
+      Chef::Log.info("Reindexing portal content...")
+
+      request = Net::HTTP::Post.new(URI.parse(@portal_url +
+        "/portaladmin/system/indexer/reindex").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      request.set_form_data(
+        'token' => token,
+        'mode' => mode,
+        'includes' => includes,
+        'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+    end
+
+    def upgrade_livingatlas(group_ids)
+      Chef::Log.info("Upgrading Living Atlas...")
+
+      request = Net::HTTP::Post.new(URI.parse(@portal_url +
+        "/portaladmin/system/content/livingatlas/upgrade").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      group_ids.each do |group_id|
+        request.set_form_data(
+          'token' => token,
+          'groupId' => group_id,
           'f' => 'json')
 
         response = send_request(request)
@@ -459,6 +502,24 @@ module ArcGIS
 
       validate_response(response)
     end
+	
+	def set_allssl(allssl)
+      token = generate_token(@portal_url + '/sharing/generateToken')
+
+      request = Net::HTTP::Post.new(URI.parse(
+        @portal_url + '/sharing/rest/portals/self/update').request_uri)
+      request.add_field('Referer', 'referer')
+
+      request.set_form_data('token' => token,
+                            'allSSL' => allssl,
+                            'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
+    end
 
     def webadaptors_shared_key
       uri = URI.parse(@portal_url + '/portaladmin/system/webadaptors/config/')
@@ -547,8 +608,8 @@ module ArcGIS
       response = send_request(request)
 
       validate_response(response)
-    end		
-	
+    end
+
     def add_root_cert(cert_location, cert_alias, norestart)
       begin
         require 'net/http/post/multipart'
@@ -596,7 +657,7 @@ module ArcGIS
 
       response = http.request(request)
 
-      if response.code.to_i == 301
+      if [301, 302].include? response.code.to_i
         Chef::Log.debug("Moved to: #{response.header['location']}")
 
         uri = URI.parse(response.header['location'])

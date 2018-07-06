@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: default
 #
-# Copyright 2015 Esri
+# Copyright 2018 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
-default['arcgis']['version'] = '10.6'
+default['arcgis']['version'] = '10.6.1'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
@@ -31,10 +31,8 @@ default['arcgis']['configure_windows_firewall'] = false
 case node['platform']
 when 'windows'
   default['arcgis']['python']['install_dir'] = 'C:\\Python27'
-  default['arcgis']['repository']['setups'] = ENV['USERPROFILE'] + '\\Documents'
-  default['arcgis']['repository']['archives'] = ENV['USERPROFILE'] + '\\Software\\Esri'
-  default['arcgis']['repository']['patches'] = node['arcgis']['repository']['archives'] + '\\Patches' 
-  default['arcgis']['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
+  default['arcgis']['repository']['setups'] = ::File.join(ENV['USERPROFILE'], 'Documents')
+  repository_archives = ::File.join(ENV['USERPROFILE'], 'Software\\Esri')
   default['arcgis']['post_install_script'] = 'C:\\imageryscripts\\deploy.bat'
 else # node['platform'] == 'linux'
   if node['current_user'] != node['arcgis']['run_as_user']
@@ -48,9 +46,22 @@ else # node['platform'] == 'linux'
   default['arcgis']['python']['install_dir'] = '' # Not needed on Linux.
   default['arcgis']['web_server']['webapp_dir'] = '' # Depends on type of web server
   default['arcgis']['repository']['setups'] = '/opt/arcgis'
-  default['arcgis']['repository']['archives'] = '/tmp/software/esri'
-  default['arcgis']['repository']['patches'] = node['arcgis']['repository']['archives'] + '/patches'
-  default["arcgis"]['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
+  repository_archives = '/tmp/software/esri'
   default['arcgis']['post_install_script'] = '/arcgis/imageryscripts/deploy.sh'
 end
 
+default['arcgis']['repository']['archives'] = repository_archives
+
+if node['arcgis']['repository']['archives'].nil?
+  default['arcgis']['repository']['patches'] = ::File.join(repository_archives, 'patches')
+else
+  default['arcgis']['repository']['patches'] = ::File.join(node['arcgis']['repository']['archives'], 'patches')
+end
+
+if node['arcgis']['repository']['patches'].nil?
+  default['arcgis']['patches']['local_patch_folder'] = ::File.join(repository_archives, 'patches')
+else
+  default['arcgis']['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
+end
+
+default['arcgis']['python']['runtime_environment'] = ''

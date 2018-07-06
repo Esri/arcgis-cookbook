@@ -24,13 +24,10 @@ else
 end
 
 data_items = [{
-  'data_item_path' => '/enterpriseDatabases/managedDatabase',
+  'data_item_path' => '/enterpriseDatabases/registeredDatabase',
   'connection_file' => ::File.join(connection_files, 'RDS_egdb.sde'),
-  'is_managed' => true
-}, {
-  'data_item_path' => '/namedWorkspaces/replicatedDatabase',
-  'connection_file' => ::File.join(connection_files, 'RDS_geodata.sde'),
-  'is_managed' => false
+  'is_managed' => false,
+  'connection_type' => 'shared'
 }]
 
 ruby_block 'Copy license' do
@@ -109,7 +106,7 @@ ruby_block 'Register RDS EGDB' do
 
       connection_string = rest_client.get_database_connection_string(item_id)
 
-      admin_client.register_database(item['data_item_path'], connection_string, item['is_managed'])
+      admin_client.register_database(item['data_item_path'], connection_string, item['is_managed'], item['connection_type'])
     end
   end
   subscribes :run, "execute[Create EGDB in SQL Server RDS]", :immediately

@@ -12,6 +12,7 @@ Requirements
 * 10.5
 * 10.5.1
 * 10.6
+* 10.6.1
 
 ### Supported ArcGIS software
 * ArcGIS Server
@@ -28,7 +29,7 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04 (when deploying ArcGIS Server on Amazon Web Services)
+* Ubuntu 14.04, 16.04 
 * Rhel 6.5, 7.0
 
 ### Dependencies
@@ -44,12 +45,12 @@ The following cookbooks are required:
 Attributes
 ----------
 #### General
-* `node['arcgis']['version']` = ArcGIS version. Default value is `10.5`.
+* `node['arcgis']['version']` = ArcGIS version. Default value is `10.6.1`.
 * `node['arcgis']['run_as_user']` = Account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_password']` = Password for the account used to run ArcGIS Server, 
 Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['hosts']` = Hostname to IP address mappings to be added to /etc/hosts file. Default value is `{}`.
-* `node['arcgis']['cache_authorization_files']` = If set to true, the software authorization file is cached on the machine and software authorization is skipped in the subsequent chef runs.
+* `node['arcgis']['cache_authorization_files']` = If set to true, the software authorization file is cached on the machine and software authorization is skipped in the subsequent chef runs. Default value is `false`.
 * `node['arcgis']['configure_windows_firewall']` = If set to true, Windows firewall is configured for ArcGIS applications as specified by the system requirements. Default value is `false`.
 * `node['arcgis']['python']['install_dir']` = Python installation directory. By default Python is installed at `C:\Python27`.
 * `node['arcgis']['repository']['setups']` = Path to folder with ArcGIS software setups. Default path is `%USERPROFILE%\Documents` on Windows and `~/arcgis` on Linux.
@@ -65,6 +66,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['wa_name']` = The name of the Web Adaptor used for ArcGIS Server. Default name is `server`.
 * `node['arcgis']['server']['wa_url']` = URL of the Web Adaptor used for ArcGIS Server. Default name is `https://<FQDN of the machine>/<Server Web Adaptor name>`.
 * `node['arcgis']['server']['domain_name']` = ArcGIS Server domain name. By default, `<node FQDN>` is used.
+* `node['arcgis']['server']['hostname']` = Host name or IP address of ArcGIS Server machine. Default value is  `''`.
 * `node['arcgis']['server']['url']` = ArcGIS Server URL. Default URL is `https://<FQDN of the machine>:6443/arcgis`.
 * `node['arcgis']['server']['private_url']` = ArcGIS Server URL without Web Adaptor. Default URL is `https://<server domain name>:6443/arcgis`.
 * `node['arcgis']['server']['primary_server_url']` = URL of ArcGIS Server site to join. Default is `nil`.
@@ -138,6 +140,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['keystore_password']` = Keystore file password for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['cert_alias']` = SSL certificate alias for Portal for ArcGIS. Default alias is composed of these values:`node['arcgis']['portal']['domain_name']`.
+* `node['arcgis']['portal']['hostname']` = Host name or IP address of Portal for ArcGIS machine specified in hostname.properties file. Default value is  `''`.
+* `node['arcgis']['portal']['hostidentifier']` = Host name or IP address of Portal for ArcGIS machine specified in hostidentifier.properties file. Default value is  `node['arcgis']['portal']['hostname']`.
 * `node['arcgis']['portal']['preferredidentifier']` = Portal for ArcGIS preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['portal']['content_store_type']` = Portal for ArcGIS content store type <FileStore|CloudStore>. Default value is `FileStore`.
 * `node['arcgis']['portal']['content_store_provider']` = Portal for ArcGIS content store provider <Amazon|FileSystem>. Default value is `FileSystem`.
@@ -150,18 +154,22 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['upgrade_rollback']` = Rollback Portal for ArcGIS upgrade in case of failure. Default value is `true`.
 * `node['arcgis']['portal']['root_cert']` = Portal for ArcGIS root certificate. Default value is `''`.
 * `node['arcgis']['portal']['root_cert_alias']` = Portal for ArcGIS root certificate alias. Default value is `''`.
+* `node['arcgis']['portal']['allssl']` = Portal for ArcGIS run in all SSL mode or not. Default value is `false`.
+* `node['arcgis']['portal']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['portal']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 
 
 #### Data Store
 
-* `node['arcgis']['data_store']['data_dir']` = ArcGIS Data Store data directory. Default location is `C:\arcgisdatastore\data` on Windows and `/arcgis/datastore/usr/arcgisdatastore` on Linux.
-* `node['arcgis']['data_store']['backup_dir']` = ArcGIS Data Store backup directory. Default location is `C:\arcgisdatastore\data\backup` on Windows and `/arcgis/datastore/usr/arcgisdatastore/backup` on Linux.
+* `node['arcgis']['data_store']['data_dir']` = ArcGIS Data Store data directory. Default location is `C:\arcgisdatastore` on Windows and `/arcgis/datastore/usr/arcgisdatastore` on Linux.
+* `node['arcgis']['data_store']['backup_dir']` = ArcGIS Data Store backup directory. Default location is `C:\arcgisdatastore\backup` on Windows and `/arcgis/datastore/usr/arcgisdatastore/backup` on Linux.
 * `node['arcgis']['data_store']['setup']` = Location of ArcGIS Data Store setup executable. Default location is `C:\Temp\ArcGISDataStore\Setup.exe` on Windows and `/tmp/tmp/data-store-cd/Setup` on Linux.
 * `node['arcgis']['data_store']['lp-setup']` = The location of language pack for ArcGIS Data Store. Default location is `nil`.
 * `node['arcgis']['data_store']['setup_archive']` = Path to ArcGIS Data Store setup archive. Default value depends on `node['arcgis']['version']` attribute value. 
 * `node['arcgis']['data_store']['install_dir']` = ArcGIS Data Store installation directory. By default, ArcGIS Data Store is installed to `%ProgramW6432%\ArcGIS\DataStore` on Windows and `/` on Linux.
 * `node['arcgis']['data_store']['install_system_requirements']` = If set to true, the required third party libraries are installed on the machine before running ArcGIS Data Store setup. Default value is `true`.
 * `node['arcgis']['data_store']['configure_autostart']` = If set to true, on Linux the ArcGIS Data Store is configured to start with the operating system. Default value is `true`.
+* `node['arcgis']['data_store']['hostidentifier']` = Host name or IP address of ArcGIS Data Store machine. Default value is  `''`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, <relational|tileCache|spatiotemporal>. By default, `tileCache,relational` is used.
 
@@ -190,13 +198,25 @@ Installs and configures ArcGIS Data Store on primary machine.
 Installs and configures ArcGIS Data Store on standby machine.
 
 ### arcgis-enterprise::disable_geoanalytics
-Resets the big data analytics configuration on the Portal for ArcGIS.
+Resets the function of the federated server in the Portal for ArcGIS.
+
+### arcgis-enterprise::disable_imagehosting
+Resets the function of the federated server in the Portal for ArcGIS.
+
+### arcgis-enterprise::disable_rasteranalytics
+Resets the function of the federated server in the Portal for ArcGIS.
 
 ### arcgis-enterprise::egdb
 Registers enterprise geodatabases with ArcGIS Server.
 
 ### arcgis-enterprise::enable_geoanalytics
-Configures the Portal for ArcGIS to perform big data analytics.
+Registers ArcGIS Server with GeoAnalytics function to the Portal for ArcGIS.
+
+### arcgis-enterprise::enable_imagehosting
+Registers ArcGIS Server with ImageHosting function to the Portal for ArcGIS.
+
+### arcgis-enterprise::enable_rasteranalytics
+Registers ArcGIS Server with RasterAnalytics function to the Portal for ArcGIS.
 
 ### arcgis-enterprise::federation
 Registers and federates ArcGIS Server with Portal for ArcGIS.
@@ -210,6 +230,21 @@ Creates entries in /etc/hosts file for the specified hostname to IP address map.
 ### arcgis-enterprise::iptables
 Configures iptables to forward ports 80/443 to 8080/8443.
 
+### arcgis-enterprise::install_datastore
+Installs ArcGIS Data Store on the machine.
+
+### arcgis-enterprise::install_portal
+Installs Portal for ArcGIS on the machine.
+
+### arcgis-enterprise::install_portal_wa
+Installs ArcGIS Web Adaptor instance for Portal for ArcGIS.
+
+### arcgis-enterprise::install_server
+Installs ArcGIS Server on the machine.
+
+### arcgis-enterprise::install_server_wa
+Installs ArcGIS Web Adaptor instance for ArcGIS Server.
+
 ### arcgis-enterprise::lp-install
 Installs language packs for ArcGIS Server software.
 
@@ -218,6 +253,9 @@ Installs hot fixes and patches for ArcGIS Enterprise software.
 
 ### arcgis-enterprise::portal
 Installs and configures Portal for ArcGIS.
+
+### arcgis-enterprise::portal_security
+Configures Portal for ArcGIS identity stores and assigns privileges to roles.
 
 ### arcgis-enterprise::portal_standby
 Installs and configures Portal for ArcGIS on standby machine
@@ -249,6 +287,12 @@ Publishes services to ArcGIS Server.
 ### arcgis-enterprise::sql_alias 
 Creates 'egdbhost' alias for SQL Server RDS instance endpoint domain name.
 
+### arcgis-enterprise::stop_machine
+Stops server machine in the ArcGIS Server site.
+
+### arcgis-enterprise::stop_server
+Stops ArcGIS Server service on the machine.
+
 ### arcgis-enterprise::system
 Configures system requirements for ArcGIS Enterprise software by invoking ':system' actions for ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, and ArcGIS Web Adaptor resources, includes arcgis::hosts recipe.
 
@@ -257,6 +301,9 @@ Installs ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Ada
 
 ### arcgis-enterprise::enterprise_uninstalled
 Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
+
+### arcgis-enterprise::unregister_machine
+Unregister server machine from the ArcGIS Server site.
 
 ### arcgis-enterprise::enterprise_validate
 Checks if ArcGIS Enterprise setups and authorization files exist.
