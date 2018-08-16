@@ -139,7 +139,7 @@ default['arcgis']['portal'].tap do |portal|
     portal['install_dir'] = '/'
     portal['install_subdir'] = 'arcgis/portal'
 
-    if !node['arcgis']['portal']['install_dir'].nil?
+    if node['arcgis']['portal']['install_dir'].nil?
       portal_install_dir = portal['install_dir']
     else
       portal_install_dir = node['arcgis']['portal']['install_dir']
