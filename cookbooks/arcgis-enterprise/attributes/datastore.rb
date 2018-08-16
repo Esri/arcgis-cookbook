@@ -102,7 +102,7 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['install_dir'] = '/'
     data_store['install_subdir'] = 'arcgis/datastore'
 
-    if !node['arcgis']['data_store']['install_dir'].nil?
+    if node['arcgis']['data_store']['install_dir'].nil?
       data_store_install_dir = data_store['install_dir']
     else
       data_store_install_dir = node['arcgis']['data_store']['install_dir']

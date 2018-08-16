@@ -147,7 +147,7 @@ default['arcgis']['server'].tap do |server|
     server['install_dir'] = '/'
     server['install_subdir'] = 'arcgis/server'
 
-    if !node['arcgis']['server']['install_dir'].nil?
+    if node['arcgis']['server']['install_dir'].nil?
       server_install_dir = server['install_dir']
     else
       server_install_dir = node['arcgis']['server']['install_dir']
