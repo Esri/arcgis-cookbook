@@ -10,17 +10,28 @@
       "instance_name":"arcgis"
   },
   "arcgis":{
+<<<<<<< HEAD
     "run_as_user":"arcgis",
+=======
+    "run_as_user":"centos",
+>>>>>>> dd679e7b5e9c4eb3bf238ea0f198a5feb0c6b608
     "version":"10.6.1",
     "web_server":{
       "webapp_dir":"/opt/tomcat_arcgis/webapps"
     },
     "web_adaptor":{
           "admin_access":true,
+<<<<<<< HEAD
       "setup":"/home/arcgis/binaries/WebAdaptor/Setup"
     },
     "data_store":{
       "setup":"/home/arcgis/binaries/ArcGISDataStore_Linux/Setup"
+=======
+      "setup":"/home/centos/binaries/WebAdaptor/Setup"
+    },
+    "data_store":{
+      "setup":"/home/centos/binaries/ArcGISDataStore_Linux/Setup"
+>>>>>>> dd679e7b5e9c4eb3bf238ea0f198a5feb0c6b608
     },
     "server":{
 	  "private_url":"https://ha1.vmfleray.int:6443/arcgis",
@@ -33,8 +44,13 @@
       "directories_root":"/shared/arcgis/arcgisserver",
       "admin_username":"siteadmin",
       "admin_password":"MY_SUPER_PASSWORD",
+<<<<<<< HEAD
       "setup":"/home/arcgis/binaries/ArcGISServer/Setup",
       "authorization_file":"/home/arcgis/binaries/ArcGISGISServerAdvanced_2020.prvc"
+=======
+      "setup":"/home/centos/binaries/ArcGISServer/Setup",
+      "authorization_file":"/home/centos/binaries/ArcGISGISServerAdvanced_2020.prvc"
+>>>>>>> dd679e7b5e9c4eb3bf238ea0f198a5feb0c6b608
     },
     "portal":{
 	  "private_url":"https://ha1.vmfleray.int:7443/arcgis",
@@ -46,8 +62,13 @@
       "admin_email":"admin@mydomain.com",
       "security_question":"Your favorite ice cream flavor?",
       "security_question_answer":"vanilla",
+<<<<<<< HEAD
       "setup":"/home/arcgis/binaries/PortalForArcGIS/Setup",
       "authorization_file":"/home/arcgis/binaries/PortalforArcGIS_Level2NamedUsers_2020.prvc"
+=======
+      "setup":"/home/centos/binaries/PortalForArcGIS/Setup",
+      "authorization_file":"/home/centos/binaries/PortalforArcGIS_Level2NamedUsers_2020.prvc"
+>>>>>>> dd679e7b5e9c4eb3bf238ea0f198a5feb0c6b608
     }
   },
   "run_list":[
