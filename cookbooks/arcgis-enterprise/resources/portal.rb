@@ -23,6 +23,15 @@ actions :system, :unpack, :install, :uninstall, :stop, :start,
         :unregister_standby, :register_server, :federate_server,
         :enable_server_function, :set_allssl, :set_identity_store
 
+attribute :http_proxy_host, :kind_of => String
+attribute :https_proxy_host, :kind_of => String
+attribute :http_proxy_port, :kind_of => String
+attribute :https_proxy_port, :kind_of => String
+attribute :non_proxy_hosts, :kind_of => String
+attribute :http_proxy_user, :kind_of => String
+attribute :https_proxy_user, :kind_of => String
+attribute :http_proxy_password, :kind_of => String
+attribute :https_proxy_password, :kind_of => String
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String

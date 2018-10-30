@@ -52,6 +52,17 @@ default['arcgis']['portal'].tap do |portal|
 
   portal['private_url'] = "https://#{portal_domain_name}:7443/arcgis"
   portal['web_context_url'] = ''
+    
+  portal['http_proxy_host'] = ''
+  portal['https_proxy_host'] = ''
+  portal['http_proxy_port'] = ''
+  portal['https_proxy_port'] = ''
+  portal['non_proxy_hosts'] = ''
+  portal['http_proxy_user'] = ''
+  portal['https_proxy_user'] = ''
+  portal['http_proxy_password'] = ''
+  portal['https_proxy_password'] = ''
+  
   portal['admin_username'] = 'admin'
   if ENV['ARCGIS_PORTAL_ADMIN_PASSWORD'].nil?
     portal['admin_password'] = 'changeit'

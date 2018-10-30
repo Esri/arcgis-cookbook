@@ -332,8 +332,44 @@ action :create_site do
       system_properties['WebContextURL'] = @new_resource.web_context_url
     end
 
-    unless @new_resource.portal_private_url == node.default['arcgis']['portal']['private_url']
+    unless @new_resource.portal_private_url.empty?
       system_properties['privatePortalURL'] = @new_resource.portal_private_url
+    end
+
+    unless @new_resource.http_proxy_host.empty?
+      system_properties['httpProxyHost'] = @new_resource.http_proxy_host
+    end
+
+    unless @new_resource.https_proxy_host.empty?
+      system_properties['httpsProxyHost'] = @new_resource.https_proxy_host
+    end
+
+    unless @new_resource.http_proxy_port.empty?
+      system_properties['httpProxyPort'] = @new_resource.http_proxy_port
+    end
+
+    unless @new_resource.https_proxy_port.empty?
+      system_properties['httpsProxyPort'] = @new_resource.https_proxy_port
+    end
+	
+    unless @new_resource.http_proxy_user.empty?
+      system_properties['httpProxyUser'] = @new_resource.http_proxy_user
+    end
+
+    unless @new_resource.https_proxy_user.empty?
+      system_properties['httpsProxyUser'] = @new_resource.https_proxy_user
+    end
+
+    unless @new_resource.http_proxy_password.empty?
+      system_properties['httpProxyPassword'] = @new_resource.http_proxy_password
+    end
+	
+    unless @new_resource.https_proxy_password.empty?
+      system_properties['httpsProxyPassword'] = @new_resource.https_proxy_password
+    end
+
+    unless @new_resource.non_proxy_hosts.empty?
+      system_properties['nonProxyHosts'] = @new_resource.non_proxy_hosts
     end
 
     portal_admin_client.update_system_properties(system_properties)

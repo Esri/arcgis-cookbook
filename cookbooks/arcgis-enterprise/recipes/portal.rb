@@ -97,6 +97,15 @@ arcgis_enterprise_portal 'Create Portal Site' do
   upgrade_rollback node['arcgis']['portal']['upgrade_rollback']
   root_cert node['arcgis']['portal']['root_cert']
   root_cert_alias node['arcgis']['portal']['root_cert_alias']
+  http_proxy_host node['arcgis']['portal']['http_proxy_host']
+  https_proxy_host node['arcgis']['portal']['https_proxy_host']
+  http_proxy_port node['arcgis']['portal']['http_proxy_port']
+  https_proxy_port node['arcgis']['portal']['https_proxy_port']
+  non_proxy_hosts node['arcgis']['portal']['non_proxy_hosts']
+  http_proxy_user node['arcgis']['portal']['http_proxy_user']
+  https_proxy_user node['arcgis']['portal']['https_proxy_user']
+  http_proxy_password node['arcgis']['portal']['http_proxy_password']
+  https_proxy_password node['arcgis']['portal']['https_proxy_password']
   action :create_site
 end
 
