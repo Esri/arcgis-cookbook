@@ -353,7 +353,7 @@ action :authorize do
 
     node['arcgis']['server']['authorization_retries'].times do
       if sa_cmd.error?
-        Chef::Log.error format_for_exception + '  Retrying software authorization...'
+        Chef::Log.error sa_cmd.format_for_exception + '  Retrying software authorization...'
         sleep(rand(120..300))
       else
         sleep(30)
