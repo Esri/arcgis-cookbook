@@ -353,7 +353,7 @@ action :authorize do
 
     node['arcgis']['server']['authorization_retries'].times do
       if sa_cmd.error?
-        Chef::Log.error format_for_exception + '  Retrying software authorization...'
+        Chef::Log.error sa_cmd.format_for_exception + '  Retrying software authorization...'
         sleep(rand(120..300))
       else
         sleep(30)
@@ -448,10 +448,37 @@ action :join_site do
             '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
             '-f', '"' + config_store_connection_file + '"', '-c', 'default'].join(' ')
   
+          # Mixlib::ShellOut does not load user profile of the impersonated user account,
+          # so the user's environment variables such as USERNAME, USERPROFILE, TEMP, TMP,
+          # APPDATA, and LOCALAPPDATA still point to the parent process user name and directories.
+          # See https://github.com/chef/mixlib-shellout/issues/168
+          # set the environment variables to get around this problem
+
+          homedrive = ENV['HOMEDRIVE'].nil? ? 'C:' : ENV['HOMEDRIVE']
+
+          if node['arcgis']['run_as_user'].include? "\\"
+            userdomain, *username = run_as_user.split(/\\/)
+          else
+            userdomain = node['hostname']
+            username = node['arcgis']['run_as_user']
+          end
+
+          userprofile = homedrive + '\\Users\\' + username
+          env = { 'USERNAME' => username,
+                  'USERDOMAIN' => userdomain,
+                  'HOME' => homedrive + '/Users/' + username,
+                  'HOMEPATH' => '\\Users\\' + username,
+                  'USERPROFILE' => userprofile,
+                  'APPDATA' => userprofile + '\\AppData\\Roaming',
+                  'LOCALAPPDATA' => userprofile + '\\AppData\\Local',
+                  'TEMP' => userprofile + '\\AppData\\Local\\Temp',
+                  'TMP' => userprofile + '\\AppData\\Local\\Temp' }
+
           cmd = Mixlib::ShellOut.new(join_site_tool_cmd, 
             { :user => node['arcgis']['run_as_user'],
               :password => node['arcgis']['run_as_password'],
-              :timeout => 1800 })
+              :timeout => 1800,
+              :environment => env })
           cmd.run_command
           cmd.error!
         else
