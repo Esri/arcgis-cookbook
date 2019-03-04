@@ -102,7 +102,7 @@ end
 
 execute 'Copy rabbitmq file' do
   command "copy \"#{node['arcgis']['server']['install_dir']}\\framework\\runtime\\rabbitmq\\etc\\rabbitmq\" " + 
-          "\"C:\\Users\\#{node['arcgis']['run_as_user']}\\AppData\\Roaming\\RabbitMQ\""
+          "\"C:\\Users\\#{node['arcgis']['run_as_user'].split("\\").last}\\AppData\\Roaming\\RabbitMQ\""
   user node['arcgis']['run_as_user']
   password node['arcgis']['run_as_password']
   # ignore_failure true
@@ -111,8 +111,8 @@ end
 
 # Remove everything under C:\ProgramData\Esri\GeoEvent-Gateway before starting GeoEvent.
 directory "#{ENV['ProgramData']}\\Esri\\GeoEvent-Gateway" do
-  recursive true
   only_if { node['platform'] == 'windows' }
+  recursive true
   action :delete
 end
 
