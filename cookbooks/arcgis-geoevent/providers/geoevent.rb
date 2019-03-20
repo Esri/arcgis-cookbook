@@ -59,9 +59,8 @@ end
 
 action :install do
   if node['platform'] == 'windows'
-    run_as_password = @new_resource.run_as_password
-
     cmd = @new_resource.setup
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
     args = "/qb PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
@@ -194,7 +193,6 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load gateway systemd unit file]', :immediately
-      not_if { ::File.exists?(gateway_path) }
       only_if { node['arcgis']['geoevent']['configure_gateway_service'] }
     end
 
@@ -220,7 +218,6 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load geoevent systemd unit file]', :immediately
-      not_if { ::File.exists?(geoevent_path) }
     end
 
     execute 'Load geoevent systemd unit file' do

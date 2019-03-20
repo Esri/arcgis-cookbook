@@ -1,0 +1,37 @@
+/************************************
+Script: RDS_create_sde_login_user.sql
+
+Description: This script creates the sde login and user for egdb & geodata databases
+
+Input: <%=@db_username%> user password
+
+Author: Esri
+*************************************/
+
+declare @SDEPword nvarchar(128)
+declare @SQLSyntax nvarchar(2500)
+
+set @SDEPword = '$(sdepassword)'
+
+--create <%=@db_username%> login
+
+set @SQLSyntax = 'CREATE LOGIN <%=@db_username%> WITH PASSWORD = ''' + @SDEPword + ''', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=ON;'
+
+Exec (@SQLSyntax);
+
+<% @data_items.each do |item| -%>
+
+--create <%=@db_username%> user in <%= item['database'] %> database
+
+USE <%= item['database'] %>;
+GO
+CREATE USER <%=@db_username%> FOR LOGIN <%=@db_username%>;
+GO
+ALTER USER <%=@db_username%> WITH DEFAULT_SCHEMA= sde;
+GO
+CREATE SCHEMA sde AUTHORIZATION <%=@db_username%>;
+GO
+GRANT CREATE FUNCTION, CREATE PROCEDURE, CREATE TABLE, CREATE VIEW TO <%=@db_username%>;
+GO
+
+<% end -%>

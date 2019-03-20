@@ -1,0 +1,37 @@
+#Usage .\Create-Aliases -server "servername"
+
+param( [string] $server= $( Throw "You must supply a value for -server" ) )
+
+# Set the two variables and then run in a PowerShell prompt
+$SQLAliasName = "egdbhost"
+$sqlserver = "$server,1433" # Update as required. Change the port if using a custom port.
+
+# This script creates a 64bit and 32bit SQL Alias on the server.
+
+Write-Host "Creating x64 SQL Alias"
+
+$x64path = "HKLM:SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo"
+$exists = Get-ItemProperty $x64path $SQLAliasName -ErrorAction SilentlyContinue
+
+if ($exists -eq $null)
+{
+    New-ItemProperty $x64path -name $SQLAliasName -propertytype String -value "DBMSSOCN,$sqlserver"
+}
+else
+{
+    Set-ItemProperty $x64path -name $SQLAliasName -value "DBMSSOCN,$sqlserver"
+}
+
+Write-Host "Creating 32bit SQL Alias"
+
+$x86path = "HKLM:SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo"
+$exists = Get-ItemProperty $x86path $SQLAliasName -ErrorAction SilentlyContinue
+
+if($exists -eq $null)
+{
+    New-ItemProperty $x86path -name $SQLAliasName -propertytype String -value "DBMSSOCN,$sqlserver"
+}
+else
+{
+    Set-ItemProperty $x86path -name $SQLAliasName  -value "DBMSSOCN,$sqlserver"
+}

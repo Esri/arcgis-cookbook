@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs/Configures esri-tomcat'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.3'
-chef_version     '>= 12.6', '< 14.0' if defined? chef_version
+version          '0.1.4'
+chef_version     '>= 13'
 
-depends          'tomcat', '>= 2.5.2'
+depends          'tomcat', '>= 3.2.0'
 depends          'java'
 depends          'openssl'
 

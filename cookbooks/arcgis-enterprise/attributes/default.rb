@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include_attribute 'arcgis-repository'
+
 default['arcgis']['run_as_user'] = 'arcgis'
 if ENV['ARCGIS_RUN_AS_PASSWORD'].nil?
   default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
@@ -23,18 +25,30 @@ else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
-default['arcgis']['version'] = '10.6.1'
+default['arcgis']['version'] = '10.7'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
+if node['cloud']
+  default['arcgis']['configure_cloud_settings'] = true
+else
+  default['arcgis']['configure_cloud_settings'] = false
+end
 
 case node['platform']
 when 'windows'
   default['arcgis']['python']['install_dir'] = 'C:\\Python27'
-  default['arcgis']['repository']['setups'] = ::File.join(ENV['USERPROFILE'], 'Documents')
-  repository_archives = ::File.join(ENV['USERPROFILE'], 'Software\\Esri')
   default['arcgis']['post_install_script'] = 'C:\\imageryscripts\\deploy.bat'
 else # node['platform'] == 'linux'
+  default['arcgis']['packages'] =
+    case node['platform']
+    when 'redhat', 'centos'
+      ['gettext']
+    when 'suse'
+      ['gettext-runtime']
+    else
+      ['autofs', 'gettext-base']
+    end
   if node['current_user'] != node['arcgis']['run_as_user']
     has_sudo_privilege = `id -u`
     if has_sudo_privilege.to_i == 0
@@ -45,23 +59,7 @@ else # node['platform'] == 'linux'
   end
   default['arcgis']['python']['install_dir'] = '' # Not needed on Linux.
   default['arcgis']['web_server']['webapp_dir'] = '' # Depends on type of web server
-  default['arcgis']['repository']['setups'] = '/opt/arcgis'
-  repository_archives = '/tmp/software/esri'
   default['arcgis']['post_install_script'] = '/arcgis/imageryscripts/deploy.sh'
-end
-
-default['arcgis']['repository']['archives'] = repository_archives
-
-if node['arcgis']['repository']['archives'].nil?
-  default['arcgis']['repository']['patches'] = ::File.join(repository_archives, 'patches')
-else
-  default['arcgis']['repository']['patches'] = ::File.join(node['arcgis']['repository']['archives'], 'patches')
-end
-
-if node['arcgis']['repository']['patches'].nil?
-  default['arcgis']['patches']['local_patch_folder'] = ::File.join(repository_archives, 'patches')
-else
-  default['arcgis']['patches']['local_patch_folder'] = node['arcgis']['repository']['patches']
 end
 
 default['arcgis']['python']['runtime_environment'] = ''

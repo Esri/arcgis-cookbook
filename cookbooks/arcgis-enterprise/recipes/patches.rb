@@ -18,6 +18,6 @@
 #
 
 arcgis_enterprise_patches 'Install ArcGIS Enterprise Patches' do
-  only_if { ::File.exists?(node['arcgis']['patches']['local_patch_folder']) }
+  only_if { ::File.exists?(node['arcgis']['repository']['patches']) }
   action :install
 end

@@ -19,6 +19,18 @@
 
 include_recipe 'arcgis-enterprise::install_server'
 
+# Create local server logs directory
+directory node['arcgis']['server']['log_dir'] do
+  owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    mode '0700'
+  end
+  recursive true
+  not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
+           node['arcgis']['server']['log_dir'].start_with?('/net/') }
+  action :create
+end
+
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']

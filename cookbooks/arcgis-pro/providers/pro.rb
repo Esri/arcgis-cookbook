@@ -27,6 +27,16 @@ action :system do
   new_resource.updated_by_last_action(false)
 end
 
+action :unpack do
+  cmd = @new_resource.setup_archive
+  args = "/s /d \"#{@new_resource.setups_repo}\""
+  cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
+  cmd.run_command
+  cmd.error!
+
+  new_resource.updated_by_last_action(true)
+end
+
 action :install do
   cmd = node['arcgis']['pro']['setup']
 

@@ -34,34 +34,9 @@ action :system do
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
     end
-  when 'redhat', 'centos'
-    ['fontconfig', 'freetype', 'gettext', 'libxkbfile', 'libXtst', 'libXrender', 'dos2unix'].each do |pckg|
-      yum_package @new_resource.recipe_name + ':datastore:' + pckg do
-        options '--enablerepo=*-optional'
-        package_name pckg
-        action :install
-      end
-    end
-  when 'suse'
-    ['libGLU1', 'libXdmcp6', 'xorg-x11-server', 'libXfont1'].each do |pckg|
-      package @new_resource.recipe_name + ':datastore:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
-  else
-    # NOTE: ArcGIS products are not officially supported on debian platform family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
-     'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
-     'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
-     'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs',
-     'libxkbfile1'].each do |pckg|
-      package @new_resource.recipe_name + ':datastore:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
+  end
 
+  if node['platform'] != 'windows' && node['arcgis']['run_as_superuser']
     ruby_block 'Set sysctl vm.max_map_count' do
       block do
         Utils.update_file_key_value(node['arcgis']['data_store']['sysctl_conf'],
@@ -120,9 +95,10 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
     args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
-           "PASSWORD=\"#{@new_resource.run_as_password}\""
+           "PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -215,9 +191,9 @@ action :update_account do
   if node['platform'] == 'windows'
     configureserviceaccount = ::File.join(@new_resource.install_dir, 'tools',
                                           'configureserviceaccount.bat')
-
-    args = "/username #{@new_resource.run_as_user} "\
-           "/password #{@new_resource.run_as_password}"
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+    args = "/username \"#{@new_resource.run_as_user}\" "\
+           "/password \"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{configureserviceaccount}\" #{args}\"",
                                { :timeout => 3600 })
@@ -253,6 +229,12 @@ action :configure_autostart do
       arcgisdatastore_path = '/etc/systemd/system/arcgisdatastore.service'
       service_file = 'arcgisdatastore.service.erb'
       template_variables = ({ :datastorehome => datastorehome, :agsuser => agsuser })
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
+          template_variables = template_variables.merge(cloudenvironment)
+        end
+      end
     end
 
     template arcgisdatastore_path do
@@ -263,7 +245,6 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
-      not_if { ::File.exists?(arcgisdatastore_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -313,6 +294,14 @@ end
 
 action :start do
   if node['platform'] == 'windows'
+    if node['arcgis']['configure_cloud_settings']
+      if node['cloud']['provider'] == 'ec2'
+        env 'arcgis_cloud_platform' do
+          value 'aws'
+        end
+      end
+    end
+
     if ::Win32::Service.status('ArcGIS Data Store').current_state != 'running'
       service 'ArcGIS Data Store' do
         notifies :run, "ruby_block[Wait for Data Store to start]", :immediately
@@ -344,6 +333,12 @@ action :start do
       end
     else
       cmd = node['arcgis']['data_store']['start_tool']
+
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cmd = 'arcgis_cloud_platform=aws ' + cmd
+        end
+      end
 
       if node['arcgis']['run_as_superuser']
         cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
@@ -437,4 +432,37 @@ action :change_backup_location do
   cmd.error!
 
   new_resource.updated_by_last_action(true)
+end
+
+action :prepare_upgrade do
+  @new_resource.types.split(',').each do |type| 
+    if node['platform'] == 'windows'
+      cmd = ::File.join(@new_resource.install_dir, 'tools\\prepareupgrade.bat')
+      args = "--store \"#{type}\" --server-url \"#{@new_resource.server_url}\" --server-admin \"#{@new_resource.username}\" --server-password \"#{@new_resource.password}\" --data-dir \"#{@new_resource.data_dir}\" --prompt no"
+      env = { 'AGSDATASTORE' => @new_resource.install_dir }
+    else
+      install_subdir = ::File.join(@new_resource.install_dir,
+                                  node['arcgis']['data_store']['install_subdir'])
+      cmd = ::File.join(install_subdir, 'tools/prepareupgrade.sh')
+      args = "--store \"#{type}\" --server-url \"#{@new_resource.server_url}\" --server-admin \"#{@new_resource.username}\" --server-password \"#{@new_resource.password}\" --data-dir \"#{@new_resource.data_dir}\" --prompt no"
+    end
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                              { :timeout => 600,
+                                :environment => env})
+    cmd.run_command
+    cmd.error!
+  end 
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :configure_hostidentifiers_properties do
+  template ::File.join(node['arcgis']['data_store']['install_dir'],
+                       node['arcgis']['data_store']['install_subdir'],
+                       'framework', 'etc', 'hostidentifier.properties') do
+    source 'hostidentifier.properties.erb'
+    variables ( {:hostidentifier => node['arcgis']['data_store']['hostidentifier'],
+                 :preferredidentifier => node['arcgis']['data_store']['preferredidentifier']} )
+  end
 end

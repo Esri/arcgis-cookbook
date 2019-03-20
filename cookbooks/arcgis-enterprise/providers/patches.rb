@@ -21,7 +21,7 @@ use_inline_resources if defined?(use_inline_resources)
 action :install do
   if node['platform'] == 'windows'
     # Dir.glob() doesn't support backslashes within a path, so they will be replaces on Windows
-    patch_folder = node['arcgis']['patches']['local_patch_folder'].gsub('\\','/')
+    patch_folder = node['arcgis']['repository']['patches'].gsub('\\','/')
 
     # get all patches  within the specified folder and register them
     Dir.glob("#{patch_folder}/**/*").each do |patch|
@@ -35,8 +35,6 @@ action :install do
 
     new_resource.updated_by_last_action(true)
   else
-    # patch_folder = node["arcgis"]["patches"]["local_patch_folder"]
-
     throw "This function is not yet supported on this platform."
   end
 end

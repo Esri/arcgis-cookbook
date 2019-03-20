@@ -1,0 +1,84 @@
+"""
+Name: RDS_create_connection_file.py
+Description: Creates a connection file to a SQL Server database as the master user
+Type RDS_create_connection_files.py -h or RDS_create_connection_files.py --help for usage
+Author: Esri
+"""
+
+# Import system modules
+import arcpy, os, sys #, optparse
+
+from optparse import OptionParser
+
+parser = OptionParser()
+
+# Define usage and versionparser = optparse.OptionParser(usage = "usage: %prog [Options]", version="%prog 1.0 for " + arcpy.GetInstallInfo()['Version'] )
+
+#Define help and options
+parser.add_option ("-u", dest="Login", type="string", default="", help="DBMS Login")
+parser.add_option ("-p", dest="Password", type="string", default="", help="DBMS password")
+
+
+# Check if value entered for option
+try:
+	(options, args) = parser.parse_args()
+
+#Check if no system arguments (options) entered
+	if len(sys.argv) == 1:
+		print "%s: error: %s\n" % (sys.argv[0], "No command options given")
+		parser.print_help()
+		sys.exit(3)
+
+	#Usage parameters for spatial database connection
+	database_type = 'SQL_SERVER'
+	instance = 'EGDBHOST'
+	account_authentication = 'DATABASE_AUTH'
+	username = options.Login
+	password = options.Password	
+
+	# Get the current product license
+	product_license=arcpy.ProductInfo()
+	
+	#if (license == ""):
+	#	print " \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+	#	parser.print_help()
+	#	sys.exit(3)
+
+<% @data_items.each do |item| -%>
+
+	database = "<%= item['database'] %>"
+
+	# Local variables
+	Connection_File_Name_full_path = r"<%= item['connection_file'] %>"
+	Conn_File_Path, Connection_File_Name = os.path.split(Connection_File_Name_full_path)
+
+	# Check for the <%= item['database'] %> .sde file and delete it if present
+	arcpy.env.overwriteOutput=True
+
+	if os.path.exists(Connection_File_Name_full_path):
+		os.remove(Connection_File_Name_full_path)
+
+	print "\nCreating <%= item['database'] %> Database Connection File...\n"	
+	# Process: Create Database Connection File...
+	# Usage:  out_file_location, out_file_name, DBMS_TYPE, instnace, database, account_authentication, username, password, save_username_password(must be true)
+	arcpy.CreateDatabaseConnection_management(out_folder_path=Conn_File_Path, out_name=Connection_File_Name, database_platform=database_type, instance=instance, account_authentication=account_authentication, username=username, password=password, save_user_pass="TRUE", database=database)
+	for i in range(arcpy.GetMessageCount()):
+		if "000565" in arcpy.GetMessage(i):   #Check if database connection was successful
+			arcpy.AddReturnMessage(i)
+			arcpy.AddMessage("\n+++++++++")
+			arcpy.AddMessage("Exiting!!")
+			arcpy.AddMessage("+++++++++\n")
+			sys.exit(3)            
+		else:
+			arcpy.AddReturnMessage(i)
+			arcpy.AddMessage("+++++++++\n")
+
+<% end -%>
+
+#Check if no value entered for option	
+except SystemExit as e:
+	if e.code == 2:
+		parser.usage = ""
+		print "\n"
+		parser.print_help() 
+		parser.exit(2)

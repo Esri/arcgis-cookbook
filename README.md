@@ -1,5 +1,3 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/services.png)](https://gitter.im/arcgis-cookbook/Lobby)
-
 Chef Cookbooks for ArcGIS
 =========================
 
@@ -7,13 +5,15 @@ This repository contains ArcGIS Chef cookbooks used to help simplify and automat
 
 Included cookbooks:
 
-* [arcgis-enterprise](cookbooks/arcgis-enterprise) (installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor)
-* [arcgis-geoevent](cookbooks/arcgis-geoevent) (installs and configures ArcGIS GeoEvent Server)
-* [arcgis-insights](cookbooks/arcgis-insights) (installs and configures Insights for ArcGIS)
-* [arcgis-desktop](cookbooks/arcgis-desktop) (installs and configures ArcGIS Desktop)
-* [arcgis-pro](cookbooks/arcgis-pro) (installs and configures ArcGIS Pro)
-* [esri-tomcat](cookbooks/esri-tomcat) (installs and configures Apache Tomcat for using with ArcGIS Web Adaptor)
-* [esri-iis](cookbooks/esri-iis) (enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding.)
+* [arcgis-enterprise](cookbooks/arcgis-enterprise) - installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor
+* [arcgis-geoevent](cookbooks/arcgis-geoevent) - installs and configures ArcGIS GeoEvent Server
+* [arcgis-insights](cookbooks/arcgis-insights) - installs and configures Insights for ArcGIS
+* [arcgis-desktop](cookbooks/arcgis-desktop) - installs and configures ArcGIS Desktop
+* [arcgis-pro](cookbooks/arcgis-pro) - installs and configures ArcGIS Pro
+* [arcgis-repository](cookbooks/arcgis-repository) - downloads ArcGIS software setups from remote to local repositories
+* [arcgis-egdb](cookbooks/arcgis-egdb) - creates enterprise geodatabases in SQL Server or PostgreSQL DBMS and registers them with ArcGIS Server
+* [esri-tomcat](cookbooks/esri-tomcat) - installs and configures Apache Tomcat for using with ArcGIS Web Adaptor
+* [esri-iis](cookbooks/esri-iis) - enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding
 
 
 Sample JSON attribute files for different ArcGIS deployment patterns are available at [roles](roles) folder.

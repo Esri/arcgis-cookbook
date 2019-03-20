@@ -16,15 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include_attribute 'arcgis-repository'
+
 default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.6.1'
+default['arcgis']['version'] = '10.7'
 
 case node['platform']
 when 'windows'
-  default['arcgis']['repository']['setups'] = ENV['USERPROFILE'] + '\\Documents'
   default['arcgis']['python']['install_dir'] = 'C:\\Python27'
 else # node['platform'] == 'linux'
-  default['arcgis']['repository']['setups'] = '/opt/arcgis'
   default['arcgis']['python']['install_dir'] = '' # Not Needed on Linux
 end

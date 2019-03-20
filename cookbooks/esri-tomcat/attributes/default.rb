@@ -1,4 +1,4 @@
-default['tomcat']['version'] = '8.0.36'
+default['tomcat']['version'] = '8.0.53'
 
 default['tomcat']['instance_name'] = 'arcgis'
 default['tomcat']['install_path'] = '/opt/tomcat_' + node['tomcat']['instance_name'] + '_' + node['tomcat']['version']

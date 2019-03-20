@@ -1,4 +1,4 @@
-ArcGIS Cookbook
+arcgis-pro Cookbook
 ===============
 
 This cookbook installs and configures ArcGIS Pro.
@@ -13,6 +13,8 @@ Requirements
 * 2.0
 * 2.1
 * 2.2
+* 2.3
+* 2.4
 
 ### Platforms
 * Windows 7
@@ -25,10 +27,13 @@ Requirements
 ### Dependencies
 The following cookbooks are required:
 * windows
+* arcgis-repository
 
 Attributes
 ----------
 
+* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `2.3`
+* `node['arcgis']['pro']['setup_archive']` = Path to ArcGIS Pro setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['pro']['setup']` = The location of ArcGIS Pro setup msi. Default location is `C:\Temp\ArcGISPro\ArcGISPro.msi`.
 * `node['arcgis']['pro']['install_dir']` = ArcGIS Pro installation directory. Default installation directory is `%ProgramFiles%\ArcGIS\Pro`.
 * `node['arcgis']['pro']['blockaddins']` = Configures the types of Add-ins that ArcGIS Pro will load. Default value is `'#0'`.

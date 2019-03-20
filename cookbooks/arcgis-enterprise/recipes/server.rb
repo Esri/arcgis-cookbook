@@ -69,8 +69,19 @@ directory node['arcgis']['server']['directories_root'] do
   end
   recursive true
   not_if { node['arcgis']['server']['directories_root'].start_with?('\\\\') ||
-           node['arcgis']['server']['directories_root'].start_with?('/net') }
+           node['arcgis']['server']['directories_root'].start_with?('/net/') }
+  action :create
+end
 
+# Create local server logs directory
+directory node['arcgis']['server']['log_dir'] do
+  owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    mode '0700'
+  end
+  recursive true
+  not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
+           node['arcgis']['server']['log_dir'].start_with?('/net/') }
   action :create
 end
 
@@ -89,6 +100,20 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   retries 5
   retry_delay 30
   action :create_site
+end
+
+# Make sure that PublishingTools.GPServer service is started
+arcgis_enterprise_gis_service 'Publish ArcGIS Server service' do
+  server_url node['arcgis']['server']['url']
+  username node['arcgis']['server']['publisher_username']
+  password node['arcgis']['server']['publisher_password']
+  folder 'System'
+  name 'PublishingTools'
+  type 'GPServer'
+  retries 5
+  retry_delay 30
+  ignore_failure true
+  action :start
 end
 
 arcgis_enterprise_server 'Set server machine properties' do

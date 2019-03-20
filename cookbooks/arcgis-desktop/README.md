@@ -12,12 +12,15 @@ Requirements
 * 10.5.1
 * 10.6
 * 10.6.1
+* 10.7
 
 ### Supported ArcGIS software
+
 * ArcGIS Desktop (Windows only)
-* ArcGIS License Manager 
+* ArcGIS License Manager
 
 ### Platforms
+
 * Windows 7
 * Windows 8 (8.1)
 * Windows 10
@@ -27,13 +30,17 @@ Requirements
 
 ### Dependencies
 The following cookbooks are required:
+
 * windows
+* arcgis-repository
 
 Attributes
 ----------
-* `node['arcgis']['version']` = ArcGIS version. Default value is `10.5`.
-* `node['arcgis']['desktop']['setup']` = The location of ArcGIS Desktop setup executable. Default location is `C:\Temp\ArcGISDesktop\Setup.exe`.
-* `node['arcgis']['desktop']['lp-setup']` = The location of language pack for ArcGIS Desktop. Default location is `nil`.
+
+* `node['arcgis']['version']` = ArcGIS version. Default value is `10.7`.
+* `node['arcgis']['desktop']['setup_archive']` = The location of ArcGIS Desktop setup archive. Default value depends on `node['arcgis']['version']` attribute value.
+* `node['arcgis']['desktop']['setup']` = The location of ArcGIS Desktop setup executable. Default location is `%USERPROFILE#\Documents\ArcGIS10.7\Desktop\Setup.exe`.
+* `node['arcgis']['desktop']['lp-setup']` = The location of language pack for ArcGIS Desktop. Default location is `C:\ArcGIS\DesktopLP\SetupFiles\setup.msi`.
 * `node['arcgis']['desktop']['install_dir']` = ArcGIS Desktop installation directory. By default, ArcGIS Desktop is installed to `%ProgramFiles(x86)%\ArcGIS`.
 * `node['arcgis']['desktop']['install_features']` = Comma-separated list of ArcGIS Desktop features to install. Default value is `ALL`.
 * `node['arcgis']['desktop']['authorization_file']` = ArcGIS Desktop authorization file path. Default location and file name are `C:\\Temp\\license.ecp`.
@@ -41,10 +48,10 @@ Attributes
 * `node['arcgis']['desktop']['esri_license_host']` = Hostname of ArcGIS License Manager. Default hostname is `%COMPUTERNAME%`.
 * `node['arcgis']['desktop']['software_class']` = ArcGIS Desktop software class <Viewer|Editor|Professional>. Default value is `Viewer`.
 * `node['arcgis']['desktop']['seat_preference']` = ArcGIS Desktop license seat preference <Fixed|Float>. Default value is `Fixed`.
-* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `C:\Temp\ArcGISLicenseManager\Setup.exe` on Windows, `/tmp/licensemanager-cd/Setup` on Linux.
-* `node['arcgis']['licensemanager']['lp-setup']` = The location of language pack for ArcGIS License Manager. Default location is `nil`.
+* `node['arcgis']['licensemanager']['setup_archive']` = The location of ArcGIS License Manager setup archive. Default value depends on `node['arcgis']['version']` attribute value.
+* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `%USERPROFILE#\Documents\ArcGIS10.7\LicenseManager\Setup.exe` on Windows, and `/opt/arcgis/10.7/licensemanager/Setup` on Linux.
+* `node['arcgis']['licensemanager']['lp-setup']` = The location of language pack for ArcGIS License Manager. Default location is `C:\ArcGIS\LicenseManager\SetupFiles\setup.msi`.
 * `node['arcgis']['licensemanager']['install_dir']` = ArcGIS License Manager installation directory. By default, the license manager is installed to `%ProgramFiles(x86)%\ArcGIS` on Windows and `/` on Linux.
-
 
 Recipes
 -------
@@ -75,7 +82,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2018 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
