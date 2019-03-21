@@ -2,13 +2,13 @@
   "arcgis":{
     "run_as_password":"Run_As_Pa$$w0rd",
     "run_as_user":"arcgis",
-    "version":"10.5",
+    "version":"10.7",
     "server":{
       "admin_username":"admin",
       "admin_password":"changeit",
       "directories_root":"C:\\arcgisserver",
-      "setup":"C:\\ArcGIS\\10.5\\ArcGIS_Server\\Setup.exe",
-      "authorization_file":"C:\\ArcGIS\\10.5\\Authorization_Files\\Server_Ent_Adv.prvc",
+      "setup":"C:\\ArcGIS\\10.7\\ArcGIS_Server\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.7\\Authorization_Files\\Server_Ent_Adv.prvc",
       "security": {
         "user_store_config": {
           "type": "WINDOWS", 

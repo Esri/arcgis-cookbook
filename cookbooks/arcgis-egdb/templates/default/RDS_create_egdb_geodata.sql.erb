@@ -1,0 +1,34 @@
+/************************************
+Script: RDS_Create_egdb_geodata.sql
+
+Description: This script creates the egdb & geodata databases
+The databases are created with 500MB data files & 125MB logfiles
+Files are placed in default location D:\RDSDBDATA\DATA
+
+Author: Esri
+*************************************/
+
+<% @data_items.each do |item| -%>
+
+--Create <%= item['database'] %> database, 500MB with 125MB logfile, default location
+
+CREATE DATABASE [<%= item['database'] %>] ON  PRIMARY 
+( NAME = N'<%= item['database'] %>', FILENAME = N'D:\RDSDBDATA\DATA\<%= item['database'] %>.mdf' , SIZE = 512000KB , FILEGROWTH = 10%)
+ LOG ON 
+( NAME = N'<%= item['database'] %>_log', FILENAME = N'D:\RDSDBDATA\DATA\<%= item['database'] %>_log.ldf' , SIZE = 128000KB , FILEGROWTH = 10%);
+GO
+
+--Configure RCS & SNAPSHOT
+ALTER DATABASE [<%= item['database'] %>] SET READ_COMMITTED_SNAPSHOT ON WITH NO_WAIT
+ALTER DATABASE [<%= item['database'] %>] SET ALLOW_SNAPSHOT_ISOLATION ON
+
+-- Create and assign schema for <%= @master_username %>
+
+use <%= item['database'] %>;
+GO
+CREATE SCHEMA [<%= @master_username %>];
+GO
+ALTER USER [<%= @master_username %>] WITH DEFAULT_SCHEMA = [<%= @master_username %>];
+GO
+
+<% end -%>

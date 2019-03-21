@@ -47,7 +47,7 @@ module ArcGIS
     end
 
     def wait_until_available
-      Utils.wait_until_url_available(@server_url + '/')
+      Utils.wait_until_url_available(@server_url + '/admin/?f=json')
     end
 
     def site_exist?
@@ -707,6 +707,27 @@ module ArcGIS
       return false
     end
 
+    def machine_status(machine_name) 
+      begin
+        request = Net::HTTP::Post.new(URI.parse(@server_url +
+          "/admin/machines/#{machine_name}/status").request_uri)
+
+        request.add_field('Referer', 'referer')
+
+        token = generate_token()
+
+        request.set_form_data('token' => token, 'f' => 'json')
+
+        response = send_request(request, @server_url)
+
+        validate_response(response)
+
+        return response.body['realTimeState']
+      rescue Exception => ex
+        return 'STOPPED'
+      end
+    end
+
     def unregister_machine(machine_name)
       request = Net::HTTP::Post.new(URI.parse(@server_url +
         "/admin/machines/#{machine_name}/unregister").request_uri)
@@ -715,13 +736,35 @@ module ArcGIS
 
       token = generate_token()
 
-      request.set_form_data(
-        'token' => token,
-        'f' => 'json')
+      request.set_form_data('token' => token, 'f' => 'json')
 
       response = send_request(request, @server_url)
 
       validate_response(response)
+    end
+
+    def unregister_stopped_machines(cluster)
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      machines = JSON.parse(response.body)['machines']
+      
+      machines.each do |machine|
+        status = machine_status(machine['machineName'])
+        if status == 'STOPPED'
+          unregister_machine(machine['machineName'])
+        end
+      end
     end
 
     def stop_machine(machine_name)

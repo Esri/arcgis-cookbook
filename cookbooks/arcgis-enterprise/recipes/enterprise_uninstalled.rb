@@ -20,11 +20,12 @@
 arcgis_enterprise_webadaptor 'Uninstall Web Adaptor for Portal' do
   install_dir node['arcgis']['web_adaptor']['install_dir']
   instance_name node['arcgis']['portal']['wa_name']
+  run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     product_code Utils.wa_product_code(node['arcgis']['portal']['wa_name'],
                                       [node['arcgis']['web_adaptor']['product_code'],
                                        node['arcgis']['web_adaptor']['product_code2']])
-    only_if { 
+    only_if {
       !Utils.wa_product_code(node['arcgis']['portal']['wa_name'],
                             [node['arcgis']['web_adaptor']['product_code'],
                              node['arcgis']['web_adaptor']['product_code2']]).nil?
@@ -41,6 +42,7 @@ end
 arcgis_enterprise_webadaptor 'Uninstall Web Adaptor for Server' do
   install_dir node['arcgis']['web_adaptor']['install_dir']
   instance_name node['arcgis']['server']['wa_name']
+  run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     product_code Utils.wa_product_code(node['arcgis']['server']['wa_name'],
                                       [node['arcgis']['web_adaptor']['product_code'],
@@ -62,6 +64,7 @@ end
 arcgis_enterprise_portal 'Uninstall Portal for ArcGIS' do
   install_dir node['arcgis']['portal']['install_dir']
   product_code node['arcgis']['portal']['product_code']
+  run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
   else
@@ -76,6 +79,7 @@ end
 arcgis_enterprise_datastore 'Uninstall ArcGIS DataStore' do
   install_dir node['arcgis']['data_store']['install_dir']
   product_code node['arcgis']['data_store']['product_code']
+  run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     only_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
   else
@@ -90,6 +94,7 @@ end
 arcgis_enterprise_server 'Uninstall ArcGIS Server' do
   install_dir node['arcgis']['server']['install_dir']
   product_code node['arcgis']['server']['product_code']
+  run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     only_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
   else

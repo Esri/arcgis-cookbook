@@ -8,12 +8,7 @@ Requirements
 
 ### Supported ArcGIS versions
 
-* 10.4
-* 10.4.1
-* 10.5
-* 10.5.1
-* 10.6
-* 10.6.1
+* 10.7
 
 ### Supported ArcGIS software
 
@@ -34,13 +29,15 @@ Requirements
 The following cookbooks are required:
 
 * arcgis-enterprise
+* arcgis-repository
 
 Attributes
 ----------
 
-* `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Server authorization file path. Default value is ``.
+* `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Server authorization file path. 
 * `node['arcgis']['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
-* `node['arcgis']['geoevent']['setup']` = The location of ArcGIS GeoEvent Server setup executable. Default location is `C:\ArcGIS\GeoEvent\setup.exe` on Windows and `/arcgis/geo-event-cd/Setup.sh` on Linux.
+* `node['arcgis']['geoevent']['setup_archive']` = Path to ArcGIS GeoEvent Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
+* `node['arcgis']['geoevent']['setup']` = The location of ArcGIS GeoEvent Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS10.7\ArcGISGeoEventServer\Setup.exe` on Windows and `/opt/arcgis/10.7/geoevent/Setup.sh` on Linux.
 * `node['arcgis']['geoevent']['configure_autostart']` = If set to true, on Linux the GeoEvent Server is configured to start with the operating system.  Default value is `true`.
 * `node['arcgis']['geoevent']['ports']` = Ports to open for GeoEvent. Default depends on `node['arcgis']['version']`.
 

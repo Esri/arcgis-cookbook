@@ -1,7 +1,13 @@
+
 esri-tomcat cookbook CHANGELOG
 ================================
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
+
+0.1.4
+-----
+- Install Tomcat 8.0.53 as default.
+- Use openjdk for test kitchen.
 
 0.1.3
 -----

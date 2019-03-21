@@ -16,68 +16,71 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
-default['arcgis']['insights']['version'] = '2.1'
+default['arcgis']['insights'].tap do |insights|
+  insights['version'] = '3.1'
 
-case node['platform']
-when 'windows'
-  default['arcgis']['insights']['setup'] = node['arcgis']['repository']['setups'] + '\\Insights ' +
-                                           node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
+  case node['platform']
+  when 'windows'
+    insights['setup'] = node['arcgis']['repository']['setups'] + '\\Insights for ArcGIS ' +
+                        node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
-  case node['arcgis']['insights']['version']
-  when '2.2'
-      default['arcgis']['insights']['product_code'] = '{00BA08F3-B462-43AF-BFFA-9E17C1B9667D}'
-      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                     '')
-  when '2.1'
-      default['arcgis']['insights']['product_code'] = '{0FDA7094-6094-49B9-94C9-F06D6B22954F}'
-      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                     'Insights_for_ArcGIS_Windows_21_159479.exe')
-  when '2.0'
-      default['arcgis']['insights']['product_code'] = '{C7CDC991-B121-4A94-85AF-31688E61F415}'
-      default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                   'Insights_for_ArcGIS_Windows_20_157378.exe')
-  when '1.2'
-    default['arcgis']['insights']['product_code'] = '{7C00C004-6379-4B0C-856A-987A7A43CD71}'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Windows_12_156050.exe')
-  when '1.1'
-    default['arcgis']['insights']['product_code'] = '{7C00C004-6379-4B0C-856A-987A7A43CD71}'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Windows_11_155241.exe')
-  when '1.0'
-    default['arcgis']['insights']['product_code'] = '{DA27EEE3-FB34-4092-8A07-38EEEFF0DFF5}'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Windows_10_154047.exe')
-  else
-    Chef::Log.warn "Unsupported Insights for ArcGIS version"
-  end
-else # node['platform'] == 'linux'
-  default['arcgis']['insights']['setup'] = ::File.join(node['arcgis']['repository']['setups'],
-                                                       node['arcgis']['insights']['version'],
-                                                       'Insights/Insights-Setup.sh')
+    case node['arcgis']['insights']['version']
+    when '3.1'
+      insights['product_code'] = '{ECDBB436-78D3-4CAD-868D-4D39C958AE11}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_31_166715.exe')
+    when '3.0'
+      insights['product_code'] = '{E02D396E-6030-4B44-BAB1-BB7C9D586EC1}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_30_164976.exe')
+    when '2.3'
+      insights['product_code'] = '{79FBD411-5574-417E-AAAC-D8859B761C10}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_23_163450.exe')
+    when '2.2.1'
+      insights['product_code'] = '{00BA08F3-B462-43AF-BFFA-9E17C1B9667D}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_221_161935.exe')
+    when '2.1'
+      insights['product_code'] = '{0FDA7094-6094-49B9-94C9-F06D6B22954F}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_21_159479.exe')
+    when '2.0'
+      insights['product_code'] = '{C7CDC991-B121-4A94-85AF-31688E61F415}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_20_157378.exe')
+    else
+      Chef::Log.warn 'Unsupported Insights for ArcGIS version'
+    end
+  else # node['platform'] == 'linux'
+    insights['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                    node['arcgis']['insights']['version'],
+                                    'Insights/Insights-Setup.sh')
 
-  case node['arcgis']['insights']['version']
-  when '2.2'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 '')
-  when '2.1'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Linux_21_159551.tar.gz')
-  when '2.0'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Linux_20_157380.tar.gz')
-  when '1.2'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Linux_12_156062.tar.gz')
-  when '1.1'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Linux_11_155242.tar.gz')
-  when '1.0'
-    default['arcgis']['insights']['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                                 'Insights_for_ArcGIS_Linux_10_154060.tar.gz')
-  else
-    Chef::Log.warn "Unsupported Insights for ArcGIS version"
+    case node['arcgis']['insights']['version']
+    when '3.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_31_166716.tar.gz')
+    when '3.0'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_30_164977.tar.gz')
+    when '2.3'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_23_163451.tar.gz')
+    when '2.2.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_221_161936.tar.gz')
+    when '2.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_21_159551.tar.gz')
+    when '2.0'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_20_157380.tar.gz')
+    else
+      Chef::Log.warn 'Unsupported Insights for ArcGIS version'
+    end
   end
 end

@@ -20,11 +20,11 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :system do
   if node['platform'] == 'windows'
-    #TODO: Ensure License Manager system requirements on Windows
+    # TODO: Ensure License Manager system requirements on Windows
   else
     arcgis_desktop_user @new_resource.recipe_name + ':create-licensemanager-account'
 
-    #TODO: Ensure License Manager system requirements on redhat,centos
+    # TODO: Ensure License Manager system requirements on redhat,centos
     case node['platform']
     when 'redhat', 'centos'
       ['glibc.i686'].each do |pckg|
@@ -35,10 +35,32 @@ action :system do
         end
       end
     when 'suse'
-      #TODO: Ensure License Manager system requirements on suse
+      # TODO: Ensure License Manager system requirements on suse
     else
       # NOTE: ArcGIS products are not officially supported on debian linux family
     end
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :unpack do
+  if node['platform'] == 'windows'
+    cmd = @new_resource.setup_archive
+    args = "/s /d \"#{@new_resource.setups_repo}\""
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
+    cmd.run_command
+    cmd.error!
+  else
+    cmd = 'tar'
+    args = "xzvf \"#{@new_resource.setup_archive}\""
+    repo = ::File.join(@new_resource.setups_repo, node['arcgis']['version'])
+    FileUtils.mkdir_p(repo) unless ::File.directory?(repo)
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600, :cwd => repo })
+    cmd.run_command
+    cmd.error!
+
+    FileUtils.chown_R @new_resource.run_as_user, nil, repo
   end
 
   new_resource.updated_by_last_action(true)

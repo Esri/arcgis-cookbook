@@ -29,17 +29,23 @@ module ArcGIS
     SLEEP_TIME = 10.0
 
     @portal_url = nil
+    @generate_token_url = nil
     @admin_username = nil
     @admin_password = nil
 
     def initialize(portal_url, admin_username, admin_password)
       @portal_url = portal_url
+      @generate_token_url = @portal_url + '/sharing/rest/generateToken'
       @admin_username = admin_username
       @admin_password = admin_password
     end
 
     def wait_until_available
       Utils.wait_until_url_available(@portal_url + '/portaladmin')
+    end
+
+    def wait_until_unavailable
+      Utils.wait_until_url_unavailable(@portal_url + '/portaladmin')
     end
 
     def site_exist?
@@ -92,22 +98,35 @@ module ArcGIS
       false
     end
 
-    def complete_upgrade(is_backup_required, is_rollback_required)
+    def complete_upgrade(is_backup_required, is_rollback_required, license_file)
       if upgrade_required?
         Chef::Log.info("Completing portal upgrade...")
 
-        request = Net::HTTP::Post.new(URI.parse(@portal_url +
-                                      '/portaladmin/upgrade').request_uri)
-  
-        request.set_form_data('f' => 'json',
-                              'isBackupRequired' => is_backup_required,
-                              'isRollbackRequired' =>is_rollback_required)
-  
+        upgrade_uri = URI.parse(@portal_url + '/portaladmin/upgrade')
+
+        if is_user_type_licensing
+          request = Net::HTTP::Post::Multipart.new(
+            upgrade_uri.path,
+            'isBackupRequired' => is_backup_required,
+            'isRollbackRequired' => is_rollback_required,
+            'isReindexRequired' => true,
+            'file' => UploadIO.new(File.new(license_file),
+                                   'application/json',
+                                   File.basename(license_file)),
+            'f' => 'json'
+          )
+        else
+          request = Net::HTTP::Post.new(upgrade_uri.request_uri)
+          request.set_form_data('f' => 'json',
+                                'isBackupRequired' => is_backup_required,
+                                'isRollbackRequired' => is_rollback_required)
+        end
+
         response = send_request(request)
-  
+
         validate_response(response)
 
-        Chef::Log.info("Portal upgrade completed successfully.")
+        Chef::Log.info('Portal upgrade completed successfully.')
 
         return true
       end
@@ -116,7 +135,7 @@ module ArcGIS
     end
 
     def post_upgrade_required?
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri = URI.parse(@portal_url + "/portaladmin")
 
@@ -142,7 +161,7 @@ module ArcGIS
 
         request.add_field('Referer', 'referer')
 
-        token = generate_token(@portal_url + '/sharing/generateToken')
+        token = generate_token(@generate_token_url)
 
         request.set_form_data(
           'token' => token,
@@ -162,7 +181,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data(
         'token' => token,
@@ -183,7 +202,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       group_ids.each do |group_id|
         request.set_form_data(
@@ -202,20 +221,40 @@ module ArcGIS
                     admin_description,
                     security_question,
                     security_question_answer,
-                    content_store)
+                    content_store,
+                    user_license_type_id,
+                    license_file)
       create_site_uri = URI.parse(@portal_url + '/portaladmin/createNewSite')
 
-      request = Net::HTTP::Post.new(create_site_uri.request_uri)
+      if is_user_type_licensing
+        request = Net::HTTP::Post::Multipart.new(
+          create_site_uri.path,
+          'username' => @admin_username,
+          'password' => @admin_password,
+          'email' => admin_email,
+          'fullname' => admin_full_name,
+          'description' => admin_description,
+          'securityQuestion' => security_question,
+          'securityQuestionAns' => security_question_answer,
+          'contentStore' => content_store,
+          'userLicenseTypeId' => user_license_type_id,
+          'file' => UploadIO.new(File.new(license_file),
+                                 'application/json',
+                                 File.basename(license_file)),
+          'f' => 'json')
+      else
+        request = Net::HTTP::Post.new(create_site_uri.request_uri)
 
-      request.set_form_data('username' => @admin_username,
-                            'password' => @admin_password,
-                            'email' => admin_email,
-                            'fullname' => admin_full_name,
-                            'description' => admin_description,
-                            'securityQuestion' => security_question,
-                            'securityQuestionAns' => security_question_answer,
-                            'contentStore' => content_store,
-                            'f' => 'json')
+        request.set_form_data('username' => @admin_username,
+                              'password' => @admin_password,
+                              'email' => admin_email,
+                              'fullname' => admin_full_name,
+                              'description' => admin_description,
+                              'securityQuestion' => security_question,
+                              'securityQuestionAns' => security_question_answer,
+                              'contentStore' => content_store,
+                              'f' => 'json')
+      end
 
       response = send_request(request)
 
@@ -237,20 +276,8 @@ module ArcGIS
       validate_response(response)
     end
 
-#    {"machines": [
-#        {
-#            "machineName": "DEV001258.ESRI.COM",
-#            "adminURL": "https://dev001258.esri.com:7443/arcgis",
-#            "role": "standby"
-#        },
-#        {
-#            "machineName": "DEV001257.ESRI.COM",
-#            "adminURL": "https://dev001257.esri.com:7443/arcgis",
-#            "role": "primary"
-#        }
-#    ]}
     def machines
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri = URI.parse(@portal_url + "/portaladmin/machines")
 
@@ -273,7 +300,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data(
         'machineName' => machine_name,
@@ -286,7 +313,7 @@ module ArcGIS
     end
 
     def ssl_certificate_exist?(cert_alias)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri = URI.parse(@portal_url +
         "/portaladmin/security/sslCertificates/#{cert_alias}")
@@ -312,7 +339,7 @@ module ArcGIS
       url = URI.parse(@portal_url + 
         '/portaladmin/security/sslCertificates/importExistingServerCertificate')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post::Multipart.new(url.path,
         'file' => UploadIO.new(File.new(cert_file), 'application/x-pkcs12', cert_alias),
@@ -332,7 +359,7 @@ module ArcGIS
     end
 
     def ssl_certificates
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri = URI.parse(@portal_url + "/portaladmin/security/sslCertificates")
 
@@ -357,7 +384,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data(
         'webServerCertificateAlias' => cert_alias,
@@ -370,7 +397,7 @@ module ArcGIS
     end
 
     def content_dir
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       content_directory_uri = URI.parse(@portal_url + '/portaladmin/system/directories/content')
 
@@ -388,7 +415,7 @@ module ArcGIS
     end
 
     def set_content_dir(content_dir)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post.new(URI.parse(
         @portal_url + '/portaladmin/system/directories/content/edit').request_uri)
@@ -405,9 +432,9 @@ module ArcGIS
     end
 
     def servers
-      uri = URI.parse(@portal_url + '/sharing/portals/self/servers/')
+      uri = URI.parse(@portal_url + '/sharing/rest/portals/self/servers/')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri.query = URI.encode_www_form('token' => token,
                                       'f' => 'json')
@@ -423,10 +450,10 @@ module ArcGIS
     end
 
     def register_server(server_name, server_url, admin_url, is_hosted, server_type)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post.new(URI.parse(
-        @portal_url + '/sharing/portals/self/servers/register').request_uri)
+        @portal_url + '/sharing/rest/portals/self/servers/register').request_uri)
       request.add_field('Referer', 'referer')
 
       request.set_form_data('token' => token,
@@ -445,7 +472,7 @@ module ArcGIS
     end
 
     def federate_server(server_url, admin_url, username, password)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post.new(URI.parse(
         @portal_url + '/portaladmin/federation/servers/federate').request_uri)
@@ -466,7 +493,7 @@ module ArcGIS
     end
 
     def update_server(server_id, server_role, function)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post.new(URI.parse(@portal_url +
         "/portaladmin/federation/servers/#{server_id}/update").request_uri)
@@ -492,7 +519,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data('token' => token,
                             'properties' => system_properties.to_json,
@@ -502,9 +529,9 @@ module ArcGIS
 
       validate_response(response)
     end
-	
-	def set_allssl(allssl)
-      token = generate_token(@portal_url + '/sharing/generateToken')
+
+    def set_allssl(allssl)
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post.new(URI.parse(
         @portal_url + '/sharing/rest/portals/self/update').request_uri)
@@ -524,7 +551,7 @@ module ArcGIS
     def webadaptors_shared_key
       uri = URI.parse(@portal_url + '/portaladmin/system/webadaptors/config/')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       uri.query = URI.encode_www_form('token' => token,
                                       'f' => 'json')
@@ -544,7 +571,7 @@ module ArcGIS
         @portal_url + '/portaladmin/system/webadaptors/config/update').request_uri)
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       web_adaptors_config = { 'sharedKey' => shared_key }
 
@@ -580,7 +607,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data('logLevel' => log_level,
                             'logDir' => log_dir,
@@ -598,7 +625,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request.set_form_data('userStoreConfig' => user_store_config.to_json,
                             'groupStoreConfig' => role_store_config.to_json,
@@ -619,7 +646,7 @@ module ArcGIS
 
       url = URI.parse(@portal_url + 
         '/portaladmin/security/sslCertificates/importRootOrIntermediate')
-      token = generate_token(@portal_url + '/sharing/generateToken')
+      token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post::Multipart.new(url.path,
         'file' => UploadIO.new(cert_location, 'application/x-x509-ca-cert'),
@@ -635,6 +662,101 @@ module ArcGIS
       if response.code.to_i == 200
         error_info = JSON.parse(response.body)
         raise error_info['error']['message'] unless error_info['error'].nil?
+      end
+    end
+
+    def is_user_type_licensing
+      uri = URI.parse(@portal_url + '/portaladmin/')
+
+      uri.query = URI.encode_www_form('f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      if response.code.to_i == 200
+        error_info = JSON.parse(response.body)
+        unless error_info['error'].nil?
+          if error_info['error']['code'] == 499 # token required
+            # Try again with a token
+            token = generate_token(@generate_token_url)
+
+            uri.query = URI.encode_www_form('token' => token,
+                                            'f' => 'json')
+
+            request = Net::HTTP::Get.new(uri.request_uri)
+            request.add_field('Referer', 'referer')
+
+            response = send_request(request)
+          else
+            return false
+          end
+        end
+      end
+
+      JSON.parse(response.body)['isUserTypeLicensing']
+    end
+
+    def validate_license(license_file)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      uri = URI.parse(@portal_url + '/portaladmin/license/validateLicense')
+
+      request = Net::HTTP::Post::Multipart.new(uri.path,
+        'file' => UploadIO.new(File.new(license_file),
+                               'application/json',
+                               File.basename(license_file)),
+        'f' => 'json')
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      if response.code.to_i == 200
+        error_info = JSON.parse(response.body)
+        if !error_info['error'].nil? 
+          if error_info['error']['code'] == 499 # token required
+            # Try again with a token
+            token = generate_token(@generate_token_url)
+
+            request = Net::HTTP::Post::Multipart.new(uri.path,
+              'file' => UploadIO.new(File.new(license_file),
+                                     'application/json',
+                                     File.basename(license_file)),
+              'token' => token,
+              'f' => 'json')
+
+            request.add_field('Referer', 'referer')
+
+            response = send_request(request)
+          else
+            raise error_info['error']['message'] unless error_info['error'].nil?
+          end
+        end
+      end
+
+      JSON.parse(response.body)
+    end
+
+    def populate_license
+      if is_user_type_licensing
+        request = Net::HTTP::Post.new(URI.parse(@portal_url + '/portaladmin/license/populateLicense').request_uri)
+
+        request.add_field('Referer', 'referer')
+
+        token = generate_token(@generate_token_url)
+
+        request.set_form_data('token' => token,
+                              'f' => 'json')
+
+        response = send_request(request)
+
+        validate_response(response)
       end
     end
 
@@ -694,6 +816,7 @@ module ArcGIS
       elsif response.code.to_i == 200
         error_info = JSON.parse(response.body)
         raise error_info['error']['message'] unless error_info['error'].nil?
+        error_info
       end
     end
   end

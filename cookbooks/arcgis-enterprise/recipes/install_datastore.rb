@@ -93,3 +93,7 @@ arcgis_enterprise_datastore 'Configure arcgisdatastore service' do
   only_if { node['arcgis']['data_store']['configure_autostart'] }
   action :configure_autostart
 end
+
+arcgis_enterprise_datastore 'Start ArcGIS Data Store after upgrade' do
+  action :start
+end

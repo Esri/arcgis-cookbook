@@ -156,7 +156,7 @@ action :configure_with_server do
   
       if node['platform'] == 'windows'
         cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-                          '\\ArcGIS\\WebAdaptor\\IIS\\Tools\\ConfigureWebAdaptor.exe')
+            node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
         args = "/m server /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
   
         cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
@@ -198,7 +198,7 @@ action :configure_with_portal do
   
       if node['platform'] == 'windows'
         cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-                          '\\ArcGIS\\WebAdaptor\\IIS\\Tools\\ConfigureWebAdaptor.exe')
+                          node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
         args = "/m portal /w \"#{wa_url}\" /g \"#{portal_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\""
   
         cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })

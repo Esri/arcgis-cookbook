@@ -22,7 +22,7 @@ transport:
 provisioner:
   name: chef_zero
   product_name: chef
-  product_version: 13.3
+  product_version: 14.5
 
 platforms:
   - name: windows-2016
@@ -43,7 +43,6 @@ suites:
       - recipe[arcgis-enterprise::server]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         server:
@@ -61,11 +60,11 @@ suites:
       - recipe[arcgis-enterprise::portal_security]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         portal:
-          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+          user_license_type_id: 'creatorUT'
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_all_50.json'
 
   - name: datastore
     driver:
@@ -80,7 +79,6 @@ suites:
       - recipe[arcgis-enterprise::datastore]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         server:
@@ -103,7 +101,6 @@ suites:
       - recipe[arcgis-enterprise::server_wa]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         hosts:
@@ -131,13 +128,13 @@ suites:
       - recipe[arcgis-enterprise::portal_wa]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         hosts:
           test.com: ''
         portal:
-          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+          user_license_type_id: 'creatorUT'
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_all_50.json'
           wa_url: 'http://test.com/server'
           url: 'http://test.com:6080/arcgis'
           domain_name: 'test.com'
@@ -160,7 +157,6 @@ suites:
       - recipe[arcgis-enterprise::server_wa]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         web_server:
@@ -191,13 +187,13 @@ suites:
       - recipe[arcgis-enterprise::portal_wa]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         web_server:
           webapp_dir: "/opt/tomcat_arcgis/webapps"
         portal:
-          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_25_50.ecp'
+          user_license_type_id: 'creatorUT'
+          authorization_file: '/auth_files/Portal_for_ArcGIS/portal_all_50.json'
       java:
         install_flavor: 'oracle'
         jdk_version: 8

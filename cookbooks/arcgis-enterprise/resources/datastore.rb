@@ -18,7 +18,8 @@
 #
 
 actions :system, :unpack, :install, :uninstall, :update_account, :configure_autostart,
-        :stop, :start, :configure, :change_backup_location
+        :stop, :start, :configure, :change_backup_location, :prepare_upgrade,
+        :configure_hostidentifiers_properties
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String

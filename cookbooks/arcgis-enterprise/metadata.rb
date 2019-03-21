@@ -4,9 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.2.1'
-chef_version     '>= 12.6', '< 14.0' if defined? chef_version
+version          '3.3.0'
+chef_version     '>= 12.6', '< 15.0' if defined? chef_version
 
+depends          'arcgis-repository'
 depends          'hostsfile'
 depends          'limits'
 depends          'authbind'
@@ -49,9 +50,8 @@ recipe 'arcgis-enterprise::system', 'System requirements'
 recipe 'arcgis-enterprise::enterprise_installed', 'Installs ArcGIS Server, Data Store, Portal, and Web Adaptors for Server and Portals'
 recipe 'arcgis-enterprise::enterprise_uninstalled', 'Uninstalls all ArcGIS software of the specified version'
 recipe 'arcgis-enterprise::enterprise_validate', 'Checks if ArcGIS Server setups and authorization files exist'
-recipe 'arcgis-enterprise::rds_egdb', 'Creates managed and replicated GeoDatabases in Amazon RDS database'
-recipe 'arcgis-enterprise::sql_alias', 'Creates EGDBHOST alias for Amazon RDS endpoint'
-recipe 'arcgis-enterprise::unregister_machine', 'Unregister server machine from the ArcGIS Server site'
+recipe 'arcgis-enterprise::unregister_machine', 'Unregisters server machine from the ArcGIS Server site'
+recipe 'arcgis-enterprise::unregister_stopped_machines', 'Unregisters all unavailable server machines in \'default\' cluster from the ArcGIS Server site'
 
 issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)
 source_url 'https://github.com/Esri/arcgis-cookbook' if respond_to?(:source_url)

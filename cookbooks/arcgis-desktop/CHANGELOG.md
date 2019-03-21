@@ -3,6 +3,11 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+3.3.0
+-----
+- Added support for ArcGIS 10.7.
+- Added dependency on arcgis-repository cookbook to support global ArcGIS software repository in S3.
+
 3.2.1
 -----
 - Added support for ArcGIS 10.6.1.

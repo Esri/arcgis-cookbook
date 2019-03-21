@@ -21,6 +21,15 @@ arcgis_desktop_licensemanager 'Verify ArcGIS License Manager system requirements
   action :system
 end
 
+arcgis_desktop_licensemanager 'Unpack ArcGIS License Manager Setup' do
+  setup_archive node['arcgis']['licensemanager']['setup_archive']
+  setups_repo node['arcgis']['repository']['setups']
+  only_if { ::File.exist?(node['arcgis']['licensemanager']['setup_archive']) &&
+            !::File.exist?(node['arcgis']['licensemanager']['setup']) }
+  not_if { Utils.product_installed?(node['arcgis']['licensemanager']['product_code']) }
+  action :unpack
+end
+
 arcgis_desktop_licensemanager 'Install ArcGIS License Manager' do
   setup node['arcgis']['licensemanager']['setup']
   product_code node['arcgis']['licensemanager']['product_code']

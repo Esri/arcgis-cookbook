@@ -21,7 +21,7 @@ actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
         :join_cluster, :configure_https, :register_database, :federate,
         :set_identity_store, :assign_privileges, :set_machine_properties,
-        :stop_machine, :unregister_machine, :block_data_copy
+        :stop_machine, :unregister_machine, :unregister_stopped_machines, :block_data_copy
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String

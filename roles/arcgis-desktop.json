@@ -5,9 +5,9 @@
     }
   },
   "arcgis":{
-    "version":"10.5",
+    "version":"10.7",
     "desktop":{
-      "setup":"C:\\ArcGIS\\10.5\\Desktop\\Setup.exe",
+      "setup":"C:\\ArcGIS\\10.7\\Desktop\\Setup.exe",
       "software_class":"Viewer",
       "seat_preference":"Fixed",
       "desktop_config":true
