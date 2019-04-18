@@ -373,7 +373,7 @@ action :configure do
       env = { 'AGSDATASTORE' => @new_resource.install_dir }
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-            { :timeout => 1200, :environment => env })
+            { :timeout => 10800, :environment => env })
       cmd.run_command
       cmd.error!
     else
@@ -384,7 +384,7 @@ action :configure do
       run_as_user = @new_resource.run_as_user
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-            { :timeout => 1200, :user => run_as_user })
+            { :timeout => 10800, :user => run_as_user })
       cmd.run_command
       cmd.error!
     end
