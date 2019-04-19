@@ -3,6 +3,11 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.3.1
+-----
+- Workaround for [BUG-000121142](https://support.esri.com/en/technical-article/000020633)
+- Increased configuredatastore tool execution timeout to 3 hours.
+
 3.3.0
 -----
 - Added support for ArcGIS Enterprise 10.7 and dropped support for previous ArcGIS Enterprise versions.

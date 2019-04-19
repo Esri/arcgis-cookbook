@@ -4,7 +4,7 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.3.0'
+version          '3.3.1'
 chef_version     '>= 12.6', '< 15.0' if defined? chef_version
 
 depends          'arcgis-repository'
