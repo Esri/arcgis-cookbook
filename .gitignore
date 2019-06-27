@@ -57,3 +57,5 @@ build
 
 # Build Files #
 .gradle/
+berks-cookbooks/
+cookbooks/arcgis/Berksfile.lock

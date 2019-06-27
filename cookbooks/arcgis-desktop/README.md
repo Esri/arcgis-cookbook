@@ -13,6 +13,7 @@ Requirements
 * 10.6
 * 10.6.1
 * 10.7
+* 10.7.1
 
 ### Supported ArcGIS software
 
@@ -27,6 +28,7 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
+* Windows Server 2019
 
 ### Dependencies
 The following cookbooks are required:

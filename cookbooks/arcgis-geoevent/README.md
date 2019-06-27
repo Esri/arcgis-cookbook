@@ -9,6 +9,7 @@ Requirements
 ### Supported ArcGIS versions
 
 * 10.7
+* 10.7.1
 
 ### Supported ArcGIS software
 
@@ -22,7 +23,8 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04/16.04
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ### Dependencies

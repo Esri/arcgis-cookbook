@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: arcgis-desktop
-# Attributes:: default
+# Cookbook Name:: arcgis-enterprise
+# Resource:: webstyles
 #
-# Copyright 2018 Esri
+# Copyright 2019 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,16 +15,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-include_attribute 'arcgis-repository'
+actions :unpack, :install
 
-default['arcgis']['run_as_user'] = 'arcgis'
-default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
-default['arcgis']['version'] = '10.7.1'
+attribute :setup_archive, :kind_of => String
+attribute :setups_repo, :kind_of => String
+attribute :run_as_user, :kind_of => String
+attribute :product_code, :kind_of => String
+attribute :setup, :kind_of => String
 
-case node['platform']
-when 'windows'
-  default['arcgis']['python']['install_dir'] = 'C:\\Python27'
-else # node['platform'] == 'linux'
-  default['arcgis']['python']['install_dir'] = '' # Not Needed on Linux
+def initialize(*args)
+  super
+  @action = :install
 end

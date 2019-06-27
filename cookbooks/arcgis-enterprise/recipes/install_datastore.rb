@@ -94,6 +94,16 @@ arcgis_enterprise_datastore 'Configure arcgisdatastore service' do
   action :configure_autostart
 end
 
-arcgis_enterprise_datastore 'Start ArcGIS Data Store after upgrade' do
+# Set hostidentifier and preferredidentifier in hostidentifier.properties file.
+arcgis_enterprise_datastore 'Configure hostidentifier.properties' do
+  action :configure_hostidentifiers_properties
+  notifies :stop, 'arcgis_enterprise_datastore[Stop ArcGIS Data Store]', :immediately
+end
+
+arcgis_enterprise_datastore 'Stop ArcGIS Data Store' do
+  action :nothing
+end
+
+arcgis_enterprise_datastore 'Start ArcGIS Data Store' do
   action :start
 end

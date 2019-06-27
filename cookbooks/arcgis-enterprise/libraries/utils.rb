@@ -188,9 +188,33 @@ module Utils
     self.retry_ShellOut("sc.exe config \"#{service}\" obj= \"#{service_logon_user}\" password= \"#{password}\"",
                         1, 60, {:timeout => 600})
 
-    if ::Win32::Service.status(service).current_state == 'running'
-      self.retry_ShellOut("net stop \"#{service}\" /yes",  5, 60, {:timeout => 3600})
-      self.retry_ShellOut("net start \"#{service}\" /yes", 5, 60, {:timeout => 600})
+    if service_started?(service)
+      self.retry_ShellOut("net stop \"#{service}\" /yes",  5, 60, :timeout => 3600)
+      self.retry_ShellOut("net start \"#{service}\" /yes", 5, 60, :timeout => 600)
+    end
+  end
+
+  # Changes windows service start-up type to auto
+  def self.sc_enable(service)
+    retry_ShellOut("sc.exe config \"#{service}\" start=auto", 1, 60, :timeout => 600)
+  end
+
+  # Returns true if windows service state is 'running' 
+  def self.service_started?(service)
+    return ::Win32::Service.status(service).current_state == 'running'
+  end
+
+  # Starts windows service and dependent services 
+  def self.start_service(service)
+    if !service_started?(service)
+      retry_ShellOut("net start \"#{service}\" /yes", 5, 60, :timeout => 600)
+    end
+  end
+
+  # Stops windows service and dependent services
+  def self.stop_service(service)
+    if service_started?(service)
+      retry_ShellOut("net stop \"#{service}\" /yes", 5, 60, :timeout => 3600)
     end
   end
 

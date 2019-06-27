@@ -6,6 +6,11 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 Requirements
 ------------
 
+### Supported ArcGIS versions
+
+* 10.7
+* 10.7.1
+
 ### Platforms
 
 * Windows 7
@@ -14,14 +19,15 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04, 16.04
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ### Dependencies
 
 The following cookbooks are required:
 
-* aws
+* s3_file
 
 Attributes
 ----------
@@ -95,12 +101,10 @@ arcgis-repository::s3files recipe use example.
          },
          "files":{
             "ArcGIS_DataStore_Linux_107_167719.tar.gz":{
-               "subfolder":"10450/setups",
-               "checksum":"A8DBE53A19838120ED99D352654174B37B31163E173AD0D26B47A15872E4245C"
+               "subfolder":"10450/setups"
             },
             "ArcGIS_Server_Linux_107_167707.tar.gz":{
-               "subfolder":"10450/setups",
-               "checksum":"350B985F8CF900A27C0043561CFA092930A1CCA2352A1DECABA4DD378ECA1492"
+               "subfolder":"10450/setups"
             }
          }
       }

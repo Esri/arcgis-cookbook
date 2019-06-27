@@ -27,14 +27,14 @@ end
 node['arcgis']['repository']['files'].each do |filename, props|
   # Download the remote file from S3
   remote_path = props['subfolder'].nil? ? filename : ::File.join(props['subfolder'], filename)
-  aws_s3_file filename do
+  s3_file filename do
     path ::File.join(node['arcgis']['repository']['local_archives'], filename)
     remote_path remote_path
     bucket node['arcgis']['repository']['server']['s3bucket']
-    region node['arcgis']['repository']['server']['region']
-    aws_access_key node['arcgis']['repository']['server']['aws_access_key']
-    aws_secret_access_key node['arcgis']['repository']['server']['aws_secret_access_key']
-    checksum props['checksum']
+    if !node['arcgis']['repository']['server']['aws_access_key'].empty? 
+      aws_access_key_id node['arcgis']['repository']['server']['aws_access_key']
+      aws_secret_access_key node['arcgis']['repository']['server']['aws_secret_access_key']
+    end
     retries 5
     retry_delay 30
     not_if { ::File.exist?(::File.join(node['arcgis']['repository']['local_archives'], filename)) }

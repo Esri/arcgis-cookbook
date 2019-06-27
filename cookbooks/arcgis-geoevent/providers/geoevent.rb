@@ -25,8 +25,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'ArcGIS GeoEvent Server' do
       description 'Allows connections through all ports used by ArcGIS GeoEvent Server'
-      localport node['arcgis']['geoevent']['ports']
-      dir :in
+      local_port node['arcgis']['geoevent']['ports']
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }

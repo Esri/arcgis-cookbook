@@ -34,6 +34,12 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['install_dir'] = ''
 
     case node['arcgis']['version']
+    when '10.7.1'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'Web_Adaptor_for_Microsoft_IIS_1071_169690.exe').gsub('/', '\\')
+      web_adaptor['product_code'] = '{5ECEF84F-592C-47D1-B7C5-9F3D7E2AB7CE}'
+      web_adaptor['product_code2'] = '{5F1D01EA-296E-4226-A704-6A90E2916782}'
+      web_adaptor['config_web_adaptor_exe'] = '\\ArcGIS\\WebAdaptor\\IIS\\10.7.1\\Tools\\ConfigureWebAdaptor.exe' 
     when '10.7'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'Web_Adaptor_for_Microsoft_IIS_107_167634.exe').gsub('/', '\\')
@@ -93,7 +99,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
                                     '{1B4E7470-72F4-4169-92B9-EF1BDF8AE4AF}',
                                     '{3FA8B44E-E0E3-4245-A662-6B81E1E75048}',
                                     '{F343B520-F769-4D93-86D2-663168AC6975}',
-                                    '{58A76431-E1A9-4D11-BB89-0D12C6E77C78}']
+                                    '{58A76431-E1A9-4D11-BB89-0D12C6E77C78}',
+                                    '{5ECEF84F-592C-47D1-B7C5-9F3D7E2AB7CE}',
+                                    '{5F1D01EA-296E-4226-A704-6A90E2916782}']
   else # node['platform'] == 'linux'
     web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                        node['arcgis']['version'],
@@ -101,6 +109,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['lp-setup'] = node['arcgis']['web_adaptor']['setup']
 
     case node['arcgis']['version']
+    when '10.7.1'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'Web_Adaptor_Java_Linux_1071_169645.tar.gz')
     when '10.7'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'Web_Adaptor_Java_Linux_107_167720.tar.gz')

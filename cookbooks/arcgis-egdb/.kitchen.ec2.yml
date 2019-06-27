@@ -45,7 +45,6 @@ suites:
       prebuilt_postgresql:
         version: 9.6.9
       arcgis:
-        version: '10.7'
         server:
           authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
         egdb:

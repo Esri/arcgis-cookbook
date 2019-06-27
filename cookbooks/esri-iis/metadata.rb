@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding.'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.1'
+version          '0.1.2'
 
-depends          'windows'
-depends          'openssl'
+depends          'windows', '~> 5.3'
+depends          'openssl', '~> 8.5'
 
 supports         'windows'
 

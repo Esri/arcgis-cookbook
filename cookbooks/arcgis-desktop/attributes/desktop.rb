@@ -38,6 +38,10 @@ default['arcgis']['desktop'].tap do |desktop|
     desktop['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
 
     case node['arcgis']['version']
+    when '10.7.1'
+      desktop['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                             'ArcGIS_Desktop_1071_169506.exe').gsub('/', '\\')
+      desktop['product_code'] = '{69262D87-3697-492B-ABED-765DDC15118B}'
     when '10.7'
       desktop['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                              'ArcGIS_Desktop_107_167519.exe').gsub('/', '\\')

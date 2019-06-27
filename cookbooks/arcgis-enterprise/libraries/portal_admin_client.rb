@@ -25,8 +25,7 @@ module ArcGIS
   # Client class for ArcGIS Portal Directory.
   #
   class PortalAdminClient
-    MAX_RETRIES = 30
-    SLEEP_TIME = 10.0
+    READ_TIMEOUT = 3600
 
     @portal_url = nil
     @generate_token_url = nil
@@ -54,7 +53,7 @@ module ArcGIS
       request = Net::HTTP::Get.new(uri.request_uri)
 
       http = Net::HTTP.new(uri.host, uri.port)
-      http.read_timeout = 3600
+      http.read_timeout = 600
 
       if uri.scheme == 'https'
         http.use_ssl = true
@@ -78,7 +77,7 @@ module ArcGIS
       request = Net::HTTP::Get.new(uri.request_uri)
 
       http = Net::HTTP.new(uri.host, uri.port)
-      http.read_timeout = 3600
+      http.read_timeout = READ_TIMEOUT
 
       if uri.scheme == 'https'
         http.use_ssl = true
@@ -766,7 +765,7 @@ module ArcGIS
       uri = URI.parse(@portal_url)
 
       http = Net::HTTP.new(uri.host, uri.port)
-      http.read_timeout = 3600
+      http.read_timeout = READ_TIMEOUT
 
       if uri.scheme == 'https'
         http.use_ssl = true
@@ -785,7 +784,7 @@ module ArcGIS
         uri = URI.parse(response.header['location'])
 
         http = Net::HTTP.new(uri.host, uri.port)
-        http.read_timeout = 3600
+        http.read_timeout = READ_TIMEOUT
 
         if uri.scheme == 'https'
           http.use_ssl = true

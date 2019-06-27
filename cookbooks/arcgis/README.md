@@ -1,38 +1,28 @@
-esri-tomcat cookbook
-====================
+arcgis cookbook
+===============
 
-This cookbook installs and configures Apache Tomcat for using with ArcGIS Web Adaptor.
-
-Requirements
-------------
-
-### Platforms
-
-* RHEL 6, 7
-* Ubuntu 14.04, 16.04, 18.04
+arcgis cookbook is a collection of Chef cookbooks used for ArcGIS configuration management.
 
 ### Dependencies
 
 The following cookbooks are required:
-* tomcat
-* java
-* openssl
 
-Attributes
-----------
+* arcgis-desktop
+* arcgis-egdb
+* arcgis-enterprise
+* arcgis-geoevent
+* arcgis-insights
+* arcgis-pro
+* arcgis-repository
+* esri-iis
+* esri-tomcat
 
-#### General
+Usage
+-----
 
-* `node['tomcat']['version']` = Tomcat version to install. Default is 8.0.33.
-* `node['tomcat']['instance_name']` = Default is 'arcgis'.
-* `node['tomcat']['instance_path']` = Default is '/opt/tomcat_INSTANCENAME_VERSION'.
+The cookbook does not have any recipes or resource. It is used to build arcgis-* cookbooks packages.
 
-#### SSL/TLS
-
-* `node['tomcat']['keystore_file']` = Optional: Path to the keystore file. If not provided, a new file and a self-signed certificate will be created.
-* `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
-* `node['tomcat']['ssl_enabled_protocols']` = Default is 'TLSv1.2,TLSv1.1,TLSv1'
-* `node['tomcat']['domain_name']` = Default is 'Fully Qualified Domain Name'
+See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
 
 ## Issues
 
@@ -45,7 +35,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -59,6 +49,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Chef Cookbook Tomcat)
-[](Esri Language: Ruby)

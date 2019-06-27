@@ -38,8 +38,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS Server' do
       description 'Allows connections through all ports used by ArcGIS Server'
-      localport '1098,4000-4004,6006,6080,6099,6443'
-      dir :in
+      local_port '1098,4000-4004,6006,6080,6099,6443'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -47,8 +46,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS GeoAnalytics Server' do
       description 'Allows connections through all ports used by ArcGIS GeoAnalytics Server'
-      localport '2181,2182,2190,7077,56540-56545'
-      dir :in
+      local_port '2181,2182,2190,7077,56540-56545'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -299,7 +297,8 @@ action :join_site do
 
           join_site_tool_cmd = [
             '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
-            '-f', '"' + config_store_connection_file + '"', '-c', 'default'].join(' ')
+            '-f', '"' + config_store_connection_file + '"', '-c', 'default'
+          ].join(' ')
 
           # Mixlib::ShellOut does not load user profile of the impersonated user account,
           # so the user's environment variables such as USERNAME, USERPROFILE, TEMP, TMP,
@@ -348,7 +347,8 @@ action :join_site do
 
           join_site_tool_cmd = [
             ::File.join(install_dir, 'tools','joinsite','join-site.sh'),
-            '-f', config_store_connection_file, '-c', 'default'].join(' ')
+                        '-f', config_store_connection_file, '-c', 'default'
+          ].join(' ')
 
           cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
                 { :user => node['arcgis']['run_as_user'],
@@ -483,7 +483,7 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('ArcGIS Server').current_state == 'running'
+    if Utils.service_started?('ArcGIS Server')
       #Stop ArcGIS Server windows service and dependent services.
       Utils.retry_ShellOut("net stop \"ArcGIS Server\" /yes",
                            5, 60, {:timeout => 3600})
@@ -520,7 +520,7 @@ action :start do
         end
       end
 
-    if ::Win32::Service.status('ArcGIS Server').current_state != 'running'
+    if !Utils.service_started?('ArcGIS Server')
       #Start ArcGIS Server windows service and dependent services.
       Utils.retry_ShellOut("net start \"ArcGIS Server\" /yes", 5, 60, {:timeout => 600})
       new_resource.updated_by_last_action(true)

@@ -28,7 +28,7 @@ default['arcgis']['geoevent'].tap do |geoevent|
   geoevent['configure_autostart'] = true
 
   case
-  when ['10.6', '10.6.1', '10.7'].include?(node['arcgis']['version'])
+  when ['10.6', '10.6.1', '10.7', '10.7.1'].include?(node['arcgis']['version'])
     geoevent['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273,2181,2182,2190'
     geoevent['configure_gateway_service'] = true
   when ['10.4', '10.4.1', '10.5', '10.5.1'].include?(node['arcgis']['version'])
@@ -46,6 +46,10 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
     case node['arcgis']['version']
+    when '10.7.1'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_1071_169716.exe').gsub('/', '\\')
+      geoevent['product_code'] = '{3AE4EE62-B5ED-45CB-8917-F761B9335F33}'
     when '10.7'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_107_167668.exe').gsub('/', '\\')
@@ -80,6 +84,9 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
     case node['arcgis']['version']
+    when '10.7.1'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_1071_169919.tar.gz').gsub('/', '\\')
     when '10.7'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_107_167732.tar.gz').gsub('/', '\\')
