@@ -28,8 +28,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'ArcGIS Data Store' do
       description 'Allows connections through all ports used by ArcGIS Data Store'
-      localport '2443,9220,9320,9876,29080,29081'
-      dir :in
+      local_port '2443,9220,9320,9876,29080,29081'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -265,10 +264,8 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('ArcGIS Data Store').current_state == 'running'
-      service 'ArcGIS Data Store' do
-        action :stop
-      end
+    if Utils.service_started?('ArcGIS Data Store')
+      Utils.stop_service('ArcGIS Data Store')
       new_resource.updated_by_last_action(true)
     end
   else
@@ -302,19 +299,10 @@ action :start do
       end
     end
 
-    if ::Win32::Service.status('ArcGIS Data Store').current_state != 'running'
-      service 'ArcGIS Data Store' do
-        notifies :run, "ruby_block[Wait for Data Store to start]", :immediately
-        action [:enable, :start]
-      end
-
-      ruby_block "Wait for Data Store to start" do
-        block do
-          sleep(60)
-        end
-        action :nothing
-      end
-
+    if !Utils.service_started?('ArcGIS Data Store')
+      Utils.sc_enable('ArcGIS Data Store')
+      Utils.start_service('ArcGIS Data Store')
+      sleep(60)
       new_resource.updated_by_last_action(true)
     end
   else

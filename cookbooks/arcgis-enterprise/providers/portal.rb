@@ -31,8 +31,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'Portal for ArcGIS' do
       description 'Allows connections through all ports used by Portal for ArcGIS'
-      localport '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
-      dir :in
+      local_port '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -238,9 +237,9 @@ action :authorize do
     # Validate user type license
     license_info = portal_admin_client.validate_license(@new_resource.authorization_file)
 
-    if license_info['MyEsri']['version'] != @new_resource.authorization_file_version
-      throw "Authorization file version '#{license_info['MyEsri']['version']}' does not match ArcGIS version '#{@new_resource.authorization_file_version}'."
-    end
+    # if license_info['MyEsri']['version'] != @new_resource.authorization_file_version
+    #   throw "Authorization file version '#{license_info['MyEsri']['version']}' does not match ArcGIS version '#{@new_resource.authorization_file_version}'."
+    # end
 
     # user_type = license_info['MyEsri']['definitions']['userTypes'].detect { |u| u['id'] == @new_resource.user_license_type_id }
 
@@ -304,13 +303,13 @@ action :create_site do
       Chef::Log.error 'Portal post upgrade failed. ' + e.message
     end
 
-    portal_admin_client.wait_until_available
+    # portal_admin_client.wait_until_available
 
-    begin
-      portal_admin_client.reindex()
-    rescue Exception => e
-      Chef::Log.error 'Portal content reindex failed. ' + e.message
-    end
+    # begin
+    #   portal_admin_client.reindex()
+    # rescue Exception => e
+    #   Chef::Log.error 'Portal content reindex failed. ' + e.message
+    # end
 
     portal_admin_client.wait_until_available
 
@@ -567,10 +566,9 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('Portal for ArcGIS').current_state == 'running'
-      service 'Portal for ArcGIS' do
-        action :stop
-      end
+
+    if Utils.service_started?('Portal for ArcGIS')
+      Utils.stop_service('Portal for ArcGIS')
       new_resource.updated_by_last_action(true)
     end
   else
@@ -604,10 +602,9 @@ action :start do
       end
     end
 
-    if ::Win32::Service.status('Portal for ArcGIS').current_state != 'running'
-      service 'Portal for ArcGIS' do
-        action [:enable, :start]
-      end
+    if !Utils.service_started?('Portal for ArcGIS')
+      Utils.sc_enable('Portal for ArcGIS')
+      Utils.start_service('Portal for ArcGIS')
       new_resource.updated_by_last_action(true)
     end
   else

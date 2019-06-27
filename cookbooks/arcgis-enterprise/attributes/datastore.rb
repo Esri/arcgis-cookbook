@@ -43,6 +43,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['data_dir'] = 'C:\\arcgisdatastore'
 
     case node['arcgis']['version']
+    when '10.7.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_1071_169689.exe').gsub('/', '\\')
+      data_store['product_code'] = '{112E5FD0-9DD2-45DA-ACD5-A21AA45F67E2}'
     when '10.7'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_107_167633.exe').gsub('/', '\\')
@@ -86,6 +90,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '10.7.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_1071_169808.tar.gz')
     when '10.7'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_107_167719.tar.gz')

@@ -44,7 +44,6 @@ suites:
       - recipe[arcgis-desktop]
     attributes:
       arcgis:
-        version: '10.6.1'
         desktop:
           software_class: 'Viewer'
           seat_preference: 'Fixed'
@@ -63,4 +62,4 @@ suites:
       - recipe[arcgis-desktop::licensemanager]
     attributes:
       arcgis:
-        version: '10.6.1'
+        version: '10.7.1'

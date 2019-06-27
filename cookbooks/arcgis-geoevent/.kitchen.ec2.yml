@@ -45,7 +45,6 @@ suites:
       - recipe[arcgis-geoevent]
     attributes:
       arcgis:
-        version: '10.6.1'
         configure_windows_firewall: true
         cache_authorization_files: true
         server:

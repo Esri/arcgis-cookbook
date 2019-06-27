@@ -77,8 +77,7 @@ default['arcgis']['portal'].tap do |portal|
   portal['configure_autostart'] = true
   portal['install_system_requirements'] = true
 
-  # authorization_file_version must be <major>.<minor> ('10.4.1' -> '10.4')
-  portal['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
+  portal['authorization_file_version'] = node['arcgis']['version']
   portal['user_license_type_id'] = ''
 
   portal['security']['user_store_config'] = {'type' => 'BUILTIN', 'properties' => {}}
@@ -105,6 +104,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['data_dir'] = 'C:\\arcgisportal'
 
     case node['arcgis']['version']
+    when '10.7.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_1071_169688.exe').gsub('/', '\\')
+      portal['product_code'] = '{7FDEEE00-6641-4E27-A54E-82ACCCE14D00}'
     when '10.7'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_107_167632.exe').gsub('/', '\\')
@@ -178,6 +181,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.7.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_1071_169807.tar.gz')
     when '10.7'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_107_167718.tar.gz')

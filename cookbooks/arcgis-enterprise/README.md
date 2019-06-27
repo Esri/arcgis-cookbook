@@ -9,6 +9,7 @@ Requirements
 ### Supported ArcGIS versions
 
 * 10.7
+* 10.7.1
 
 ### Supported ArcGIS software
 
@@ -25,7 +26,8 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04, 16.04
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ### Dependencies
@@ -133,6 +135,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['install_dir']` = Portal for ArcGIS installation directory. By default, Portal for ArcGIS is installed to `%ProgramW6432%\ArcGIS\Portal` on Windows machines and `/` on Linux machines.
 * `node['arcgis']['portal']['install_system_requirements']` = If set to true, the required third party libraries are installed on the machine before running Portal for ArcGIS setup. Default value is `true`.
 * `node['arcgis']['portal']['configure_autostart']` = If set to true, on Linux the Portal for ArcGIS is configured to start with the operating system. Default value is `true`.
+* `node['arcgis']['portal']['data_dir']` = Data directory path used by Portal for ArcGIS setup. The path must be a local directory, not a shared network directory. Dafault path on Windows is `C:\arcgisportal`, on Linux is `/arcgis/portal/usr/arcgisportal/`.
 * `node['arcgis']['portal']['content_dir']` = Portal for ArcGIS content directory. Default directory is `C:\arcgisportal\content` on Windows and `/arcgis/portal/usr/arcgisportal/content` on Linux.
 * `node['arcgis']['portal']['authorization_file']` = Portal for ArcGIS authorization file path. Default location and file name is `C:\Temp\portal_license.prvc` on Windows and `/tmp/portal_license.prvc` on Linux.
 * `node['arcgis']['portal']['authorization_file_version']` = Portal for ArcGIS authorization file version. Default value is `10.4`.
@@ -157,6 +160,11 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['allssl']` = Portal for ArcGIS run in all SSL mode or not. Default value is `false`.
 * `node['arcgis']['portal']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['portal']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+
+#### Web Styles
+
+* `node['arcgis']['webstyles']['setup']` = ArcGIS Web Styles setup path.
+* `node['arcgis']['webstyles']['setup_archive']` = ArcGIS Web Styles setup archive path. Default value depends on `node['arcgis']['version']` attribute value.
 
 #### Data Store
 
@@ -339,6 +347,10 @@ Unregisters all unavailable server machines in 'default' cluster from the ArcGIS
 ### arcgis-enterprise::enterprise_validate
 
 Checks if ArcGIS Enterprise setups and authorization files exist.
+
+### arcgis-enterprise::webstyles
+
+Installs Portal for ArcGIS Web Styles.
 
 Usage
 -----

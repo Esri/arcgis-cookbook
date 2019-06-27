@@ -20,7 +20,7 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '3.1'
+  insights['version'] = '3.2.1'
 
   case node['platform']
   when 'windows'
@@ -28,6 +28,14 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '3.2.1'
+      insights['product_code'] = '{451E8919-F60D-47DD-B5CF-7BC97F8E9FE5}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_321_168370.exe')
+    when '3.2'
+      insights['product_code'] = '{01F700EA-D707-41BF-AC1A-DFB82FAF84AC}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Windows_32_168464.exe')
     when '3.1'
       insights['product_code'] = '{ECDBB436-78D3-4CAD-868D-4D39C958AE11}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -61,6 +69,12 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '3.2.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_321_168491.tar.gz')
+    when '3.2'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'Insights_for_ArcGIS_Linux_32_168465.tar.gz')
     when '3.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'Insights_for_ArcGIS_Linux_31_166716.tar.gz')

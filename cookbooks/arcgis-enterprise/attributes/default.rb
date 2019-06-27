@@ -25,7 +25,7 @@ else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
-default['arcgis']['version'] = '10.7'
+default['arcgis']['version'] = '10.7.1'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
@@ -42,7 +42,7 @@ when 'windows'
 else # node['platform'] == 'linux'
   default['arcgis']['packages'] =
     case node['platform']
-    when 'redhat', 'centos'
+    when 'redhat', 'centos', 'amazon'
       ['gettext']
     when 'suse'
       ['gettext-runtime']

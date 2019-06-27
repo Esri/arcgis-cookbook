@@ -83,6 +83,8 @@ arcgis_enterprise_portal 'Create Portal Site' do
   upgrade_rollback node['arcgis']['portal']['upgrade_rollback']
   root_cert node['arcgis']['portal']['root_cert']
   root_cert_alias node['arcgis']['portal']['root_cert_alias']
+  retries 5
+  retry_delay 600
   action :create_site
 end
 

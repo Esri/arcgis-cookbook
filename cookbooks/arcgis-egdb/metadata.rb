@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license 'Apache 2.0'
 description 'Creates enterprise geodatabases in SQL Server or PostgreSQL DBMS and registers them with ArcGIS Server.'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '1.0.0'
+version '1.0.1'
 chef_version '>= 12.6', '< 15.0' if defined? chef_version
 
-depends    'arcgis-enterprise'
+depends    'arcgis-enterprise', '~> 3.4'
 
 supports   'windows'
 supports   'ubuntu'

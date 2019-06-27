@@ -19,20 +19,6 @@
 
 include_recipe 'arcgis-enterprise::install_datastore'
 
-# Set hostidentifier and preferredidentifier in hostidentifier.properties file.
-arcgis_enterprise_datastore 'Configure hostidentifier.properties' do
-  action :configure_hostidentifiers_properties
-  notifies :stop, 'arcgis_enterprise_datastore[Stop ArcGIS Data Store]', :immediately
-end
-
-arcgis_enterprise_datastore 'Stop ArcGIS Data Store' do
-  action :nothing
-end
-
-arcgis_enterprise_datastore 'Start ArcGIS Data Store' do
-  action :start
-end
-
 arcgis_enterprise_datastore 'Configure ArcGIS Data Store' do
   install_dir node['arcgis']['data_store']['install_dir']
   data_dir node['arcgis']['data_store']['data_dir']

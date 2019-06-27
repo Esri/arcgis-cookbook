@@ -10,10 +10,11 @@ arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or PostgreSQL
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04/16.04
-* Rhel 6.5, 7.0
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
+* RHEL 6.5, 7.0
 
-## Database Servers 
+## Database Servers
 
 The cookbook was tested with:
 

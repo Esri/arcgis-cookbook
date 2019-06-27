@@ -6,6 +6,7 @@ Requirements
 ------------
 
 ### Platforms
+
 * Windows 7
 * Windows 8 (8.1)
   - 8.1 requires .Net Framework 3.5 (See ms_dotnet cookbook README)
@@ -14,8 +15,10 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
+* Windows Server 2019
 
 ### Dependencies
+
 The following cookbooks are required:
 * openssl
 * windows
