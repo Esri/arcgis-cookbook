@@ -7,33 +7,34 @@ Requirements
 ------------
 
 ### Supported ArcGIS versions
-* 10.4
-* 10.4.1
-* 10.5
-* 10.5.1
-* 10.6
-* 10.6.1
+
+* 10.7
+* 10.7.1
 
 ### Supported ArcGIS software
+
 * ArcGIS Server
 * ArcGIS Data Store
 * Portal for ArcGIS
-* ArcGIS Web Adaptor (IIS/Java) 
+* ArcGIS Web Adaptor (IIS/Java)
 
 ### Platforms
+
 * Windows 7
-* Windows 8 (8.1)
-  - 8.1 requires .Net Framework 3.5 (See ms_dotnet cookbook README)
-* Windows 10
-  - requires .Net Framework 3.5 (See ms_dotnet cookbook README)
+* Windows 8 (8.1). 8.1 requires .Net Framework 3.5 (See ms_dotnet cookbook README)
+* Windows 10. Requires .Net Framework 3.5 (See ms_dotnet cookbook README)
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04, 16.04 
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ### Dependencies
+
 The following cookbooks are required:
+
+* arcgis-repository
 * hostsfile
 * limits
 * authbind
@@ -44,8 +45,10 @@ The following cookbooks are required:
 
 Attributes
 ----------
+
 #### General
-* `node['arcgis']['version']` = ArcGIS version. Default value is `10.6.1`.
+
+* `node['arcgis']['version']` = ArcGIS version. Default value is `10.7`.
 * `node['arcgis']['run_as_user']` = Account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_password']` = Password for the account used to run ArcGIS Server, 
 Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
@@ -53,12 +56,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['cache_authorization_files']` = If set to true, the software authorization file is cached on the machine and software authorization is skipped in the subsequent chef runs. Default value is `false`.
 * `node['arcgis']['configure_windows_firewall']` = If set to true, Windows firewall is configured for ArcGIS applications as specified by the system requirements. Default value is `false`.
 * `node['arcgis']['python']['install_dir']` = Python installation directory. By default Python is installed at `C:\Python27`.
-* `node['arcgis']['repository']['setups']` = Path to folder with ArcGIS software setups. Default path is `%USERPROFILE%\Documents` on Windows and `~/arcgis` on Linux.
-* `node['arcgis']['repository']['archives']` = Path to folder with ArcGIS software setup archives. Default path is `%USERPROFILE%\Software\Esri` on Windows and `~/software/esri` on Linux.
-* `node['arcgis']['repository']['patches']` = Path to folder with hot fixes and patches for ArcGIS Enterprise software. The default path on Windows is `%USERPROFILE%\Software\Esri\Patches`,   on Linux is `~/software/esri/patches`.
 * `node['arcgis']['post_install_script']` = Custom post-installation script path. The default path on Windows is `C:\imageryscripts\deploy.bat`, on Linux is `/arcgis/imageryscripts/deploy.sh`.
 
 #### File Server
+
 * `node['arcgis']['fileserver']['shares']` = List of local directories shared by 'fileserver' recipe. Default list is `[node['arcgis']['server']['local_directories_root'], node['arcgis']['data_store']['data_dir'], node['arcgis']['portal']['data_dir']]`.
 
 #### Server
@@ -67,7 +68,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['wa_url']` = URL of the Web Adaptor used for ArcGIS Server. Default name is `https://<FQDN of the machine>/<Server Web Adaptor name>`.
 * `node['arcgis']['server']['domain_name']` = ArcGIS Server domain name. By default, `<node FQDN>` is used.
 * `node['arcgis']['server']['hostname']` = Host name or IP address of ArcGIS Server machine. Default value is  `''`.
-* `node['arcgis']['server']['url']` = ArcGIS Server URL. Default URL is `https://<FQDN of the machine>:6443/arcgis`.
+* `node['arcgis']['server']['url']` = ArcGIS Server URL. The default URL is `https://<FQDN of the machine>:6443/arcgis` using the fully qualified domain name of the machine on which Chef is running. If ArcGIS Server and the web adaptor are running on different machines, then this value should be explicitly set.
 * `node['arcgis']['server']['private_url']` = ArcGIS Server URL without Web Adaptor. Default URL is `https://<server domain name>:6443/arcgis`.
 * `node['arcgis']['server']['primary_server_url']` = URL of ArcGIS Server site to join. Default is `nil`.
 * `node['arcgis']['server']['web_context_url']` = ArcGIS server web context URL. By default, this is `'https://<Domain name>/<WA name>`.
@@ -117,7 +118,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['domain_name']` = Portal for ArcGIS domain name. By default, `<node FQDN>` is used.
 * `node['arcgis']['portal']['wa_name']` = The Web Adaptor name for Portal for ArcGIS., Default name is `portal`.
 * `node['arcgis']['portal']['wa_url']` = URL of the Web Adaptor for Portal for ArcGIS., Default name is `https://<FQDN of the machine>/<Portal Web Adaptor name>`.
-* `node['arcgis']['portal']['url']` = Portal for ArcGIS URL. Default URL is `https://<FQDN of the machine>:7443/arcgis`.
+* `node['arcgis']['portal']['url']` = Portal for ArcGIS URL. The default URL is `https://<FQDN of the machine>:7443/arcgis` using the fully qualified domain name of the machine on which Chef is running. If Portal for ArcGIS and the web adaptor are running on different machines, then this value should be explicitly set.
 * `node['arcgis']['portal']['private_url']` = Portal for ArcGIS private URL. Default URL is `https://<portal domain name>:7443/arcgis`.
 * `node['arcgis']['portal']['web_context_url']` = Portal for ArcGIS web context URL. By default, this is `nil`.
 * `node['arcgis']['portal']['primary_machine_url']` = URL of primary Portal for ArcGIS machine. By default, this is `nil`.
@@ -134,9 +135,11 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['install_dir']` = Portal for ArcGIS installation directory. By default, Portal for ArcGIS is installed to `%ProgramW6432%\ArcGIS\Portal` on Windows machines and `/` on Linux machines.
 * `node['arcgis']['portal']['install_system_requirements']` = If set to true, the required third party libraries are installed on the machine before running Portal for ArcGIS setup. Default value is `true`.
 * `node['arcgis']['portal']['configure_autostart']` = If set to true, on Linux the Portal for ArcGIS is configured to start with the operating system. Default value is `true`.
+* `node['arcgis']['portal']['data_dir']` = Data directory path used by Portal for ArcGIS setup. The path must be a local directory, not a shared network directory. Dafault path on Windows is `C:\arcgisportal`, on Linux is `/arcgis/portal/usr/arcgisportal/`.
 * `node['arcgis']['portal']['content_dir']` = Portal for ArcGIS content directory. Default directory is `C:\arcgisportal\content` on Windows and `/arcgis/portal/usr/arcgisportal/content` on Linux.
 * `node['arcgis']['portal']['authorization_file']` = Portal for ArcGIS authorization file path. Default location and file name is `C:\Temp\portal_license.prvc` on Windows and `/tmp/portal_license.prvc` on Linux.
 * `node['arcgis']['portal']['authorization_file_version']` = Portal for ArcGIS authorization file version. Default value is `10.4`.
+* `node['arcgis']['portal']['user_license_type_id']` = Portal for ArcGIS administrator user license type Id.
 * `node['arcgis']['portal']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['keystore_password']` = Keystore file password for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['cert_alias']` = SSL certificate alias for Portal for ArcGIS. Default alias is composed of these values:`node['arcgis']['portal']['domain_name']`.
@@ -158,6 +161,10 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['portal']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 
+#### Web Styles
+
+* `node['arcgis']['webstyles']['setup']` = ArcGIS Web Styles setup path.
+* `node['arcgis']['webstyles']['setup_archive']` = ArcGIS Web Styles setup archive path. Default value depends on `node['arcgis']['version']` attribute value.
 
 #### Data Store
 
@@ -173,144 +180,181 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, <relational|tileCache|spatiotemporal>. By default, `tileCache,relational` is used.
 
-#### RDS
-* `node['arcgis']['rds']['engine']` = RDS DB engine <nil|postgres|sqlserver-se>. Default DB engine is `nil`.
-* `node['arcgis']['rds']['endpoint']` = RDS DB instance endpoint. Default endpoint is `nil`.
-* `node['arcgis']['rds']['username']` = RDS DB instance master username. Default username is `nil`.
-* `node['arcgis']['rds']['password']` = RDS DB instance master user password. Default password is `nil`.
-
 #### Linux Web Server
+
 * `node['arcgis']['web_server']['webapp_dir']` = Path to web server's web application directory (eg. /opt/tomcat/webapps). Default value is `''`
 
 
 Recipes
 -------
+
 ### arcgis-enterprise::authbind (DEPRECATED)
+
 Configures authbind for Apache Tomcat user (for Debian Linux family).
 
 ### arcgis-enterprise::clean
+
 Deletes local directories created by ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store.
 
 ### arcgis-enterprise::datastore
+
 Installs and configures ArcGIS Data Store on primary machine.
 
 ### arcgis-enterprise::datastore_standby
+
 Installs and configures ArcGIS Data Store on standby machine.
 
 ### arcgis-enterprise::disable_geoanalytics
+
 Resets the function of the federated server in the Portal for ArcGIS.
 
 ### arcgis-enterprise::disable_imagehosting
+
 Resets the function of the federated server in the Portal for ArcGIS.
 
 ### arcgis-enterprise::disable_rasteranalytics
+
 Resets the function of the federated server in the Portal for ArcGIS.
 
 ### arcgis-enterprise::egdb
+
 Registers enterprise geodatabases with ArcGIS Server.
 
 ### arcgis-enterprise::enable_geoanalytics
+
 Registers ArcGIS Server with GeoAnalytics function to the Portal for ArcGIS.
 
 ### arcgis-enterprise::enable_imagehosting
+
 Registers ArcGIS Server with ImageHosting function to the Portal for ArcGIS.
 
 ### arcgis-enterprise::enable_rasteranalytics
+
 Registers ArcGIS Server with RasterAnalytics function to the Portal for ArcGIS.
 
 ### arcgis-enterprise::federation
+
 Registers and federates ArcGIS Server with Portal for ArcGIS.
 
 ### arcgis-enterprise::fileserver
+
 Creates and shares directories on file server machine.
 
 ### arcgis-enterprise::hosts
+
 Creates entries in /etc/hosts file for the specified hostname to IP address map.
 
 ### arcgis-enterprise::iptables
+
 Configures iptables to forward ports 80/443 to 8080/8443.
 
 ### arcgis-enterprise::install_datastore
+
 Installs ArcGIS Data Store on the machine.
 
 ### arcgis-enterprise::install_portal
+
 Installs Portal for ArcGIS on the machine.
 
 ### arcgis-enterprise::install_portal_wa
+
 Installs ArcGIS Web Adaptor instance for Portal for ArcGIS.
 
 ### arcgis-enterprise::install_server
+
 Installs ArcGIS Server on the machine.
 
 ### arcgis-enterprise::install_server_wa
+
 Installs ArcGIS Web Adaptor instance for ArcGIS Server.
 
 ### arcgis-enterprise::lp-install
+
 Installs language packs for ArcGIS Server software.
 
 ### arcgis-enterprise::patches
+
 Installs hot fixes and patches for ArcGIS Enterprise software.
 
 ### arcgis-enterprise::portal
+
 Installs and configures Portal for ArcGIS.
 
 ### arcgis-enterprise::portal_security
+
 Configures Portal for ArcGIS identity stores and assigns privileges to roles.
 
 ### arcgis-enterprise::portal_standby
+
 Installs and configures Portal for ArcGIS on standby machine
 
 ### arcgis-enterprise::portal_wa
+
 Installs ArcGIS Web Adaptor and configures it with Portal for ArcGIS. IIS or Java application server such as Tomcat must be installed and configured before installing ArcGIS Web Adaptor.
 
 ### arcgis-enterprise::post_install
+
 Executes custom post-installation script if it exists.
 
-### arcgis-enterprise::rds_egdb 
-Creates EGDBs in Amazon AWS RDS instance and registers the EGDBs with ArcGIS Server.
-
 ### arcgis-enterprise::server
+
 Installs and configures ArcGIS Server site.
 
 ### arcgis-enterprise::server_node
+
 Installs ArcGIS Server on the machine and joins an existing site.
 
 ### arcgis-enterprise::server_security
+
 Configures ArcGIS Server identity stores and assigns privileges to roles.
 
 ### arcgis-enterprise::server_wa
+
 Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. IIS or Java application server such as Tomcat must be installed and configured before installing ArcGIS Web Adaptor.
 
 ### arcgis-enterprise::services
+
 Publishes services to ArcGIS Server.
 
-### arcgis-enterprise::sql_alias 
-Creates 'egdbhost' alias for SQL Server RDS instance endpoint domain name.
-
 ### arcgis-enterprise::stop_machine
+
 Stops server machine in the ArcGIS Server site.
 
 ### arcgis-enterprise::stop_server
+
 Stops ArcGIS Server service on the machine.
 
 ### arcgis-enterprise::system
+
 Configures system requirements for ArcGIS Enterprise software by invoking ':system' actions for ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, and ArcGIS Web Adaptor resources, includes arcgis::hosts recipe.
 
 ### arcgis-enterprise::enterprise_installed
+
 Installs ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
 ### arcgis-enterprise::enterprise_uninstalled
+
 Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
 
 ### arcgis-enterprise::unregister_machine
-Unregister server machine from the ArcGIS Server site.
+
+Unregisters server machine from the ArcGIS Server site.
+
+### arcgis-enterprise::unregister_stopped_machines
+
+Unregisters all unavailable server machines in 'default' cluster from the ArcGIS Server site.
 
 ### arcgis-enterprise::enterprise_validate
+
 Checks if ArcGIS Enterprise setups and authorization files exist.
 
+### arcgis-enterprise::webstyles
+
+Installs Portal for ArcGIS Web Styles.
 
 Usage
 -----
+
 See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
 
 ## Issues
@@ -324,7 +368,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2018 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -338,6 +382,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Enterprise Chef Cookbook)
-[](Esri Language: Ruby)

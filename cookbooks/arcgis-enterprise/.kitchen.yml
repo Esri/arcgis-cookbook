@@ -9,7 +9,7 @@ driver:
 
 provisioner:
   name: chef_zero
-  require_chef_omnibus: 13.3
+  require_chef_omnibus: 14.5
 
 platforms:
   - name: windows-2016
@@ -76,7 +76,8 @@ suites:
           setup: "C:\\temp\\setups\\ArcGIS_DataStore\\Setup.exe"
         portal:
           setup: "C:\\temp\\setups\\Portal_for_ArcGIS\\Setup.exe"
-          authorization_file: "C:\\temp\\authorization_files\\Portal_for_ArcGIS\\portal_25_50.ecp"
+          user_license_type_id: 'creatorUT'
+          authorization_file: "C:\\temp\\authorization_files\\Portal_for_ArcGIS\\portal_all_50.json"
           wa_url: "https://test.com/portal"
           url: "https://test.com:7443/arcgis"
           domain_name: "test.com"
@@ -132,7 +133,8 @@ suites:
           setup: "/tmp/data-store-cd/Setup"
         portal:
           setup: "/tmp/portal-cd/Setup"
-          authorization_file: "/tmp/authorization_files/ArcGISPortal/portal_25_50.ecp"
+          user_license_type_id: 'creatorUT'
+          authorization_file: '/tmp/authorization_files/Portal_for_ArcGIS/portal_all_50.json'
           wa_url: "https://test.com/portal"
           url: "https://test.com:7443/arcgis"
           domain_name: "test.com"

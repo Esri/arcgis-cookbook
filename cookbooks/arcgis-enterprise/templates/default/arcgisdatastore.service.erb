@@ -38,6 +38,7 @@ LimitAS=infinity
 LimitFSIZE=infinity
 ExecStart=<%=@datastorehome%>/startdatastore.sh
 ExecStop=<%=@datastorehome%>/stopdatastore.sh
+<%=@cloudenvironment%>
 
 [Install]
 WantedBy=multi-user.target

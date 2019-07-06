@@ -19,29 +19,6 @@
 
 include_recipe 'arcgis-enterprise::install_portal'
 
-arcgis_enterprise_portal 'Authorize Portal for ArcGIS' do
-  authorization_file node['arcgis']['portal']['authorization_file']
-  authorization_file_version node['arcgis']['portal']['authorization_file_version']
-  retries 5
-  retry_delay 60
-  not_if { ::File.exists?(node['arcgis']['portal']['cached_authorization_file']) &&
-           FileUtils.compare_file(node['arcgis']['portal']['authorization_file'],
-                                  node['arcgis']['portal']['cached_authorization_file']) }
-  action :authorize
-end
-
-# Copy portal authorization file to the machine to indicate that portal is already authorized
-file 'Cache portal authorization file' do
-  path node['arcgis']['portal']['cached_authorization_file']
-  if ::File.exists?(node['arcgis']['portal']['authorization_file'])
-    content File.open(node['arcgis']['portal']['authorization_file'], 'rb') { |file| file.read }
-  end
-  sensitive true
-  subscribes :create, 'arcgis_enterprise_portal[Authorize Portal for ArcGIS]', :immediately
-  only_if { node['arcgis']['cache_authorization_files'] }
-  action :nothing
-end
-
 # Set hostname in hostname.properties file.
 template ::File.join(node['arcgis']['portal']['install_dir'],
                      node['arcgis']['portal']['install_subdir'],
@@ -53,13 +30,8 @@ template ::File.join(node['arcgis']['portal']['install_dir'],
 end
 
 # Set hostidentifier and preferredidentifier in hostidentifier.properties file.
-template ::File.join(node['arcgis']['portal']['install_dir'],
-                     node['arcgis']['portal']['install_subdir'],
-                     'framework', 'runtime', 'ds', 'framework', 'etc',
-                     'hostidentifier.properties') do
-  source 'hostidentifier.properties.erb'
-  variables ( {:hostidentifier => node['arcgis']['portal']['hostidentifier'],
-               :preferredidentifier => node['arcgis']['portal']['preferredidentifier']} )
+arcgis_enterprise_portal 'Configure hostidentifier.properties' do
+  action :configure_hostidentifiers_properties
 end
 
 arcgis_enterprise_portal 'Stop Portal for ArcGIS' do
@@ -68,6 +40,18 @@ end
 
 arcgis_enterprise_portal 'Start Portal for ArcGIS' do
   action :start
+end
+
+# Authorize portal on the machine or validate the license file if
+# user type licensing is used
+arcgis_enterprise_portal 'Authorize Portal for ArcGIS' do
+  authorization_file node['arcgis']['portal']['authorization_file']
+  authorization_file_version node['arcgis']['portal']['authorization_file_version']
+  user_license_type_id node['arcgis']['portal']['user_license_type_id']
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  action :authorize
 end
 
 arcgis_enterprise_portal 'Join Portal Site' do

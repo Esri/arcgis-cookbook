@@ -14,6 +14,10 @@ Requirements
 * 2.0
 * 2.1
 * 2.2
+* 3.0
+* 3.1
+* 3.2
+* 3.2.1
 
 ### Platforms
 
@@ -23,18 +27,21 @@ Requirements
 * Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
-* Ubuntu 14.04, 16.04
+* Windows Server 2019
+* Ubuntu 14.04, 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ### Dependencies
 The following cookbooks are required:
 
 * arcgis-enterprise
+* arcgis-repository
 
 Attributes
 ----------
 
-* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `1.0`
+* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `3.1`
+* `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS version setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['insights']['setup']` = The location of Insights for ArcGIS setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
 

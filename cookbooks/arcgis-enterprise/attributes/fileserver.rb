@@ -20,5 +20,5 @@ include_attribute 'arcgis-enterprise::datastore'
 include_attribute 'arcgis-enterprise::portal'
 
 default['arcgis']['fileserver']['shares'] = [ node['arcgis']['server']['local_directories_root'],
-                                              node['arcgis']['data_store']['data_dir'],
-                                              node['arcgis']['portal']['data_dir'] ]
+                                              node['arcgis']['data_store']['local_backup_dir'],
+                                              File.expand_path("..", node['arcgis']['portal']['local_content_dir']) ]

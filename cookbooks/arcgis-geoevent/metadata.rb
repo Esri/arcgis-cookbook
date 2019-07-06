@@ -4,10 +4,11 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS GeoEvent Server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.2.1'
-chef_version     '>= 12.6', '< 14.0' if defined? chef_version
+version          '3.4.0'
+chef_version     '>= 12.6', '< 15.0' if defined? chef_version
 
-depends          'arcgis-enterprise'
+depends          'arcgis-enterprise', '~> 3.4'
+depends          'arcgis-repository', '~> 3.4'
 
 supports         'windows'
 supports         'ubuntu'

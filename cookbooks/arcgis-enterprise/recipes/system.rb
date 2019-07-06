@@ -31,6 +31,11 @@ if platform?('windows')
     action :create
   end
 else
+  
+  node['arcgis']['packages'].each do |package_install|
+    package package_install
+  end 
+
   user node['arcgis']['run_as_user'] do
     comment 'ArcGIS user account'
     manage_home true
@@ -71,5 +76,4 @@ else
     end
   end
 end
-
 include_recipe 'arcgis-enterprise::hosts'

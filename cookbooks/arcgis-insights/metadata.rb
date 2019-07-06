@@ -4,9 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures Insights for ArcGIS'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.2.1'
+version          '3.4.0'
 
-depends          'arcgis-enterprise'
+depends          'arcgis-enterprise', '~> 3.4'
+depends          'arcgis-repository', '~> 3.4'
 
 supports         'windows'
 supports         'ubuntu'

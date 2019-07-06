@@ -1,0 +1,29 @@
+#!/bin/sh
+
+POSTGRESBIN="<%=@postgres_bin%>";export POSTGRESBIN
+SCRIPTLOCATION="<%=@scripts_dir%>";export SCRIPTLOCATION
+KEYCODES="<%=@keycodes%>";export KEYCODES
+PYTHONPATH="<%=@pythonpath%>";export PYTHONPATH
+RDSENDPOINT=$1;export RDSENDPOINT
+RDSMASTERUSER=$2;export RDSMASTERUSER
+PGPASSWORD=$3;export PGPASSWORD
+SDEUSER=$4;export SDEUSER
+SDEPASSWORD=$5;export SDEPASSWORD
+
+SQLSTMT="CREATE ROLE $SDEUSER LOGIN ENCRYPTED PASSWORD '$SDEPASSWORD' CREATEDB VALID UNTIL 'infinity'"
+$POSTGRESBIN/psql -U $RDSMASTERUSER -h $RDSENDPOINT -d postgres -c "$SQLSTMT"
+$POSTGRESBIN/psql -U $RDSMASTERUSER -h $RDSENDPOINT -d postgres -c "GRANT rds_superuser TO $SDEUSER"
+
+PGPASSWORD=$SDEPASSWORD;export PGPASSWORD
+
+<% @data_items.each do |item| -%>
+
+$POSTGRESBIN/psql -U $SDEUSER -h $RDSENDPOINT -d postgres -c "CREATE DATABASE <%= item['database'] %> WITH OWNER = $SDEUSER"
+
+# execute the type installation of the postgis type into the databases
+$POSTGRESBIN/psql -U $SDEUSER -h $RDSENDPOINT -d <%= item['database'] %> -f $SCRIPTLOCATION/create_sde_schema_install_postgis.sql
+
+# enable the dbs with postgis type installed to become geodatabases
+$PYTHONPATH/python $SCRIPTLOCATION/enable_enterprise_gdb.py --DBMS POSTGRESQL --auth DATABASE_AUTH -u $SDEUSER -p $SDEPASSWORD -l "$KEYCODES" -i $RDSENDPOINT -D <%= item['database'] %>  -c "<%= item['connection_file'] %>"
+
+<% end -%>

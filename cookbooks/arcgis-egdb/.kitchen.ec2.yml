@@ -1,0 +1,56 @@
+driver:
+  name: ec2
+  region: us-west-2
+  instance_type: m4.large
+  aws_ssh_key_id: test-kitchen
+  subnet_id: subnet-74de082e
+  iam_profile_name: s3-test-kitchen
+  security_group_ids: ['sg-9abe55e5']
+  associate_public_ip: true
+  interface: dns
+  block_device_mappings:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: 100
+        delete_on_termination: true
+  tags:
+    created-by: 'test-kitchen'
+
+transport:
+  ssh_key: /keys/test-kitchen.pem
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: 14.5
+
+platforms:
+  - name: windows-2016
+  - name: ubuntu-16.04
+
+suites:
+  - name: arcgis-egdb
+    driver:
+      tags:
+        Name: 'postgresql-egdb'
+    run_list:
+      - recipe[download-setups-s3::server]
+      - recipe[apt]
+      - recipe[arcgis-enterprise::system]
+      - recipe[arcgis-enterprise::server]
+      - recipe[postgresql-test::client]
+      - recipe[postgresql-test::server]
+      - recipe[arcgis-egdb::default]
+    attributes:
+      prebuilt_postgresql:
+        version: 9.6.9
+      arcgis:
+        server:
+          authorization_file: '/auth_files/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp'
+        egdb:
+          engine: postgres
+          endpoint: localhost
+          master_username: postgres
+          master_password: changeit
+          db_username: sde
+          db_password: changeit

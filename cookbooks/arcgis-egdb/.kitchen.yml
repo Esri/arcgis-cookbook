@@ -1,0 +1,58 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  # You may wish to disable always updating cookbooks in CI or other testing environments.
+  # For example:
+  #   always_update_cookbooks: <%= !ENV['CI'] %>
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-16.04
+  - name: centos-7
+
+suites:
+  - name: default
+    driver:
+      network:
+        - ["forwarded_port", {guest: 6080, host: 26080}]
+        - ["forwarded_port", {guest: 6443, host: 26443}]
+      synced_folders:
+        - ["/arcgis/setups/linux/ArcGISServer", "/tmp/server-cd"]
+        - ["/arcgis/setups/authorization_files/Version10.7/ArcGIS_Server/Advanced", "/tmp/authorization_files/ArcGISServer"]
+    run_list:
+      - recipe[prebuilt_postgresql::client]
+      - recipe[prebuilt_postgresql::server]
+      - recipe[arcgis-enterprise::server]
+      - recipe[arcgis-egdb::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      prebuilt_postgresql:
+        version: 9.6.9
+      arcgis:
+        version: '10.7'
+        server:
+          setup: "/tmp/server-cd/Setup"
+          authorization_file: "/tmp/authorization_files/ArcGISServer/Server_Ent_Adv.ecp"
+          admin_username: admin
+          admin_password: changeit
+        egdb:
+          engine: postgres
+          endpoint: localhost
+          master_username: EsriRDSAdmin
+          master_password: changeit
+          db_username: sde
+          db_password: changeit
+          data_items:
+          - database: egdb
+            data_item_path: "/enterpriseDatabases/registeredDatabase"
+            connection_file: "/var/chef/msic_scripts/connection_files/RDS_egdb.sde"
+            is_managed: true
+            connection_type: shared

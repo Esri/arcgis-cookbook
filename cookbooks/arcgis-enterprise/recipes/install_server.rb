@@ -72,3 +72,7 @@ arcgis_enterprise_server 'Configure arcgisserver service' do
   only_if { node['arcgis']['server']['configure_autostart'] }
   action :configure_autostart
 end
+
+arcgis_enterprise_server 'Start ArcGIS Server after upgrade' do
+  action :start
+end

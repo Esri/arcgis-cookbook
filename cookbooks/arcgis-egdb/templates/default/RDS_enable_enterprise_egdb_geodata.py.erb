@@ -1,0 +1,122 @@
+"""
+Name: RDS_enable_enterprise_egdb_geodata.py
+Description: Creates a connection file to a SQL Server database as the 'sde' user and enables an enterprise geodatabase.
+Type RDS_enable_enterprise_egdb_geodata.py -h or RDS_enable_enterprise_egdb_geodata.py --help for usage
+Author: Esri
+"""
+
+# Import system modules
+import arcpy, os, sys #, optparse
+
+from optparse import OptionParser
+
+parser = OptionParser()
+
+# Define usage and versionparser = optparse.OptionParser(usage = "usage: %prog [Options]", version="%prog 1.0 for " + arcpy.GetInstallInfo()['Version'] )
+
+#Define help and options
+parser.add_option ("-u", dest="Username", type="string", default="sde", help="Geodatabase  administrator username")
+parser.add_option ("-p", dest="Password", type="string", default="", help="Geodatabase  administrator password")
+parser.add_option ("-l", dest="Authorization_file", type="string", default="", help="Full path and name of authorization file")
+
+
+# Check if value entered for option
+try:
+	(options, args) = parser.parse_args()
+
+	
+#Check if no system arguments (options) entered
+	if len(sys.argv) == 1:
+		print "%s: error: %s\n" % (sys.argv[0], "No command options given")
+		parser.print_help()
+		sys.exit(3)
+	
+
+	#Usage parameters for spatial database connection
+	database_type = 'SQL_SERVER'
+	instance = 'egdbhost'
+	account_authentication = 'DATABASE_AUTH'
+	username = options.Username 
+	password = options.Password	
+	license = options.Authorization_file
+		
+	if (license == ""):
+		print " \n%s: error: \n%s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+		parser.print_help()
+		sys.exit(3)
+		
+	# Get the current product license
+	product_license=arcpy.ProductInfo()
+	
+	if (license == ""):
+		print " \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+		parser.print_help()
+		sys.exit(3)
+	
+	# Local variables
+	instance_temp = instance.replace("\\","_")
+	instance_temp = instance_temp.replace("/","_")
+	instance_temp = instance_temp.replace(":","_")
+
+	if os.environ.get("TEMP") == None:
+		temp = "c:\\temp"	
+	else:
+		temp = os.environ.get("TEMP")
+	
+	if os.environ.get("TMP") == None:
+		temp = "/usr/tmp"		
+	else:
+		temp = os.environ.get("TMP")  
+
+<% @data_items.each do |item| -%>
+
+	database = "<%= item['database'] %>"
+	Conn_File_NameT = instance_temp + "_" + database + "_" + username    
+	Connection_File_Name = Conn_File_NameT + ".sde"
+	Connection_File_Name_full_path = temp + os.sep + Conn_File_NameT + ".sde"
+	
+	# Check for the egdb .sde file and delete it if present
+	arcpy.env.overwriteOutput=True
+	if os.path.exists(Connection_File_Name_full_path):
+		os.remove(Connection_File_Name_full_path)
+	
+	print "\nCreating egdb Database Connection File...\n"	
+	# Process: Create egdb Database Connection File...
+	# Usage:  out_file_location, out_file_name, DBMS_TYPE, instnace, database, account_authentication, username, password, save_username_password(must be true)
+	arcpy.CreateDatabaseConnection_management(out_folder_path=temp, out_name=Connection_File_Name, database_platform=database_type, instance=instance, database=database, account_authentication=account_authentication, username=username, password=password, save_user_pass="TRUE")
+	for i in range(arcpy.GetMessageCount()):
+		if "000565" in arcpy.GetMessage(i):   #Check if database connection was successful
+			arcpy.AddReturnMessage(i)
+			arcpy.AddMessage("\n+++++++++")
+			arcpy.AddMessage("Exiting!!")
+			arcpy.AddMessage("+++++++++\n")
+			sys.exit(3)            
+		else:
+			arcpy.AddReturnMessage(i)
+			arcpy.AddMessage("+++++++++\n")
+	
+	# Process: Enable geodatabase egdb...
+	try:
+		print "Enabling Enterprise Geodatabase egdb...\n"
+		print Connection_File_Name_full_path
+		print license
+		arcpy.EnableEnterpriseGeodatabase_management(Connection_File_Name_full_path, license)
+		for i in range(arcpy.GetMessageCount()):
+			arcpy.AddReturnMessage(i)
+		arcpy.AddMessage("+++++++++\n")
+	except:
+		for i in range(arcpy.GetMessageCount()):
+			arcpy.AddReturnMessage(i)
+			
+	if os.path.exists(Connection_File_Name_full_path):
+		os.remove(Connection_File_Name_full_path)
+
+<% end -%>
+	
+#Check if no value entered for option	
+except SystemExit as e:
+	if e.code == 2:
+		parser.usage = ""
+		print "\n"
+		parser.print_help() 
+		parser.exit(2)

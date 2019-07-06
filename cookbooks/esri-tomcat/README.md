@@ -7,23 +7,28 @@ Requirements
 ------------
 
 ### Platforms
-* Rhel 6, 7
-* Ubuntu 14.04, 16.04
+
+* RHEL 6, 7
+* Ubuntu 14.04, 16.04, 18.04
 
 ### Dependencies
+
 The following cookbooks are required:
-* Tomcat v 2.5
-* Java v 1.31
-* OpenSSL v 4.0
+* tomcat
+* java
+* openssl
 
 Attributes
 ----------
+
 #### General
+
 * `node['tomcat']['version']` = Tomcat version to install. Default is 8.0.33.
 * `node['tomcat']['instance_name']` = Default is 'arcgis'.
 * `node['tomcat']['instance_path']` = Default is '/opt/tomcat_INSTANCENAME_VERSION'.
 
 #### SSL/TLS
+
 * `node['tomcat']['keystore_file']` = Optional: Path to the keystore file. If not provided, a new file and a self-signed certificate will be created.
 * `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
 * `node['tomcat']['ssl_enabled_protocols']` = Default is 'TLSv1.2,TLSv1.1,TLSv1'
@@ -57,4 +62,3 @@ A copy of the license is available in the repository's [License.txt](https://git
 
 [](Esri Tags: ArcGIS Chef Cookbook Tomcat)
 [](Esri Language: Ruby)
-

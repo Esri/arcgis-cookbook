@@ -31,41 +31,12 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'Portal for ArcGIS' do
       description 'Allows connections through all ports used by Portal for ArcGIS'
-      localport '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
-      dir :in
+      local_port '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
     end
-  when 'redhat', 'centos'
-    ['fontconfig', 'freetype', 'gettext', 'libxkbfile', 'libXtst', 'libXrender', 'dos2unix'].each do |pckg|
-      yum_package @new_resource.recipe_name + ':portal:' + pckg do
-        options '--enablerepo=*-optional'
-        package_name pckg
-        action :install
-      end
-    end
-  when 'suse'
-    ['libGLU1', 'libXdmcp6', 'xorg-x11-server', 'libXfont1'].each do |pckg|
-      package @new_resource.recipe_name + ':portal:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
-  else
-    # NOTE: ArcGIS products are not officially supported on debian platform family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
-     'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
-     'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
-     'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs', 'libxkbfile1',
-     'dos2unix'].each do |pckg|
-      package @new_resource.recipe_name + ':portal:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
   end
-
   new_resource.updated_by_last_action(true)
 end
 
@@ -94,10 +65,13 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+    # install_log = ::File.join(Chef::Config[:file_cache_path], 'portal_install.log')
+    # /log \"#{install_log}\" 
     args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "CONTENTDIR=\"#{node['arcgis']['portal']['data_dir']}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
-           "PASSWORD=\"#{@new_resource.run_as_password}\""
+           "PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
     cmd.run_command
@@ -192,10 +166,16 @@ action :configure_autostart do
       service_file = 'arcgisportal.erb'
       template_variables = ({ :portalhome => install_subdir })
     # Systemd
-    else node['init_package'] == 'systemd'
+    else # node['init_package'] == 'systemd'
       arcgisportal_path = '/etc/systemd/system/arcgisportal.service'
       service_file = 'arcgisportal.service.erb'
       template_variables = ({ :portalhome => install_subdir, :agsuser => agsuser })
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
+          template_variables = template_variables.merge(cloudenvironment)
+        end
+      end
     end
 
     template arcgisportal_path do
@@ -206,7 +186,6 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
-      not_if { ::File.exists?(arcgisportal_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -230,9 +209,9 @@ action :update_account do
     configureserviceaccount = ::File.join(@new_resource.install_dir,
                                           'tools', 'ConfigUtility',
                                           'configureserviceaccount.bat')
-
-    args = "/username #{@new_resource.run_as_user} "\
-           "/password #{@new_resource.run_as_password}"
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+    args = "/username \"#{@new_resource.run_as_user}\" "\
+           "/password \"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{configureserviceaccount}\" #{args}\"",
                                {:timeout => 3600})
@@ -240,32 +219,61 @@ action :update_account do
     cmd.error!
 
     # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
-    Utils.sc_config('Portal for ArcGIS', @new_resource.run_as_user, @new_resource.run_as_password)  
+    Utils.sc_config('Portal for ArcGIS', @new_resource.run_as_user, @new_resource.run_as_password)
 
     new_resource.updated_by_last_action(true)
   end
 end
 
 action :authorize do
-  cmd = node['arcgis']['portal']['authorization_tool']
+  portal_admin_client = ArcGIS::PortalAdminClient.new(
+    @new_resource.portal_url,
+    @new_resource.username,
+    @new_resource.password)
 
-  if node['platform'] == 'windows'
-    args = "/VER #{@new_resource.authorization_file_version} "\
-           "/LIF \"#{@new_resource.authorization_file}\" /S"
+  portal_admin_client.wait_until_available
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600} )
-    cmd.run_command
-    cmd.error!
+  if portal_admin_client.is_user_type_licensing
+    # Validate user type license
+    license_info = portal_admin_client.validate_license(@new_resource.authorization_file)
+
+    # if license_info['MyEsri']['version'] != @new_resource.authorization_file_version
+    #   throw "Authorization file version '#{license_info['MyEsri']['version']}' does not match ArcGIS version '#{@new_resource.authorization_file_version}'."
+    # end
+
+    # user_type = license_info['MyEsri']['definitions']['userTypes'].detect { |u| u['id'] == @new_resource.user_license_type_id }
+
+    # if (user_type == nil)
+    #   throw "Unrecognized user license type id '#{@new_resource.user_license_type_id}'."
+    # end
+
+    # if (user_type['level'] != '2')
+    #   throw "The specified user license type id '#{@new_resource.user_license_type_id}' is invalid. The user license type for your Initial Administrator must have Level 2 capabilities."
+    # end
+
+    new_resource.updated_by_last_action(false)
   else
-    args = "-f \"#{@new_resource.authorization_file}\""
+    # Authorize Portal
+    cmd = node['arcgis']['portal']['authorization_tool']
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :user => node['arcgis']['run_as_user'], :timeout => 600 })
-    cmd.run_command
-    cmd.error!
+    if node['platform'] == 'windows'
+      args = "/VER #{@new_resource.authorization_file_version} "\
+             "/LIF \"#{@new_resource.authorization_file}\" /S"
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600} )
+      cmd.run_command
+      cmd.error!
+    else
+      args = "-f \"#{@new_resource.authorization_file}\""
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+            { :user => node['arcgis']['run_as_user'], :timeout => 600 })
+      cmd.run_command
+      cmd.error!
+    end
+
+    new_resource.updated_by_last_action(true)
   end
-
-  new_resource.updated_by_last_action(true)
 end
 
 action :create_site do
@@ -277,31 +285,43 @@ action :create_site do
   portal_admin_client.wait_until_available
 
   # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
-  if portal_admin_client.complete_upgrade(@new_resource.upgrade_backup, @new_resource.upgrade_rollback)
-    sleep(60.0)
+  if portal_admin_client.complete_upgrade(@new_resource.upgrade_backup,
+                                          @new_resource.upgrade_rollback,
+                                          @new_resource.authorization_file)
+    Chef::Log.info('Wait until portal restarted after upgrade.')
+
+    1800.times do
+      break if !Utils.url_available?(@new_resource.portal_url + '/portaladmin')
+      sleep(1.0)
+    end
+
     portal_admin_client.wait_until_available
 
-    # Post upgrade portal
     begin
       portal_admin_client.post_upgrade()
     rescue Exception => e
-      Chef::Log.error "Portal post upgrade failed. " + e.message
+      Chef::Log.error 'Portal post upgrade failed. ' + e.message
     end
 
-    # Reindex portal content
-    begin
-      portal_admin_client.reindex()
-    rescue Exception => e
-      Chef::Log.error "Portal content reindex failed. " + e.message
-    end
+    # portal_admin_client.wait_until_available
 
-    # Upgrade Living Atlas
+    # begin
+    #   portal_admin_client.reindex()
+    # rescue Exception => e
+    #   Chef::Log.error 'Portal content reindex failed. ' + e.message
+    # end
+
+    portal_admin_client.wait_until_available
+
+    Chef::Log.info('Upgrade Living Atlas...')
     begin
       portal_admin_client.upgrade_livingatlas(node['arcgis']['portal']['living_atlas']['group_ids'])
     rescue Exception => e
-      Chef::Log.error "Living Atlas upgrade failed. " + e.message
+      Chef::Log.error 'Living Atlas upgrade failed. ' + e.message
     end
   end
+
+  portal_admin_client.wait_until_available
 
   if portal_admin_client.site_exist?
     Chef::Log.info('Portal site already exists.')
@@ -320,11 +340,15 @@ action :create_site do
                                     @new_resource.description,
                                     @new_resource.security_question,
                                     @new_resource.security_question_answer,
-                                    content_store.to_json)
+                                    content_store.to_json,
+                                    @new_resource.user_license_type_id,
+                                    @new_resource.authorization_file)
 
     sleep(120.0)
 
     portal_admin_client.wait_until_available
+
+    portal_admin_client.populate_license
 
     system_properties = {}
 
@@ -342,7 +366,7 @@ action :create_site do
                                           @new_resource.log_dir,
                                           @new_resource.max_log_file_age)
 
-    unless (@new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?)
+    unless @new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?
       portal_admin_client.add_root_cert(@new_resource.root_cert, @new_resource.root_cert_alias, 'false')
     end
 
@@ -359,9 +383,6 @@ action :join_site do
     @new_resource.password)
 
   portal_admin_client.wait_until_available
-
-  # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
-  portal_admin_client.complete_upgrade(@new_resource.upgrade_backup, @new_resource.upgrade_rollback)
 
   if portal_admin_client.site_exist?
     Chef::Log.info('Portal site already exists.')
@@ -478,7 +499,7 @@ action :set_allssl do
                                                       @new_resource.password)
 
   portal_admin_client.wait_until_available
-  
+
   json = portal_admin_client.set_allssl(@new_resource.allssl)
 
   Chef::Log.info("Result of allssl update: (#{json})")
@@ -545,10 +566,9 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('Portal for ArcGIS').current_state == 'running'
-      service 'Portal for ArcGIS' do
-        action :stop
-      end
+
+    if Utils.service_started?('Portal for ArcGIS')
+      Utils.stop_service('Portal for ArcGIS')
       new_resource.updated_by_last_action(true)
     end
   else
@@ -574,10 +594,17 @@ end
 
 action :start do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('Portal for ArcGIS').current_state != 'running'
-      service 'Portal for ArcGIS' do
-        action [:enable, :start]
+    if node['arcgis']['configure_cloud_settings']
+      if node['cloud']['provider'] == 'ec2'
+        env 'arcgis_cloud_platform' do
+          value 'aws'
+        end
       end
+    end
+
+    if !Utils.service_started?('Portal for ArcGIS')
+      Utils.sc_enable('Portal for ArcGIS')
+      Utils.start_service('Portal for ArcGIS')
       new_resource.updated_by_last_action(true)
     end
   else
@@ -591,7 +618,7 @@ action :start do
       sed_cmd.run_command
       sed_cmd.error!
     end
-    
+
     if node['arcgis']['portal']['configure_autostart']
       service 'arcgisportal' do
         supports :status => true, :restart => true, :reload => true
@@ -599,6 +626,12 @@ action :start do
       end
     else
       cmd = node['arcgis']['portal']['start_tool']
+
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cmd = 'arcgis_cloud_platform=aws ' + cmd
+        end
+      end
 
       if node['arcgis']['run_as_superuser']
         cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
@@ -609,5 +642,16 @@ action :start do
       cmd.error!
     end
     new_resource.updated_by_last_action(true)
+  end
+end
+
+action :configure_hostidentifiers_properties do
+  template ::File.join(node['arcgis']['portal']['install_dir'],
+                       node['arcgis']['portal']['install_subdir'],
+                       'framework', 'runtime', 'ds', 'framework', 'etc',
+                       'hostidentifier.properties') do
+    source 'hostidentifier.properties.erb'
+    variables ( {:hostidentifier => node['arcgis']['portal']['hostidentifier'],
+                 :preferredidentifier => node['arcgis']['portal']['preferredidentifier']} )
   end
 end

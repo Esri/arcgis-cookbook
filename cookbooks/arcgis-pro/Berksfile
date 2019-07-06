@@ -7,6 +7,7 @@ source 'https://supermarket.chef.io'
 metadata
 
 group :integration do
+  cookbook 'arcgis-repository', path: '../arcgis-repository'
   cookbook 'aws'
   cookbook 'seven_zip'
   fixture 'download-setups-s3'

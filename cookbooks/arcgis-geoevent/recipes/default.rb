@@ -90,35 +90,16 @@ arcgis_geoevent_geoevent 'Configure ArcGISGeoEvent service' do
   only_if { node['arcgis']['geoevent']['configure_autostart'] }
 end
 
-# Sometimes rabbitmq file is not copied to the user's AppData folder 
-# by ArcGIS Server. Copy the file to work around the issue.
-execute 'Create RabbitMQ dir' do
-  command "mkdir \"C:\\Users\\#{node['arcgis']['run_as_user']}\\AppData\\Roaming\\RabbitMQ\""
-  user node['arcgis']['run_as_user']
-  password node['arcgis']['run_as_password']
-  returns [0, 1]
-  only_if { node['platform'] == 'windows' }
-end
+if node['platform'] == 'windows'
+  # Remove everything under C:\ProgramData\Esri\GeoEvent-Gateway before starting GeoEvent.
+  directory "#{ENV['ProgramData']}\\Esri\\GeoEvent-Gateway" do
+    recursive true
+    action :delete
+  end
 
-execute 'Copy rabbitmq file' do
-  command "copy \"#{node['arcgis']['server']['install_dir']}\\framework\\runtime\\rabbitmq\\etc\\rabbitmq\" " + 
-          "\"C:\\Users\\#{node['arcgis']['run_as_user'].split("\\").last}\\AppData\\Roaming\\RabbitMQ\""
-  user node['arcgis']['run_as_user']
-  password node['arcgis']['run_as_password']
-  # ignore_failure true
-  only_if { node['platform'] == 'windows' }
-end
-
-# Remove everything under C:\ProgramData\Esri\GeoEvent-Gateway before starting GeoEvent.
-directory "#{ENV['ProgramData']}\\Esri\\GeoEvent-Gateway" do
-  only_if { node['platform'] == 'windows' }
-  recursive true
-  action :delete
-end
-
-directory "#{ENV['ProgramData']}\\Esri\\GeoEvent-Gateway" do
-  only_if { node['platform'] == 'windows' }
-  action :create
+  directory "#{ENV['ProgramData']}\\Esri\\GeoEvent-Gateway" do
+    action :create
+  end
 end
 
 arcgis_geoevent_geoevent 'Start ArcGIS GeoEvent' do

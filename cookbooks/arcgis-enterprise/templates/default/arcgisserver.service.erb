@@ -30,9 +30,12 @@ After=network.target
 [Service]
 Type=forking
 User=<%=@agsuser%>
+LimitNOFILE=65535
+LimitNPROC=25059
 GuessMainPID=false
 ExecStart=<%=@agshome%>/startserver.sh
 ExecStop=<%=@agshome%>/stopserver.sh
+<%=@cloudenvironment%>
 
 [Install]
 WantedBy=multi-user.target

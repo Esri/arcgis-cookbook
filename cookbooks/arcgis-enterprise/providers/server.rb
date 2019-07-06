@@ -38,8 +38,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS Server' do
       description 'Allows connections through all ports used by ArcGIS Server'
-      localport '1098,4000-4004,6006,6080,6099,6443'
-      dir :in
+      local_port '1098,4000-4004,6006,6080,6099,6443'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -47,161 +46,12 @@ action :system do
 
     windows_firewall_rule 'ArcGIS GeoAnalytics Server' do
       description 'Allows connections through all ports used by ArcGIS GeoAnalytics Server'
-      localport '2181,2182,2190,7077,56540-56545'
-      dir :in
+      local_port '2181,2182,2190,7077,56540-56545'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
     end
-
-#    windows_firewall_rule 'ArcGIS Server - Javaw' do
-#      description 'For ArcGIS server to be able to make a cluster, connecting to other machines, Allow outbound connections for javaw.exe'
-#      program node['arcgis']['server']['install_dir'] + '\\framework\\runtime\\jre\\bin\\javaw.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - Java' do
-#      description 'For ArcGIS server to be able to make a cluster, connecting to other machines, Allow outbound connections for java.exe'
-#      program node['arcgis']['server']['install_dir'] + '\\framework\\runtime\\jre\\bin\\java.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - NodeAgent' do
-#      description 'Allow ArcGISServer NodeAgent'
-#      program node['arcgis']['server']['install_dir'] + '\\framework\\etc\\service\\bin\\ArcGISServer.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - rmid' do
-#      description 'Allow remote message invocation (communication between processes)'
-#      program node['arcgis']['server']['install_dir'] + '\\framework\\runtime\\jre\\bin\\rmid.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - ConHost' do
-#      description 'Allow console process used by java.exe'
-#      program '%SystemRoot%\\System32\\conhost.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - ServerConfigurationUtility' do
-#      description 'Allow ServerConfigurationUtility to make outbound connections'
-#      program node['arcgis']['server']['install_dir'] + '\\bin\\ServerConfigurationUtility.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - ServerConfigurationUtilityUI' do
-#      description 'Allow ServerConfigurationUtilityUI to make outbound connections'
-#      program node['arcgis']['server']['install_dir'] + '\\bin\\ServerConfigurationUtilityUI.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - ArcSOC' do
-#      description 'Allow ArcSOC to make outbound connections'
-#      program node['arcgis']['server']['install_dir'] + '\\bin\\ArcSOC.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - DataLicInstall' do
-#      description 'Allow DataLicInstall to make outbound connections'
-#      program node['arcgis']['server']['install_dir'] + '\\bin\\DataLicInstall.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS - ArcGISConnection' do
-#      description 'Allow ArcGISConnection to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\ArcGISConnection.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS - ESRIRegAsm' do
-#      description 'Allow ESRIRegAsm to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\ESRIRegAsm.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS - ESRIReporter' do
-#      description 'Allow ESRIReporter to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\ESRIReporter.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS - ESRIWebReporter' do
-#      description 'Allow ESRIWebReporter to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\ESRIWebReporter.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS - SoftwareAuthorization' do
-#      description 'Allow SoftwareAuthorization to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\SoftwareAuthorization.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-#
-#    windows_firewall_rule 'ArcGIS Server - fontSupport' do
-#      description 'Allow fontSupport to make outbound connections'
-#      program ENV['CommonProgramFiles'] + '\\ArcGIS\\bin\\fontSupport.exe'
-#      dir :out
-#      firewall_action :allow
-#      only_if { node['arcgis']['configure_windows_firewall'] }
-#    end
-  when 'redhat', 'centos'
-    ['fontconfig', 'freetype', 'gettext', 'libxkbfile', 'libXtst', 'libXrender', 'dos2unix'].each do |pckg|
-      yum_package @new_resource.recipe_name + ':server:' + pckg do
-        options '--enablerepo=*-optional'
-        package_name pckg
-        action :install
-      end
-    end
-  when 'suse'
-    ['libGLU1', 'libXdmcp6', 'xorg-x11-server', 'libXfont1'].each do |pckg|
-      package @new_resource.recipe_name + ':server:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
-  else
-    # NOTE: ArcGIS products are not officially supported on debian linux family
-    ['xserver-common', 'xvfb', 'libfreetype6', 'fontconfig', 'libxfont1',
-     'libpixman-1-0', 'libgl1-mesa-dri', 'libgl1-mesa-glx', 'libglu1-mesa',
-     'libpng12-0', 'x11-xkb-utils', 'libapr1', 'libxrender1', 'libxi6',
-     'libxtst6', 'libaio1', 'nfs-kernel-server', 'autofs',
-     'libxkbfile1'].each do |pckg|
-      package @new_resource.recipe_name + ':server:' + pckg do
-        package_name pckg
-        action :install
-      end
-    end
   end
-
   new_resource.updated_by_last_action(true)
 end
 
@@ -230,7 +80,8 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{@new_resource.run_as_password}\""
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
     cmd.run_command
@@ -249,9 +100,9 @@ action :install do
     end
 
     if node['arcgis']['run_as_superuser']
-      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 7200 })
+      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 3600 })
     else
-      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 7200})
+      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 3600})
     end
     cmd.run_command
     cmd.error!
@@ -294,9 +145,9 @@ action :update_account do
   if node['platform'] == 'windows'
     configureserviceaccount = ::File.join(@new_resource.install_dir,
                                           'bin', 'ServerConfigurationUtility.exe')
-
-    args = "/username #{@new_resource.run_as_user} "\
-           "/password \"#{@new_resource.run_as_password}\""
+    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+    args = "/username \"#{@new_resource.run_as_user}\" "\
+           "/password \"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{configureserviceaccount}\" #{args}",
                                {:timeout => 3600})
@@ -317,12 +168,12 @@ action :authorize do
   if node['platform'] == 'windows'
     args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
     sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
-    sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time 
+    sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
     sa_cmd.run_command
 
     # Retry authorization five times with random intervals between 120 and 300 seconds.
     # Check if 'keycodes' file exists after each retry.
-    # This is required to get around the problem with simultaneous authorization from 
+    # This is required to get around the problem with simultaneous authorization from
     # multiple machines using the same license.
     node['arcgis']['server']['authorization_retries'].times do
       if sa_cmd.error?
@@ -346,14 +197,14 @@ action :authorize do
 
     # Retry authorization five times with random intervals between 120 and 300 seconds.
     # Check if softwareAuthorization stdout does not contain 'Not Authorized' after each retry.
-    # This is required to get around the problem with simultaneous authorization from 
+    # This is required to get around the problem with simultaneous authorization from
     # multiple machines using the same license.
     sa_status_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -s",
           { :user => node['arcgis']['run_as_user'], :timeout => 600 })
 
     node['arcgis']['server']['authorization_retries'].times do
       if sa_cmd.error?
-        Chef::Log.error format_for_exception + '  Retrying software authorization...'
+        Chef::Log.error sa_cmd.format_for_exception + '  Retrying software authorization...'
         sleep(rand(120..300))
       else
         sleep(30)
@@ -377,7 +228,7 @@ action :create_site do
     admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
                                                  @new_resource.username,
                                                  @new_resource.password)
-  
+
     admin_client.wait_until_available
 
     admin_client.complete_upgrade if admin_client.upgrade_required?
@@ -394,7 +245,7 @@ action :create_site do
                                @new_resource.log_level,
                                @new_resource.log_dir,
                                @new_resource.max_log_file_age)
-  
+
       admin_client.wait_until_available
 
       #Restart ArcGIS Server on Linux to make sure the server machine SSL certificate is updated
@@ -411,7 +262,7 @@ action :create_site do
         sleep(120.0)
         admin_client.update_system_properties(@new_resource.system_properties)
       end
-  
+
       new_resource.updated_by_last_action(true)
     end
   rescue Exception => e
@@ -425,9 +276,9 @@ action :join_site do
     admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
                                                  @new_resource.username,
                                                  @new_resource.password)
-  
+
     admin_client.wait_until_available
-  
+
     admin_client.complete_upgrade if admin_client.upgrade_required?
 
     if admin_client.site_exist?
@@ -439,33 +290,68 @@ action :join_site do
           'connectionString' => @new_resource.config_store_connection_string,
           'connectionSecret' => @new_resource.config_store_connection_secret
         }
-  
+
         if node['platform'] == 'windows'
           config_store_connection_file = ::File.join(@new_resource.install_dir, 'framework','etc','config-store-connection.json')
           ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
-  
+
           join_site_tool_cmd = [
             '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
-            '-f', '"' + config_store_connection_file + '"', '-c', 'default'].join(' ')
-  
-          cmd = Mixlib::ShellOut.new(join_site_tool_cmd, 
-            { :user => node['arcgis']['run_as_user'],
+            '-f', '"' + config_store_connection_file + '"', '-c', 'default'
+          ].join(' ')
+
+          # Mixlib::ShellOut does not load user profile of the impersonated user account,
+          # so the user's environment variables such as USERNAME, USERPROFILE, TEMP, TMP,
+          # APPDATA, and LOCALAPPDATA still point to the parent process user name and directories.
+          # See https://github.com/chef/mixlib-shellout/issues/168
+          # set the environment variables to get around this problem
+
+          homedrive = ENV['HOMEDRIVE'].nil? ? 'C:' : ENV['HOMEDRIVE']
+
+          run_as_user = node['arcgis']['run_as_user']
+
+          if run_as_user.include? "\\"
+            tokens = run_as_user.split(/\\/)
+            userdomain = tokens[0]
+            username = tokens[1]
+          else
+            userdomain = node['hostname']
+            username = run_as_user
+          end
+
+          userprofile = homedrive + '\\Users\\' + username
+          env = { 'AGSSERVER' => @new_resource.install_dir + '\\',
+                  'USERNAME' => username,
+                  'USERDOMAIN' => userdomain,
+                  'HOME' => homedrive + '/Users/' + username,
+                  'HOMEPATH' => '\\Users\\' + username,
+                  'USERPROFILE' => userprofile,
+                  'APPDATA' => userprofile + '\\AppData\\Roaming',
+                  'LOCALAPPDATA' => userprofile + '\\AppData\\Local',
+                  'TEMP' => userprofile + '\\AppData\\Local\\Temp',
+                  'TMP' => userprofile + '\\AppData\\Local\\Temp' }
+
+          cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
+            { :user => username,
+              :domain => userdomain,
               :password => node['arcgis']['run_as_password'],
-              :timeout => 1800 })
+              :timeout => 1800,
+              :environment => env })
           cmd.run_command
           cmd.error!
         else
           install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['server']['install_subdir'])
-    
+
           config_store_connection_file = ::File.join(install_dir, 'framework','etc','config-store-connection.json')
           ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
-  
+
           join_site_tool_cmd = [
             ::File.join(install_dir, 'tools','joinsite','join-site.sh'),
-            '-f', config_store_connection_file, '-c', 'default'].join(' ')
-  
+                        '-f', config_store_connection_file, '-c', 'default'
+          ].join(' ')
+
           cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
-                { :user => node['arcgis']['run_as_user'], 
+                { :user => node['arcgis']['run_as_user'],
                   :timeout => 1800 })
           cmd.run_command
           cmd.error!
@@ -475,12 +361,12 @@ action :join_site do
           @new_resource.primary_server_url,
           @new_resource.username,
           @new_resource.password)
-  
+
         primary_admin_client.wait_until_site_exist
-  
+
         admin_client.join_site(@new_resource.primary_server_url)
       end
-  
+
       new_resource.updated_by_last_action(true)
     end
   rescue Exception => e
@@ -494,13 +380,13 @@ action :join_cluster do
     admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
                                                  @new_resource.username,
                                                  @new_resource.password)
-  
+
     admin_client.wait_until_available
-  
+
     machine_name = admin_client.local_machine_name
-  
+
     admin_client.add_machine_to_cluster(machine_name, @new_resource.cluster)
-  
+
     new_resource.updated_by_last_action(true)
   rescue Exception => e
     Chef::Log.error "Failed to join ArcGIS Server cluster. " + e.message
@@ -597,7 +483,7 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('ArcGIS Server').current_state == 'running'
+    if Utils.service_started?('ArcGIS Server')
       #Stop ArcGIS Server windows service and dependent services.
       Utils.retry_ShellOut("net stop \"ArcGIS Server\" /yes",
                            5, 60, {:timeout => 3600})
@@ -626,7 +512,15 @@ end
 
 action :start do
   if node['platform'] == 'windows'
-    if ::Win32::Service.status('ArcGIS Server').current_state != 'running'
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          env 'arcgis_cloud_platform' do
+            value 'aws'
+          end
+        end
+      end
+
+    if !Utils.service_started?('ArcGIS Server')
       #Start ArcGIS Server windows service and dependent services.
       Utils.retry_ShellOut("net start \"ArcGIS Server\" /yes", 5, 60, {:timeout => 600})
       new_resource.updated_by_last_action(true)
@@ -639,6 +533,12 @@ action :start do
       end
     else
       cmd = node['arcgis']['server']['start_tool']
+
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cmd = 'arcgis_cloud_platform=aws ' + cmd
+        end
+      end
 
       if node['arcgis']['run_as_superuser']
         cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 120})
@@ -673,6 +573,12 @@ action :configure_autostart do
       arcgisserver_path = '/etc/systemd/system/arcgisserver.service'
       service_file = 'arcgisserver.service.erb'
       template_variables = ({ :agshome => agshome, :agsuser => agsuser })
+      if node['arcgis']['configure_cloud_settings']
+        if node['cloud']['provider'] == 'ec2'
+          cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
+          template_variables = template_variables.merge(cloudenvironment)
+        end
+      end
     end
 
     template arcgisserver_path do
@@ -683,7 +589,6 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load systemd unit file]', :immediately
-      not_if { ::File.exists?(arcgisserver_path) }
     end
 
     execute 'Load systemd unit file' do
@@ -839,6 +744,32 @@ action :unregister_machine do
   end
 end
 
+action :unregister_stopped_machines do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering stopped server machines...')
+
+    admin_client.unregister_stopped_machines(@new_resource.cluster)
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister stopped server machines. " + e.message
+    raise e
+  end
+end
+
 action :block_data_copy do
   begin
     admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
@@ -862,14 +793,29 @@ private
 
 def generate_admin_token(install_dir, expiration)
   if node['platform'] == 'windows'
+    run_as_user = node['arcgis']['run_as_user']
+
+    if run_as_user.include? "\\"
+      tokens = run_as_user.split(/\\/)
+      userdomain = tokens[0]
+      username = tokens[1]
+    else
+      userdomain = node['hostname']
+      username = run_as_user
+    end
+
+    env = { 'AGSSERVER' => @new_resource.install_dir + '\\' }
+
     generate_admin_token_cmd = [
       '"' + ::File.join(install_dir, 'tools', 'GenerateAdminToken', 'generate-admin-token.bat') + '"',
       '-e', expiration.to_s].join(' ')
 
-    cmd = Mixlib::ShellOut.new(generate_admin_token_cmd, 
-      { :user => node['arcgis']['run_as_user'],
+    cmd = Mixlib::ShellOut.new(generate_admin_token_cmd,
+      { :user => username,
+        :domain => userdomain,
         :password => node['arcgis']['run_as_password'],
-        :timeout => 1800 })
+        :timeout => 1800,
+        :environment => env })
     cmd.run_command
     cmd.error!
 
@@ -882,7 +828,7 @@ def generate_admin_token(install_dir, expiration)
       '-e', expiration.to_s].join(' ')
 
     cmd = Mixlib::ShellOut.new(generate_admin_token_cmd,
-          { :user => node['arcgis']['run_as_user'], 
+          { :user => node['arcgis']['run_as_user'],
             :timeout => 1800 })
     cmd.run_command
     cmd.error!

@@ -1,0 +1,65 @@
+{
+  "java":{
+    "install_flavor":"openjdk",
+    "jdk_version":"8"
+  },
+  "tomcat":{
+    "instance_name":"arcgis",
+    "keystore_type" : "PKCS12",
+    "keystore_file":"/home/wild-card.pfx",
+    "keystore_password":"certificate_password",
+    "domain_name": "machine.domain.com",
+    "ssl_enabled_protocols" : "TLSv1.2,TLSv1.1,TLSv1"
+  },
+  "arcgis":{
+    "run_as_user":"arcgis",
+    "run_as_password":"Pa$$w0rdPa$$w0rd",
+    "version":"10.7",
+    "repository":{
+		"setup_archives":"/opt/software/esri",
+		"setups":"/home/extracted_setup/esri"
+    },
+    "web_server":{
+      "webapp_dir":"/opt/tomcat_arcgis/webapps"
+    },
+    "web_adaptor":{
+     "install_dir":"/home",
+      "admin_access":true
+    },
+    "data_store":{
+      "install_dir":"/home"
+    },
+    "server":{
+      "admin_username":"siteadmin",
+      "admin_password":"siteadmin", 
+	  "authorization_file":"/home/Authorization_Files/Version10.7/ArcGIS_Server/Advanced/Server_Ent_Adv.ecp",
+      "install_dir":"/home",
+      "keystore_file":"/home/wild-card.pfx",
+      "keystore_password":"certificate_password"
+    },
+    "portal":{
+      "admin_username":"portaladmin",
+      "admin_password":"portaladmin",
+      "admin_email":"admin@mydomain.com",
+      "security_question":"Your favorite ice cream flavor?",
+      "security_question_answer":"vanilla",
+      "authorization_file":"/home/Authorization_Files/Version10.7/Portal_for_ArcGIS/portal_all_50.json",
+      "install_dir":"/home",
+      "keystore_file":"/home/wild-card.pfx",
+      "keystore_password":"certificate_password"
+    }
+  },
+  "run_list":[
+	"recipe[arcgis-repository::s3files]",
+    "recipe[arcgis-enterprise::system]",
+    "recipe[esri-tomcat]",
+    "recipe[iptables]",
+    "recipe[arcgis-enterprise::iptables]",
+    "recipe[arcgis-enterprise::portal]",
+    "recipe[arcgis-enterprise::portal_wa]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datastore]",
+    "recipe[arcgis-enterprise::federation]"
+  ]
+}

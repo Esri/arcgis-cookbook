@@ -40,6 +40,7 @@ Thumbs.db
 .settings
 .metadata
 .buildpath
+.vscode
 Servers
 
 *.class
@@ -53,3 +54,8 @@ Servers
 target
 build
 *.launch
+
+# Build Files #
+.gradle/
+berks-cookbooks/
+cookbooks/arcgis/Berksfile.lock

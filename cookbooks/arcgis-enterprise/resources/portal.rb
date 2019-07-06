@@ -21,7 +21,8 @@ actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
         :create_site, :join_site, :configure_https,
         :unregister_standby, :register_server, :federate_server,
-        :enable_server_function, :set_allssl, :set_identity_store
+        :enable_server_function, :set_allssl, :set_identity_store,
+        :configure_hostidentifiers_properties
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -70,6 +71,7 @@ attribute :upgrade_rollback, :kind_of => [TrueClass, FalseClass], :default => tr
 attribute :user_store_config, :kind_of => Hash, :default => {}
 attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :server_function, :kind_of => String
+attribute :user_license_type_id, :kind_of => String
 
 def initialize(*args)
   super

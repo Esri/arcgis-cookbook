@@ -1,0 +1,52 @@
+{
+  "arcgis":{
+    "run_as_user":"arcgis",
+    "version": "10.7",
+    "run_as_password":"Run_As_Pa$$w0rd",
+    "iis":{
+      "keystore_file":"C:\\keystore\\mydomain_com.pfx",
+      "keystore_password":"changeit"
+    },
+    "web_adaptor":{
+      "setup":"C:\\ArcGIS\\10.7\\WebAdaptorIIS\\Setup.exe"
+    },
+    "data_store":{
+      "setup":"C:\\ArcGIS\\10.7\\DataStore\\Setup.exe",
+      "data_dir":"C:\\arcgisdatastore\\data",
+      "backup_dir":"\\\\fileserver\\arcgisdatastore\\backup"
+    },
+    "server":{
+      "domain_name":"mydomain.com",
+      "admin_username":"admin",
+      "admin_password":"changeit",
+      "directories_root":"\\\\fileserver\\arcgisserver",
+      "setup":"C:\\ArcGIS\\10.7\\Server\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.7\\Authorization_Files\\Server.prvc",
+      "keystore_file":"C:\\keystore\\mydomain_com.pfx",
+      "keystore_password":"changeit"
+    },
+    "portal":{
+      "domain_name":"mydomain.com",
+      "admin_username":"admin",
+      "admin_password":"changeit",
+      "admin_email":"admin@mydomain.com",
+      "security_question":"Your favorite ice cream flavor?",
+      "security_question_answer":"vanilla",
+      "content_dir":"\\\\fileserver\\arcgisportal\\content",
+      "setup":"C:\\ArcGIS\\10.7\\Portal\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.7\\Authorization_Files\\Portal.json",
+      "user_license_type_id":"creatorUT",
+      "keystore_file":"C:\\keystore\\mydomain_com.pfx",
+      "keystore_password":"changeit"
+    }
+  },
+  "run_list":[
+    "recipe[arcgis-enterprise::system]",
+    "recipe[esri-iis]",
+    "recipe[arcgis-enterprise::portal]",
+    "recipe[arcgis-enterprise::portal_wa]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-enterprise::server_wa]",
+    "recipe[arcgis-enterprise::datastore]"
+  ]
+}
