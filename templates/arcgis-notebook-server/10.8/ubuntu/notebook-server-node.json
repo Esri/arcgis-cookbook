@@ -1,0 +1,42 @@
+{
+    "arcgis": {
+        "version": "10.8",
+        "run_as_user": "arcgis",
+        "hosts": {
+            "primary": "10.0.0.0"
+        },
+        "repository": {
+            "local_archives": "/opt/software/esri",
+            "server": {
+                "s3bucket": "arcgisstore108"
+            },
+            "files": {
+                "ArcGIS_Notebook_Docker_Advanced_108_172943.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "ArcGIS_Notebook_Docker_Standard_108_172942.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "ArcGIS_Notebook_Server_Linux_108_173012.tar.gz": {
+                    "subfolder": "12790/setups"
+                }
+            }
+        },
+        "notebook_server": {
+            "setup": "/opt/arcgis/10.8/NotebookServer_Linux/Setup",
+            "authorization_file": "/opt/software/esri/notebookserver_108.prvc",
+            "license_level": "standard",
+            "admin_username": "admin",
+            "admin_password": "change.it",
+            "primary_server_url": "https://primary:11443/arcgis/admin",
+            "configure_autostart": true,
+            "install_system_requirements": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-repository::s3files]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::server_node]"
+    ]
+}

@@ -24,6 +24,7 @@ attribute :setups_repo, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :setup, :kind_of => String
+attribute :setup_options, :kind_of => String, :default => ''
 
 def initialize(*args)
   super

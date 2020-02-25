@@ -37,6 +37,7 @@ arcgis_enterprise_webstyles 'Unpack ArcGIS Web Styles' do
   arcgis_enterprise_webstyles 'Install ArcGIS Web Styles' do
     product_code node['arcgis']['webstyles']['product_code']
     setup node['arcgis']['webstyles']['setup']
+    setup_options node['arcgis']['webstyles']['setup_options']
     run_as_user node['arcgis']['run_as_user']
     if node['platform'] == 'windows'
       not_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }

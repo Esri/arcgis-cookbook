@@ -24,6 +24,10 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'ArcGISWebStyles', 'Setup.exe').tr('/', '\\')
 
     case node['arcgis']['version']
+    when '10.8'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Windows_108_172871.exe').tr('/', '\\')
+      webstyles['product_code'] = '{EF31CB36-2EB4-4FD3-A451-AC12FD22A582}'
     when '10.7.1'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'ArcGIS_Web_Styles_Windows_1071_170272.exe').tr('/', '\\')
@@ -37,6 +41,9 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'WebStyles', 'WebStyles-Setup.sh')
 
     case node['arcgis']['version']
+    when '10.8'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Linux_108_172990.tar.gz')
     when '10.7.1'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'ArcGIS_Web_Styles_Linux_1071_170273.tar.gz')
@@ -44,4 +51,6 @@ default['arcgis']['webstyles'].tap do |webstyles|
       Chef::Log.warn 'Unsupported ArcGIS Web Styles version'
     end
   end
+
+  webstyles['setup_options'] = ''
 end

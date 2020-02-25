@@ -80,15 +80,25 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{run_as_password}\""
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
+    password = if @new_resource.run_as_msa
+                 'MSA=\"True\"'
+               else
+                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+               end
+
+    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+           "INSTALLDIR1=\"#{@new_resource.python_dir}\" "\
+           "USER_NAME=\"#{@new_resource.run_as_user}\" "\
+           "#{password} "\
+           "#{@new_resource.setup_options}"
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200, :environment => @new_resource.install_environment })
     cmd.run_command
     cmd.error!
   else
     cmd = @new_resource.setup
-    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
+    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
     run_as_user = @new_resource.run_as_user
 
     subdir = @new_resource.install_dir
@@ -100,9 +110,9 @@ action :install do
     end
 
     if node['arcgis']['run_as_superuser']
-      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 3600 })
+      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 3600, :environment => @new_resource.install_environment })
     else
-      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 3600})
+      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 3600, :environment => @new_resource.install_environment })
     end
     cmd.run_command
     cmd.error!
@@ -166,7 +176,7 @@ end
 action :authorize do
   cmd = node['arcgis']['server']['authorization_tool']
   if node['platform'] == 'windows'
-    args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+    args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S #{@new_resource.authorization_options}"
     sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
     sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
     sa_cmd.run_command
@@ -190,7 +200,7 @@ action :authorize do
 
     sa_cmd.error!
   else
-    sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -f \"#{@new_resource.authorization_file}\"",
+    sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -f \"#{@new_resource.authorization_file}\" #{@new_resource.authorization_options}",
           { :user => node['arcgis']['run_as_user'], :timeout => 600 })
     sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
     sa_cmd.run_command
@@ -434,6 +444,37 @@ action :configure_https do
   end
 end
 
+# Update server security config
+action :configure_security_protocol do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    admin_client.update_security_configuration(@new_resource.protocol,
+                                               @new_resource.authentication_mode,
+                                               @new_resource.authentication_tier,
+                                               @new_resource.hsts_enabled,
+                                               @new_resource.virtual_dirs_security_enabled,
+                                               @new_resource.allow_direct_access)
+
+    new_resource.updated_by_last_action(true)
+
+  rescue Exception => e
+    Chef::Log.error "Failed to update security configuration in ArcGIS Server." + e.message
+    raise e
+  end
+end
+
 action :register_database do
   admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
                                                @new_resource.username,
@@ -513,7 +554,7 @@ end
 action :start do
   if node['platform'] == 'windows'
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           env 'arcgis_cloud_platform' do
             value 'aws'
           end
@@ -535,7 +576,7 @@ action :start do
       cmd = node['arcgis']['server']['start_tool']
 
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cmd = 'arcgis_cloud_platform=aws ' + cmd
         end
       end
@@ -574,7 +615,7 @@ action :configure_autostart do
       service_file = 'arcgisserver.service.erb'
       template_variables = ({ :agshome => agshome, :agsuser => agsuser })
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
           template_variables = template_variables.merge(cloudenvironment)
         end

@@ -25,7 +25,7 @@ if keystore_file.empty? && keystore_password.empty?
   keystore_file = node.override['tomcat']['keystore_file'] = ::File.join(certs_dir, dn) + '.pfx'
   keystore_password = node.override['tomcat']['keystore_password'] = 'changeit'
 
-  openssl_x509 keystore_file.gsub(/\.pfx/, '.pem') do
+  openssl_x509_certificate keystore_file.gsub(/\.pfx/, '.pem') do
     common_name node['tomcat']['domain_name']
     org 'test'
     org_unit 'dev'

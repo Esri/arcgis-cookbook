@@ -10,6 +10,7 @@ Requirements
 
 * 10.7
 * 10.7.1
+* 10.8
 
 ### Platforms
 

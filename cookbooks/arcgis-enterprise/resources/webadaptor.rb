@@ -33,8 +33,9 @@ attribute :server_wa_url, :kind_of => String
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
-attribute :password, :kind_of => String
 attribute :admin_access, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :mode, :kind_of => String, :default => 'server'
+attribute :setup_options, :kind_of => String, :default => ''
 
 def initialize(*args)
   super

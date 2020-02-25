@@ -2,7 +2,7 @@
   "arcgis":{
     "run_as_password":"Run_As_Pa$$w0rd",
     "run_as_user":"arcgis",
-    "version":"10.7",
+    "version":"10.8",
     "portal":{
       "admin_username":"admin",
       "admin_password":"changeit",
@@ -10,8 +10,8 @@
       "security_question":"Your favorite ice cream flavor?",
       "security_question_answer":"vanilla",
       "content_dir":"C:\\arcgisportal\\content",
-      "setup":"C:\\ArcGIS\\10.7\\Portal\\Setup.exe",
-      "authorization_file":"C:\\ArcGIS\\10.7\\Authorization_Files\\Portal.json",
+      "setup":"C:\\ArcGIS\\10.8\\Portal\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\Portal.json",
       "user_license_type_id":"creatorUT",
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
       "keystore_password":"changeit",

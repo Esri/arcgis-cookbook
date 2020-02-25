@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis-enterprise
-# Recipe:: all_uninstalled
+# Recipe:: enterprise_uninstalled
 #
 # Copyright 2015 Esri
 #

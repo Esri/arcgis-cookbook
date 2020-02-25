@@ -41,14 +41,14 @@ default['arcgis']['iis'].tap do |iis|
           'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
           'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
           'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
-          'IIS-WindowsAuthentication', 'IIS-Metabase']
+          'IIS-WindowsAuthentication', 'IIS-Metabase', 'IIS-WebSockets']
       elsif
         iis['features'] = ['IIS-WebServerRole', 'IIS-ISAPIFilter',
           'IIS-ISAPIExtensions', 'NetFx4Extended-ASPNET45', 'IIS-NetFxExtensibility45',
           'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
           'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
           'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
-          'IIS-WindowsAuthentication', 'IIS-Metabase']
+          'IIS-WindowsAuthentication', 'IIS-Metabase', 'IIS-WebSockets']
       end
     end
     iis['appid'] = '{00112233-4455-6677-8899-AABBCCDDEEFF}'

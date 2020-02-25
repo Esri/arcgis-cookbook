@@ -35,7 +35,7 @@ default['arcgis']['insights'].tap do |insights|
     when '3.3'
       insights['product_code'] = '{B88D471B-33EE-4971-B492-D0A70F88C705}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'Insights_for_ArcGIS_Windows_33_169942.exe')
+                                              'Insights_for_ArcGIS_Windows_33_169942.exe')      
     when '3.2.1'
       insights['product_code'] = '{451E8919-F60D-47DD-B5CF-7BC97F8E9FE5}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -82,7 +82,7 @@ default['arcgis']['insights'].tap do |insights|
                                               'Insights_for_ArcGIS_Linux_331_169947.tar.gz')
     when '3.3'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'Insights_for_ArcGIS_Linux_33_169943.tar.gz')
+                                              'Insights_for_ArcGIS_Linux_33_169943.tar.gz')      
     when '3.2.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'Insights_for_ArcGIS_Linux_321_168491.tar.gz')

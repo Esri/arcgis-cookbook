@@ -1,8 +1,8 @@
 {
   "arcgis":{
-    "version":"10.7",
+    "version":"10.8",
     "licensemanager":{
-      "setup":"C:\\ArcGIS\\10.7\\LicenseManager\\Setup.exe"
+      "setup":"C:\\ArcGIS\\10.8\\LicenseManager\\Setup.exe"
     }
   },
   "run_list":[

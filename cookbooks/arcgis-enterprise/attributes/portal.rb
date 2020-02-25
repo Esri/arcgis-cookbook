@@ -18,7 +18,7 @@
 
 default['arcgis']['portal'].tap do |portal|
 
-  if node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
+  if node['arcgis']['configure_cloud_settings']
     portal['preferredidentifier'] = 'ip'
   else
     portal['preferredidentifier'] = 'hostname'
@@ -34,7 +34,7 @@ default['arcgis']['portal'].tap do |portal|
     portal_wa_name = node['arcgis']['portal']['wa_name']
   end
 
-  if node['fqdn'].nil? || node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
+  if node['fqdn'].nil? || node['arcgis']['configure_cloud_settings']
     portal_domain_name = node['ipaddress']
     portal['domain_name'] = portal_domain_name
     portal['url'] = "https://#{node['ipaddress']}:7443/arcgis"
@@ -104,6 +104,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['data_dir'] = 'C:\\arcgisportal'
 
     case node['arcgis']['version']
+    when '10.8'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_108_172870.exe').gsub('/', '\\')
+      portal['product_code'] = '{7D432555-69F9-4945-8EE7-FC4503A94D6A}'
     when '10.7.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_1071_169688.exe').gsub('/', '\\')
@@ -181,6 +185,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.8'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_108_172989.tar.gz')
     when '10.7.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_1071_169807.tar.gz')
@@ -242,4 +249,5 @@ default['arcgis']['portal'].tap do |portal|
   portal['object_store'] = nil
   portal['upgrade_backup'] = true
   portal['upgrade_rollback'] = true
+  portal['setup_options'] = ''
 end

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-desktop
 # Attributes:: desktop
 #
-# Copyright 2018 Esri
+# Copyright 2019 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,10 @@ default['arcgis']['desktop'].tap do |desktop|
     desktop['authorization_file_version'] = node['arcgis']['version'].to_f.to_s
 
     case node['arcgis']['version']
+    when '10.8'
+      desktop['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                             'ArcGIS_Desktop_108_172737.exe').gsub('/', '\\')
+      desktop['product_code'] = '{3DB5C522-636F-4FC2-9C38-298DBEBFD0BC}'
     when '10.7.1'
       desktop['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                              'ArcGIS_Desktop_1071_169506.exe').gsub('/', '\\')

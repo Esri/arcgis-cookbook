@@ -21,16 +21,19 @@ actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
         :join_cluster, :configure_https, :register_database, :federate,
         :set_identity_store, :assign_privileges, :set_machine_properties,
-        :stop_machine, :unregister_machine, :unregister_stopped_machines, :block_data_copy
+        :stop_machine, :unregister_machine, :unregister_stopped_machines, :block_data_copy,
+        :configure_security_protocol
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String
+attribute :install_environment, :kind_of => [Hash, nil], :default => nil
 attribute :python_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
+attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :server_admin_url, :kind_of => String
 attribute :wa_url, :kind_of => String
@@ -64,6 +67,14 @@ attribute :user_store_config, :kind_of => Hash, :default => {}
 attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :privileges, :kind_of => Hash, :default => {}
 attribute :soc_max_heap_size, :kind_of => Integer, :default => 64
+attribute :protocol, :kind_of => String, :default => 'HTTPS'
+attribute :authentication_mode, :kind_of => String, :default => 'ARCGIS_TOKEN'
+attribute :authentication_tier, :kind_of => String, :default => 'GIS_SERVER'
+attribute :hsts_enabled, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :virtual_dirs_security_enabled, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :allow_direct_access, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :setup_options, :kind_of => String, :default => ''
+attribute :authorization_options, :kind_of => String, :default => ''
 
 def initialize(*args)
   super

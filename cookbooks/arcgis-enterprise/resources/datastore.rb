@@ -18,7 +18,7 @@
 #
 
 actions :system, :unpack, :install, :uninstall, :update_account, :configure_autostart,
-        :stop, :start, :configure, :change_backup_location, :prepare_upgrade,
+        :stop, :start, :configure, :configure_backup_location, :prepare_upgrade,
         :configure_hostidentifiers_properties
 
 attribute :setup_archive, :kind_of => String
@@ -31,9 +31,13 @@ attribute :backup_dir, :kind_of => String
 attribute :types, :kind_of => String, :default => 'tileCache,relational'
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
+attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
+attribute :store, :kind_of => String, :default => 'relational'
+attribute :backup_location, :kind_of => String
+attribute :setup_options, :kind_of => String, :default => ''
 
 def initialize(*args)
   super

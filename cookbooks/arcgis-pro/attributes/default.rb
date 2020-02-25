@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Attributes:: default
 #
-# Copyright 2015 Esri
+# Copyright 2015-2020 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '2.4'
+    pro['version'] = '2.5'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -38,10 +38,14 @@ default['arcgis']['pro'].tap do |pro|
     pro['authorization_tool'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro\\bin\\SoftwareAuthorizationPro.exe'
 
     case node['arcgis']['pro']['version']
+    when '2.5'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_25_172639.exe').gsub('/', '\\')
+      pro['product_code'] = '{0D695F82-EB12-4430-A241-20226042FD40}'
     when '2.4'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_24_19052.exe').gsub('/', '\\')
-      pro['product_code'] = '{78D498E7-1791-4796-9A4F-6BFAD51C09B5}'
+                                         'ArcGISPro_24_169232.exe').gsub('/', '\\')
+      pro['product_code'] = '{E3B1CE52-A1E6-4386-95C4-5AB450EF57BD}'
     when '2.3'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_23_14527.exe').gsub('/', '\\')

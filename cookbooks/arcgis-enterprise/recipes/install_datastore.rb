@@ -26,17 +26,6 @@ directory node['arcgis']['data_store']['data_dir'] do
   action :create
 end
 
-directory node['arcgis']['data_store']['backup_dir'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    mode '0700'
-  end
-  recursive true
-  not_if { node['arcgis']['data_store']['backup_dir'].start_with?('\\\\') ||
-           node['arcgis']['data_store']['backup_dir'].start_with?('/net/') }
-  action :create
-end
-
 if node['platform'] == 'windows'
   arcgis_enterprise_datastore 'Update ArcGIS Data Store service logon account' do
     install_dir node['arcgis']['data_store']['install_dir']
@@ -72,11 +61,13 @@ end
 
 arcgis_enterprise_datastore 'Install ArcGIS Data Store' do
   setup node['arcgis']['data_store']['setup']
+  setup_options node['arcgis']['data_store']['setup_options']
   product_code node['arcgis']['data_store']['product_code']
   install_dir node['arcgis']['data_store']['install_dir']
   data_dir node['arcgis']['data_store']['data_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
+  run_as_msa node['arcgis']['run_as_msa']
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
   else
@@ -88,20 +79,15 @@ arcgis_enterprise_datastore 'Install ArcGIS Data Store' do
   action :install
 end
 
+# Set hostidentifier and preferredidentifier in hostidentifier.properties file.
+arcgis_enterprise_datastore 'Configure hostidentifier.properties' do
+  action :configure_hostidentifiers_properties
+end
+
 arcgis_enterprise_datastore 'Configure arcgisdatastore service' do
   install_dir node['arcgis']['data_store']['install_dir']
   only_if { node['arcgis']['data_store']['configure_autostart'] }
   action :configure_autostart
-end
-
-# Set hostidentifier and preferredidentifier in hostidentifier.properties file.
-arcgis_enterprise_datastore 'Configure hostidentifier.properties' do
-  action :configure_hostidentifiers_properties
-  notifies :stop, 'arcgis_enterprise_datastore[Stop ArcGIS Data Store]', :immediately
-end
-
-arcgis_enterprise_datastore 'Stop ArcGIS Data Store' do
-  action :nothing
 end
 
 arcgis_enterprise_datastore 'Start ArcGIS Data Store' do

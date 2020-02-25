@@ -9,6 +9,7 @@ group :release do
   cookbook 'arcgis-egdb', path: '../arcgis-egdb'
   cookbook 'arcgis-enterprise', path: '../arcgis-enterprise'
   cookbook 'arcgis-geoevent', path: '../arcgis-geoevent'
+  cookbook 'arcgis-notebooks', path: '../arcgis-notebooks'
   cookbook 'arcgis-insights', path: '../arcgis-insights'
   cookbook 'arcgis-pro', path: '../arcgis-pro'
   cookbook 'arcgis-repository', path: '../arcgis-repository'

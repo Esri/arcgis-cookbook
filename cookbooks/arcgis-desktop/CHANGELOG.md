@@ -3,6 +3,12 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+
+3.5.0
+-----
+- Added support for ArcGIS 10.8.
+
+
 3.4.0
 -----
 - Added support for ArcGIS 10.7.1.

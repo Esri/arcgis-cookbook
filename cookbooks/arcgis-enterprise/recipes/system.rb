@@ -75,5 +75,25 @@ else
       value 'unlimited'
     end
   end
+
+  # Rename ~/.ESRI.properties.<hostname>.<version> files to include
+  # the correct hostname
+  script 'Rename .ESRI.properties.*.* files' do
+    interpreter 'bash'
+    user node['arcgis']['run_as_user']
+    cwd '/home/' + node['arcgis']['run_as_user']
+    code <<-EOH
+      for file in /home/arcgis/.ESRI.properties.* ; do
+        oldhost=$(echo $file | cut -d'.' -f 4)
+        newhost=$(hostname)
+        newfile=$(echo $file | sed -e "s,$oldhost,$newhost,g")
+        if [ ! -f $newfile ]; then
+          mv $file $newfile
+        fi
+      done
+    EOH
+    only_if { ENV['arcgis_cloud_platform'] == 'aws' }
+  end
+
 end
 include_recipe 'arcgis-enterprise::hosts'

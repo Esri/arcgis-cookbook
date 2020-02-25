@@ -1,0 +1,18 @@
+{
+    "arcgis": {
+        "portal": {
+            "wa_url": "https://portal.domain.com/portal",
+            "admin_username": "admin",
+            "admin_password": "admin123"
+        },
+        "notebook_server": {
+            "web_context_url": "https://domain.com/notebooks",
+            "private_url": "https://domain.com/notebooks",
+            "admin_username": "siteadmin",
+            "admin_password": "admin123"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-notebooks::federation]"
+    ]
+}
