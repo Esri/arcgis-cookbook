@@ -38,6 +38,7 @@ end
 arcgis_enterprise_webadaptor 'Install Web Adaptor for Server' do
   install_dir node['arcgis']['web_adaptor']['install_dir']
   setup node['arcgis']['web_adaptor']['setup']
+  setup_options node['arcgis']['web_adaptor']['setup_options']
   run_as_user node['arcgis']['run_as_user']
   instance_name node['arcgis']['server']['wa_name']
   if node['platform'] == 'windows'

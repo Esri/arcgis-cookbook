@@ -37,6 +37,7 @@ attribute :content_store_connection_string, :kind_of => [String, Hash]
 attribute :object_store, :kind_of => [String, nil]
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
+attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :portal_url, :kind_of => String
@@ -72,6 +73,7 @@ attribute :user_store_config, :kind_of => Hash, :default => {}
 attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :server_function, :kind_of => String
 attribute :user_license_type_id, :kind_of => String
+attribute :setup_options, :kind_of => String, :default => ''
 
 def initialize(*args)
   super

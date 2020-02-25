@@ -32,10 +32,33 @@ arcgis_enterprise_datastore 'Configure ArcGIS Data Store' do
   action :configure
 end
 
-arcgis_enterprise_datastore 'Change ArcGIS DataStore backup location' do
-  install_dir node['arcgis']['data_store']['install_dir']
-  backup_dir node['arcgis']['data_store']['backup_dir']
-  run_as_user node['arcgis']['run_as_user']
-  only_if { node['arcgis']['data_store']['types'].include? 'relational' }
-  action :change_backup_location
+node['arcgis']['data_store']['types'].split(',').each do |type|
+  store_type = type.downcase.strip
+
+  if !node['arcgis']['data_store'][store_type].nil?
+    store_type_backup_type = node['arcgis']['data_store'][store_type]['backup_type']
+    store_type_backup_location = node['arcgis']['data_store'][store_type]['backup_location'] 
+
+    # Create Data Store backup dir if the backup type is 'fs' (file system) and
+    # the directory is not on a file share. 
+    directory store_type_backup_location do
+      owner node['arcgis']['run_as_user']
+      mode '0700' if node['platform'] != 'windows'
+      recursive true
+      only_if { store_type_backup_type == 'fs' }
+      not_if { store_type_backup_location.start_with?('\\\\') ||
+               store_type_backup_location.start_with?('/net/') }
+      action :create
+    end
+
+    arcgis_enterprise_datastore "Configure ArcGIS Data Store #{store_type} backup location" do
+      install_dir node['arcgis']['data_store']['install_dir']
+      run_as_user node['arcgis']['run_as_user']
+      store store_type
+      backup_location store_type_backup_location
+      only_if { store_type_backup_type != 'none' }
+      ignore_failure true # Temporary workaround
+      action :configure_backup_location
+    end
+  end
 end

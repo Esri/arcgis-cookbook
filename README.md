@@ -1,3 +1,5 @@
+[![Gitter chat](https://badges.gitter.im/gitterHQ/services.png)](https://gitter.im/arcgis-cookbook/Lobby)
+
 Chef Cookbooks for ArcGIS
 =========================
 
@@ -7,6 +9,7 @@ Included cookbooks:
 
 * [arcgis-enterprise](cookbooks/arcgis-enterprise) - installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor
 * [arcgis-geoevent](cookbooks/arcgis-geoevent) - installs and configures ArcGIS GeoEvent Server
+* [arcgis-notebooks](cookbooks/arcgis-notebooks) - installs and configures ArcGIS Notebook Server
 * [arcgis-insights](cookbooks/arcgis-insights) - installs and configures Insights for ArcGIS
 * [arcgis-desktop](cookbooks/arcgis-desktop) - installs and configures ArcGIS Desktop
 * [arcgis-pro](cookbooks/arcgis-pro) - installs and configures ArcGIS Pro
@@ -31,7 +34,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2018 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

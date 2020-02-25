@@ -1,7 +1,9 @@
-default['tomcat']['version'] = '8.0.53'
+default['tomcat']['version'] = '8.5.45'
 
 default['tomcat']['instance_name'] = 'arcgis'
 default['tomcat']['install_path'] = '/opt/tomcat_' + node['tomcat']['instance_name'] + '_' + node['tomcat']['version']
+default['tomcat']['tarball_path'] = "#{Chef::Config['file_cache_path']}/apache-tomcat-#{node['tomcat']['version']}.tar.gz"
+
 default['tomcat']['user'] = 'tomcat_' + node['tomcat']['instance_name']
 default['tomcat']['group'] = 'tomcat_' + node['tomcat']['instance_name']
 

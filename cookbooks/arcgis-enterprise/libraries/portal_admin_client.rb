@@ -16,6 +16,7 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'socket'
 
 #
 # ArcGIS helper classes
@@ -293,6 +294,41 @@ module ArcGIS
       JSON.parse(response.body)['machines']
     end
 
+    # Select the machine name that corresponds to the local machine IP address
+    # from the list of machines returned by /portaladmin/machines call.
+    def local_machine_name
+      local_ip_address = Addrinfo.ip(Socket.gethostname).ip_address
+
+      machines.each do |machine|
+        if Addrinfo.ip(machine['machineName']).ip_address == local_ip_address
+          return machine['machineName']
+        end
+      end
+
+      Socket.gethostname
+    end
+
+    # Returns portal admin API URL for SSL certificates.
+    # Before Portal for ArcGIS 10.8 the SSL certificates are configured per site.
+    # Starting from Portal for ArcGIS 10.8 the SSL certificates are configured per machine.
+    def ssl_certificates_url
+      url = @portal_url + "/portaladmin/machines/#{local_machine_name}/sslCertificates"
+
+      token = generate_token(@generate_token_url)
+
+      uri = URI.parse(url)
+      uri.query = URI.encode_www_form('token' => token, 'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      validate_response(send_request(request))
+
+      url
+    rescue Exception
+      @portal_url + '/portaladmin/security/sslCertificates'
+    end
+
     def unregister_machine(machine_name)
       request = Net::HTTP::Post.new(URI.parse(@portal_url +
         "/portaladmin/machines/unregister").request_uri)
@@ -314,18 +350,21 @@ module ArcGIS
     def ssl_certificate_exist?(cert_alias)
       token = generate_token(@generate_token_url)
 
-      uri = URI.parse(@portal_url +
-        "/portaladmin/security/sslCertificates/#{cert_alias}")
-
-      uri.query = URI.encode_www_form('token' => token, 'f' => 'json')
+      uri = URI.parse(ssl_certificates_url + "/#{cert_alias}")
 
       request = Net::HTTP::Get.new(uri.request_uri)
 
       request.add_field('Referer', 'referer')
 
+      request.set_form_data('token' => token, 'f' => 'json')
+
       response = send_request(request)
 
-      JSON.parse(response.body)['Alias name'] == cert_alias
+      validate_response(response)
+
+      JSON.parse(response.body)['entryType'] == 'PrivateKeyEntry'
+    rescue Exception
+      false
     end
 
     def import_server_ssl_certificate(cert_file, cert_password, cert_alias)
@@ -335,8 +374,7 @@ module ArcGIS
         Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
       end
 
-      url = URI.parse(@portal_url + 
-        '/portaladmin/security/sslCertificates/importExistingServerCertificate')
+      url = URI.parse(ssl_certificates_url + "/importExistingServerCertificate")
 
       token = generate_token(@generate_token_url)
 
@@ -360,7 +398,7 @@ module ArcGIS
     def ssl_certificates
       token = generate_token(@generate_token_url)
 
-      uri = URI.parse(@portal_url + "/portaladmin/security/sslCertificates")
+      uri = URI.parse(ssl_certificates_url)
 
       uri.query = URI.encode_www_form('token' => token, 'f' => 'json')
 
@@ -378,15 +416,21 @@ module ArcGIS
     end
 
     def set_server_ssl_certificate(cert_alias)
-      request = Net::HTTP::Post.new(URI.parse(@portal_url +
-        "/portaladmin/security/sslCertificates/update").request_uri)
+      certs = ssl_certificates
+
+      request = Net::HTTP::Post.new(URI.parse(ssl_certificates_url + "/update").request_uri)
 
       request.add_field('Referer', 'referer')
 
       token = generate_token(@generate_token_url)
 
+      hsts_enabled = certs['HSTSEnabled'].nil? ? false : certs['HSTSEnabled']
+
       request.set_form_data(
         'webServerCertificateAlias' => cert_alias,
+        'sslProtocols' => certs['sslProtocols'],
+        'cipherSuites' => certs['cipherSuites'],
+        'HSTSEnabled' => hsts_enabled,
         'token' => token,
         'f' => 'json')
 
@@ -643,8 +687,7 @@ module ArcGIS
         Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
       end
 
-      url = URI.parse(@portal_url + 
-        '/portaladmin/security/sslCertificates/importRootOrIntermediate')
+      url = URI.parse(ssl_certificates_url + "/importRootOrIntermediate")
       token = generate_token(@generate_token_url)
 
       request = Net::HTTP::Post::Multipart.new(url.path,

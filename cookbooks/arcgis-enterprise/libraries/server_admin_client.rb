@@ -265,7 +265,11 @@ module ArcGIS
 
       response = send_request(request, @server_url)
 
-      JSON.parse(response.body)['Alias name'] == cert_alias
+      validate_response(response)
+
+      JSON.parse(response.body)['entryType'] == 'PrivateKeyEntry'
+    rescue Exception
+      false
     end
 
     def import_server_ssl_certificate(machine_name, cert_file, cert_password, cert_alias)
@@ -457,6 +461,58 @@ module ArcGIS
       response = send_request(request, @server_url)
 
       validate_response(response)
+    end
+
+    def security_configuration
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+                                    "/admin/security/config").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
+    end
+
+    # Update server security config
+    def update_security_configuration(server_protocol, auth_mode, auth_tier, 
+                                      hsts_enabled, virtual_dirs_security_enabled,
+                                      allow_direct_access)
+      if security_configuration['authenticationTier'] == 'ARCGIS_PORTAL'
+        Chef::Log.info("The server is federated. Skip the security configuration update.")
+        return
+      end
+
+      request = Net::HTTP::Post.new(
+        URI.parse(@server_url + '/admin/security/config/update').request_uri)
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token,
+                            'httpsProtocols' => 'TLSv1.2',
+                            'cipherSuites' => 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA',
+                            'Protocol' => server_protocol,
+                            'authenticationMode' => auth_mode,
+                            'authenticationTier' => auth_tier,
+                            'HSTSEnabled' => hsts_enabled,
+                            'virtualDirsSecurityEnabled' => virtual_dirs_security_enabled,
+                            'allowDirectAccess' => allow_direct_access,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      sleep(30.0)
+
+      wait_until_available
     end
 
     def generate_token()

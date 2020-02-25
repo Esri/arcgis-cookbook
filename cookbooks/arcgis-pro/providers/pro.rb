@@ -66,7 +66,7 @@ action :patches do
 	patch_folder = node['arcgis']['patches']['local_patch_folder'].gsub('\\','/')
 
 	# get all patches  within the specified folder and register them
-	Dir.glob("#{patch_folder}/**/*").each do |patch|
+	Dir.glob("#{patch_folder}/**/*.msp").each do |patch|
 	  windows_package "Install #{patch}" do
 		action :install
 		source patch

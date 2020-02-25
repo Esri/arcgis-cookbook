@@ -20,12 +20,12 @@ default['arcgis']['server'].tap do |server|
 
   server_wa_name = 'server'
   server['wa_name'] = server_wa_name
-    
+
   unless node['arcgis']['server']['wa_name'].nil?
     server_wa_name = node['arcgis']['server']['wa_name']
   end
 
-  if node['fqdn'].nil? || node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
+  if node['fqdn'].nil? || node['arcgis']['configure_cloud_settings']
     server_domain_name = node['ipaddress']
     server['domain_name'] = server_domain_name
     server['url'] = "https://#{node['ipaddress']}:6443/arcgis"
@@ -67,6 +67,16 @@ default['arcgis']['server'].tap do |server|
   server['install_system_requirements'] = true
   server['use_join_site_tool'] = false
   server['soc_max_heap_size'] = 64
+  server['protocol'] = 'HTTPS'
+  server['authentication_mode'] = 'ARCGIS_TOKEN'
+  server['authentication_tier'] = 'GIS_SERVER'
+  server['hsts_enabled'] = false
+  server['virtual_dirs_security_enabled'] = false
+  server['allow_direct_access'] = true
+
+  # hash of environment variables to pass to the install command.
+  # e.g. server['install_environment'] = { 'IATEMPDIR' => /var/tmp' }
+  server['install_environment'] = nil
 
   unless node['arcgis']['server']['authorization_file'].nil?
     server['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
@@ -104,6 +114,12 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '10.8'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
+      server['product_code'] = '{458BF5FF-2DF8-426B-AEBC-BE4C47DB6B54}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.8").gsub('/', '\\')
     when '10.7.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1071_169677.exe').gsub('/', '\\')
@@ -204,6 +220,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.8'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_108_172977.tar.gz')
     when '10.7.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_1071_169796.tar.gz')
@@ -260,4 +279,7 @@ default['arcgis']['server'].tap do |server|
   end
 
   server['config_store_connection_secret'] = ''
+
+  server['setup_options'] = ''
+  server['authorization_options'] = ''
 end

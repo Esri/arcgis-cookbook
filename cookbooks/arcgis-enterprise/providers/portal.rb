@@ -65,20 +65,25 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    # install_log = ::File.join(Chef::Config[:file_cache_path], 'portal_install.log')
-    # /log \"#{install_log}\" 
+
+    password = if @new_resource.run_as_msa
+                 'MSA=\"True\"'
+               else
+                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+               end
+
     args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "CONTENTDIR=\"#{node['arcgis']['portal']['data_dir']}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
-           "PASSWORD=\"#{run_as_password}\""
+           "#{password} "\
+           "#{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
     cmd.run_command
     cmd.error!
   else
     cmd = @new_resource.setup
-    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
+    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
     install_subdir = ::File.join(@new_resource.install_dir,
                                  node['arcgis']['portal']['install_subdir'])
     dir_data = @new_resource.data_dir
@@ -171,7 +176,7 @@ action :configure_autostart do
       service_file = 'arcgisportal.service.erb'
       template_variables = ({ :portalhome => install_subdir, :agsuser => agsuser })
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
           template_variables = template_variables.merge(cloudenvironment)
         end
@@ -348,7 +353,11 @@ action :create_site do
 
     portal_admin_client.wait_until_available
 
-    portal_admin_client.populate_license
+    begin
+      portal_admin_client.populate_license
+    rescue Exception => e
+      Chef::Log.error 'Populate license failed. ' + e.message
+    end
 
     system_properties = {}
 
@@ -516,12 +525,12 @@ action :federate_server do
   server = servers.detect { |s| s['url'] == @new_resource.server_url }
 
   if server.nil?
-    server_admin_client = ArcGIS::ServerAdminClient.new(
-      @new_resource.server_admin_url,
-      @new_resource.server_username,
-      @new_resource.server_password)
+    # server_admin_client = ArcGIS::ServerAdminClient.new(
+    #   @new_resource.server_admin_url,
+    #   @new_resource.server_username,
+    #   @new_resource.server_password)
 
-    server_admin_client.start_service('Utilities/PrintingTools.GPServer')
+    # server_admin_client.start_service('Utilities/PrintingTools.GPServer')
 
     server_id = portal_admin_client.federate_server(
       @new_resource.server_url,
@@ -595,7 +604,7 @@ end
 action :start do
   if node['platform'] == 'windows'
     if node['arcgis']['configure_cloud_settings']
-      if node['cloud']['provider'] == 'ec2'
+      if node['arcgis']['cloud']['provider'] == 'ec2'
         env 'arcgis_cloud_platform' do
           value 'aws'
         end
@@ -628,7 +637,7 @@ action :start do
       cmd = node['arcgis']['portal']['start_tool']
 
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cmd = 'arcgis_cloud_platform=aws ' + cmd
         end
       end

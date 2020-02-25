@@ -22,6 +22,7 @@ include_recipe 'arcgis-enterprise::install_server'
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
+  authorization_options node['arcgis']['server']['authorization_options']
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
@@ -138,6 +139,22 @@ arcgis_enterprise_server 'Configure HTTPS' do
   retry_delay 30
   not_if { node['arcgis']['server']['keystore_file'].empty? }
   action :configure_https
+end
+
+# Update server security config
+arcgis_enterprise_server 'Configure Security Protocol' do
+  server_url node['arcgis']['server']['url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  protocol node['arcgis']['server']['protocol']
+  authentication_mode node['arcgis']['server']['authentication_mode']
+  authentication_tier node['arcgis']['server']['authentication_tier']
+  hsts_enabled node['arcgis']['server']['hsts_enabled']
+  virtual_dirs_security_enabled node['arcgis']['server']['virtual_dirs_security_enabled']
+  allow_direct_access node['arcgis']['server']['allow_direct_access']
+  retries 5
+  retry_delay 30
+  action :configure_security_protocol
 end
 
 # Restart ArcGIS Server

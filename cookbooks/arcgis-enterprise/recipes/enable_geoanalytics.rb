@@ -25,7 +25,7 @@ arcgis_enterprise_portal "Enable GeoAnalytics" do
   server_admin_url node['arcgis']['server']['private_url']
   server_username node['arcgis']['server']['admin_username']
   server_password node['arcgis']['server']['admin_password']
-  is_hosting node['arcgis']['server']['is_hosting']
+  is_hosting false
   server_function 'GeoAnalytics'
   action :enable_server_function
 end

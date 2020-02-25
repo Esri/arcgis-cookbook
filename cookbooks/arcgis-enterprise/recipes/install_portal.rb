@@ -64,8 +64,10 @@ arcgis_enterprise_portal 'Install Portal for ArcGIS' do
   product_code node['arcgis']['portal']['product_code']
   data_dir node['arcgis']['portal']['data_dir']
   setup node['arcgis']['portal']['setup']
+  setup_options node['arcgis']['portal']['setup_options']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
+  run_as_msa node['arcgis']['run_as_msa']  
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
   else

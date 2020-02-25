@@ -14,6 +14,7 @@ The following cookbooks are required:
 * arcgis-insights
 * arcgis-pro
 * arcgis-repository
+* arcgis-notebooks
 * esri-iis
 * esri-tomcat
 

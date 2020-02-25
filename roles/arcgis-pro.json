@@ -6,8 +6,8 @@
   },
   "arcgis":{
     "pro":{
-      "version":"2.3",
-      "setup":"C:\\ArcGIS\\2.3\\ArcGISPro\\ArcGISPro.msi",
+      "version":"2.4",
+      "setup":"C:\\ArcGIS\\2.4\\ArcGISPro\\ArcGISPro.msi",
       "seat_preference":"Fixed"
     }
   },

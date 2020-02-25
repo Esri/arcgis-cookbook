@@ -52,10 +52,13 @@ end
 
 arcgis_enterprise_server 'Setup ArcGIS Server' do
   setup node['arcgis']['server']['setup']
+  setup_options node['arcgis']['server']['setup_options']
   install_dir node['arcgis']['server']['install_dir']
   python_dir node['arcgis']['python']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
+  run_as_msa node['arcgis']['run_as_msa']
+  install_environment node['arcgis']['server']['install_environment']
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
   else

@@ -3,6 +3,14 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.5.0
+-----
+- Added support for ArcGIS Enterprise 10.8.
+- Added support for custom setup command line parameters.
+- Added support for using hostnames instead of IP addresses on AWS.
+- Added support for Windows Managed Service Accounts.
+- Added support for Password protected Esri Secured License Files (ESLF)
+
 3.4.0
 -----
 - Added support for ArcGIS Enterprise 10.7.1.

@@ -1,31 +1,28 @@
 {
   "java":{
-    "install_flavor":"oracle",
-    "jdk_version":"8",
-    "oracle":{
-      "accept_oracle_download_terms":true
-    }
+    "install_flavor":"openjdk",
+    "jdk_version":"8"
   },
   "tomcat":{
       "instance_name":"arcgis"
   },
   "arcgis":{
     "run_as_user":"arcgis",
-    "version":"10.7",
+    "version":"10.8",
     "web_server":{
       "webapp_dir":"/opt/tomcat_arcgis/webapps"
     },
     "web_adaptor":{
-      "setup":"/arcgis/10.7/WebAdaptor/CD_Linux/Setup"
+      "setup":"/arcgis/10.8/WebAdaptor/CD_Linux/Setup"
     },
     "data_store":{
-      "setup":"/arcgis/10.7/ArcGISDataStore/CD_Linux/Setup"
+      "setup":"/arcgis/10.8/ArcGISDataStore/CD_Linux/Setup"
     },
     "server":{
       "admin_username":"admin",
       "admin_password":"changeit",
-      "setup":"/arcgis/10.7/ArcGISServer/CD_Linux/Setup",
-      "authorization_file":"/arcgis/10.7/Authorization_Files/Server_Ent_Adv.prvc"
+      "setup":"/arcgis/10.8/ArcGISServer/CD_Linux/Setup",
+      "authorization_file":"/arcgis/10.8/Authorization_Files/Server_Ent_Adv.prvc"
     },
     "portal":{
       "admin_username":"admin",
@@ -33,8 +30,8 @@
       "admin_email":"admin@mydomain.com",
       "security_question":"Your favorite ice cream flavor?",
       "security_question_answer":"vanilla",
-      "setup":"/arcgis/10.7/ArcGISPortal/CD_Linux/Setup",
-      "authorization_file":"/arcgis/10.7/Authorization_Files/Portal.json",
+      "setup":"/arcgis/10.8/ArcGISPortal/CD_Linux/Setup",
+      "authorization_file":"/arcgis/10.8/Authorization_Files/Portal.json",
       "user_license_type_id":"creatorUT"
     }
   },

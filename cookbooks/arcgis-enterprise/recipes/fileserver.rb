@@ -26,6 +26,21 @@ directory node['arcgis']['data_store']['local_backup_dir'] do
   action :create
 end
 
+# Create default subdirectories for tile cache and relational Data Stores
+# in the backup directory.
+
+directory ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'tilecache') do
+  owner node['arcgis']['run_as_user']
+  mode '0755' if node['platform'] != 'windows'
+  action :create
+end
+
+directory ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'relational') do
+  owner node['arcgis']['run_as_user']
+  mode '0755' if node['platform'] != 'windows'
+  action :create
+end
+
 directory node['arcgis']['server']['local_directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'

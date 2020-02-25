@@ -3,6 +3,11 @@ arcgis-repository cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-repository cookbook.
 
+3.5.0
+-----
+- Updated dependent cookbooks.
+
+
 3.4.0
 -----
 - Use s3_file cookbook instead of aws cookbook to download files from S3.

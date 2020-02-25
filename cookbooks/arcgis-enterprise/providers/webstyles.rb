@@ -45,14 +45,14 @@ action :install do
     cmd = @new_resource.setup
     # install_log = ::File.join(Chef::Config[:file_cache_path], 'webstyles_install.log')
     # /log \"#{install_log}\"
-    args = '/qb'
+    args = "/qb #{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", :timeout => 7200)
     cmd.run_command
     cmd.error!
   else
     cmd = @new_resource.setup
-    args = ''
+    args = @new_resource.setup_options
     run_as_user = @new_resource.run_as_user
 
     if node['arcgis']['run_as_superuser']
@@ -63,6 +63,9 @@ action :install do
     cmd.run_command
     cmd.error!
   end
+
+  # Wait for webstyles installation to finish
+  sleep(900.0)
 
   new_resource.updated_by_last_action(true)
 end

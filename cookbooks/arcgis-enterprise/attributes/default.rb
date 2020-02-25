@@ -25,12 +25,21 @@ else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
-default['arcgis']['version'] = '10.7.1'
+default['arcgis']['run_as_msa'] = false
+
+default['arcgis']['version'] = '10.8'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
-if node['cloud']
+
+if node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
   default['arcgis']['configure_cloud_settings'] = true
+
+  if ENV['arcgis_cloud_platform'] == 'aws'
+    default['arcgis']['cloud']['provider'] = 'ec2'
+  else 
+    default['arcgis']['cloud']['provider'] = node['cloud']['provider']
+  end
 else
   default['arcgis']['configure_cloud_settings'] = false
 end

@@ -15,9 +15,9 @@ Requirements
 * 2.2
 * 2.3
 * 2.4
+* 2.5
 
 ### Platforms
-* Windows 7
 * Windows 8 (8.1)
 * Windows 10
 * Windows Server 2008 (R2)
@@ -33,7 +33,7 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `2.3`
+* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `2.4`
 * `node['arcgis']['pro']['setup_archive']` = Path to ArcGIS Pro setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['pro']['setup']` = The location of ArcGIS Pro setup msi. Default location is `C:\Temp\ArcGISPro\ArcGISPro.msi`.
 * `node['arcgis']['pro']['install_dir']` = ArcGIS Pro installation directory. Default installation directory is `%ProgramFiles%\ArcGIS\Pro`.
@@ -52,6 +52,9 @@ Recipes
 -------
 
 ### arcgis-pro::default
+Installs and authorizes ArcGIS Pro.
+
+### arcgis-pro::install_pro
 Installs ArcGIS Pro.
 
 ### arcgis-pro::uninstall

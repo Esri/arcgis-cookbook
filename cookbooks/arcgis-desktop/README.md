@@ -14,6 +14,7 @@ Requirements
 * 10.6.1
 * 10.7
 * 10.7.1
+* 10.8
 
 ### Supported ArcGIS software
 

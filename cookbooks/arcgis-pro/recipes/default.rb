@@ -17,25 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_pro_pro 'Verify ArcGIS Pro system requirements' do
-  action :system
-end
-
-arcgis_pro_pro 'Unpack ArcGIS Pro Setup' do
-  setup_archive node['arcgis']['pro']['setup_archive']
-  setups_repo node['arcgis']['repository']['setups']
-  only_if { ::File.exist?(node['arcgis']['pro']['setup_archive']) &&
-            !::File.exist?(node['arcgis']['pro']['setup']) }
-  not_if { Utils.product_installed?(node['arcgis']['pro']['product_code']) }
-  action :unpack
-end
-
-arcgis_pro_pro 'Install ArcGIS Pro' do
-  setup node['arcgis']['pro']['setup']
-  install_dir node['arcgis']['pro']['install_dir']
-  not_if { Utils.product_installed?(node['arcgis']['pro']['product_code']) }
-  action :install
-end
+include_recipe 'arcgis-pro::install_pro'
 
 arcgis_pro_pro 'Authorize ArcGIS Pro' do
   authorization_file node['arcgis']['pro']['authorization_file']

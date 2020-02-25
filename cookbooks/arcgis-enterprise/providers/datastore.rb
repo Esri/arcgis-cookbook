@@ -28,7 +28,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'ArcGIS Data Store' do
       description 'Allows connections through all ports used by ArcGIS Data Store'
-      local_port '2443,9220,9320,9876,29080,29081'
+      local_port '2443,9220,9320,9876,29079-29090,4369'
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -94,10 +94,17 @@ end
 action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+
+    password = if @new_resource.run_as_msa
+                 'MSA=\"True\"'
+               else
+                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+               end
+
     args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
-           "PASSWORD=\"#{run_as_password}\""
+           "#{password} "\
+           "#{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -120,7 +127,7 @@ action :install do
     install_subdir = ::File.join(@new_resource.install_dir,
                                  node['arcgis']['data_store']['install_subdir'])
     cmd = @new_resource.setup
-    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
+    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
     run_as_user = @new_resource.run_as_user
 
     subdir = @new_resource.install_dir
@@ -155,6 +162,19 @@ action :install do
   end
 
   sleep(120.0) # Wait for Data Store installation to finish
+
+  if node['platform'] != 'windows'
+    # Stop Data Store to start it later using SystemD service
+    cmd = node['arcgis']['data_store']['stop_tool']
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+    else
+      cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!
+  end
 
   new_resource.updated_by_last_action(true)
 end
@@ -229,7 +249,7 @@ action :configure_autostart do
       service_file = 'arcgisdatastore.service.erb'
       template_variables = ({ :datastorehome => datastorehome, :agsuser => agsuser })
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cloudenvironment = { :cloudenvironment => 'Environment="arcgis_cloud_platform=aws"' }
           template_variables = template_variables.merge(cloudenvironment)
         end
@@ -250,7 +270,7 @@ action :configure_autostart do
       command 'systemctl daemon-reload'
       action :nothing
       only_if {( node['init_package'] == 'systemd' )}
-      notifies :restart, 'service[arcgisdatastore]', :immediately
+#      notifies :restart, 'service[arcgisdatastore]', :immediately
     end
 
     service 'arcgisdatastore' do
@@ -292,7 +312,7 @@ end
 action :start do
   if node['platform'] == 'windows'
     if node['arcgis']['configure_cloud_settings']
-      if node['cloud']['provider'] == 'ec2'
+      if node['arcgis']['cloud']['provider'] == 'ec2'
         env 'arcgis_cloud_platform' do
           value 'aws'
         end
@@ -323,7 +343,7 @@ action :start do
       cmd = node['arcgis']['data_store']['start_tool']
 
       if node['arcgis']['configure_cloud_settings']
-        if node['cloud']['provider'] == 'ec2'
+        if node['arcgis']['cloud']['provider'] == 'ec2'
           cmd = 'arcgis_cloud_platform=aws ' + cmd
         end
       end
@@ -343,7 +363,6 @@ action :start do
         action :run
       end
     end
-
 
     new_resource.updated_by_last_action(true)
   end
@@ -384,40 +403,59 @@ action :configure do
   end
 end
 
-action :change_backup_location do
+action :configure_backup_location do
+  operation = 'change'
+
+  # At 10.8 tilecache backup location is no longer registered by default
+  # therefore --operation register needs to be used.
+  if @new_resource.store == 'tilecache' && node['arcgis']['version'].to_f >= 10.8
+    operation = 'register'
+  end
+
   if node['platform'] == 'windows'
     cmd = ::File.join(@new_resource.install_dir, 'tools\\configurebackuplocation')
+    args = "--location \"#{@new_resource.backup_location}\" --operation #{operation} --store #{@new_resource.store} --prompt no"
+    env = { 'AGSDATASTORE' => @new_resource.install_dir }
 
-    # Use configurebackuplocation tool if it exists (the tool is available since 10.5).
-    if ::File.exists?(cmd)
-      args = "--location \"#{@new_resource.backup_dir}\" --prompt no"
-    else
-      cmd = ::File.join(@new_resource.install_dir, 'tools\\changebackuplocation')
-      is_shared_folder = @new_resource.backup_dir.start_with?('\\\\')? 'true' : 'false'
-      args = "\"#{@new_resource.backup_dir}\" --is-shared-folder #{is_shared_folder} --prompt no"
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                               { :timeout => 600, :environment => env })
+    cmd.run_command
+    if cmd.error? && (cmd.stderr.include?('Operation is not supported under this configuration.') ||
+                      cmd.stderr.include?('Backup location already exists.'))
+      Chef::Log.debug(cmd.stderr)
+
+      cmd = ::File.join(@new_resource.install_dir, 'tools\\configurebackuplocation')
+      args = "--location \"#{@new_resource.backup_location}\" --operation change --store #{@new_resource.store} --prompt no"
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                                 { :timeout => 600, :environment => env })
+      cmd.run_command
     end
 
-    env = { 'AGSDATASTORE' => @new_resource.install_dir }
+    cmd.error!
   else
     install_subdir = ::File.join(@new_resource.install_dir,
                                  node['arcgis']['data_store']['install_subdir'])
     cmd = ::File.join(install_subdir, 'tools/configurebackuplocation.sh')
-    if ::File.exists?(cmd)
-      args = "--location \"#{@new_resource.backup_dir}\" --prompt no"
-    else
-      cmd = ::File.join(install_subdir, 'tools/changebackuplocation.sh')
-      args = "\"#{@new_resource.backup_dir}\" --is-shared-folder true --prompt no"
+    args = "--location \"#{@new_resource.backup_location}\" --operation #{operation} --store #{@new_resource.store} --prompt no"
+    run_as_user = @new_resource.run_as_user
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                               { :timeout => 600, :user => run_as_user })
+    cmd.run_command
+
+    if cmd.error? && (cmd.stderr.include?('Operation is not supported under this configuration.') ||
+                      cmd.stderr.include?('Backup location already exists.'))
+      Chef::Log.debug(cmd.stderr)
+
+      cmd = ::File.join(install_subdir, 'tools/configurebackuplocation.sh')
+      args = "--location \"#{@new_resource.backup_location}\" --operation change --store #{@new_resource.store} --prompt no"
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                                 { :timeout => 600, :user => run_as_user })
+      cmd.run_command
     end
 
-    run_as_user = @new_resource.run_as_user
+    cmd.error!
   end
-
-  cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                             { :timeout => 600,
-                               :user => run_as_user,
-                               :environment => env})
-  cmd.run_command
-  cmd.error!
 
   new_resource.updated_by_last_action(true)
 end

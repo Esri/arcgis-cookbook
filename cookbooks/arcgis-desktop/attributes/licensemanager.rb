@@ -26,6 +26,10 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
     case node['arcgis']['version']
+    when '10.8'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2019_2_173083.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{77F1D4EB-0225-4626-BB9E-7FCB4B0309E5}'
     when '10.7'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2018_1_167080.exe').gsub('/', '\\')

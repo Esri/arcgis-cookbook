@@ -18,7 +18,7 @@
 
 default['arcgis']['data_store'].tap do |data_store|
 
-  if node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
+  if node['arcgis']['configure_cloud_settings']
     data_store['preferredidentifier'] = 'ip'
   else
     data_store['preferredidentifier'] = 'hostname'
@@ -43,6 +43,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['data_dir'] = 'C:\\arcgisdatastore'
 
     case node['arcgis']['version']
+    when '10.8'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_108_172872.exe').gsub('/', '\\')
+      data_store['product_code'] = '{2018A7D8-CBE8-4BCF-AF0E-C9AAFB4C9B6D}'
     when '10.7.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_1071_169689.exe').gsub('/', '\\')
@@ -90,6 +94,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '10.8'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_108_172991.tar.gz')
     when '10.7.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_1071_169808.tar.gz')
@@ -165,4 +172,16 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
   end
 
+  data_store['relational']['backup_type'] = 'fs'
+  data_store['tilecache']['backup_type'] = 'fs'
+
+  if node['arcgis']['data_store']['backup_dir'].nil?
+    data_store['relational']['backup_location'] = ::File.join(data_store['backup_dir'], 'relational')
+    data_store['tilecache']['backup_location'] = ::File.join(data_store['backup_dir'], 'tilecache')
+  else
+    data_store['relational']['backup_location'] = ::File.join(node['arcgis']['data_store']['backup_dir'], 'relational')
+    data_store['tilecache']['backup_location'] = ::File.join(node['arcgis']['data_store']['backup_dir'], 'tilecache')
+  end
+
+  data_store['setup_options'] = ''
 end

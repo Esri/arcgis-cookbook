@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+# ArcGIS Notebook Server systemd unit file
+# ------------------------------------------------------------------
+#
+# Configure ArcGIS Notebook Server to be started at boot on RHEL 7.x by
+# following these instructions:
+#
+# 1.) Switch to the root user.
+#
+# 2.) Copy this file to /etc/systemd/system
+#
+# 3.) Enable the service to start at boot:
+#
+#     # systemctl enable agsnotebook.service
+#
+# 4.) Verify systemd service is setup correctly:
+#
+#    # systemctl stop agsnotebook.service
+#    # systemctl start agsnotebook.service
+#    # systemctl status agsnotebook.service
+#
+# 5.) Reboot the system and verify that Notebook Server restarts properly.
+#
+# ------------------------------------------------------------------
+
+[Unit]
+Description=ArcGIS Notebook Server Service
+After=network.target
+
+[Service]
+Type=forking
+User=<%=@agsuser%>
+LimitNOFILE=65535
+LimitNPROC=25059
+GuessMainPID=false
+ExecStart=<%=@agsnotebookhome%>/startnotebookserver.sh
+ExecStop=<%=@agsnotebookhome%>/stopnotebookserver.sh
+<%=@cloudenvironment%>
+
+[Install]
+WantedBy=multi-user.target
+

@@ -58,7 +58,7 @@ action :install do
     end
 
     cmd = @new_resource.setup
-    args = "/qb VDIRNAME=#{@new_resource.instance_name}"
+    args = "/qb VDIRNAME=#{@new_resource.instance_name} #{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command
@@ -69,7 +69,7 @@ action :install do
     src_path = ::File.join(install_subdir, 'java/arcgis.war')
 
     cmd = @new_resource.setup
-    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
+    args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
 
     subdir = @new_resource.install_dir
     node['arcgis']['web_adaptor']['install_subdir'].split("/").each do |path|
@@ -157,7 +157,7 @@ action :configure_with_server do
       if node['platform'] == 'windows'
         cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
             node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
-        args = "/m server /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
+        args = "/m #{@new_resource.mode} /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
   
         cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
         cmd.run_command
@@ -167,7 +167,7 @@ action :configure_with_server do
         wareg_jar_path = ::File.join(@new_resource.install_dir,
                                      node['arcgis']['web_adaptor']['install_subdir'],
                                      'java/tools/arcgis-wareg.jar')
-        args = "-jar \"#{wareg_jar_path}\" -m server -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
+        args = "-jar \"#{wareg_jar_path}\" -m #{@new_resource.mode} -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
   
         cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
         cmd.run_command
@@ -187,41 +187,62 @@ action :configure_with_portal do
     wa_url = @new_resource.portal_wa_url + '/webadaptor'
     uri = URI.parse(@new_resource.portal_url)
     portal_url = uri.scheme + '://' + uri.host + ':' + uri.port.to_s
-  
+    healthcheck_url = @new_resource.portal_wa_url + '/portaladmin/healthCheck'
+
     rest_client = ArcGIS::PortalRestClient.new(@new_resource.portal_wa_url,
                                                @new_resource.username,
                                                @new_resource.password)
-  
-    unless rest_client.available?
-      Utils.wait_until_url_available(portal_url)
-      Utils.wait_until_url_available(wa_url)
-  
-      if node['platform'] == 'windows'
-        cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-                          node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
-        args = "/m portal /w \"#{wa_url}\" /g \"#{portal_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\""
-  
-        cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
-        cmd.run_command
-        cmd.error!
+
+    Utils.wait_until_url_available(portal_url)
+    Utils.wait_until_url_available(wa_url)
+
+    if node['platform'] == 'windows'
+      cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
+                        node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
+      args = "/m portal /w \"#{wa_url}\" /g \"#{portal_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\""
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
+      cmd.run_command
+      if (cmd.error? && cmd.stdout.include?('The underlying connection was closed: An unexpected error occurred on a receive.'))
+        # Web Adaptor registration failed because portal content reindexing timed out.
+        # Log an error and sleep on it, but assume the Web Adaptor registration was successful.
+        Chef::Log.error(cmd.stdout)
+        sleep(600.0)
+        Utils.wait_until_url_available(wa_url)
       else
-        cmd = 'java'
-        wareg_jar_path = ::File.join(@new_resource.install_dir,
-                                     node['arcgis']['web_adaptor']['install_subdir'],
-                                     'java/tools/arcgis-wareg.jar')
-        args = "-jar \"#{wareg_jar_path}\" -m portal -w '#{wa_url}' -g '#{portal_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}'"
-  
-        cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
-        cmd.run_command
         cmd.error!
       end
-  
-      Utils.wait_until_url_available(portal_url)
-      sleep(60.0)
-      Utils.wait_until_url_available(portal_url)
-  
-      new_resource.updated_by_last_action(true)
+    else
+      cmd = 'java'
+      wareg_jar_path = ::File.join(@new_resource.install_dir,
+                                    node['arcgis']['web_adaptor']['install_subdir'],
+                                    'java/tools/arcgis-wareg.jar')
+      args = "-jar \"#{wareg_jar_path}\" -m portal -w '#{wa_url}' -g '#{portal_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}'"
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
+      cmd.run_command
+      if (cmd.error? && cmd.stdout.include?('The underlying connection was closed: An unexpected error occurred on a receive.'))
+        # Web Adaptor registration failed because portal content reindexing timed out.
+        # Log an error and sleep on it, but assume the Web Adaptor registration was successful.
+        Chef::Log.error(cmd.stdout)
+        sleep(600.0)
+        Utils.wait_until_url_available(wa_url)
+      else
+        cmd.error!
+      end
     end
+
+    Utils.wait_until_url_available(healthcheck_url)
+
+    # wait_until_url_available does not wait more than 10 minutes.
+    # Portal content reindexing during WA registration may take up to 25 minutes.
+    Utils.wait_until_url_available(healthcheck_url)
+
+    unless Utils.url_available?(healthcheck_url)
+      raise 'Portal health check URL is not available.'
+    end
+
+    new_resource.updated_by_last_action(true)
   rescue Exception => e
     Chef::Log.error "Failed to configure Web Adaptor with Portal for ArcGIS. " + e.message
     raise e

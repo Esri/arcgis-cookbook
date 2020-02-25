@@ -65,3 +65,16 @@ arcgis_enterprise_portal 'Join Portal Site' do
   retry_delay 30
   action :join_site
 end
+
+arcgis_enterprise_portal 'Configure HTTPS' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  keystore_file node['arcgis']['portal']['keystore_file']
+  keystore_password node['arcgis']['portal']['keystore_password']
+  cert_alias node['arcgis']['portal']['cert_alias']
+  not_if { node['arcgis']['portal']['keystore_file'].empty? }
+  retries 5
+  retry_delay 30
+  action :configure_https
+end

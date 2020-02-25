@@ -34,6 +34,7 @@ end
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
+  authorization_options node['arcgis']['server']['authorization_options']
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately

@@ -1,0 +1,77 @@
+{
+    "java": {
+        "install_flavor": "openjdk",
+        "jdk_version": "8"
+    },
+    "tomcat": {
+        "tarball_path": "/opt/software/esri/apache-tomcat-8.5.45.tar.gz",
+        "install_path": "/tomcat_arcgis",
+        "keystore_file": "/tomcat_arcgis/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "change.it"
+    },
+    "arcgis": {
+        "version": "10.8",
+        "run_as_user": "arcgis",
+        "hosts": {
+            "primary": ""
+        },
+        "repository": {
+            "local_archives": "/opt/software/esri",
+            "server": {
+                "s3bucket": "arcgisstore108"
+            },
+            "files": {
+                "ArcGIS_Notebook_Docker_Advanced_108_172943.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "ArcGIS_Notebook_Docker_Standard_108_172942.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "ArcGIS_Notebook_Server_Linux_108_173012.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "Web_Adaptor_Java_Linux_108_172992.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "apache-tomcat-8.5.45.tar.gz": {
+                    "subfolder": "depfiles"
+                }
+            }
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis/webapps"
+        },
+        "notebook_server": {
+            "setup": "/opt/arcgis/10.8/NotebookServer_Linux/Setup",
+            "shares": [
+                "/gisdata/notebookserver/directories",
+                "/gisdata/notebookserver/config-store"
+            ],
+            "authorization_file": "/opt/software/esri/notebookserver_108.prvc",
+            "license_level": "standard",
+            "admin_username": "admin",
+            "admin_password": "change.it",
+            "directories_root": "/net/primary/gisdata/notebookserver/directories",
+            "config_store_connection_string": "/net/primary/gisdata/notebookserver/config-store",
+            "configure_autostart": true,
+            "install_system_requirements": true
+        },
+        "web_adaptor": {
+            "setup": "/opt/arcgis/10.8/WebAdaptor/Setup"
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-repository::s3files]",
+        "recipe[arcgis-notebooks::fileserver]",
+        "recipe[java]",
+        "recipe[esri-tomcat]",
+        "recipe[iptables]",
+        "recipe[arcgis-enterprise::iptables]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::server]",
+        "recipe[arcgis-notebooks::server_wa]"
+    ]
+}

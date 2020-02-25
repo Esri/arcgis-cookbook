@@ -4,9 +4,9 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Desktop'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.4.0'
+version          '3.5.0'
 
-depends          'arcgis-repository', '~> 3.4'
+depends          'arcgis-repository', '~> 3.5'
 depends          'windows', '~> 5.3'
 depends          'limits', '~> 1.0'
 

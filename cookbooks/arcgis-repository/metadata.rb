@@ -4,8 +4,8 @@ maintainer_email 'contracts@esri.com'
 license          'Apache-2.0'
 description      'Downloads ArcGIS software setups from remote to local repositories'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.4.0'
-chef_version     '>= 12.6', '< 15.0' if defined? chef_version
+version          '3.5.0'
+chef_version     '>= 13.0', '< 15.0' if defined? chef_version
 
 depends 's3_file', '~> 2.8'
 

@@ -10,17 +10,18 @@ Requirements
 
 * 10.7
 * 10.7.1
+* 10.8
 
 ### Supported ArcGIS software
 
 * ArcGIS Server
 * ArcGIS Data Store
 * Portal for ArcGIS
+* Portal for ArcGIS Web Styles
 * ArcGIS Web Adaptor (IIS/Java)
 
 ### Platforms
 
-* Windows 7
 * Windows 8 (8.1). 8.1 requires .Net Framework 3.5 (See ms_dotnet cookbook README)
 * Windows 10. Requires .Net Framework 3.5 (See ms_dotnet cookbook README)
 * Windows Server 2008 (R2)
@@ -52,11 +53,14 @@ Attributes
 * `node['arcgis']['run_as_user']` = Account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_password']` = Password for the account used to run ArcGIS Server, 
 Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
+* `node['arcgis']['run_as_msa']` = If set to `true` configures ArcGIS Enterprise applications to use windows group managed service account (gMSA). Default setting is `false`.
 * `node['arcgis']['hosts']` = Hostname to IP address mappings to be added to /etc/hosts file. Default value is `{}`.
 * `node['arcgis']['cache_authorization_files']` = If set to true, the software authorization file is cached on the machine and software authorization is skipped in the subsequent chef runs. Default value is `false`.
 * `node['arcgis']['configure_windows_firewall']` = If set to true, Windows firewall is configured for ArcGIS applications as specified by the system requirements. Default value is `false`.
 * `node['arcgis']['python']['install_dir']` = Python installation directory. By default Python is installed at `C:\Python27`.
 * `node['arcgis']['post_install_script']` = Custom post-installation script path. The default path on Windows is `C:\imageryscripts\deploy.bat`, on Linux is `/arcgis/imageryscripts/deploy.sh`.
+* `node['arcgis']['configure_cloud_settings']` = If set to `true`, makes the cookbook use cloud provider specific ArcGIS Enterprise configuration. The default value is `true` if `node['cloud']` is defined or arcgis_cloud_platform environment varible is set to `aws`.
+* `node['arcgis']['cloud']['provider']` = Cloud provider. Default value is set `ec2` if arcgis_cloud_platform environment variable is set to `aws` and to `node['cloud']['provider']` attribute value otherwise.
 
 #### File Server
 
@@ -79,6 +83,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['publisher_password']` = ArcGIS Server publisher password. Default value is `node['arcgis']['server']['admin_password']`.
 * `node['arcgis']['server']['directories_root']` = ArcGIS Server root directory. Default Windows directory is `C:\arcgisserver`; default Linux directory is `/arcgis/server/usr`.
 * `node['arcgis']['server']['setup']` = The location of the ArcGIS Server setup executable. Default location on Windows is `C:\Temp\ArcGISServer\Setup.exe`; default location on Linux is `/tmp/server-cd/Setup`.
+* `node['arcgis']['server']['setup_options']` = Additional ArcGIS Server setup command line options. Default options are `''`.
 * `node['arcgis']['server']['lp-setup']` = The location of language pack for ArcGIS Server. Default location is `nil`.
 * `node['arcgis']['server']['setup_archive']` = Path to ArcGIS Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
 * `node['arcgis']['server']['install_dir']` = ArcGIS Server installation directory. By default, ArcGIS Server is installed to  `%ProgramW6432%\ArcGIS\Server` on Windows machines and `/` on Linux machines.
@@ -87,6 +92,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['configure_autostart']` = If set to true, on Linux the ArcGIS Server is configured to start with the operating system. Default value is `true`.
 * `node['arcgis']['server']['authorization_file']` = ArcGIS Server authorization file path. Default location and authorization file is `C:\Temp\server_license.prvc` on Windows and `/tmp/server_license.prvc` on Linux.
 * `node['arcgis']['server']['authorization_file_version']` = ArcGIS Server authorization file version. Default version is `node['arcgis']['version']`.
+* `node['arcgis']['server']['authorization_options']` = Additional ArcGIS Server software authorization command line options. Default options are `''`.
 * `node['arcgis']['server']['managed_database']` = ArcGIS Server's managed database connection string. By default, this value is `nil`.
 * `node['arcgis']['server']['replicated_database']` = ArcGIS Server's replicated geodatabase connection string. By default, this value is `nil`.
 * `node['arcgis']['server']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for ArcGIS Server. Default value is `nil`.
@@ -104,11 +110,18 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['server']['security']['privileges']` = Privileges to user roles assignments `{'PUBLISH' => [], 'ADMINISTER' => []}`
 * `node['arcgis']['server']['soc_max_heap_size']` = SOC maximum heap size in megabytes. Default value is `64`.
+* `node['arcgis']['server']['protocol']` = Protocol used by server. Default value is `HTTPS`.
+* `node['arcgis']['server']['authentication_mode']` = Server authentication mode. Default value is `ARCGIS_TOKEN`.
+* `node['arcgis']['server']['authentication_tier']` = Server authentication tier. Default value is `GIS_SERVER`.
+* `node['arcgis']['server']['hsts_enabled']` = HTTP Strict Transport Security enabled. Default value is `false`.
+* `node['arcgis']['server']['virtual_dirs_security_enabled']` = Security for virtual directories enabled. Default value is `false`.
+* `node['arcgis']['server']['allow_direct_access']` = Allow direct access to server. Default value is `true`.
 
 #### Web Adaptor
 
 * `node['arcgis']['web_adaptor']['admin_access']` = Indicates if ArcGIS Server Manager and Admin API will be available through the Web Adaptor <true|false>. Default value is `false`.
 * `node['arcgis']['web_adaptor']['setup']` = Location of ArcGIS Web Adaptor setup executable. Default location is `C:\Temp\WebAdaptorIIS\Setup.exe` on Windows and `/tmp/web-adaptor-cd/Setup` on Linux.
+* `node['arcgis']['web_adaptor']['setup_options']` = Additional Web Adaptor setup command line options. Default options are `''`.
 * `node['arcgis']['web_adaptor']['lp-setup']` = The location of language pack for ArcGIS Web Adaptor. Default location is `nil`.
 * `node['arcgis']['web_adaptor']['setup_archive']` = Path to ArcGIS Web Adaptor setup archive. Default value depends on `node['arcgis']['version']` attribute value. 
 * `node['arcgis']['web_adaptor']['install_dir']` = ArcGIS Web Adaptor installation directory (Linux only). By default, ArcGIS Web Adaptor is installed to `/` on Linux.
@@ -130,6 +143,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['security_question']` = Security question. Default question is `Your favorite ice cream flavor?`
 * `node['arcgis']['portal']['security_question_answer']` = Security question answer. Default answer is `bacon`.
 * `node['arcgis']['portal']['setup']` = Portal for ArcGIS setup path. Default location is `C:\Temp\ArcGISPortal\Setup.exe` on Windows and `/tmp/portal-cd/Setup` on Linux.
+* `node['arcgis']['portal']['setup_options']` = Additional Portal for ArcGIS setup command line options. Default options are `''`.
 * `node['arcgis']['portal']['lp-setup']` = The location of language pack for Portal for ArcGIS. Default location is `nil`.
 * `node['arcgis']['portal']['setup_archive']` = Path to Portal for ArcGIS setup archive. Default value depends on `node['arcgis']['version']` attribute value.
 * `node['arcgis']['portal']['install_dir']` = Portal for ArcGIS installation directory. By default, Portal for ArcGIS is installed to `%ProgramW6432%\ArcGIS\Portal` on Windows machines and `/` on Linux machines.
@@ -164,6 +178,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 #### Web Styles
 
 * `node['arcgis']['webstyles']['setup']` = ArcGIS Web Styles setup path.
+* `node['arcgis']['webstyles']['setup_options']` = Additional ArcGIS Web Styles setup command line options. Default options are `''`.
 * `node['arcgis']['webstyles']['setup_archive']` = ArcGIS Web Styles setup archive path. Default value depends on `node['arcgis']['version']` attribute value.
 
 #### Data Store
@@ -171,6 +186,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['data_dir']` = ArcGIS Data Store data directory. Default location is `C:\arcgisdatastore` on Windows and `/arcgis/datastore/usr/arcgisdatastore` on Linux.
 * `node['arcgis']['data_store']['backup_dir']` = ArcGIS Data Store backup directory. Default location is `C:\arcgisdatastore\backup` on Windows and `/arcgis/datastore/usr/arcgisdatastore/backup` on Linux.
 * `node['arcgis']['data_store']['setup']` = Location of ArcGIS Data Store setup executable. Default location is `C:\Temp\ArcGISDataStore\Setup.exe` on Windows and `/tmp/tmp/data-store-cd/Setup` on Linux.
+* `node['arcgis']['data_store']['setup_options']` = Additional ArcGIS Data Store setup command line options. Default options are `''`.
 * `node['arcgis']['data_store']['lp-setup']` = The location of language pack for ArcGIS Data Store. Default location is `nil`.
 * `node['arcgis']['data_store']['setup_archive']` = Path to ArcGIS Data Store setup archive. Default value depends on `node['arcgis']['version']` attribute value. 
 * `node['arcgis']['data_store']['install_dir']` = ArcGIS Data Store installation directory. By default, ArcGIS Data Store is installed to `%ProgramW6432%\ArcGIS\DataStore` on Windows and `/` on Linux.
@@ -179,11 +195,14 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['hostidentifier']` = Host name or IP address of ArcGIS Data Store machine. Default value is  `''`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, <relational|tileCache|spatiotemporal>. By default, `tileCache,relational` is used.
+* `node['arcgis']['data_store']['relational']['backup_type']` = Type of location to use for relational Data Store backups <fs|s3|azure|none>. The default value is `fs`.
+* `node['arcgis']['data_store']['relational']['backup_location']` = Relational Data Store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/relational`).
+* `node['arcgis']['data_store']['tilecache']['backup_type']` = Type of location to use for tile cache Data Store backups <fs|s3|azure|none>. The default value is `fs`.
+* `node['arcgis']['data_store']['tilecache']['backup_location']` =  = Tile cache Data Store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/tilecache`).
 
 #### Linux Web Server
 
 * `node['arcgis']['web_server']['webapp_dir']` = Path to web server's web application directory (eg. /opt/tomcat/webapps). Default value is `''`
-
 
 Recipes
 -------
