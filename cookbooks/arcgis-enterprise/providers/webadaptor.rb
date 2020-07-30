@@ -47,18 +47,22 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     # uninstall older WA versions
     installed_code = Utils.wa_product_code(@new_resource.instance_name,
                                            node['arcgis']['web_adaptor']['product_codes'])
     if !installed_code.nil?
-      cmd = Mixlib::ShellOut.new("msiexec /qb /x #{installed_code}", {:timeout => 3600})
+      cmd = Mixlib::ShellOut.new("msiexec /qn /x #{installed_code}", {:timeout => 3600})
       cmd.run_command
       cmd.error!
     end
 
     cmd = @new_resource.setup
-    args = "/qb VDIRNAME=#{@new_resource.instance_name} #{@new_resource.setup_options}"
+    args = "/qn VDIRNAME=#{@new_resource.instance_name} #{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command
@@ -92,7 +96,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command
@@ -145,37 +149,31 @@ action :configure_with_server do
     wa_url = @new_resource.server_wa_url + '/webadaptor'
     uri = URI.parse(@new_resource.server_url)
     server_url = uri.scheme + '://' + uri.host + ':' + uri.port.to_s
-  
-    rest_client = ArcGIS::ServerRestClient.new(@new_resource.server_wa_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
-  
-    unless rest_client.available?
-      Utils.wait_until_url_available(wa_url)
-      Utils.wait_until_url_available(server_url)
-  
-      if node['platform'] == 'windows'
-        cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-            node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
-        args = "/m #{@new_resource.mode} /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
-  
-        cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
-        cmd.run_command
-        cmd.error!
-      else
-        cmd = 'java'
-        wareg_jar_path = ::File.join(@new_resource.install_dir,
-                                     node['arcgis']['web_adaptor']['install_subdir'],
-                                     'java/tools/arcgis-wareg.jar')
-        args = "-jar \"#{wareg_jar_path}\" -m #{@new_resource.mode} -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
-  
-        cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
-        cmd.run_command
-        cmd.error!
-      end
-  
-      new_resource.updated_by_last_action(true)
+
+    Utils.wait_until_url_available(wa_url)
+    Utils.wait_until_url_available(server_url)
+
+    if node['platform'] == 'windows'
+      cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
+          node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
+      args = "/m #{@new_resource.mode} /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
+      cmd.run_command
+      cmd.error!
+    else
+      cmd = 'java'
+      wareg_jar_path = ::File.join(@new_resource.install_dir,
+                                    node['arcgis']['web_adaptor']['install_subdir'],
+                                    'java/tools/arcgis-wareg.jar')
+      args = "-jar \"#{wareg_jar_path}\" -m #{@new_resource.mode} -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
+      cmd.run_command
+      cmd.error!
     end
+
+    new_resource.updated_by_last_action(true)
   rescue Exception => e
     Chef::Log.error "Failed to configure Web Adaptor with ArcGIS Server. " + e.message
     raise e
@@ -189,10 +187,6 @@ action :configure_with_portal do
     portal_url = uri.scheme + '://' + uri.host + ':' + uri.port.to_s
     healthcheck_url = @new_resource.portal_wa_url + '/portaladmin/healthCheck'
 
-    rest_client = ArcGIS::PortalRestClient.new(@new_resource.portal_wa_url,
-                                               @new_resource.username,
-                                               @new_resource.password)
-
     Utils.wait_until_url_available(portal_url)
     Utils.wait_until_url_available(wa_url)
 
@@ -200,6 +194,8 @@ action :configure_with_portal do
       cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
                         node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
       args = "/m portal /w \"#{wa_url}\" /g \"#{portal_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\""
+
+      args += ' /r false' unless @new_resource.reindex_portal_content
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command
@@ -218,6 +214,8 @@ action :configure_with_portal do
                                     node['arcgis']['web_adaptor']['install_subdir'],
                                     'java/tools/arcgis-wareg.jar')
       args = "-jar \"#{wareg_jar_path}\" -m portal -w '#{wa_url}' -g '#{portal_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}'"
+
+      args += ' -r false' unless @new_resource.reindex_portal_content
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command

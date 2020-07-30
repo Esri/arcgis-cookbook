@@ -22,5 +22,6 @@ include_recipe 'arcgis-pro::install_pro'
 arcgis_pro_pro 'Authorize ArcGIS Pro' do
   authorization_file node['arcgis']['pro']['authorization_file']
   authorization_file_version node['arcgis']['pro']['authorization_file_version']
+  authorization_type node['arcgis']['pro']['authorization_type']
   action :authorize
 end

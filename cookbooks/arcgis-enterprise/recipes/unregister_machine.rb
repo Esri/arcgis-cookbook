@@ -18,7 +18,9 @@
 #
 
 arcgis_enterprise_server 'Unregister server machine' do
+  use_join_site_tool node['arcgis']['server']['use_join_site_tool']
   server_url node['arcgis']['server']['url']
+  install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   retries 5

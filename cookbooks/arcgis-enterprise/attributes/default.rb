@@ -27,17 +27,19 @@ end
 
 default['arcgis']['run_as_msa'] = false
 
-default['arcgis']['version'] = '10.8'
+default['arcgis']['version'] = '10.8.1'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
+
+default['arcgis']['cloud']['provider'] = ''
 
 if node['cloud'] || ENV['arcgis_cloud_platform'] == 'aws'
   default['arcgis']['configure_cloud_settings'] = true
 
   if ENV['arcgis_cloud_platform'] == 'aws'
     default['arcgis']['cloud']['provider'] = 'ec2'
-  else 
+  elsif !node['cloud']['provider'].nil?
     default['arcgis']['cloud']['provider'] = node['cloud']['provider']
   end
 else

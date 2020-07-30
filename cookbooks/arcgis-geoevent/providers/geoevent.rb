@@ -57,10 +57,14 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
     run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/qb PASSWORD=\"#{run_as_password}\""
+    args = "/qn PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -83,7 +87,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -237,6 +241,10 @@ end
 
 action :authorize do
   if !@new_resource.authorization_file.nil? && !@new_resource.authorization_file.empty?
+    unless ::File.exists?(@new_resource.authorization_file)
+      raise "File '#{@new_resource.authorization_file}' not found."
+    end
+
     cmd = node['arcgis']['server']['authorization_tool']
 
     if node['platform'] == 'windows'

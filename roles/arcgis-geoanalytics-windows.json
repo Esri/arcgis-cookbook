@@ -1,8 +1,8 @@
 {
   "arcgis":{
+    "version":"10.8.1",
     "run_as_password":"Run_As_Pa$$w0rd",
     "run_as_user":"arcgis",
-    "version":"10.8",
     "repository":{
       "archives":"\\\\repo\\Software\\Esri"
     },

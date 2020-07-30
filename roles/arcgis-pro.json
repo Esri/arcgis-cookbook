@@ -1,18 +1,13 @@
 {
-  "ms_dotnet" : {
-    "v4" : {
-      "version" : "4.5.1"
-    }
-  },
   "arcgis":{
     "pro":{
-      "version":"2.4",
-      "setup":"C:\\ArcGIS\\2.4\\ArcGISPro\\ArcGISPro.msi",
-      "seat_preference":"Fixed"
+      "version":"2.6",
+      "setup":"C:\\ArcGIS\\2.6\\ArcGISPro\\ArcGISPro.msi",
+      "seat_preference":"Fixed",
+      "allusers": 1
     }
   },
   "run_list":[
-    "recipe[ms_dotnet::ms_dotnet4]",
     "recipe[arcgis-pro]"
   ]
 }

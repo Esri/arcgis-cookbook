@@ -36,6 +36,7 @@ attribute :password, :kind_of => String
 attribute :admin_access, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :mode, :kind_of => String, :default => 'server'
 attribute :setup_options, :kind_of => String, :default => ''
+attribute :reindex_portal_content, :kind_of => [TrueClass, FalseClass], :default => true
 
 def initialize(*args)
   super

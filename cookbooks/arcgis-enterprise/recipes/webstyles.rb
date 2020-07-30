@@ -18,34 +18,39 @@
 #
 
 arcgis_enterprise_webstyles 'Unpack ArcGIS Web Styles' do
-    setup_archive node['arcgis']['webstyles']['setup_archive']
-    setups_repo node['arcgis']['repository']['setups']
-    run_as_user node['arcgis']['run_as_user']
-    only_if { ::File.exist?(node['arcgis']['webstyles']['setup_archive']) &&
-              !::File.exist?(node['arcgis']['webstyles']['setup']) }
-    if node['platform'] == 'windows'
-      not_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }
-    else
-      not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                                 node['hostname'],
-                                                 node['arcgis']['version'],
-                                                 :ArcGISWebStyles) }
-    end
-    action :unpack
+  setup_archive node['arcgis']['webstyles']['setup_archive']
+  setups_repo node['arcgis']['repository']['setups']
+  run_as_user node['arcgis']['run_as_user']
+  only_if { ::File.exist?(node['arcgis']['webstyles']['setup_archive']) &&
+            !::File.exist?(node['arcgis']['webstyles']['setup']) }
+  if node['platform'] == 'windows'
+    not_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }
+  else
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                node['arcgis']['version'],
+                                                :ArcGISPortal_WebStyles) }
   end
+  action :unpack
+end
 
-  arcgis_enterprise_webstyles 'Install ArcGIS Web Styles' do
-    product_code node['arcgis']['webstyles']['product_code']
-    setup node['arcgis']['webstyles']['setup']
-    setup_options node['arcgis']['webstyles']['setup_options']
-    run_as_user node['arcgis']['run_as_user']
-    if node['platform'] == 'windows'
-      not_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }
-    else
-      not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                                 node['hostname'],
-                                                 node['arcgis']['version'],
-                                                 :ArcGISWebStyles) }
-    end
-    action :install
+arcgis_enterprise_webstyles 'Install ArcGIS Web Styles' do
+  product_code node['arcgis']['webstyles']['product_code']
+  setup node['arcgis']['webstyles']['setup']
+  setup_options node['arcgis']['webstyles']['setup_options']
+  run_as_user node['arcgis']['run_as_user']
+  if node['platform'] == 'windows'
+    not_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }
+  else
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                node['arcgis']['version'],
+                                                :ArcGISPortal_WebStyles) }
   end
+  action :install
+end
+
+arcgis_enterprise_portal 'Start Portal for ArcGIS after Web Styles install' do
+  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
+  action :start
+end

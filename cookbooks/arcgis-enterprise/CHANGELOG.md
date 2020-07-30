@@ -3,6 +3,11 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.6.0
+-----
+- Added support for ArcGIS Enterprise 10.8.1.
+- Added support for importing root SSL certificate into ArcGIS Server.
+
 3.5.0
 -----
 - Added support for ArcGIS Enterprise 10.8.

@@ -19,7 +19,7 @@
         "repository": {
             "local_archives": "/opt/software/esri",
             "server": {
-                "s3bucket": "arcgisstore108"
+                "s3bucket": "arcgisdaily-repo-us-east-1"
             },
             "files": {
                 "ArcGIS_Notebook_Docker_Advanced_1071_169738.tar.gz": {
@@ -49,7 +49,7 @@
             ],
             "authorization_file": "/opt/software/esri/notebookserver_107.prvc",
             "license_level": "standard",
-            "admin_username": "admin",
+            "admin_username": "siteadmin",
             "admin_password": "change.it",
             "directories_root": "/net/primary/gisdata/notebookserver/directories",
             "config_store_connection_string": "/net/primary/gisdata/notebookserver/config-store",

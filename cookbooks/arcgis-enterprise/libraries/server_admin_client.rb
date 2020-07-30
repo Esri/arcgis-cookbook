@@ -84,6 +84,16 @@ module ArcGIS
       end
     end
 
+    def wait_until_service_started(service_name)
+      MAX_RETRIES.times do
+        if service_started?(service_name)
+          break
+        end
+
+        sleep(SLEEP_TIME)
+      end
+    end
+
     def info
       uri = URI.parse(@server_url + '/rest/info')
 
@@ -139,7 +149,8 @@ module ArcGIS
 
       if response.code.to_i == 200
         return JSON.parse(response.body)['upgradeStatus'] == 'UPGRADE_REQUIRED' ||
-               JSON.parse(response.body)['upgradeStatus'] == 'LAST_ATTEMPT_FAILED'
+               JSON.parse(response.body)['upgradeStatus'] == 'LAST_ATTEMPT_FAILED' ||
+               JSON.parse(response.body)['isUpgrade'] # Notebook Server
       end
 
       false
@@ -253,7 +264,7 @@ module ArcGIS
       validate_response(response)
     end
 
-    def ssl_certificate_exist?(machine_name, cert_alias)
+    def ssl_certificate_exist?(machine_name, cert_alias, entry_type = 'PrivateKeyEntry')
       request = Net::HTTP::Post.new(URI.parse(@server_url +
         "/admin/machines/#{machine_name}/sslcertificates/#{cert_alias}").request_uri)
 
@@ -267,7 +278,7 @@ module ArcGIS
 
       validate_response(response)
 
-      JSON.parse(response.body)['entryType'] == 'PrivateKeyEntry'
+      JSON.parse(response.body)['entryType'] == entry_type
     rescue Exception
       false
     end
@@ -287,6 +298,31 @@ module ArcGIS
       request = Net::HTTP::Post::Multipart.new url.path,
         'certFile' => UploadIO.new(File.new(cert_file), 'application/x-pkcs12', cert_alias),
         'certPassword' => cert_password,
+        'alias' => cert_alias,
+        'token' => token,
+        'f' => 'json'
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def import_root_ssl_certificate(machine_name, cert_file, cert_alias)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      url = URI.parse(@server_url + 
+        "/admin/machines/#{machine_name}/sslcertificates/importRootOrIntermediate")
+
+      token = generate_token()
+
+      request = Net::HTTP::Post::Multipart.new url.path,
+        'rootCACertificate' => UploadIO.new(File.new(cert_file), 'application/x-x509-ca-cert', cert_alias),
         'alias' => cert_alias,
         'token' => token,
         'f' => 'json'
@@ -483,7 +519,7 @@ module ArcGIS
     # Update server security config
     def update_security_configuration(server_protocol, auth_mode, auth_tier, 
                                       hsts_enabled, virtual_dirs_security_enabled,
-                                      allow_direct_access)
+                                      allow_direct_access, allowed_admin_access_ips)
       if security_configuration['authenticationTier'] == 'ARCGIS_PORTAL'
         Chef::Log.info("The server is federated. Skip the security configuration update.")
         return
@@ -504,6 +540,7 @@ module ArcGIS
                             'HSTSEnabled' => hsts_enabled,
                             'virtualDirsSecurityEnabled' => virtual_dirs_security_enabled,
                             'allowDirectAccess' => allow_direct_access,
+                            'allowedAdminAccessIPs' => allowed_admin_access_ips,
                             'f' => 'json')
 
       response = send_request(request, @server_url)
@@ -596,6 +633,52 @@ module ArcGIS
       begin
         validate_response(response)
         return true
+      rescue Exception => ex
+        return false
+      end
+    end
+
+    def configured_service_state(service_name)
+      return false if service_name.nil? || service_name.empty?
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        '/admin/services/' + service_name + '/status').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      begin
+        validate_response(response)
+
+        return JSON.parse(response.body)['configuredState']
+      rescue Exception => ex
+        return false
+      end
+    end
+
+    def service_started?(service_name)
+      return false if service_name.nil? || service_name.empty?
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        '/admin/services/' + service_name + '/status').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      begin
+        validate_response(response)
+
+        return JSON.parse(response.body)['realTimeState'] == 'STARTED'
       rescue Exception => ex
         return false
       end
@@ -856,6 +939,42 @@ module ArcGIS
       response = send_request(request, @server_url)
 
       validate_response(response)
+    end
+
+    def unregister_web_adaptor(id)
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/system/webadaptors/#{id}/unregister").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def unregister_web_adaptors
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/system/webadaptors").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      web_adaptors = JSON.parse(response.body)['webAdaptors']
+
+      web_adaptors.each do |web_adaptor|
+        unregister_web_adaptor(web_adaptor['id'])
+      end
     end
 
     private

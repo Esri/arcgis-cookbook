@@ -104,6 +104,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['data_dir'] = 'C:\\arcgisportal'
 
     case node['arcgis']['version']
+    when '10.8.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_1081_175214.exe').gsub('/', '\\')
+      portal['product_code'] = '{0803DE56-BAE9-49F5-A120-BA249BD924E2}'
     when '10.8'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_108_172870.exe').gsub('/', '\\')
@@ -185,6 +189,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.8.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_1081_175300.tar.gz')
     when '10.8'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_108_172989.tar.gz')

@@ -41,11 +41,15 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
     # install_log = ::File.join(Chef::Config[:file_cache_path], 'webstyles_install.log')
     # /log \"#{install_log}\"
-    args = "/qb #{@new_resource.setup_options}"
+    args = "/qn #{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", :timeout => 7200)
     cmd.run_command
@@ -62,10 +66,18 @@ action :install do
     end
     cmd.run_command
     cmd.error!
-  end
 
-  # Wait for webstyles installation to finish
-  sleep(900.0)
+    # Stop Portal to start it later using SystemD service
+    cmd = node['arcgis']['portal']['stop_tool']
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+    else
+      cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!
+  end
 
   new_resource.updated_by_last_action(true)
 end

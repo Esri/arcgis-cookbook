@@ -70,6 +70,15 @@ arcgis_enterprise_server 'Setup ArcGIS Server' do
   action :install
 end
 
+# Disable all NodeAgent plugins on AWS/EC2
+template ::File.join(node['arcgis']['server']['install_dir'],
+  node['arcgis']['server']['install_subdir'],
+  'framework', 'etc', 'NodeAgentExt.xml') do
+  source 'NodeAgentExt.xml.erb'
+  only_if { node['arcgis']['cloud']['provider'] == 'ec2' &&
+            node['arcgis']['server']['disable_nodeagent_plugins'] }
+end
+
 arcgis_enterprise_server 'Configure arcgisserver service' do
   install_dir node['arcgis']['server']['install_dir']
   only_if { node['arcgis']['server']['configure_autostart'] }

@@ -21,6 +21,21 @@ require 'json'
 # ArcGIS helper classes
 #
 module ArcGIS
+
+  def self.build_endpoint_url(bucket, region)
+    endpoint = if region && region != "us-east-1"
+                 "s3-#{region}.amazonaws.com"
+               else
+                 "s3.amazonaws.com"
+               end
+  
+    if bucket =~ /^[a-z0-9][a-z0-9-]+[a-z0-9]$/
+      "https://#{bucket}.#{endpoint}"
+    else
+      "https://#{endpoint}/#{bucket}"
+    end
+  end
+
   # Retrieves ArcGIS software download URL from remote ArcGIS Software repository.
   def self.get_download_url(repository_url, access_key, file, subfolder)
     uri = URI.parse(repository_url + '/' + file)

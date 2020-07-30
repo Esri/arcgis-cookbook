@@ -15,7 +15,6 @@ Requirements
 
 The following cookbooks are required:
 * tomcat
-* java
 * openssl
 
 Attributes
@@ -24,16 +23,17 @@ Attributes
 #### General
 
 * `node['tomcat']['version']` = Tomcat version to install. Default is `8.0.33`.
-* `node['tomcat']['instance_name']` = Default is `arcgis`.
-* `node['tomcat']['instance_path']` = Default is `/opt/tomcat_INSTANCENAME_VERSION`.
-* `node['tomcat']['tarball_path']` = Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`
+* `node['tomcat']['instance_name']` = tomcat instance name. Default is `arcgis`.
+* `node['tomcat']['install_path']` = tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
+* `node['tomcat']['tarball_path']` = tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
+* `node['tomcat']['verify_checksum']` = Verify checksum of downloaded tomcat tarball. Default value is `true`.
 
 #### SSL/TLS
 
 * `node['tomcat']['keystore_file']` = Optional: Path to the keystore file. If not provided, a new file and a self-signed certificate will be created.
 * `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
-* `node['tomcat']['ssl_enabled_protocols']` = Default is `TLSv1.2,TLSv1.1,TLSv1`
-* `node['tomcat']['domain_name']` = Default is `Fully Qualified Domain Name`
+* `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of HTTPS listener. Default is `TLSv1.2,TLSv1.1,TLSv1`.
+* `node['tomcat']['domain_name']` = Domain name for generated self-signed SSL certificate. Default is `Fully Qualified Domain Name`.
 
 ## Issues
 
@@ -46,7 +46,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016 Esri
+Copyright 2016-2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

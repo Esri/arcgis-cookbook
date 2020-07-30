@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '2.5'
+    pro['version'] = '2.6'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -38,6 +38,10 @@ default['arcgis']['pro'].tap do |pro|
     pro['authorization_tool'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro\\bin\\SoftwareAuthorizationPro.exe'
 
     case node['arcgis']['pro']['version']
+    when '2.6'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_26_175036.exe').gsub('/', '\\')
+      pro['product_code'] = '{9D510CBA-7DB1-4E3D-8938-5E193DF406C9}'
     when '2.5'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_25_172639.exe').gsub('/', '\\')

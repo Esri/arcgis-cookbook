@@ -10,10 +10,12 @@ group :release do
   cookbook 'arcgis-enterprise', path: '../arcgis-enterprise'
   cookbook 'arcgis-geoevent', path: '../arcgis-geoevent'
   cookbook 'arcgis-notebooks', path: '../arcgis-notebooks'
+  cookbook 'arcgis-mission', path: '../arcgis-mission'
   cookbook 'arcgis-insights', path: '../arcgis-insights'
   cookbook 'arcgis-pro', path: '../arcgis-pro'
   cookbook 'arcgis-repository', path: '../arcgis-repository'
   cookbook 'esri-iis', path: '../esri-iis'
   cookbook 'esri-tomcat', path: '../esri-tomcat'
+  cookbook 'java', '~> 6.0'
   cookbook 'apt'
 end

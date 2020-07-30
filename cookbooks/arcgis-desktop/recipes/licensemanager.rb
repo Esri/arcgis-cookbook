@@ -26,7 +26,9 @@ arcgis_desktop_licensemanager 'Unpack ArcGIS License Manager Setup' do
   setups_repo node['arcgis']['repository']['setups']
   only_if { ::File.exist?(node['arcgis']['licensemanager']['setup_archive']) &&
             !::File.exist?(node['arcgis']['licensemanager']['setup']) }
-  not_if { Utils.product_installed?(node['arcgis']['licensemanager']['product_code']) }
+  if node['platform'] == 'windows'
+    not_if { Utils.product_installed?(node['arcgis']['licensemanager']['product_code']) }
+  end
   action :unpack
 end
 

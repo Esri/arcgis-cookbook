@@ -8,7 +8,7 @@
         "repository": {
             "local_archives": "/opt/software/esri",
             "server": {
-                "s3bucket": "arcgisstore108"
+                "s3bucket": "arcgisdaily-repo-us-east-1"
             },
             "files": {
                 "ArcGIS_Notebook_Docker_Advanced_108_172943.tar.gz": {
@@ -26,7 +26,7 @@
             "setup": "/opt/arcgis/10.8/NotebookServer_Linux/Setup",
             "authorization_file": "/opt/software/esri/notebookserver_108.prvc",
             "license_level": "standard",
-            "admin_username": "admin",
+            "admin_username": "siteadmin",
             "admin_password": "change.it",
             "primary_server_url": "https://primary:11443/arcgis/admin",
             "configure_autostart": true,

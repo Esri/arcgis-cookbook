@@ -17,48 +17,72 @@
 # limitations under the License.
 
 default['arcgis']['licensemanager'].tap do |licensemanager|
+  licensemanager['version'] = '2020.0'
+
   case node['platform']
   when 'windows'
     licensemanager['setup'] = ::File.join(node['arcgis']['repository']['setups'],
-                                  'ArcGIS ' + node['arcgis']['version'],
+                                  'License Manager ' + node['arcgis']['licensemanager']['version'],
                                   'LicenseManager', 'Setup.exe')
     licensemanager['lp-setup'] = 'C:\\ArcGIS\\LicenseManager\\SetupFiles\\setup.msi'
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
-    case node['arcgis']['version']
-    when '10.8'
+    case node['arcgis']['licensemanager']['version']
+    when '2020.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2020_0_175435.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{F89EA66A-6AC2-401C-B8A0-E3ABDB5EDC10}'
+    when '2019.2'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2019_2_173083.exe').gsub('/', '\\')
       licensemanager['product_code'] = '{77F1D4EB-0225-4626-BB9E-7FCB4B0309E5}'
-    when '10.7'
+    when '2019.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2019_1_172308.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{BA3C546E-6FAC-405C-B2C9-30BC6E26A7A9}'
+    when '2019.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2019_0_169344.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{CB1E78B5-9914-45C6-8227-D55F4CD5EA6F}'
+    when '2018.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2018_1_167080.exe').gsub('/', '\\')
       licensemanager['product_code'] = '{E1C26E47-C6AB-4120-A3DE-2FA0F723C876}'
-    when '10.6.1'
+    when '2018.0'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2018_0_163304.exe').gsub('/', '\\')
-      licensemanager['product_code'] = '{1914B5D6-02C2-4CA3-9CAB-EE76358228CF}'
-    when '10.6'
-      licensemanager['product_code'] = '{D6AF20B5-825F-44A9-915D-C2868CBD59F3}'
-    when '10.5.1'
-      licensemanager['product_code'] = '{DF06C3DC-54B5-49A1-9756-B68FD65A0AD0}'
-    when '10.5'
-      licensemanager['product_code'] = '{3A024FEA-3E14-4257-87D0-8FCA03257560}'
-    when '10.4.1'
-      licensemanager['product_code'] = '{D71379AF-A72B-4B10-A7BA-64BC6AF6841B}'
-    when '10.4'
-      licensemanager['product_code'] = '{E1393226-725C-42F8-A672-4E5AC55EFBDE}'
+      licensemanager['product_code'] = '{CFF43ACB-9B0C-4725-B489-7F969F5B90AB}'
     else
-      Chef::Log.warn 'Unsupported ArcGIS version'
+      Chef::Log.warn 'Unsupported ArcGIS License Manager version'
     end
   else # node['platform'] == 'linux'
     licensemanager['setup'] = ::File.join(node['arcgis']['repository']['setups'],
-                                          node['arcgis']['version'],
-                                          'licensemanager', 'Setup')
+                                          node['arcgis']['licensemanager']['version'],
+                                          'LicenseManager_Linux', 'Setup')
     licensemanager['install_dir'] = '/'
-    licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['version']
+    licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['licensemanager']['version']
 
-    licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                  'ArcGIS_License_Manager_Linux_2018_1_167092.tar.gz')
+    case node['arcgis']['licensemanager']['version']
+    when '2020.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2020_0_174031.tar.gz')
+    when '2019.2'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2019_2_173095.tar.gz')
+    when '2019.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2019_1_172320.tar.gz')
+    when '2019.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2019_0_169356.tar.gz')
+    when '2018.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2018_1_167092.tar.gz')
+    when '2018.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2018_0_163516.tar.gz')
+    else
+      Chef::Log.warn 'Unsupported ArcGIS License Manager version'
+    end
   end
 end

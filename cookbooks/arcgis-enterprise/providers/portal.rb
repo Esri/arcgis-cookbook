@@ -63,6 +63,10 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
 
@@ -72,13 +76,13 @@ action :install do
                  "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
                end
 
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "CONTENTDIR=\"#{node['arcgis']['portal']['data_dir']}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
            "#{@new_resource.setup_options}"
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200 })
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 14400 })
     cmd.run_command
     cmd.error!
   else
@@ -98,9 +102,9 @@ action :install do
     end
 
     if node['arcgis']['run_as_superuser']
-      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 7200 })
+      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 14400 })
     else
-      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 7200})
+      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 14400})
     end
     cmd.run_command
     cmd.error!
@@ -118,10 +122,18 @@ action :install do
         ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{dir_data}") }
       end
     end
-  end
 
-  # Wait for Portal installation to finish
-  sleep(900.0)
+    # Stop Portal to start it later using SystemD service
+    cmd = node['arcgis']['portal']['stop_tool']
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+    else
+      cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!
+  end
 
   new_resource.updated_by_last_action(true)
 end
@@ -129,7 +141,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 10800})
     cmd.run_command
@@ -231,6 +243,10 @@ action :update_account do
 end
 
 action :authorize do
+  unless ::File.exists?(@new_resource.authorization_file)
+    raise "File '#{@new_resource.authorization_file}' not found."
+  end
+
   portal_admin_client = ArcGIS::PortalAdminClient.new(
     @new_resource.portal_url,
     @new_resource.username,
@@ -306,6 +322,7 @@ action :create_site do
       portal_admin_client.post_upgrade()
     rescue Exception => e
       Chef::Log.error 'Portal post upgrade failed. ' + e.message
+      raise e
     end
 
     # portal_admin_client.wait_until_available
@@ -315,6 +332,9 @@ action :create_site do
     # rescue Exception => e
     #   Chef::Log.error 'Portal content reindex failed. ' + e.message
     # end
+
+    # Wait for portal to restart after post upgrade
+    sleep(60.0)
 
     portal_admin_client.wait_until_available
 

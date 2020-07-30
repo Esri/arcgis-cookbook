@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of the arcgis-insights cookbook.
 
+## 3.6.0
+- Added support for Insights for ArcGIS 3.4/3.4.1/2020.1
+
 ## 3.5.0
 - Added support for Insights for ArcGIS 3.3/3.3.1
 

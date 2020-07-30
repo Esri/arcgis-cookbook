@@ -3,6 +3,10 @@ arcgis cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis cookbook.
 
+3.6.0
+-----
+- Added arcgis-mission cookbook.
+
 3.5.0
 -----
 - Added arcgis-notebooks cookbook.

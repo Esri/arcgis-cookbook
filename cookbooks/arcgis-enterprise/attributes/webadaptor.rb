@@ -34,6 +34,12 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['install_dir'] = ''
 
     case node['arcgis']['version']
+    when '10.8.1'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_for_Microsoft_IIS_1081_175217.exe').gsub('/', '\\')
+      web_adaptor['product_code'] = '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}'
+      web_adaptor['product_code2'] = '{56F26E70-2C61-45BC-A624-E100175086F7}'
+      web_adaptor['config_web_adaptor_exe'] = '\\ArcGIS\\WebAdaptor\\IIS\\10.8.1\\Tools\\ConfigureWebAdaptor.exe' 
     when '10.8'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'Web_Adaptor_for_Microsoft_IIS_108_172749.exe').gsub('/', '\\')
@@ -109,7 +115,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
                                     '{5ECEF84F-592C-47D1-B7C5-9F3D7E2AB7CE}',
                                     '{5F1D01EA-296E-4226-A704-6A90E2916782}',
                                     '{D6059C27-7199-4A94-806B-6C40EFD02828}',
-                                    '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}']
+                                    '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}',
+                                    '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}',
+                                    '{56F26E70-2C61-45BC-A624-E100175086F7}']
   else # node['platform'] == 'linux'
     web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                        node['arcgis']['version'],
@@ -117,6 +125,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['lp-setup'] = node['arcgis']['web_adaptor']['setup']
 
     case node['arcgis']['version']
+    when '10.8.1'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz')
     when '10.8'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'Web_Adaptor_Java_Linux_108_172992.tar.gz')
@@ -159,4 +170,7 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
   end
 
   web_adaptor['setup_options'] = ''
+
+  # Starting from ArcGIS 10.8.1 Web Adaptor registration supports 'ReindexPortalContent' option.
+  web_adaptor['reindex_portal_content'] = true
 end

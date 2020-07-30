@@ -20,7 +20,7 @@
 actions :system, :unpack, :install, :uninstall
 
 attribute :setup_archive, :kind_of => String
-attribute :setup_repo, :kind_of => String
+attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String

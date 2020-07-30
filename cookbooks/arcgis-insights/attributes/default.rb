@@ -20,7 +20,7 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '3.3.1'
+  insights['version'] = '2020.1'
 
   case node['platform']
   when 'windows'
@@ -28,6 +28,18 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '2020.1'
+      insights['product_code'] = '{5293D733-7F85-48C8-90A2-7506E51773DB}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2020_1_173526.exe')
+    when '3.4.1'
+      insights['product_code'] = '{F3B91D92-3DD8-4F0B-B43B-6F9DA2C1830A}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_341_171410.exe')
+    when '3.4'
+      insights['product_code'] = '{4230C365-8713-4A13-93BA-6016BE47ECAE}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_34_171405.exe')
     when '3.3.1'
       insights['product_code'] = '{2BA374B7-1C4C-4F5D-B80C-6C63077D076E}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -77,6 +89,15 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '2020.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2020_1_173527.tar.gz')
+    when '3.4.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_341_171471.tar.gz')
+    when '3.4'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_34_171406.tar.gz')      
     when '3.3.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'Insights_for_ArcGIS_Linux_331_169947.tar.gz')

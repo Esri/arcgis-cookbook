@@ -8,9 +8,6 @@ Requirements
 
 ### Supported Insights for ArcGIS versions
 
-* 1.0
-* 1.1
-* 1.2
 * 2.0
 * 2.1
 * 2.2
@@ -20,13 +17,13 @@ Requirements
 * 3.2.1
 * 3.3
 * 3.3.1
+* 3.4
+* 3.4.1
+* 2020.1
 
 ### Platforms
 
-* Windows 7
-* Windows 8 (8.1)
 * Windows 10
-* Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
@@ -42,7 +39,7 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `3.1`
+* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `3.4.1`
 * `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS version setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['insights']['setup']` = The location of Insights for ArcGIS setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
@@ -73,7 +70,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2018 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
