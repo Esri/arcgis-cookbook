@@ -48,5 +48,6 @@ end
 arcgis_desktop_desktop 'Authorize ArcGIS Desktop' do
   authorization_file node['arcgis']['desktop']['authorization_file']
   authorization_file_version node['arcgis']['desktop']['authorization_file_version']
+  seat_preference node['arcgis']['desktop']['seat_preference']
   action :authorize
 end

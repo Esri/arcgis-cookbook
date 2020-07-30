@@ -49,7 +49,7 @@
             ],
             "authorization_file": "/opt/software/esri/notebookserver_107.prvc",
             "license_level": "standard",
-            "admin_username": "admin",
+            "admin_username": "siteadmin",
             "admin_password": "change.it",
             "directories_root": "/net/primary/gisdata/notebookserver/directories",
             "config_store_connection_string": "/net/primary/gisdata/notebookserver/config-store",

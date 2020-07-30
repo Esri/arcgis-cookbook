@@ -10,6 +10,7 @@ Included cookbooks:
 * [arcgis-enterprise](cookbooks/arcgis-enterprise) - installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor
 * [arcgis-geoevent](cookbooks/arcgis-geoevent) - installs and configures ArcGIS GeoEvent Server
 * [arcgis-notebooks](cookbooks/arcgis-notebooks) - installs and configures ArcGIS Notebook Server
+* [arcgis-mission](cookbooks/arcgis-mission) - installs and configures ArcGIS Mission Server
 * [arcgis-insights](cookbooks/arcgis-insights) - installs and configures Insights for ArcGIS
 * [arcgis-desktop](cookbooks/arcgis-desktop) - installs and configures ArcGIS Desktop
 * [arcgis-pro](cookbooks/arcgis-pro) - installs and configures ArcGIS Pro

@@ -112,6 +112,66 @@ module ArcGIS
       end
     end
 
+    def add_service_permission(service, service_type, role)
+      uri = URI.parse(@server_url + '/admin/services/' + service + '.' + service_type + '/permissions/add')
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('principal' => role,
+                            'isAllowed' => 'true',
+                            'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def clean_service_permissions(role)
+      uri = URI.parse(@server_url + '/admin/services/permissions/clean')
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('principal' => role,
+                            'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def upload_service_item(service, service_type, item_folder, item_file)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      return if item_file.nil? || item_file.empty?
+
+      url = URI.parse(@server_url + '/admin/services/' + service + '.' + service_type + '/iteminfo/upload')
+      request = Net::HTTP::Post.new(url.request_uri)
+
+      token = generate_token()
+
+      request = Net::HTTP::Post::Multipart.new url.path,
+        'folder' => item_folder,
+        'file' => UploadIO.new(File.new(item_file), 'application/octet-stream', File.basename(item_file)),
+        'token' => token,
+        'f' => 'json'
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
     def get_database_connection_string(uploaded_connection_file_id)
       tool = '/rest/services/System/PublishingTools/GPServer/Get%20Database%20Connection%20String'
       request = Net::HTTP::Post.new(URI.parse(@server_url + tool + '/submitJob').request_uri)

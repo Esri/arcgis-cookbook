@@ -7,7 +7,7 @@ default['tomcat']['tarball_path'] = "#{Chef::Config['file_cache_path']}/apache-t
 default['tomcat']['user'] = 'tomcat_' + node['tomcat']['instance_name']
 default['tomcat']['group'] = 'tomcat_' + node['tomcat']['instance_name']
 
-default['tomcat']['ssl_enabled_protocols']='TLSv1.2,TLSv1.1,TLSv1'
+default['tomcat']['ssl_enabled_protocols'] ='TLSv1.2,TLSv1.1,TLSv1'
 default['tomcat']['keystore_file']  = ''
 if ENV['TOMCAT_KEYSTORE_PASSWORD'].nil?
   default['tomcat']['keystore_password']  = ''
@@ -16,3 +16,4 @@ else
 end
 default['tomcat']['keystore_type']  = 'PKCS12'
 default['tomcat']['domain_name']  = node['fqdn']
+default['tomcat']['verify_checksum'] = true

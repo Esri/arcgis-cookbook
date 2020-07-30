@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-actions :publish, :start, :stop, :delete
+actions :publish, :start, :stop, :delete, :add_permission, :clean_permissions, :upload_item
 
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
@@ -27,6 +27,9 @@ attribute :name, :kind_of => String
 attribute :type, :kind_of => String
 attribute :definition_file, :kind_of => String
 attribute :properties, :kind_of => Hash, :default => {}
+attribute :roles, :kind_of => [Array, String]
+attribute :item_folder, :kind_of => String
+attribute :item_file, :kind_of => String
 
 def initialize(*args)
   super

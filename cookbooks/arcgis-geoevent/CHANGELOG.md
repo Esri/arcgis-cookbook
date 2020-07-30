@@ -3,6 +3,13 @@ arcgis-geoevent cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-geoevent cookbook.
 
+<<<<<<< HEAD
+=======
+3.6.0
+-----
+- Added support for ArcGIS GeoEvent Server 10.8.1.
+
+>>>>>>> db62b7ad130ebfa991cabda65f73cf61bc4a7a26
 3.5.0
 -----
 - Added support for ArcGIS GeoEvent Server 10.8.

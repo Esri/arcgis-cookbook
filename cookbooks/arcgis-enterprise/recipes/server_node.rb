@@ -124,9 +124,12 @@ arcgis_enterprise_server 'Configure HTTPS' do
   keystore_file node['arcgis']['server']['keystore_file']
   keystore_password node['arcgis']['server']['keystore_password']
   cert_alias node['arcgis']['server']['cert_alias']
+  root_cert node['arcgis']['server']['root_cert']
+  root_cert_alias node['arcgis']['server']['root_cert_alias']
   use_join_site_tool node['arcgis']['server']['use_join_site_tool']
   retries 10
   retry_delay 30
-  not_if { node['arcgis']['server']['keystore_file'].empty? }
+  not_if { node['arcgis']['server']['keystore_file'].empty? &&
+           node['arcgis']['server']['root_cert'].empty? }
   action :configure_https
 end

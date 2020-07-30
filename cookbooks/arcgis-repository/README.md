@@ -11,10 +11,10 @@ Requirements
 * 10.7
 * 10.7.1
 * 10.8
+* 10.8.1
 
 ### Platforms
 
-* Windows 7
 * Windows 8 (8.1)
 * Windows 10
 * Windows Server 2008 (R2)
@@ -40,7 +40,8 @@ Attributes
 * `node['arcgis']['repository']['server']['url']` = Remote ArcGIS software repository URL. The Default URL is `https://downloads.arcgis.com/dms/rest/download/secured`.
 * `node['arcgis']['repository']['server']['key']` = Remote ArcGIS software repository key.
 * `node['arcgis']['repository']['server']['s3bucket']` = Remote ArcGIS software repository S3 bucket name.
-* `node['arcgis']['repository']['server']['aws_access_key']` = AWS access key ID.
+* `node['arcgis']['repository']['server']['region']` = Remote ArcGIS software repository S3 bucket region id.
+* `node['arcgis']['repository']['server']['aws_access_key']` = AWS access key ID. IAM role credentials are used if access key is not specified.
 * `node['arcgis']['repository']['server']['aws_secret_access_key']` = AWS secret access key.
 * `node['arcgis']['repository']['files']` = file names mapped to SHA256 checksum and the remote path subfolder attributes. Default value is `nil`.
 
@@ -54,6 +55,10 @@ Downloads files from remote ArcGIS software repository to local repository speci
 ### arcgis-repository::s3files
 
 Downloads files from ArcGIS software repository in S3 to local repository specified by `node['arcgis']['repository']['local_archives']` attribute.
+
+### arcgis-repository::s3files2
+
+Downloads files from ArcGIS software repository in S3 to local repository using AWS CLI Tools on Linux and AWS Tools for PowerShell on Windows.
 
 Examples
 --------

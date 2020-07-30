@@ -10,6 +10,7 @@ Requirements
 
 * 10.7.1
 * 10.8
+* 10.8.1
 
 ### Supported ArcGIS software
 
@@ -98,6 +99,9 @@ Uninstalls ArcGIS Notebook Server.
 
 Uninstalls ArcGIS Web Adaptor for ArcGIS Notebook Server.
 
+### arcgis-notebooks::unregister_machine
+
+Unregisters server machine from the ArcGIS Notebook Server site.
 
 Usage
 -----

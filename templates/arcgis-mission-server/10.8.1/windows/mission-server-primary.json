@@ -1,0 +1,52 @@
+{
+    "arcgis": {
+        "version": "10.8.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Temp",
+            "local_archives": "C:\\Temp",
+            "setups": "C:\\Temp",
+            "server": {
+                "s3bucket": "arcgisdaily-repo-us-east-1",
+                "region": "us-east-1"
+            },
+            "files": {
+                "ArcGIS_Mission_Server_Windows_1081_175253.exe": {
+                    "subfolder": "14362/setups"
+                },
+                "ArcGIS_Web_Adaptor_for_Microsoft_IIS_1081_175217.exe": {
+                    "subfolder": "14362/setups"
+                }
+            }
+        },
+        "iis": {
+            "keystore_file": "ssl_certificate.pfx",
+            "keystore_password": "change.it"
+        },
+        "mission_server": {
+            "setup_archive": "C:\\Temp\\ArcGIS_Mission_Server_Windows_1081_175253.exe",
+            "authorization_file": "MissionServer.prvc",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "directories_root": "C:\\arcgismissionserver",
+            "config_store_connection_string": "C:\\arcgismissionserver\\config-store",
+            "configure_autostart": true,
+            "install_system_requirements": true,
+            "system_properties": {
+                "WebSocketContextURL": "wss://my.domain.com/mission"
+            }
+        },
+        "web_adaptor": {
+            "setup_archive": "C:\\Temp\\ArcGIS_Web_Adaptor_for_Microsoft_IIS_1081_175217.exe"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-repository::s3files2]",
+        "recipe[esri-iis]",
+        "recipe[arcgis-mission::server]",
+        "recipe[arcgis-mission::server_wa]"
+    ]
+}

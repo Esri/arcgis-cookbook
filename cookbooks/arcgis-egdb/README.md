@@ -48,7 +48,7 @@ ArcPy does not support creating databases in Amazon RDS database servers. The co
   [{
     "database" : "egdb",
     "data_item_path" : "/enterpriseDatabases/registeredDatabase",
-    "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
+    "connection_file": "C:\\chef\\misc_scripts\\connection_files\\RDS_egdb.sde",
     "is_managed" : true,
     "connection_type" : "shared"
   }]
@@ -135,7 +135,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ## Licensing
 
-Copyright 2019 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

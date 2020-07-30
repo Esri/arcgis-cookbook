@@ -3,6 +3,13 @@ arcgis-repository cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-repository cookbook.
 
+<<<<<<< HEAD
+=======
+3.6.0
+-----
+- Added s3files2 recipe.
+
+>>>>>>> db62b7ad130ebfa991cabda65f73cf61bc4a7a26
 3.5.0
 -----
 - Updated dependent cookbooks.

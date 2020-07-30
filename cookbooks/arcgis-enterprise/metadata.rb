@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.5.0'
+version          '3.6.0'
 chef_version     '>= 13.0', '< 15.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 3.5'
+depends          'arcgis-repository', '~> 3.6'
 depends          'hostsfile', '~> 3.0'
 depends          'limits', '~> 1.0'
 depends          'authbind', '~> 0.1'
@@ -57,6 +57,7 @@ recipe 'arcgis-enterprise::stop_machine', 'Stops server machine in the ArcGIS Se
 recipe 'arcgis-enterprise::system', 'System requirements'
 recipe 'arcgis-enterprise::unregister_machine', 'Unregisters server machine from the ArcGIS Server site'
 recipe 'arcgis-enterprise::unregister_stopped_machines', 'Unregisters all unavailable server machines in \'default\' cluster from the ArcGIS Server site'
+recipe 'arcgis-enterprise::unregister_server_wa', 'Unregisters all ArcGIS Server Web Adaptors'
 recipe 'arcgis-enterprise::webstyles', 'Installs Portal for ArcGIS Web Styles'
 
 issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)

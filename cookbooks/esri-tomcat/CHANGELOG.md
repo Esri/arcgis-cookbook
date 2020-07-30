@@ -4,6 +4,13 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+<<<<<<< HEAD
+=======
+0.1.7
+-----
+- Disabled AJP port connector.
+
+>>>>>>> db62b7ad130ebfa991cabda65f73cf61bc4a7a26
 0.1.6
 -----
 - Added tarball_path attribute.

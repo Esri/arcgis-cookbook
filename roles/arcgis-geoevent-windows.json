@@ -1,17 +1,17 @@
 {
   "arcgis":{
-    "run_as_password":"Run_As_Pa$$w0rd",
+    "version":"10.8.1",
     "run_as_user":"arcgis",
-    "version":"10.8",
+    "run_as_password":"Run_As_Pa$$w0rd",
     "server":{
       "admin_username":"admin",
       "admin_password":"changeit",
       "directories_root":"C:\\arcgisserver",
-      "setup":"C:\\ArcGIS\\10.8\\ArcGIS_Server\\Setup.exe",
+      "setup":"C:\\ArcGIS\\10.8.1\\ArcGIS_Server\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\geoevent.prvc"
     },
     "geoevent":{
-      "setup":"C:\\ArcGIS\\10.8\\GeoEvent\\setup.exe",
+      "setup":"C:\\ArcGIS\\10.8.1\\GeoEvent\\setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\geoevent.prvc"
     }
   },

@@ -31,7 +31,11 @@ node['arcgis']['repository']['files'].each do |filename, props|
     path ::File.join(node['arcgis']['repository']['local_archives'], filename)
     remote_path remote_path
     bucket node['arcgis']['repository']['server']['s3bucket']
-    if !node['arcgis']['repository']['server']['aws_access_key'].empty? 
+    unless node['arcgis']['repository']['server']['region'].empty?
+      s3_url ArcGIS.build_endpoint_url(node['arcgis']['repository']['server']['s3bucket'],
+                                       node['arcgis']['repository']['server']['region'])
+    end
+    if !node['arcgis']['repository']['server']['aws_access_key'].empty?
       aws_access_key_id node['arcgis']['repository']['server']['aws_access_key']
       aws_secret_access_key node['arcgis']['repository']['server']['aws_secret_access_key']
     end

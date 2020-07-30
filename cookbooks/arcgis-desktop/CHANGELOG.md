@@ -3,6 +3,13 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+<<<<<<< HEAD
+=======
+3.6.0
+-----
+- Added support for ArcGIS Desktop 10.8.1 and ArcGIS License Manager 2020.0.
+- Fixed software authorization issues with single use ArcGIS Desktop licenses.
+>>>>>>> db62b7ad130ebfa991cabda65f73cf61bc4a7a26
 
 3.5.0
 -----

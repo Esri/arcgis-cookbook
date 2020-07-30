@@ -42,6 +42,8 @@ Thumbs.db
 .buildpath
 .vscode
 Servers
+.chef
+.vs
 
 *.class
 

@@ -29,6 +29,7 @@ attribute :install_dir, :kind_of => String
 attribute :data_dir, :kind_of => String
 attribute :backup_dir, :kind_of => String
 attribute :types, :kind_of => String, :default => 'tileCache,relational'
+attribute :mode, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false

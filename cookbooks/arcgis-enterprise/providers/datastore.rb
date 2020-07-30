@@ -92,6 +92,10 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
 
@@ -101,7 +105,7 @@ action :install do
                  "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
                end
 
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
            "#{@new_resource.setup_options}"
@@ -182,7 +186,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command
@@ -377,6 +381,13 @@ action :configure do
     if node['platform'] == 'windows'
       cmd = ::File.join(@new_resource.install_dir, 'tools\\configuredatastore')
       args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
+
+      if !@new_resource.mode.nil? && !@new_resource.mode.empty? &&
+         Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8.1') &&
+         @new_resource.types.downcase.include?('tilecache')
+        args += " --mode #{@new_resource.mode}"
+      end
+
       env = { 'AGSDATASTORE' => @new_resource.install_dir }
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
@@ -388,6 +399,13 @@ action :configure do
                                    node['arcgis']['data_store']['install_subdir'])
       cmd = ::File.join(install_subdir, 'tools/configuredatastore.sh')
       args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
+
+      if !@new_resource.mode.nil? && !@new_resource.mode.empty? &&
+        Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8.1') &&
+        @new_resource.types.downcase.include?('tilecache')
+       args += " --mode #{@new_resource.mode}"
+      end
+
       run_as_user = @new_resource.run_as_user
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
@@ -408,7 +426,7 @@ action :configure_backup_location do
 
   # At 10.8 tilecache backup location is no longer registered by default
   # therefore --operation register needs to be used.
-  if @new_resource.store == 'tilecache' && node['arcgis']['version'].to_f >= 10.8
+  if @new_resource.store == 'tilecache' && Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8')
     operation = 'register'
   end
 

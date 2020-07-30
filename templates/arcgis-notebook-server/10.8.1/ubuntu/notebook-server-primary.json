@@ -1,0 +1,80 @@
+{
+    "java": {
+        "install_flavor": "openjdk",
+        "jdk_version": "8"
+    },
+    "tomcat": {
+        "tarball_path": "/opt/software/esri/apache-tomcat-8.5.51.tar.gz",
+        "install_path": "/tomcat_arcgis",
+        "keystore_file": "/tomcat_arcgis/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "change.it"
+    },
+    "arcgis": {
+        "version": "10.8.1",
+        "run_as_user": "arcgis",
+        "hosts": {
+            "primary": ""
+        },
+        "repository": {
+            "local_archives": "/opt/software/esri",
+            "server": {
+                "s3bucket": "arcgisdaily-repo-us-east-1",
+                "region": "us-east-1"
+            },
+            "files": {
+                "ArcGIS_Notebook_Docker_Advanced_1081_175252.tar.gz": {
+                    "subfolder": "14362/setups"
+                },
+                "ArcGIS_Notebook_Docker_Standard_1081_175251.tar.gz": {
+                    "subfolder": "14362/setups"
+                },
+                "ArcGIS_Notebook_Server_Linux_1081_175333.tar.gz": {
+                    "subfolder": "14362/setups"
+                },
+                "ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz": {
+                    "subfolder": "14362/setups"
+                },
+                "apache-tomcat-8.5.51.tar.gz": {
+                    "subfolder": "depfiles"
+                }
+            }
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis/webapps"
+        },
+        "notebook_server": {
+            "setup_archive": "/opt/software/esri/ArcGIS_Notebook_Server_Linux_1081_175333.tar.gz",
+            "standard_images": "/opt/software/esri/ArcGIS_Notebook_Docker_Standard_1081_175251.tar.gz",
+            "advanced_images": "/opt/software/esri/ArcGIS_Notebook_Docker_Advanced_1081_175252.tar.gz",
+            "shares": [
+                "/gisdata/notebookserver/directories",
+                "/gisdata/notebookserver/config-store"
+            ],
+            "authorization_file": "/opt/software/esri/notebookserver_108.prvc",
+            "license_level": "standard",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "directories_root": "/net/primary/gisdata/notebookserver/directories",
+            "config_store_connection_string": "/net/primary/gisdata/notebookserver/config-store",
+            "configure_autostart": true,
+            "install_system_requirements": true
+        },
+        "web_adaptor": {
+            "setup_archive": "/opt/software/esri/ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz"
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-repository::s3files2]",
+        "recipe[arcgis-notebooks::fileserver]",
+        "recipe[java]",
+        "recipe[esri-tomcat]",
+        "recipe[iptables]",
+        "recipe[arcgis-enterprise::iptables]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::server]",
+        "recipe[arcgis-notebooks::server_wa]"
+    ]
+}

@@ -123,8 +123,7 @@ arcgis_enterprise_portal 'Configure arcgisportal service' do
   action :configure_autostart
 end
 
-# On Linux portal is stopped after upgrade
-arcgis_enterprise_portal 'Start Portal for ArcGIS after upgrade' do
+arcgis_enterprise_portal 'Start Portal for ArcGIS after install' do
   tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
   action :start
 end

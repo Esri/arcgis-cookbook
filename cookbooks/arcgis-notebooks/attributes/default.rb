@@ -58,6 +58,14 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['workspace'] = 'C:\\arcgisnotebookserver\\arcgisworkspace'
 
     case node['arcgis']['version']
+    when '10.8.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_1081_175250.exe').gsub('/', '\\')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_1081_175251.tar.gz').gsub('/', '\\')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_1081_175252.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{55DE1B3D-DDFB-4906-81F2-B573BAC25018}'
     when '10.8'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_108_172941.exe').gsub('/', '\\')
@@ -101,6 +109,12 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
                                                         notebook_server_install_subdir,
                                                         '/tools/authorizeSoftware')
 
+    notebook_server['keycodes'] = ::File.join(node['arcgis']['notebook_server']['install_dir'],
+                                              node['arcgis']['notebook_server']['install_subdir'],
+                                              'framework/.esri/License' +
+                                              node['arcgis']['notebook_server']['authorization_file_version'] +
+                                              '/sysgen/keycodes')
+
     notebook_server['directories_root'] = ::File.join(notebook_server_install_dir,
                                                       notebook_server_install_subdir,
                                                       'usr', 'directories')
@@ -112,6 +126,13 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
                                                'usr', 'arcgisworkspace')
 
     case node['arcgis']['version']
+    when '10.8.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_1081_175333.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_1081_175251.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_1081_175252.tar.gz')
     when '10.8'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_108_173012.tar.gz')

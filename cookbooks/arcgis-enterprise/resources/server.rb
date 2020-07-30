@@ -22,7 +22,7 @@ actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :join_cluster, :configure_https, :register_database, :federate,
         :set_identity_store, :assign_privileges, :set_machine_properties,
         :stop_machine, :unregister_machine, :unregister_stopped_machines, :block_data_copy,
-        :configure_security_protocol
+        :configure_security_protocol, :unregister_web_adaptors
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -41,6 +41,8 @@ attribute :primary_server_url, :kind_of => String
 attribute :keystore_file, :kind_of => [String, nil]
 attribute :keystore_password, :kind_of => [String, nil]
 attribute :cert_alias, :kind_of => String
+attribute :root_cert, :kind_of => String
+attribute :root_cert_alias, :kind_of => String
 attribute :cluster, :kind_of => String
 attribute :server_id, :kind_of => String
 attribute :secret_key, :kind_of => String
@@ -73,6 +75,7 @@ attribute :authentication_tier, :kind_of => String, :default => 'GIS_SERVER'
 attribute :hsts_enabled, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :virtual_dirs_security_enabled, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :allow_direct_access, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :allowed_admin_access_ips, :kind_of => String, :default => ''
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :authorization_options, :kind_of => String, :default => ''
 

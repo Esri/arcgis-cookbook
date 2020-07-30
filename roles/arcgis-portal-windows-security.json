@@ -1,8 +1,8 @@
 {
   "arcgis":{
-    "run_as_password":"Run_As_Pa$$w0rd",
+    "version":"10.8.1",
     "run_as_user":"arcgis",
-    "version":"10.8",
+    "run_as_password":"Run_As_Pa$$w0rd",
     "portal":{
       "admin_username":"admin",
       "admin_password":"changeit",
@@ -10,7 +10,7 @@
       "security_question":"Your favorite ice cream flavor?",
       "security_question_answer":"vanilla",
       "content_dir":"C:\\arcgisportal\\content",
-      "setup":"C:\\ArcGIS\\10.8\\Portal\\Setup.exe",
+      "setup":"C:\\ArcGIS\\10.8.1\\Portal\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\Portal.json",
       "user_license_type_id":"creatorUT",
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
