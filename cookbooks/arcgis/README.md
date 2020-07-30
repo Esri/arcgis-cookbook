@@ -1,7 +1,7 @@
 arcgis cookbook
 ===============
 
-arcgis cookbook is a collection of Chef cookbooks used for ArcGIS configuration management.
+arcgis cookbook is a collection of Chef cookbooks for ArcGIS configuration management.
 
 ### Dependencies
 
@@ -15,6 +15,7 @@ The following cookbooks are required:
 * arcgis-pro
 * arcgis-repository
 * arcgis-notebooks
+* arcgis-mission
 * esri-iis
 * esri-tomcat
 
@@ -36,7 +37,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2019 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

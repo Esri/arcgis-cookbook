@@ -69,6 +69,97 @@ action :publish do
   end
 end
 
+action :add_permission do
+  if @new_resource.folder.nil? || @new_resource.folder.empty? || @new_resource.folder == 'root'
+    service = @new_resource.name + '.' + @new_resource.type;
+  else
+    service = @new_resource.folder + '/' + @new_resource.name + '.' + @new_resource.type;
+  end
+
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+  admin_client.wait_until_available
+
+  generate_token_url = admin_client.info['authInfo']['tokenServicesUrl']
+
+  if !generate_token_url.nil? && !generate_token_url.empty?
+    admin_client.generate_token_url = generate_token_url
+  end
+
+  if admin_client.service_exists?(service)
+    rest_client = ArcGIS::ServerRestClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+    @new_resource.roles.each do |role|
+      rest_client.add_service_permission(@new_resource.name,
+                                         @new_resource.type,
+                                         role)
+    end
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
+action :clean_permissions do
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+  admin_client.wait_until_available
+
+  generate_token_url = admin_client.info['authInfo']['tokenServicesUrl']
+
+  if !generate_token_url.nil? && !generate_token_url.empty?
+    admin_client.generate_token_url = generate_token_url
+  end
+
+  rest_client = ArcGIS::ServerRestClient.new(@new_resource.server_url,
+                                             @new_resource.username,
+                                             @new_resource.password)
+
+  @new_resource.roles.each do |role|
+    rest_client.clean_service_permissions(role)
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :upload_item do
+  if @new_resource.folder.nil? || @new_resource.folder.empty? || @new_resource.folder == 'root'
+    service = @new_resource.name + '.' + @new_resource.type;
+  else
+    service = @new_resource.folder + '/' + @new_resource.name + '.' + @new_resource.type;
+  end
+
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+  admin_client.wait_until_available
+
+  generate_token_url = admin_client.info['authInfo']['tokenServicesUrl']
+
+  if !generate_token_url.nil? && !generate_token_url.empty?
+    admin_client.generate_token_url = generate_token_url
+  end
+
+  if admin_client.service_exists?(service)
+    rest_client = ArcGIS::ServerRestClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+    rest_client.upload_service_item(@new_resource.name,
+                                    @new_resource.type,
+                                    @new_resource.item_folder,
+                                    @new_resource.item_file)
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
 action :start do
   if @new_resource.folder.nil? || @new_resource.folder.empty? || @new_resource.folder == 'root'
     service = @new_resource.name + '.' + @new_resource.type;
@@ -80,7 +171,12 @@ action :start do
                                                @new_resource.username,
                                                @new_resource.password)
 
-  admin_client.start_service(service)
+  if admin_client.configured_service_state(service) == 'STARTED'
+    # If service's configuredState is 'STARTED', wait until realTimeState becomes 'STARTED'.
+    admin_client.wait_until_service_started(service)
+  else
+    admin_client.start_service(service)
+  end
 
   new_resource.updated_by_last_action(true)
 end

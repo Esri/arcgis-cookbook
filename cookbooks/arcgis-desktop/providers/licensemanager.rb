@@ -54,7 +54,7 @@ action :unpack do
   else
     cmd = 'tar'
     args = "xzvf \"#{@new_resource.setup_archive}\""
-    repo = ::File.join(@new_resource.setups_repo, node['arcgis']['version'])
+    repo = ::File.join(@new_resource.setups_repo, node['arcgis']['licensemanager']['version'])
     FileUtils.mkdir_p(repo) unless ::File.directory?(repo)
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600, :cwd => repo })
     cmd.run_command
@@ -67,9 +67,13 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    args = "/qb ADDLOCAL=ALL INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\""
+    args = "/qn ADDLOCAL=ALL INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}")
     cmd.run_command
@@ -107,7 +111,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{product_code}"
+    args = "/qn /x #{product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}")
     cmd.run_command

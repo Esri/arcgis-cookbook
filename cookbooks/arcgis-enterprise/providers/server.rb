@@ -78,6 +78,10 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
 
@@ -87,7 +91,7 @@ action :install do
                  "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
                end
 
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "INSTALLDIR1=\"#{@new_resource.python_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
@@ -127,7 +131,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command
@@ -174,6 +178,10 @@ action :update_account do
 end
 
 action :authorize do
+  unless ::File.exists?(@new_resource.authorization_file)
+    raise "File '#{@new_resource.authorization_file}' not found."
+  end
+
   cmd = node['arcgis']['server']['authorization_tool']
   if node['platform'] == 'windows'
     args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S #{@new_resource.authorization_options}"
@@ -419,9 +427,19 @@ action :configure_https do
 
     machine_name = admin_client.local_machine_name
 
+    # Import root certificate if it does not exist
+    unless @new_resource.root_cert.empty? || 
+           admin_client.ssl_certificate_exist?(machine_name,
+                                               @new_resource.root_cert_alias,
+                                               'trustedCertEntry')
+      admin_client.import_root_ssl_certificate(machine_name,
+                                               @new_resource.root_cert,
+                                               @new_resource.root_cert_alias)
+    end
+
     cert_alias = admin_client.get_server_ssl_certificate(machine_name)
 
-    unless cert_alias == @new_resource.cert_alias
+    unless @new_resource.keystore_file.empty? || cert_alias == @new_resource.cert_alias
       unless admin_client.ssl_certificate_exist?(machine_name, @new_resource.cert_alias)
         admin_client.import_server_ssl_certificate(machine_name,
                                                    @new_resource.keystore_file,
@@ -465,7 +483,8 @@ action :configure_security_protocol do
                                                @new_resource.authentication_tier,
                                                @new_resource.hsts_enabled,
                                                @new_resource.virtual_dirs_security_enabled,
-                                               @new_resource.allow_direct_access)
+                                               @new_resource.allow_direct_access,
+                                               @new_resource.allowed_admin_access_ips)
 
     new_resource.updated_by_last_action(true)
 
@@ -826,6 +845,32 @@ action :block_data_copy do
     new_resource.updated_by_last_action(true)
   rescue Exception => e
     Chef::Log.error "Failed to block automatic copying of data. " + e.message
+    raise e
+  end
+end
+
+action :unregister_web_adaptors do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering ArcGIS Server Web Adaptors...')
+
+    admin_client.unregister_web_adaptors
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister ArcGIS Server Web Adaptors. " + e.message
     raise e
   end
 end

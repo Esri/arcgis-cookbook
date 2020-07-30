@@ -1,36 +1,46 @@
 {
   "arcgis":{
+    "version": "10.8.1",    
     "run_as_user":"arcgis",
     "run_as_password":"Run_As_Pa$$w0rd",
-	"version": "10.8",
     "iis":{
       "keystore_file":"C:\\keystore\\mydomain_com.pfx",
-      "keystore_password":"changeit"
+      "keystore_password":"changeit",
+      "replace_https_binding":true
     },
     "web_adaptor":{
-      "setup":"C:\\ArcGIS\\10.8\\WebAdaptorIIS\\Setup.exe"
+      "setup":"C:\\ArcGIS\\10.8.1\\WebAdaptorIIS\\Setup.exe",
+      "admin_access":true,
+      "reindex_portal_content":false
     },
     "data_store":{
-      "setup":"C:\\ArcGIS\\10.8\\DataStore\\Setup.exe",
+      "setup":"C:\\ArcGIS\\10.8.1\\DataStore\\Setup.exe",
       "data_dir":"C:\\arcgisdatastore\\data",
-      "backup_dir":"\\\\fileserver\\arcgisdatastore\\ds_backups"
+      "backup_dir":"\\\\fileserver\\arcgisdatastore\\ds_backups",
+      "types":"relational,tileCache"
     },
     "server":{
       "domain_name":"mydomain.com",
       "admin_username":"admin",
       "admin_password":"changeit",
       "primary_server_url":"https://primary:6443/arcgis",
-      "setup":"C:\\ArcGIS\\10.8\\Server\\Setup.exe",
-      "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\Server.prvc"
+      "setup":"C:\\ArcGIS\\10.8.1\\Server\\Setup.exe",
+      "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\Server.prvc",
+      "use_join_site_tool" : false,
+      "config_store_type" : "FILESYSTEM",
+      "config_store_connection_string" : "\\\\fileserver\\arcgisserver\\config-store",
+      "wa_name":"server"
     },
     "portal":{
       "domain_name":"mydomain.com",
-      "primary_machine_url":"https://primary:7443",
+      "primary_machine_url":"https://primary.domain.com:7443",
       "admin_username":"admin",
       "admin_password":"changeit",
-      "setup":"C:\\ArcGIS\\10.8\\Portal\\Setup.exe",
+      "setup":"C:\\ArcGIS\\10.8.1\\Portal\\Setup.exe",
       "authorization_file":"C:\\ArcGIS\\10.8\\Authorization_Files\\Portal.json",
-      "user_license_type_id":"creatorUT"
+      "user_license_type_id":"creatorUT",
+      "wa_name":"portal",
+      "web_context_url" : "https://external_load_balancer.domain.com/portal"
     }
   },
   "run_list":[

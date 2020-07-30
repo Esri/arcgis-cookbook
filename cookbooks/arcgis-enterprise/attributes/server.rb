@@ -28,11 +28,13 @@ default['arcgis']['server'].tap do |server|
   if node['fqdn'].nil? || node['arcgis']['configure_cloud_settings']
     server_domain_name = node['ipaddress']
     server['domain_name'] = server_domain_name
+    server['hostname'] = node['ipaddress']
     server['url'] = "https://#{node['ipaddress']}:6443/arcgis"
     server['wa_url'] = "https://#{node['ipaddress']}/#{server_wa_name}"
   else
     server_domain_name = node['fqdn']
     server['domain_name'] = server_domain_name
+    server['hostname'] = '' # Use the default server machine hostname 
     server['url'] = "https://#{node['fqdn']}:6443/arcgis"
     server['wa_url'] = "https://#{node['fqdn']}/#{server_wa_name}"
   end
@@ -41,7 +43,6 @@ default['arcgis']['server'].tap do |server|
     server_domain_name = node['arcgis']['server']['domain_name']
   end
 
-  server['hostname'] = '' # Use the default server machine hostname 
   server['private_url'] = "https://#{server_domain_name}:6443/arcgis"
   server['web_context_url'] = "https://#{server_domain_name}/#{server_wa_name}"
   server['admin_username'] = 'admin'
@@ -59,6 +60,8 @@ default['arcgis']['server'].tap do |server|
     server['keystore_password'] = ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD']
   end
   server['cert_alias'] = server_domain_name
+  server['root_cert'] = ''
+  server['root_cert_alias'] = ''
   server['system_properties'] = {}
   server['log_level'] = 'WARNING'
   server['max_log_file_age'] = 90
@@ -73,6 +76,7 @@ default['arcgis']['server'].tap do |server|
   server['hsts_enabled'] = false
   server['virtual_dirs_security_enabled'] = false
   server['allow_direct_access'] = true
+  server['allowed_admin_access_ips'] = ''
 
   # hash of environment variables to pass to the install command.
   # e.g. server['install_environment'] = { 'IATEMPDIR' => /var/tmp' }
@@ -97,6 +101,9 @@ default['arcgis']['server'].tap do |server|
   server['setup_archive'] = ''
   server['product_code'] = ''
 
+  # disable nodeagent plugins on aws ec2
+  server['disable_nodeagent_plugins'] = true
+
   case node['platform']
   when 'windows'
     server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
@@ -114,6 +121,13 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '10.8.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_1081_175203.exe').gsub('/', '\\')
+      server['product_code'] = '{E9B85E31-4C31-4528-996B-F06E213F8BB3}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.8").gsub('/', '\\')
+
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
@@ -220,6 +234,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.8.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_1081_175289.tar.gz')
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_108_172977.tar.gz')

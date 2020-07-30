@@ -8,7 +8,8 @@ Recommended Chef Client version: 14.4.56
 
 Recommended ArcGIS Chef Cookbooks versions:
 
-* 3.5.0 with ArcGIS Notebook Server 10.7.1
+* 3.5.0 with ArcGIS Notebook Server 10.7.1 & 10.8
+* 3.6.0 with ArcGIS Notebook Server 10.8.1
 
 Supported Platforms:
 

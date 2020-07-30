@@ -11,6 +11,7 @@ Requirements
 * 10.7
 * 10.7.1
 * 10.8
+* 10.8.1
 
 ### Supported ArcGIS software
 
@@ -49,7 +50,7 @@ Attributes
 
 #### General
 
-* `node['arcgis']['version']` = ArcGIS version. Default value is `10.7`.
+* `node['arcgis']['version']` = ArcGIS version. Default value is `10.8.1`.
 * `node['arcgis']['run_as_user']` = Account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_password']` = Password for the account used to run ArcGIS Server, 
 Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
@@ -98,6 +99,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for ArcGIS Server. Default value is `nil`.
 * `node['arcgis']['server']['keystore_password']` = Keystore file password for ArcGIS Server. Default value is `nil`.
 * `node['arcgis']['server']['cert_alias']` = SSL certificate alias for ArcGIS Server. Default alias is composed of these values: `node['arcgis']['server']['domain_name']`.
+* `node['arcgis']['server']['root_cert']` = ArcGIS Server root CA certificate file path. Default value is `''`.
+* `node['arcgis']['server']['root_cert_alias']` = ArcGIS Server root CA certificate alias. Default value is `''`.
 * `node['arcgis']['server']['system_properties']` = ArcGIS Server system properties. Default value is `{}`. 
 * `node['arcgis']['server']['log_level']` = ArcGIS Server log level. Default value is `WARNING`.
 * `node['arcgis']['server']['log_dir']` = ArcGIS Server log directory. Default value is `C:\arcgisserver\logs` on Windows and `/arcgis/server/usr/logs` on Linux.
@@ -116,6 +119,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['hsts_enabled']` = HTTP Strict Transport Security enabled. Default value is `false`.
 * `node['arcgis']['server']['virtual_dirs_security_enabled']` = Security for virtual directories enabled. Default value is `false`.
 * `node['arcgis']['server']['allow_direct_access']` = Allow direct access to server. Default value is `true`.
+* `node['arcgis']['server']['allowed_admin_access_ips']` = A comma separated list of client machine IP addresses that are allowed access to ArcGIS Server. `''`.
 
 #### Web Adaptor
 
@@ -125,6 +129,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['web_adaptor']['lp-setup']` = The location of language pack for ArcGIS Web Adaptor. Default location is `nil`.
 * `node['arcgis']['web_adaptor']['setup_archive']` = Path to ArcGIS Web Adaptor setup archive. Default value depends on `node['arcgis']['version']` attribute value. 
 * `node['arcgis']['web_adaptor']['install_dir']` = ArcGIS Web Adaptor installation directory (Linux only). By default, ArcGIS Web Adaptor is installed to `/` on Linux.
+* `node['arcgis']['web_adaptor']['reindex_portal_content']` = If set to `true`, Web Adaptor registration reindexes Portal for ArcGIS content. Default value is `true`.
 
 #### Portal
 
@@ -195,6 +200,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['hostidentifier']` = Host name or IP address of ArcGIS Data Store machine. Default value is  `''`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method <hostname|ip>. Default method used is `hostname`.
 * `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, <relational|tileCache|spatiotemporal>. By default, `tileCache,relational` is used.
+* `node['arcgis']['data_store']['mode']` = Tile cache ArcGIS Data Store mode, <|primaryStandby|cluster>. Supported from ArcGIS Data Store 10.8.1. The default value is empty string `` that means use the mode default for the ArcGIS Data Store version or the currently configured mode.
 * `node['arcgis']['data_store']['relational']['backup_type']` = Type of location to use for relational Data Store backups <fs|s3|azure|none>. The default value is `fs`.
 * `node['arcgis']['data_store']['relational']['backup_location']` = Relational Data Store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/relational`).
 * `node['arcgis']['data_store']['tilecache']['backup_type']` = Type of location to use for tile cache Data Store backups <fs|s3|azure|none>. The default value is `fs`.
@@ -363,6 +369,10 @@ Unregisters server machine from the ArcGIS Server site.
 
 Unregisters all unavailable server machines in 'default' cluster from the ArcGIS Server site.
 
+### arcgis-enterprise::unregister_server_wa
+
+Unregisters all Web Adaptors registered with ArcGIS Server.
+
 ### arcgis-enterprise::enterprise_validate
 
 Checks if ArcGIS Enterprise setups and authorization files exist.
@@ -387,7 +397,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2019 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

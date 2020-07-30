@@ -41,15 +41,15 @@ action :install do
   cmd = node['arcgis']['pro']['setup']
 
   if node['arcgis']['pro']['authorization_type'] == 'NAMED_USER'
-    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
+    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qn"
   end
 
   if node['arcgis']['pro']['authorization_type'] == 'SINGLE_USE'
-    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"
+    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qn"
   end
 
   if node['arcgis']['pro']['authorization_type'] == 'CONCURRENT_USE'
-    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} ESRI_LICENSE_HOST=#{node['arcgis']['pro']['esri_license_host']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qb"  
+    args = "ALLUSERS=#{node['arcgis']['pro']['allusers']} Portal_List=#{node['arcgis']['pro']['portal_list']} ESRI_LICENSE_HOST=#{node['arcgis']['pro']['esri_license_host']} AUTHORIZATION_TYPE=#{node['arcgis']['pro']['authorization_type']} SOFTWARE_CLASS=#{node['arcgis']['pro']['software_class']} BLOCKADDINS=#{node['arcgis']['pro']['blockaddins']} INSTALLDIR=\"#{node['arcgis']['pro']['install_dir']}\" /qn"  
   end
 
   cmd = Mixlib::ShellOut.new("msiexec.exe /i \"#{cmd}\" #{args}",
@@ -80,7 +80,7 @@ end
 
 action :uninstall do
   cmd = 'msiexec'
-  args = "/qb /x #{@new_resource.product_code}"
+  args = "/qn /x #{@new_resource.product_code}"
 
   cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
                              { :timeout => 3600 })
@@ -93,6 +93,10 @@ end
 action :authorize do
   cmd = node['arcgis']['pro']['authorization_tool']
   if node['arcgis']['pro']['authorization_type'] == 'SINGLE_USE'
+    unless ::File.exists?(@new_resource.authorization_file)
+      raise "File '#{@new_resource.authorization_file}' not found."
+    end
+
     args = "/LIF \"#{@new_resource.authorization_file}\" /S /VER \"#{@new_resource.authorization_file_version}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })

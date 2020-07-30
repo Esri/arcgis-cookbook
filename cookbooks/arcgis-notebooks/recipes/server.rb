@@ -68,6 +68,7 @@ end
 
 arcgis_notebooks_server 'Create ArcGIS Notebook Server site' do
   install_dir node['arcgis']['notebook_server']['install_dir']
+  server_url node['arcgis']['notebook_server']['url']
   username node['arcgis']['notebook_server']['admin_username']
   password node['arcgis']['notebook_server']['admin_password']
   server_directories_root node['arcgis']['notebook_server']['directories_root']

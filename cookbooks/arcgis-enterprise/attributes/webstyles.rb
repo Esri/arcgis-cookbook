@@ -24,6 +24,10 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'ArcGISWebStyles', 'Setup.exe').tr('/', '\\')
 
     case node['arcgis']['version']
+    when '10.8.1'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Windows_1081_175215.exe').tr('/', '\\')
+      webstyles['product_code'] = '{7748EA55-04FF-45E2-98EC-C78095AC25AA}'
     when '10.8'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Windows_108_172871.exe').tr('/', '\\')
@@ -41,6 +45,9 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'WebStyles', 'WebStyles-Setup.sh')
 
     case node['arcgis']['version']
+    when '10.8.1'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Linux_1081_175311.tar.gz')
     when '10.8'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Linux_108_172990.tar.gz')

@@ -135,9 +135,12 @@ arcgis_enterprise_server 'Configure HTTPS' do
   keystore_file node['arcgis']['server']['keystore_file']
   keystore_password node['arcgis']['server']['keystore_password']
   cert_alias node['arcgis']['server']['cert_alias']
+  root_cert node['arcgis']['server']['root_cert']
+  root_cert_alias node['arcgis']['server']['root_cert_alias']
   retries 5
   retry_delay 30
-  not_if { node['arcgis']['server']['keystore_file'].empty? }
+  not_if { node['arcgis']['server']['keystore_file'].empty? &&
+           node['arcgis']['server']['root_cert'].empty? }
   action :configure_https
 end
 
@@ -152,16 +155,8 @@ arcgis_enterprise_server 'Configure Security Protocol' do
   hsts_enabled node['arcgis']['server']['hsts_enabled']
   virtual_dirs_security_enabled node['arcgis']['server']['virtual_dirs_security_enabled']
   allow_direct_access node['arcgis']['server']['allow_direct_access']
+  allowed_admin_access_ips node['arcgis']['server']['allowed_admin_access_ips']
   retries 5
   retry_delay 30
   action :configure_security_protocol
 end
-
-# Restart ArcGIS Server
-#arcgis_enterprise_server 'Stop ArcGIS Server' do
-#  action :stop
-#end
-
-#arcgis_enterprise_server 'Start ArcGIS Server' do
-#  action :start
-#end

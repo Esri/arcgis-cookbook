@@ -26,6 +26,7 @@ arcgis_enterprise_webadaptor 'Configure Web Adaptor with Portal' do
   instance_name node['arcgis']['portal']['wa_name']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
+  reindex_portal_content node['arcgis']['web_adaptor']['reindex_portal_content']
   retries 10
   retry_delay 600
   action :configure_with_portal

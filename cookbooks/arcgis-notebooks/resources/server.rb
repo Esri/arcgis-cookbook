@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: arcgis-notebooks
-# Resource:: notebook
+# Resource:: server
 #
 # Copyright 2019 Esri
 #
@@ -18,7 +18,8 @@
 #
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
-        :configure_autostart, :authorize, :post_install, :create_site, :join_site
+        :configure_autostart, :authorize, :post_install, :create_site, :join_site,
+        :unregister_machine
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -35,6 +36,7 @@ attribute :password, :kind_of => String
 attribute :server_directories_root, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
 attribute :workspace, :kind_of => String
+attribute :server_url, :kind_of => String
 attribute :primary_server_url, :kind_of => String
 
 def initialize(*args)
@@ -93,10 +95,14 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
     run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/qb INSTALLDIR=\"#{@new_resource.install_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{run_as_password}\""
+    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{run_as_password}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -115,7 +121,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -217,21 +223,67 @@ end
 
 action :authorize do
   if !@new_resource.authorization_file.nil? && !@new_resource.authorization_file.empty?
+    unless ::File.exists?(@new_resource.authorization_file)
+      raise "File '#{@new_resource.authorization_file}' not found."
+    end
+
     cmd = node['arcgis']['notebook_server']['authorization_tool']
 
     if node['platform'] == 'windows'
       args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+      sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
 
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
-      cmd.run_command
-      cmd.error!
+      sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
+      sa_cmd.run_command
+  
+      # Retry authorization five times with random intervals between 120 and 300 seconds.
+      # Check if 'keycodes' file exists after each retry.
+      # This is required to get around the problem with simultaneous authorization from
+      # multiple machines using the same license.
+      node['arcgis']['server']['authorization_retries'].times do
+        if sa_cmd.error?
+          Chef::Log.error sa_cmd.format_for_exception + ' Retrying software authorization.'
+          sleep(rand(120..300))
+        else
+          sleep(30)
+          break if ::File.exists?(node['arcgis']['notebook_server']['keycodes'])
+          Chef::Log.error "'#{node['arcgis']['notebook_server']['keycodes']}' file not found. Retrying software authorization."
+          sleep(rand(90..270))
+        end
+        sa_cmd.run_command
+      end
+  
+      sa_cmd.error!
     else
       args = "-f \"#{@new_resource.authorization_file}\""
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+      sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
             { :timeout => 600, :user => node['arcgis']['run_as_user'] })
-      cmd.run_command
-      cmd.error!
+      sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
+      sa_cmd.run_command
+  
+      # Retry authorization five times with random intervals between 120 and 300 seconds.
+      # Check if softwareAuthorization stdout does not contain 'Not Authorized' after each retry.
+      # This is required to get around the problem with simultaneous authorization from
+      # multiple machines using the same license.
+      sa_status_cmd = Mixlib::ShellOut.new("\"#{cmd}\" -s",
+            { :user => node['arcgis']['run_as_user'], :timeout => 600 })
+
+      node['arcgis']['server']['authorization_retries'].times do
+        if sa_cmd.error?
+          Chef::Log.error sa_cmd.format_for_exception + ' Retrying software authorization...'
+          sleep(rand(120..300))
+        else
+          sleep(30)
+          sa_status_cmd.run_command
+          break if !sa_status_cmd.error? && !sa_status_cmd.stdout.include?('Not Authorized')
+          Chef::Log.error sa_status_cmd.stdout
+          Chef::Log.error "ArcGIS Notebook Server is not authorized. Retrying software authorization..."
+          sleep(rand(90..270))
+        end
+        sa_cmd.run_command
+      end
+
+      sa_cmd.error!
     end
   end
 end
@@ -257,46 +309,87 @@ action :post_install do
 end
 
 action :create_site do
-  if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools', 'CreateSiteUtility', 'createsite.bat')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
-           "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\" " +
-           "-w \"#{@new_resource.workspace}\""
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+    @new_resource.username,
+    @new_resource.password)
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 1200 })
-    cmd.run_command
-    cmd.error!
+  admin_client.wait_until_available
+
+  if admin_client.upgrade_required?
+    Chef::Log.info('Completing ArcGIS Notebook Server upgrade...')
+    admin_client.complete_upgrade
   else
-    install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['notebook_server']['install_subdir'])
-    cmd = ::File.join(install_dir, 'tools', 'createSiteUtility', 'createsite.sh')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
-           "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\""
+    if node['platform'] == 'windows'
+      cmd = ::File.join(@new_resource.install_dir, 'tools', 'CreateSiteUtility', 'createsite.bat')
+      args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
+            "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\" " +
+            "-w \"#{@new_resource.workspace}\""
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :timeout => 1200, :user => @new_resource.run_as_user })
-    cmd.run_command
-    cmd.error!
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 1200 })
+      cmd.run_command
+      cmd.error!
+    else
+      install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['notebook_server']['install_subdir'])
+      cmd = ::File.join(install_dir, 'tools', 'createSiteUtility', 'createsite.sh')
+      args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
+            "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\""
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+            { :timeout => 1200, :user => @new_resource.run_as_user })
+      cmd.run_command
+      cmd.error!
+    end
   end
 end
 
 action :join_site do
-  if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools', 'JoinSiteUtility', 'joinsite.bat')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
-           "-s \"#{@new_resource.primary_server_url}\""
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+    @new_resource.username,
+    @new_resource.password)
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 1200 })
-    cmd.run_command
-    cmd.error!
+  admin_client.wait_until_available
+
+  if admin_client.upgrade_required?
+    Chef::Log.info('Completing ArcGIS Notebook Server upgrade...')
+    admin_client.complete_upgrade
   else
-    install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['notebook_server']['install_subdir'])
-    cmd = ::File.join(install_dir, 'tools', 'joinSiteUtility', 'joinsite.sh')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
-           "-s \"#{@new_resource.primary_server_url}\""
+    if node['platform'] == 'windows'
+      cmd = ::File.join(@new_resource.install_dir, 'tools', 'JoinSiteUtility', 'joinsite.bat')
+      args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
+            "-s \"#{@new_resource.primary_server_url}\""
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :timeout => 1200, :user => @new_resource.run_as_user })
-    cmd.run_command
-    cmd.error!
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 1200 })
+      cmd.run_command
+      cmd.error!
+    else
+      install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['notebook_server']['install_subdir'])
+      cmd = ::File.join(install_dir, 'tools', 'joinSiteUtility', 'joinsite.sh')
+      args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
+            "-s \"#{@new_resource.primary_server_url}\""
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+            { :timeout => 1200, :user => @new_resource.run_as_user })
+      cmd.run_command
+      cmd.error!
+    end
+  end
+end
+
+action :unregister_machine do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                  @new_resource.username,
+                                                  @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering server machine...')
+
+    machine_name = node['fqdn']
+
+    admin_client.unregister_machine(machine_name)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister server machine. " + e.message
+    raise e
   end
 end

@@ -4,14 +4,13 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-include_recipe 'java'
-
 instance_name = node['tomcat']['instance_name']
 
 tomcat_install instance_name do
   version node['tomcat']['version']
   install_path node['tomcat']['install_path']
   tarball_path node['tomcat']['tarball_path']
+  verify_checksum node['tomcat']['verify_checksum']
   tomcat_user node['tomcat']['user']
   tomcat_group node['tomcat']['group']
   not_if { ::File.exist?(::File.join(node['tomcat']['install_path'], 'LICENSE')) }

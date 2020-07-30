@@ -46,6 +46,7 @@ end
 
 arcgis_notebooks_server 'Join ArcGIS Notebook Server site' do
   install_dir node['arcgis']['notebook_server']['install_dir']
+  server_url node['arcgis']['notebook_server']['url']
   username node['arcgis']['notebook_server']['admin_username']
   password node['arcgis']['notebook_server']['admin_password']
   primary_server_url node['arcgis']['notebook_server']['primary_server_url']

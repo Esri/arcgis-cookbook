@@ -1,0 +1,63 @@
+{
+    "java": {
+        "install_flavor": "openjdk",
+        "jdk_version": "8"
+    },
+    "tomcat": {
+        "tarball_path": "/opt/software/esri/apache-tomcat-8.5.45.tar.gz",
+        "install_path": "/tomcat_arcgis",
+        "keystore_file": "/tomcat_arcgis/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "change.it"
+    },
+    "arcgis": {
+        "version": "10.8",
+        "run_as_user": "arcgis",
+        "repository": {
+            "local_archives": "/opt/software/esri",
+            "server": {
+                "s3bucket": "arcgisdaily-repo-us-east-1"
+            },
+            "files": {
+                "ArcGIS_Mission_Server_Linux_108_173013.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "Web_Adaptor_Java_Linux_108_172992.tar.gz": {
+                    "subfolder": "12790/setups"
+                },
+                "apache-tomcat-8.5.45.tar.gz": {
+                    "subfolder": "depfiles"
+                }
+            }
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis/webapps"
+        },
+        "mission_server": {
+            "setup": "/opt/arcgis/10.8/MissionServer/Setup",
+            "authorization_file": "/opt/software/esri/Server_Mission.ecp",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "directories_root": "/gisdata/arcgismissionserver",
+            "config_store_connection_string": "/gisdata/arcgismissionserver/config-store",
+            "configure_autostart": true,
+            "install_system_requirements": true,
+            "system_properties": {
+                "WebSocketContextURL": "wss://my.domain.com/mission"
+            }
+        },
+        "web_adaptor": {
+            "setup_archive": "/opt/software/esri/Web_Adaptor_Java_Linux_108_172992.tar.gz"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-repository::s3files]",
+        "recipe[java]",
+        "recipe[esri-tomcat]",
+        "recipe[iptables]",
+        "recipe[arcgis-enterprise::iptables]",
+        "recipe[arcgis-mission::server]",
+        "recipe[arcgis-mission::server_wa]"
+    ]
+}

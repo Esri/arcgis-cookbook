@@ -42,9 +42,13 @@ action :unpack do
 end
 
 action :install do
+  unless ::File.exists?(@new_resource.setup)
+    raise "File '#{@new_resource.setup}' not found."
+  end
+
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    args = "/qb"
+    args = "/qn"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -65,7 +69,7 @@ end
 action :uninstall do
   if node['platform'] == 'windows'
     cmd = 'msiexec'
-    args = "/qb /x #{@new_resource.product_code}"
+    args = "/qn /x #{@new_resource.product_code}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command

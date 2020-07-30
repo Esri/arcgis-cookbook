@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+# ArcGIS Mission Server systemd unit file
+# ------------------------------------------------------------------
+#
+# Configure ArcGIS Mission Server to be started at boot on RHEL 7.x by
+# following these instructions:
+#
+# 1.) Switch to the root user.
+#
+# 2.) Copy this file to /etc/systemd/system
+#
+# 3.) Enable the service to start at boot:
+#
+#     # systemctl enable agsmission.service
+#
+# 4.) Verify systemd service is setup correctly:
+#
+#    # systemctl stop agsmission.service
+#    # systemctl start agsmission.service
+#    # systemctl status agsmission.service
+#
+# 5.) Reboot the system and verify that Mission Server restarts properly.
+#
+# ------------------------------------------------------------------
+
+[Unit]
+Description=ArcGIS Mission Server Service
+After=network.target
+
+[Service]
+Type=forking
+User=<%=@agsuser%>
+LimitNOFILE=65535
+LimitNPROC=25059
+GuessMainPID=false
+ExecStart=<%=@agsmissionhome%>/startmissionserver.sh
+ExecStop=<%=@agsmissionhome%>/stopmissionserver.sh
+<%=@cloudenvironment%>
+
+[Install]
+WantedBy=multi-user.target
+
