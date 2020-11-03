@@ -121,6 +121,8 @@ arcgis-repository::s3files recipe use example.
 }
 ```
 
+See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
+
 ## Issues
 
 Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
@@ -146,6 +148,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Chef Cookbook)
-[](Esri Language: Ruby)

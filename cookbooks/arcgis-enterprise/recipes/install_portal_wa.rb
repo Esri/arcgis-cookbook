@@ -24,7 +24,7 @@ arcgis_enterprise_webadaptor 'Unpack ArcGIS Web Adaptor' do
   only_if { ::File.exist?(node['arcgis']['web_adaptor']['setup_archive']) &&
             !::File.exist?(node['arcgis']['web_adaptor']['setup']) }
   if node['platform'] == 'windows'
-    not_if { !Utils.wa_product_code(node['arcgis']['server']['wa_name'],
+    not_if { !Utils.wa_product_code(node['arcgis']['portal']['wa_name'],
                                     [node['arcgis']['web_adaptor']['product_code'],
                                      node['arcgis']['web_adaptor']['product_code2']]).nil? }
   else

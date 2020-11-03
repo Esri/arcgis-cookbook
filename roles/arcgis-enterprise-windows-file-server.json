@@ -3,13 +3,13 @@
     "run_as_user": "arcgis",
     "run_as_password": "Pa$$w0rdPa$$w0rd",
     "fileserver": {
-      "shares": ["C:\\arcgisserver", "C:\\arcgisdatastore", "C:\\arcgisportal\\content"]
+      "shares": ["C:\\arcgisserver", "C:\\arcgisdatastore", "C:\\arcgisportal"]
     },
     "server": {
       "local_directories_root": "C:\\arcgisserver"
     },
     "portal": {
-      "local_content_dir": "C:\\arcgisportal\\content"
+      "local_content_dir": "C:\\arcgisportal"
     },
     "data_store": {
       "local_backup_dir": "C:\\arcgisdatastore\\backup"

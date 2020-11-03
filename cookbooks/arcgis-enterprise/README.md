@@ -363,7 +363,11 @@ Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web A
 
 ### arcgis-enterprise::unregister_machine
 
-Unregisters server machine from the ArcGIS Server site.
+Unregisters the local server machine from the ArcGIS Server site.
+
+### arcgis-enterprise::unregister_machines
+
+Unregisters from the ArcGIS Server site all the server machines except for the local.
 
 ### arcgis-enterprise::unregister_stopped_machines
 

@@ -805,6 +805,23 @@ module ArcGIS
       validate_response(response)
     end
 
+    def machines
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)['machines']
+    end
+
     # TODO: Support setting webServerMaxHeapSize, appServerMaxHeapSize, and 
     # other machine properties here.
     def set_machine_properties(machine_name, soc_max_heap_size)

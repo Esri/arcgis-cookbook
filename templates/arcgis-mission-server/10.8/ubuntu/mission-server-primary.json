@@ -16,7 +16,7 @@
         "repository": {
             "local_archives": "/opt/software/esri",
             "server": {
-                "s3bucket": "arcgisdaily-repo-us-east-1"
+                "s3bucket": "arcgisstore108-us-east-1"
             },
             "files": {
                 "ArcGIS_Mission_Server_Linux_108_173013.tar.gz": {

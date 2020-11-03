@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_insights_insights 'Unpack Insights for ArcGIS' do
+arcgis_insights_insights 'Unpack ArcGIS Insights' do
   setup_archive node['arcgis']['insights']['setup_archive']
   setups_repo node['arcgis']['repository']['setups']
   run_as_user node['arcgis']['run_as_user']
@@ -36,7 +36,7 @@ arcgis_insights_insights 'Unpack Insights for ArcGIS' do
   action :unpack
 end
 
-arcgis_insights_insights 'Setup Insights for ArcGIS' do
+arcgis_insights_insights 'Install ArcGIS Insights' do
   setup node['arcgis']['insights']['setup']
   run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
@@ -50,4 +50,17 @@ arcgis_insights_insights 'Setup Insights for ArcGIS' do
                                         'uninstall_Insights.sh'))}
   end
   action :install
+end
+
+arcgis_enterprise_portal 'Start Portal for ArcGIS after ArcGIS Insights install' do
+  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
+  if node['platform'] == 'windows'
+    only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
+  else
+    only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['version'],
+                                               :ArcGISPortal) }
+  end
+  action :start
 end

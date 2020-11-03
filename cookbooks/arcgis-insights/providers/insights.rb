@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-insights
 # Provider:: insights
 #
-# Copyright 2017 Esri
+# Copyright 2020 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,6 +61,17 @@ action :install do
                                { :timeout => 3600 })
     cmd.run_command
     cmd.error!
+
+    # Stop Portal to start it later using SystemD service
+    cmd = node['arcgis']['portal']['stop_tool']
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+    else
+      cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!    
   end
 
   new_resource.updated_by_last_action(true)
@@ -98,8 +109,18 @@ action :uninstall do
       cmd.run_command
       cmd.error!
     end
+    
+    # Stop Portal to start it later using SystemD service
+    cmd = node['arcgis']['portal']['stop_tool']
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
+    else
+      cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!    
   end
 
   new_resource.updated_by_last_action(true)
 end
-

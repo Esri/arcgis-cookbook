@@ -4,8 +4,8 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'ArcGIS Chef Cookbooks'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.6.0'
-chef_version     '>= 12.6', '< 15.0' if defined? chef_version
+version          '3.6.1'
+chef_version     '>= 13.0' if defined? chef_version
 
 depends          'arcgis-desktop', '~> 3.6'
 depends          'arcgis-egdb', '~> 1.0'
