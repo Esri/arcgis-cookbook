@@ -20,6 +20,8 @@ Requirements
 * 3.4
 * 3.4.1
 * 2020.1
+* 2020.2
+* 2020.3
 
 ### Platforms
 
@@ -31,6 +33,7 @@ Requirements
 * Rhel 6.5, 7.0
 
 ### Dependencies
+
 The following cookbooks are required:
 
 * arcgis-enterprise
@@ -39,9 +42,9 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `3.4.1`
-* `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS version setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
-* `node['arcgis']['insights']['setup']` = The location of Insights for ArcGIS setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
+* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `2020.3`
+* `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS version setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
+* `node['arcgis']['insights']['setup']` = The location of Insights for ArcGIS setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
 
 
@@ -49,9 +52,11 @@ Recipes
 -------
 
 ### arcgis-insights::default
+
 Installs and configures Insights for ArcGIS.
 
 ### arcgis-insights::uninstall
+
 Uninstalls Insights for ArcGIS.
 
 Usage

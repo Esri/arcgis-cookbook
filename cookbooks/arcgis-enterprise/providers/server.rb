@@ -830,6 +830,39 @@ action :unregister_stopped_machines do
   end
 end
 
+action :unregister_machines do
+  begin
+    if @new_resource.use_join_site_tool
+      token = generate_admin_token(@new_resource.install_dir, 5)
+
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   nil, nil, token)
+    else
+      admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                   @new_resource.username,
+                                                   @new_resource.password)
+    end
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering all server machines except the local machine...')
+
+    machines = admin_client.machines
+    local_machine_name = admin_client.local_machine_name
+
+    machines.each do |machine|
+      if machine['machineName'] != local_machine_name
+        admin_client.unregister_machine(machine['machineName'])
+      end
+    end
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister server machines. " + e.message
+    raise e
+  end
+end
+
 action :block_data_copy do
   begin
     admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,

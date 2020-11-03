@@ -8,7 +8,7 @@
         "repository": {
             "local_archives": "/opt/software/esri",
             "server": {
-                "s3bucket": "arcgisdaily-repo-us-east-1",
+                "s3bucket": "arcgisstore1081-us-east-1",
                 "region": "us-east-1"
             },
             "files": {

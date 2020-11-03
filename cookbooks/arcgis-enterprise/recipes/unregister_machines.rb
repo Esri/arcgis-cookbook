@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: arcgis-enterprise
-# Attributes:: datasources
+# Recipe:: unregister_machines
 #
-# Copyright 2018 Esri
+# Copyright 2020 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,17 +15,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-case node['platform']
-when 'windows'
-  default['arcgis']['misc']['scripts_dir'] = 'C:\\Chef\\misc_scripts'
-else # node['platform'] == 'linux'
-  default['arcgis']['misc']['scripts_dir'] = '/var/chef/misc_scripts'
-end
-
-default['arcgis']['datasources'].tap do |datasource|
-  datasource['block_data_copy'] = false
-  datasource['ags_connection_file'] = File.join(node['arcgis']['misc']['scripts_dir'], 'AdminConnection.ags')
-  datasource['sde_files']['files'] = {}
-  datasource['server_config_url'] = "https://#{node['fqdn']}:6443/arcgis"
+arcgis_enterprise_server 'Unregister server machines' do
+  use_join_site_tool node['arcgis']['server']['use_join_site_tool']
+  server_url node['arcgis']['server']['url']
+  install_dir node['arcgis']['server']['install_dir']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  retries 5
+  retry_delay 30
+  action :unregister_machines
 end

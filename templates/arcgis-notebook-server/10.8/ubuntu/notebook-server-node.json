@@ -8,7 +8,7 @@
         "repository": {
             "local_archives": "/opt/software/esri",
             "server": {
-                "s3bucket": "arcgisdaily-repo-us-east-1"
+                "s3bucket": "arcgisstore108-us-east-1"
             },
             "files": {
                 "ArcGIS_Notebook_Docker_Advanced_108_172943.tar.gz": {
