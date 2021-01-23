@@ -165,7 +165,7 @@ action :start  do
       if node['arcgis']['run_as_superuser']
         cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\"", {:timeout => 30})
       else
-        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 30})
       end
       cmd.run_command
       cmd.error!
@@ -176,7 +176,7 @@ action :start  do
       if node['arcgis']['run_as_superuser']
         cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\"", {:timeout => 30})
       else
-        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 30})
       end
       cmd.run_command
       cmd.error!
