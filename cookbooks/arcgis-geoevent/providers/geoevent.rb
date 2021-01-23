@@ -150,7 +150,7 @@ action :start  do
 #      action [:delete, :create]
 #    end
 
-    # if
+    # if geoevent configure autostart false, start service manually
     if node['arcgis']['geoevent']['configure_autostart']
       service "arcgisgeoevent" do
         supports :status => true, :restart => true, :reload => true
