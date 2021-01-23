@@ -150,9 +150,38 @@ action :start  do
 #      action [:delete, :create]
 #    end
 
-    service "arcgisgeoevent" do
-      supports :status => true, :restart => true, :reload => true
-      action [:enable, :start]
+    # if
+    if node['arcgis']['geoevent']['configure_autostart']
+      service "arcgisgeoevent" do
+        supports :status => true, :restart => true, :reload => true
+        action [:enable, :start]
+      end
+    else
+      geoevent = node['arcgis']['geoevent']
+      args = "start"
+
+      # start geoevent gateway service
+      cmd = geoevent['geoeventGateway_service_tool']
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\"", {:timeout => 30})
+      else
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+      end
+      cmd.run_command
+      cmd.error!
+      new_resource.updated_by_last_action(true)
+
+      # start geoevent service
+      cmd = geoevent['geoevent_service_tool']
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} #{args}\"", {:timeout => 30})
+      else
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+      end
+      cmd.run_command
+      cmd.error!
+      new_resource.updated_by_last_action(true)
+
     end
   end
 end

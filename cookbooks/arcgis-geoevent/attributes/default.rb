@@ -91,6 +91,29 @@ default['arcgis']['geoevent'].tap do |geoevent|
                                     'ArcGISGeoEventServer', 'Setup.sh')
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
+    # get server install information  
+    if node['arcgis']['server']['install_dir'].nil?
+      server_install_dir = '/'
+    else
+      server_install_dir = node['arcgis']['server']['install_dir']
+    end
+
+    if node['arcgis']['server']['install_subdir'].nil?
+      server_install_subdir = 'arcgis/server'
+    else
+      server_install_subdir = node['arcgis']['server']['install_subdir']
+    end
+
+    geoevent['geoeventGateway_service_tool'] = ::File.join(server_install_dir,
+                                       server_install_subdir,
+                                       '/GeoEvent/gateway/bin',
+                                       '/ArcGISGeoEventGateway-service')
+
+    geoevent['geoevent_service_tool'] = ::File.join(server_install_dir,
+                                      server_install_subdir,
+                                      '/GeoEvent/bin',
+                                      '/ArcGISGeoEvent-service')        
+
     case node['arcgis']['version']
     when '10.8.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
