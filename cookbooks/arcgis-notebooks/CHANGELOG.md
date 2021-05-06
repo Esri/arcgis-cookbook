@@ -2,6 +2,20 @@
 
 This file is used to list changes made in each version of the arcgis-notebooks cookbook.
 
+# 3.7.0
+
+- Added support for ArcGIS Notebook Server 10.9.
+- Added iptables and samples_data recipes.
+- Added support for installation without Linux superuser privileges.
+- Added support for group managed service Windows accounts (gMSA).
+- Added support for setting sever machine hostnames.
+- Added support for setting system properties.
+- Added support for config store in DynamoDB/S3 AWS storage services.
+
+# 3.6.1 
+
+- Added support for Chef Client 15.
+
 # 3.6.0
 -------
 

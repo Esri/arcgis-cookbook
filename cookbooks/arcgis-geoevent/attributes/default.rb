@@ -27,14 +27,7 @@ default['arcgis']['geoevent'].tap do |geoevent|
   end
   geoevent['configure_autostart'] = true
 
-  case
-  when ['10.6', '10.6.1', '10.7', '10.7.1', '10.8', '10.8.1'].include?(node['arcgis']['version'])
-    geoevent['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273,2181,2182,2190'
-    geoevent['configure_gateway_service'] = true
-  when ['10.4', '10.4.1', '10.5', '10.5.1'].include?(node['arcgis']['version'])
-    geoevent['ports'] = '6180,6143,9220,9320,5565,5575,27271,27272,27273'
-    geoevent['configure_gateway_service'] = false
-  end
+  geoevent['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273,2181,2182,2190'
 
   geoevent['setup_archive'] = ''
 
@@ -46,6 +39,10 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
     case node['arcgis']['version']
+    when '10.9'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_109_177813.exe').gsub('/', '\\')
+      geoevent['product_code'] = '{B73748C3-DD75-4376-B4DA-D52C59121A10}'
     when '10.8.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_1081_175242.exe').gsub('/', '\\')
@@ -62,26 +59,6 @@ default['arcgis']['geoevent'].tap do |geoevent|
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_107_167668.exe').gsub('/', '\\')
       geoevent['product_code'] = '{7430C9C3-7D96-429E-9F47-04938A1DC37E}'
-    when '10.6.1'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1061_163795.exe').gsub('/', '\\')
-      geoevent['product_code'] = '{D0586C08-E589-4942-BC9B-E83B2E8B95C2}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
-    when '10.6'
-      geoevent['product_code'] = '{723742C8-6633-4C85-87AC-503507FE222B}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
-    when '10.5.1'
-      geoevent['product_code'] = '{F11BBE3B-B78F-4E5D-AE45-E3B29063335F}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
-    when '10.5'
-      geoevent['product_code'] = '{4375BD31-BD98-4166-84D9-E944D77103E8}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
-    when '10.4.1'
-      geoevent['product_code'] = '{D71379AF-A72B-4B10-A7BA-64BC6AF6841B}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
-    when '10.4'
-      geoevent['product_code'] = '{188191AE-5A83-49E8-88CB-1F1DB05F030D}'
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
     else
       Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
     end
@@ -92,22 +69,21 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
     case node['arcgis']['version']
+    when '10.9'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_109_177900.tar.gz')
     when '10.8.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1081_175325.tar.gz').gsub('/', '\\')
+                                              'ArcGIS_GeoEvent_Server_1081_175325.tar.gz')
     when '10.8'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_108_173004.tar.gz').gsub('/', '\\')
+                                              'ArcGIS_GeoEvent_Server_108_173004.tar.gz')
     when '10.7.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1071_169919.tar.gz').gsub('/', '\\')
+                                              'ArcGIS_GeoEvent_Server_1071_169919.tar.gz')
     when '10.7'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_107_167732.tar.gz').gsub('/', '\\')
-    when '10.6.1'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1061_164069.tar.gz').gsub('/', '\\')
-      Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
+                                              'ArcGIS_GeoEvent_Server_107_167732.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
     end

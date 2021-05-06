@@ -18,7 +18,7 @@
 #
 
 arcgis_enterprise_portal 'Federate Server' do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['server']['web_context_url']
@@ -29,4 +29,20 @@ arcgis_enterprise_portal 'Federate Server' do
   retries 5
   retry_delay 30
   action :federate_server
+end
+
+arcgis_enterprise_portal "Enable Hosting Server" do
+  portal_url node['arcgis']['portal']['private_url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  server_url node['arcgis']['server']['web_context_url']
+  server_admin_url node['arcgis']['server']['private_url']
+  server_username node['arcgis']['server']['admin_username']
+  server_password node['arcgis']['server']['admin_password']
+  is_hosting true
+  server_function ''
+  only_if { node['arcgis']['server']['is_hosting'] }
+  retries 5
+  retry_delay 30
+  action :enable_server_function
 end

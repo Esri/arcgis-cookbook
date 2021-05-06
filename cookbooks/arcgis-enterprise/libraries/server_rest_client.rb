@@ -223,6 +223,10 @@ module ArcGIS
     def generate_token()
       generate_token_url = info['authInfo']['tokenServicesUrl']
 
+      if generate_token_url.empty?
+        generate_token_url = info['owningSystemUrl'] + '/sharing/rest/generateToken'
+      end
+
       request = Net::HTTP::Post.new(URI.parse(generate_token_url).request_uri)
 
       request.set_form_data('username' => @username,

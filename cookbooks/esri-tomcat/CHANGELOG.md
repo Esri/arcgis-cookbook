@@ -4,6 +4,10 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.1.8
+-----
+- Added iptables, firewalld, and openjdk recipes.
+
 0.1.7
 -----
 - Disabled AJP port connector.

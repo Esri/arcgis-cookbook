@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: fileserver
 #
-# Copyright 2015 Esri
+# Copyright 2015-2020 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,60 +17,19 @@
 # limitations under the License.
 #
 
-directory node['arcgis']['data_store']['local_backup_dir'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    mode '0755'
-  end
-  recursive true
-  action :create
-end
+# Create file server directories
 
-# Create default subdirectories for tile cache and relational Data Stores
-# in the backup directory.
-
-directory ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'tilecache') do
-  owner node['arcgis']['run_as_user']
-  mode '0755' if node['platform'] != 'windows'
-  action :create
-end
-
-directory ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'relational') do
-  owner node['arcgis']['run_as_user']
-  mode '0755' if node['platform'] != 'windows'
-  action :create
-end
-
-directory node['arcgis']['server']['local_directories_root'] do
-  owner node['arcgis']['run_as_user']
-  if node['platform'] != 'windows'
-    mode '0755'
-  end
-  recursive true
-  action :create
-end
-
-if node['platform'] == 'windows'
-  directory node['arcgis']['portal']['local_content_dir'] do
+node['arcgis']['fileserver']['directories'].each do |dir|
+  directory dir do
     owner node['arcgis']['run_as_user']
+    mode '0755' if node['platform'] != 'windows'
     recursive true
     action :create
-  end
-else
-  subdir = '/'
-  node['arcgis']['portal']['local_content_dir'].split('/').each do |path|
-    subdir = ::File.join(subdir, path)
-    if subdir != '/'
-      directory subdir do
-        owner node['arcgis']['run_as_user']
-        mode '0755'
-        action :create
-      end
-    end
   end
 end
 
 # Share the directories
+
 node['arcgis']['fileserver']['shares'].each do |path|
   if node['platform'] == 'windows'
     powershell_script "Share #{path}" do

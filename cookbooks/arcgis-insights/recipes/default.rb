@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_insights_insights 'Unpack ArcGIS Insights' do
+arcgis_insights_insights 'Unpack Insights for ArcGIS' do
   setup_archive node['arcgis']['insights']['setup_archive']
   setups_repo node['arcgis']['repository']['setups']
   run_as_user node['arcgis']['run_as_user']
@@ -36,7 +36,7 @@ arcgis_insights_insights 'Unpack ArcGIS Insights' do
   action :unpack
 end
 
-arcgis_insights_insights 'Install ArcGIS Insights' do
+arcgis_insights_insights 'Setup ArcGIS Insights' do
   setup node['arcgis']['insights']['setup']
   run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'

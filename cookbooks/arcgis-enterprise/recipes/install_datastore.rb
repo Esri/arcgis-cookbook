@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: install_datastore
 #
-# Copyright 2018 Esri
+# Copyright 2018-2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ if node['platform'] == 'windows'
     install_dir node['arcgis']['data_store']['install_dir']
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_msa'] }
     only_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
-    subscribes :update_account, "user[#{node['arcgis']['run_as_user']}]", :immediately
-    action :nothing
+    action :update_account
   end
 end
 
@@ -88,8 +88,4 @@ arcgis_enterprise_datastore 'Configure arcgisdatastore service' do
   install_dir node['arcgis']['data_store']['install_dir']
   only_if { node['arcgis']['data_store']['configure_autostart'] }
   action :configure_autostart
-end
-
-arcgis_enterprise_datastore 'Start ArcGIS Data Store' do
-  action :start
 end

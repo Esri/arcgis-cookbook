@@ -12,6 +12,7 @@ Requirements
 * 10.7.1
 * 10.8
 * 10.8.1
+* 10.9
 
 ### Supported ArcGIS software
 
@@ -65,7 +66,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 
 #### File Server
 
-* `node['arcgis']['fileserver']['shares']` = List of local directories shared by 'fileserver' recipe. Default list is `[node['arcgis']['server']['local_directories_root'], node['arcgis']['data_store']['data_dir'], node['arcgis']['portal']['data_dir']]`.
+* `node['arcgis']['fileserver']['directories']` = List of local directories created by 'fileserver' recipe. Default list is `[node['arcgis']['server']['local_directories_root'], node['arcgis']['data_store']['local_backup_dir'], node['arcgis']['data_store']['local_backup_dir']/tilecache, node['arcgis']['data_store']['local_backup_dir']/relational, node['arcgis']['portal']['local_content_dir']]`.
+* `node['arcgis']['fileserver']['shares']` = List of local directories shared by 'fileserver' recipe. Default list is `[node['arcgis']['server']['local_directories_root'], node['arcgis']['data_store']['local_backup_dir'], node['arcgis']['portal']['local_content_dir']]`.
 
 #### Server
 
@@ -94,14 +96,15 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['authorization_file']` = ArcGIS Server authorization file path. Default location and authorization file is `C:\Temp\server_license.prvc` on Windows and `/tmp/server_license.prvc` on Linux.
 * `node['arcgis']['server']['authorization_file_version']` = ArcGIS Server authorization file version. Default version is `node['arcgis']['version']`.
 * `node['arcgis']['server']['authorization_options']` = Additional ArcGIS Server software authorization command line options. Default options are `''`.
-* `node['arcgis']['server']['managed_database']` = ArcGIS Server's managed database connection string. By default, this value is `nil`.
-* `node['arcgis']['server']['replicated_database']` = ArcGIS Server's replicated geodatabase connection string. By default, this value is `nil`.
+* `node['arcgis']['server']['data_items']` = Array of data items that need to be registered with ArcGIS Server. Default value is `[]`.
+* `node['arcgis']['server']['managed_database']` = (deprecated) ArcGIS Server's managed database connection string. By default, this value is `nil`.
+* `node['arcgis']['server']['replicated_database']` = (deprecated) ArcGIS Server's replicated geodatabase connection string. By default, this value is `nil`.
 * `node['arcgis']['server']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for ArcGIS Server. Default value is `nil`.
 * `node['arcgis']['server']['keystore_password']` = Keystore file password for ArcGIS Server. Default value is `nil`.
 * `node['arcgis']['server']['cert_alias']` = SSL certificate alias for ArcGIS Server. Default alias is composed of these values: `node['arcgis']['server']['domain_name']`.
 * `node['arcgis']['server']['root_cert']` = ArcGIS Server root CA certificate file path. Default value is `''`.
 * `node['arcgis']['server']['root_cert_alias']` = ArcGIS Server root CA certificate alias. Default value is `''`.
-* `node['arcgis']['server']['system_properties']` = ArcGIS Server system properties. Default value is `{}`. 
+* `node['arcgis']['server']['system_properties']` = ArcGIS Server system properties. Default value is `{}`.
 * `node['arcgis']['server']['log_level']` = ArcGIS Server log level. Default value is `WARNING`.
 * `node['arcgis']['server']['log_dir']` = ArcGIS Server log directory. Default value is `C:\arcgisserver\logs` on Windows and `/arcgis/server/usr/logs` on Linux.
 * `node['arcgis']['server']['max_log_file_age']` = ArcGIS Server maximum log file age. Default value is `90`.
@@ -120,6 +123,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['virtual_dirs_security_enabled']` = Security for virtual directories enabled. Default value is `false`.
 * `node['arcgis']['server']['allow_direct_access']` = Allow direct access to server. Default value is `true`.
 * `node['arcgis']['server']['allowed_admin_access_ips']` = A comma separated list of client machine IP addresses that are allowed access to ArcGIS Server. `''`.
+* `node['arcgis']['server']['ports]` = Ports opened in Windows firewall for ArcGIS Server. Default ports are `1098,4000-4004,6006,6080,6099,6443`.
+* `node['arcgis']['server']['geoanalytics_ports]` = Ports opened in Windows firewall for ArcGIS GeoAnalytics Server. Default ports are `2181,2182,2190,7077,12181,12182,12190,56540-56545`.
 
 #### Web Adaptor
 
@@ -138,7 +143,6 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['wa_url']` = URL of the Web Adaptor for Portal for ArcGIS., Default name is `https://<FQDN of the machine>/<Portal Web Adaptor name>`.
 * `node['arcgis']['portal']['url']` = Portal for ArcGIS URL. The default URL is `https://<FQDN of the machine>:7443/arcgis` using the fully qualified domain name of the machine on which Chef is running. If Portal for ArcGIS and the web adaptor are running on different machines, then this value should be explicitly set.
 * `node['arcgis']['portal']['private_url']` = Portal for ArcGIS private URL. Default URL is `https://<portal domain name>:7443/arcgis`.
-* `node['arcgis']['portal']['web_context_url']` = Portal for ArcGIS web context URL. By default, this is `nil`.
 * `node['arcgis']['portal']['primary_machine_url']` = URL of primary Portal for ArcGIS machine. By default, this is `nil`.
 * `node['arcgis']['portal']['admin_username']` = Initial portal administrator user name. Default user name is `admin`.
 * `node['arcgis']['portal']['admin_password']` = Initial portal administrator password. Default password is `changeit`.
@@ -179,6 +183,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['portal']['allssl']` = Portal for ArcGIS run in all SSL mode or not. Default value is `false`.
 * `node['arcgis']['portal']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['portal']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
+* `node['arcgis']['portal']['system_properties']` = Portal for ArcGIS system properties. Default value is `{}`.
+* `node['arcgis']['portal']['ports']` = Ports opened in Windows firewall for Portal for ArcGIS. Default ports are `5701,5702,5703,7080,7443,7005,7099,7199,7120,7220,7654`.
 
 #### Web Styles
 
@@ -189,7 +195,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 #### Data Store
 
 * `node['arcgis']['data_store']['data_dir']` = ArcGIS Data Store data directory. Default location is `C:\arcgisdatastore` on Windows and `/arcgis/datastore/usr/arcgisdatastore` on Linux.
-* `node['arcgis']['data_store']['backup_dir']` = ArcGIS Data Store backup directory. Default location is `C:\arcgisdatastore\backup` on Windows and `/arcgis/datastore/usr/arcgisdatastore/backup` on Linux.
+* `node['arcgis']['data_store']['backup_dir']` = ArcGIS Data Store backup directory. Default location is `C:\arcgisbackup` on Windows and `/arcgis/datastore/usr/arcgisbackup` on Linux.
 * `node['arcgis']['data_store']['setup']` = Location of ArcGIS Data Store setup executable. Default location is `C:\Temp\ArcGISDataStore\Setup.exe` on Windows and `/tmp/tmp/data-store-cd/Setup` on Linux.
 * `node['arcgis']['data_store']['setup_options']` = Additional ArcGIS Data Store setup command line options. Default options are `''`.
 * `node['arcgis']['data_store']['lp-setup']` = The location of language pack for ArcGIS Data Store. Default location is `nil`.
@@ -205,6 +211,8 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['data_store']['relational']['backup_location']` = Relational Data Store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/relational`).
 * `node['arcgis']['data_store']['tilecache']['backup_type']` = Type of location to use for tile cache Data Store backups <fs|s3|azure|none>. The default value is `fs`.
 * `node['arcgis']['data_store']['tilecache']['backup_location']` =  = Tile cache Data Store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/tilecache`).
+* `node['arcgis']['data_store']['force_remove_machine']` = Specify true only if ArcGIS Server site is unavailable when ArcGIS Data Store machine is removed. Default value is `false`.
+* `node['arcgis']['data_store']['ports']` = Ports opened in windows firewall for ArcGIS Data Store. Default ports are `2443,4369,9220,9320,9876,9900,29079-29090`.
 
 #### Linux Web Server
 
@@ -237,11 +245,15 @@ Resets the function of the federated server in the Portal for ArcGIS.
 
 Resets the function of the federated server in the Portal for ArcGIS.
 
+### arcgis-enterprise::disable_loopback_check
+
+Enables filesharing via a DNS Alias
+
 ### arcgis-enterprise::disable_rasteranalytics
 
 Resets the function of the federated server in the Portal for ArcGIS.
 
-### arcgis-enterprise::egdb
+### arcgis-enterprise::egdb (deprecated)
 
 Registers enterprise geodatabases with ArcGIS Server.
 
@@ -268,10 +280,6 @@ Creates and shares directories on file server machine.
 ### arcgis-enterprise::hosts
 
 Creates entries in /etc/hosts file for the specified hostname to IP address map.
-
-### arcgis-enterprise::iptables
-
-Configures iptables to forward ports 80/443 to 8080/8443.
 
 ### arcgis-enterprise::install_datastore
 
@@ -321,9 +329,17 @@ Installs ArcGIS Web Adaptor and configures it with Portal for ArcGIS. IIS or Jav
 
 Executes custom post-installation script if it exists.
 
+### arcgis-enterprise::remove_datastore_machine
+
+Removes machine from ArcGIS Data Store.
+
 ### arcgis-enterprise::server
 
 Installs and configures ArcGIS Server site.
+
+### arcgis-enterprise::server_data_items
+
+Registers data items with ArcGIS Server.
 
 ### arcgis-enterprise::server_node
 
@@ -341,13 +357,33 @@ Installs ArcGIS Web Adaptor and configures it with ArcGIS Server. IIS or Java ap
 
 Publishes services to ArcGIS Server.
 
-### arcgis-enterprise::stop_machine
+### arcgis-enterprise::start_datastore
 
-Stops server machine in the ArcGIS Server site.
+Starts ArcGIS Data Store on the machine.
+
+### arcgis-enterprise::start_portal
+
+Starts Portal for ArcGIS on the machine.
+
+### arcgis-enterprise::start_server
+
+Starts ArcGIS Server on the machine.
+
+### arcgis-enterprise::stop_datastore
+
+Stops ArcGIS Data Store on the machine.
+
+### arcgis-enterprise::stop_portal
+
+Stops Portal for ArcGIS on the machine.
 
 ### arcgis-enterprise::stop_server
 
-Stops ArcGIS Server service on the machine.
+Stops ArcGIS Server on the machine.
+
+### arcgis-enterprise::stop_machine
+
+Stops server machine in the ArcGIS Server site.
 
 ### arcgis-enterprise::system
 
@@ -401,7 +437,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2020 Esri
+Copyright 2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

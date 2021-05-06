@@ -4,7 +4,7 @@
         "jdk_version": "8"
     },
     "tomcat": {
-        "tarball_path": "/opt/software/esri/apache-tomcat-8.5.51.tar.gz",
+        "tarball_path": "/opt/software/esri/apache-tomcat-8.5.45.tar.gz",
         "install_path": "/tomcat_arcgis",
         "keystore_file": "/tomcat_arcgis/conf/ssl_certificate_file.pfx",
         "keystore_type": "pkcs12",
@@ -35,7 +35,7 @@
                 "ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz": {
                     "subfolder": "14362/setups"
                 },
-                "apache-tomcat-8.5.51.tar.gz": {
+                "apache-tomcat-8.5.45.tar.gz": {
                     "subfolder": "depfiles"
                 }
             }

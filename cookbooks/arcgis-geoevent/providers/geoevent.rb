@@ -63,9 +63,13 @@ action :install do
 
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/qn PASSWORD=\"#{run_as_password}\""
 
+    args = if @new_resource.run_as_msa
+             args = "/qn MSA=\"True\""
+           else
+             args = "/qn PASSWORD=\"#{@new_resource.run_as_password}\""
+           end
+ 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
     cmd.error!
@@ -124,10 +128,51 @@ action :stop do
       supports :status => true, :restart => true, :reload => true
       action :stop
     end
-  else
-    service "arcgisgeoevent" do
+
+    service "ArcGISGeoEventGateway" do
       supports :status => true, :restart => true, :reload => true
       action :stop
+    end
+  else
+    if node['arcgis']['geoevent']['configure_autostart']
+      service "arcgisgeoevent" do
+        supports :status => true, :restart => true, :reload => true
+        action :stop
+      end
+
+      service "geoeventGateway" do
+        supports :status => true, :restart => true, :reload => true
+        action :stop
+      end
+    else
+      # stop geoevent gateway service
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['server']['install_subdir'],
+                        '/GeoEvent/gateway/bin',
+                        '/ArcGISGeoEventGateway-service')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} stop\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
+      new_resource.updated_by_last_action(true)
+
+      # stop geoevent service
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['server']['install_subdir'],
+                        '/GeoEvent/bin',
+                        '/ArcGISGeoEvent-service')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} stop\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
     end
   end
 
@@ -136,29 +181,70 @@ end
 
 action :start  do
   if node['platform'] == 'windows'
+    service "ArcGISGeoEventGateway" do
+      supports :status => true, :restart => true, :reload => true
+      timeout 180
+      action [:enable, :start]
+    end
+
     service "ArcGISGeoEvent" do
       supports :status => true, :restart => true, :reload => true
       timeout 180
       action [:enable, :start]
     end
   else
-#    directory ::File.join(@new_resource.install_dir,
-#                          node['arcgis']['server']['install_subdir'],
-#                          'GeoEvent/data') do
-#      recursive true
-#      owner node['arcgis']['run_as_user']
-#      action [:delete, :create]
-#    end
+    if node['arcgis']['geoevent']['configure_autostart']
+      service "geoeventGateway" do
+        supports :status => true, :restart => true, :reload => true
+        action [:enable, :start]
+      end
 
-    service "arcgisgeoevent" do
-      supports :status => true, :restart => true, :reload => true
-      action [:enable, :start]
-    end
+      service "arcgisgeoevent" do
+        supports :status => true, :restart => true, :reload => true
+        action [:enable, :start]
+      end
+    else
+      # start geoevent gateway service
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['server']['install_subdir'],
+                        '/GeoEvent/gateway/bin',
+                        '/ArcGISGeoEventGateway-service')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} start\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
+      new_resource.updated_by_last_action(true)
+
+      # start geoevent service
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['server']['install_subdir'],
+                        '/GeoEvent/bin',
+                        '/ArcGISGeoEvent-service')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd} start\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
+    end      
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :configure_autostart do
   if node['platform'] == 'windows'
+    service "ArcGISGeoEventGateway" do
+      supports :status => true, :restart => true, :reload => true
+      action :enable
+    end
+
     service "ArcGISGeoEvent" do
       supports :status => true, :restart => true, :reload => true
       action :enable
@@ -196,21 +282,18 @@ action :configure_autostart do
       group 'root'
       mode '0755'
       notifies :run, 'execute[Load gateway systemd unit file]', :immediately
-      only_if { node['arcgis']['geoevent']['configure_gateway_service'] }
     end
 
     execute 'Load gateway systemd unit file' do
       command 'systemctl daemon-reload'
       action :nothing
-      only_if { ( node['init_package'] == 'systemd' ) &&
-                  node['arcgis']['geoevent']['configure_gateway_service'] }
+      only_if { node['init_package'] == 'systemd' }
       notifies :restart, 'service[geoeventGateway]', :immediately
     end
 
     service 'geoeventGateway' do
       supports :status => true, :restart => true, :reload => true
       action :enable
-      only_if { node['arcgis']['geoevent']['configure_gateway_service'] }
     end
 
     template geoevent_path do

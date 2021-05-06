@@ -12,6 +12,7 @@ Requirements
 * 10.7.1
 * 10.8
 * 10.8.1
+* 10.9
 
 ### Supported ArcGIS software
 
@@ -29,6 +30,7 @@ Requirements
 * Rhel 6.5, 7.0
 
 ### Dependencies
+
 The following cookbooks are required:
 
 * arcgis-enterprise
@@ -49,10 +51,20 @@ Recipes
 -------
 
 ### arcgis-geoevent::default
+
 Installs and configures ArcGIS GeoEvent Server.
 
 ### arcgis-geoevent::lp-install
+
 Installs language pack for ArcGIS GeoEvent Server.
+
+### arcgis-geoevent::start_server
+
+Starts ArcGIS GeoEvent Server.
+
+### arcgis-geoevent::stop_server
+
+Stops ArcGIS GeoEvent Server.
 
 ### arcgis-geoevent::uninstall
 Uninstalls ArcGIS GeoEvent Server.
@@ -74,7 +86,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2020 Esri
+Copyright 2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

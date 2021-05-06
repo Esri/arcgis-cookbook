@@ -34,6 +34,12 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['install_dir'] = ''
 
     case node['arcgis']['version']
+    when '10.9'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_for_Microsoft_IIS_109_177789.exe').gsub('/', '\\')
+      web_adaptor['product_code'] = '{1FD4759C-6858-42AD-A1DC-6DA0C3B1D28C}'
+      web_adaptor['product_code2'] = '{E3CBD7DB-60AE-45F3-B281-F9556781E602}'
+      web_adaptor['config_web_adaptor_exe'] = '\\ArcGIS\\WebAdaptor\\IIS\\10.9\\Tools\\ConfigureWebAdaptor.exe' 
     when '10.8.1'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'ArcGIS_Web_Adaptor_for_Microsoft_IIS_1081_175217.exe').gsub('/', '\\')
@@ -97,27 +103,33 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     else
       Chef::Log.warn 'Unsupported ArcGIS Web Adaptor version'
     end
-
-    web_adaptor['product_codes'] = ['{B83D9E06-B57C-4B26-BF7A-004BE10AB2D5}',
-                                    '{E2C783F3-6F85-4B49-BFCD-6D6A57A2CFCE}',
-                                    '{F53FEE2B-54DD-4A6F-8545-6865F4FBF6DC}',
-                                    '{475ACDE5-D140-4F10-9006-C804CA93D2EF}',
-                                    '{87B4BD93-A5E5-469E-9224-8A289C6B2F10}',
-                                    '{604CF558-B7E1-4271-8543-75E260080DFA}',
-                                    '{0A9DA130-E764-485F-8C1A-AD78B04AA7A4}',
-                                    '{B8A6A873-ED78-47CE-A9B4-AB3192C47604}',
-                                    '{4FB9D475-9A23-478D-B9F7-05EBA2073FC7}',
-                                    '{38DBD944-7F0E-48EB-9DCB-98A0567FB062}',
-                                    '{1B4E7470-72F4-4169-92B9-EF1BDF8AE4AF}',
-                                    '{3FA8B44E-E0E3-4245-A662-6B81E1E75048}',
-                                    '{F343B520-F769-4D93-86D2-663168AC6975}',
-                                    '{58A76431-E1A9-4D11-BB89-0D12C6E77C78}',
-                                    '{5ECEF84F-592C-47D1-B7C5-9F3D7E2AB7CE}',
-                                    '{5F1D01EA-296E-4226-A704-6A90E2916782}',
-                                    '{D6059C27-7199-4A94-806B-6C40EFD02828}',
-                                    '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}',
-                                    '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}',
-                                    '{56F26E70-2C61-45BC-A624-E100175086F7}']
+ 
+    # Product codes used to uninstall ArcGIS Web Adaptor.
+    # The list includes the first two product codes form each supported ArcGIS version.
+    web_adaptor['product_codes'] = [
+      '{1FD4759C-6858-42AD-A1DC-6DA0C3B1D28C}',
+      '{E3CBD7DB-60AE-45F3-B281-F9556781E602}',
+      '{B83D9E06-B57C-4B26-BF7A-004BE10AB2D5}',
+      '{E2C783F3-6F85-4B49-BFCD-6D6A57A2CFCE}',
+      '{F53FEE2B-54DD-4A6F-8545-6865F4FBF6DC}',
+      '{475ACDE5-D140-4F10-9006-C804CA93D2EF}',
+      '{87B4BD93-A5E5-469E-9224-8A289C6B2F10}',
+      '{604CF558-B7E1-4271-8543-75E260080DFA}',
+      '{0A9DA130-E764-485F-8C1A-AD78B04AA7A4}',
+      '{B8A6A873-ED78-47CE-A9B4-AB3192C47604}',
+      '{4FB9D475-9A23-478D-B9F7-05EBA2073FC7}',
+      '{38DBD944-7F0E-48EB-9DCB-98A0567FB062}',
+      '{1B4E7470-72F4-4169-92B9-EF1BDF8AE4AF}',
+      '{3FA8B44E-E0E3-4245-A662-6B81E1E75048}',
+      '{F343B520-F769-4D93-86D2-663168AC6975}',
+      '{58A76431-E1A9-4D11-BB89-0D12C6E77C78}',
+      '{5ECEF84F-592C-47D1-B7C5-9F3D7E2AB7CE}',
+      '{5F1D01EA-296E-4226-A704-6A90E2916782}',
+      '{D6059C27-7199-4A94-806B-6C40EFD02828}',
+      '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}',
+      '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}',
+      '{56F26E70-2C61-45BC-A624-E100175086F7}'
+    ]
   else # node['platform'] == 'linux'
     web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                        node['arcgis']['version'],
@@ -125,6 +137,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['lp-setup'] = node['arcgis']['web_adaptor']['setup']
 
     case node['arcgis']['version']
+    when '10.9'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_Java_Linux_109_177888.tar.gz')
     when '10.8.1'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz')

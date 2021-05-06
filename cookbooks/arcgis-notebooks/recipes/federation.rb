@@ -18,7 +18,7 @@
 #
 
 arcgis_enterprise_portal 'Federate Notebook Server' do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['notebook_server']['web_context_url']
@@ -32,7 +32,7 @@ arcgis_enterprise_portal 'Federate Notebook Server' do
 end
 
 arcgis_enterprise_portal 'Enable NotebookServer server function' do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['notebook_server']['web_context_url']

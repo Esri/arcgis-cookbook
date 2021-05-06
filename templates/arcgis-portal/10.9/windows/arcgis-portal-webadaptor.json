@@ -1,0 +1,32 @@
+{
+    "arcgis": {
+        "version": "10.9",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "iis": {
+            "keystore_file": "C:\\Temp\\keystore.pfx",
+            "keystore_password": "change.it",
+            "replace_https_binding": true
+        },
+        "portal": {
+            "url": "https://domain.com:7443/arcgis",
+            "wa_url": "https://domain.com/portal",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "wa_name": "portal"
+        },
+        "web_adaptor": {
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-iis]",
+        "recipe[arcgis-enterprise::portal_wa]"
+    ]
+}

@@ -30,6 +30,7 @@ action :install do
         source patch
         installer_type :custom
         options '/qn'
+        timeout 3600 # one hour
       end
     end
 

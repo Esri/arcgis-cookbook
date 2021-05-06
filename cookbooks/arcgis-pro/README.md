@@ -14,6 +14,7 @@ Requirements
 * 2.4
 * 2.5
 * 2.6
+* 2.7
 
 ### Platforms
 * Windows 10
@@ -29,7 +30,7 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `2.6`
+* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `2.7`
 * `node['arcgis']['pro']['setup_archive']` = Path to ArcGIS Pro setup archive. Default value depends on `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['pro']['setup']` = The location of ArcGIS Pro setup msi. Default location is `C:\Temp\ArcGISPro\ArcGISPro.msi`.
 * `node['arcgis']['pro']['install_dir']` = ArcGIS Pro installation directory. Default installation directory is `%ProgramFiles%\ArcGIS\Pro`.
@@ -75,7 +76,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016-2020 Esri
+Copyright 2016-2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

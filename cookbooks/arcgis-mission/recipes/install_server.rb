@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Recipe:: install_server
 #
-# Copyright 2020 Esri
+# Copyright 2020-2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ if node['platform'] == 'windows'
     install_dir node['arcgis']['mission_server']['install_dir']
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_msa'] }
     only_if { Utils.product_installed?(node['arcgis']['mission_server']['product_code']) }
-    subscribes :update_account, "user[#{node['arcgis']['run_as_user']}]", :immediately
-    action :nothing
+    action :update_account
   end
 end
 
@@ -55,6 +55,7 @@ arcgis_mission_server 'Setup ArcGIS Mission Server' do
   install_dir node['arcgis']['mission_server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
+  run_as_msa node['arcgis']['run_as_msa']
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['mission_server']['product_code']) }
   else
@@ -70,8 +71,4 @@ arcgis_mission_server 'Configure agsmission service' do
   install_dir node['arcgis']['mission_server']['install_dir']
   only_if { node['arcgis']['mission_server']['configure_autostart'] }
   action :configure_autostart
-end
-
-arcgis_mission_server 'Start ArcGIS Mission Server' do
-  action :start
 end

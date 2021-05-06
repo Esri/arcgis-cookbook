@@ -19,7 +19,7 @@
 
 actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
-        :create_site, :join_site, :configure_https,
+        :create_site, :join_site, :set_system_properties, :configure_https,
         :unregister_standby, :register_server, :federate_server,
         :enable_server_function, :set_allssl, :set_identity_store,
         :configure_hostidentifiers_properties
@@ -74,6 +74,7 @@ attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :server_function, :kind_of => String
 attribute :user_license_type_id, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
+attribute :system_properties, :kind_of => Hash, :default => {}
 
 def initialize(*args)
   super

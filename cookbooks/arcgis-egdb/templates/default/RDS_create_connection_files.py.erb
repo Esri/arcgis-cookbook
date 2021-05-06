@@ -14,7 +14,8 @@ parser = OptionParser()
 
 # Define usage and versionparser = optparse.OptionParser(usage = "usage: %prog [Options]", version="%prog 1.0 for " + arcpy.GetInstallInfo()['Version'] )
 
-#Define help and options
+# Define help and options
+parser.add_option ("-i", dest="Instance", type="string", default="egdbhost", help="RDS instance endpoint")
 parser.add_option ("-u", dest="Login", type="string", default="", help="DBMS Login")
 parser.add_option ("-p", dest="Password", type="string", default="", help="DBMS password")
 
@@ -31,7 +32,7 @@ try:
 
 	#Usage parameters for spatial database connection
 	database_type = 'SQL_SERVER'
-	instance = 'EGDBHOST'
+	instance = options.Instance
 	account_authentication = 'DATABASE_AUTH'
 	username = options.Login
 	password = options.Password	
