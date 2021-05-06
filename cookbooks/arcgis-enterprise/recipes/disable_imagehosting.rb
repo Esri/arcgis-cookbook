@@ -18,7 +18,7 @@
 #
 
 arcgis_enterprise_portal "Disable ImageHosting" do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['server']['web_context_url']

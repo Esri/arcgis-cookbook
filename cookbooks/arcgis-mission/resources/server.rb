@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Resource:: server
 #
-# Copyright 2020 Esri
+# Copyright 2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
 #
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
-        :configure_autostart, :authorize, :create_site
+        :configure_autostart, :authorize, :create_site, :join_site,
+        :unregister_machine, :set_system_properties
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -26,15 +27,23 @@ attribute :setup, :kind_of => String
 attribute :install_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String
+attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
 attribute :server_directories_root, :kind_of => String
+attribute :config_store_type, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
+attribute :config_store_class_name, :kind_of => String
 attribute :server_url, :kind_of => String
+attribute :primary_server_url, :kind_of => String
 attribute :system_properties, :kind_of => Hash, :default => {}
+attribute :log_level, :kind_of => String, :default => 'WARNING'
+attribute :log_dir, :kind_of => String
+attribute :max_log_file_age, :kind_of => Integer, :default => 90
+attribute :hostname, :kind_of => String
 
 def initialize(*args)
   super
@@ -84,8 +93,14 @@ action :install do
 
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" PASSWORD=\"#{run_as_password}\""
+    
+    password = if @new_resource.run_as_msa
+                 'MSA=\"True\"'
+               else
+                 "PASSWORD=\"#{@new_resource.run_as_password}\""
+               end
+
+    args = "/qn ACCEPTEULA=Yes INSTALLDIR=\"#{@new_resource.install_dir}\" USER_NAME=\"#{@new_resource.run_as_user}\" #{password}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
@@ -95,7 +110,21 @@ action :install do
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
     run_as_user = @new_resource.run_as_user
 
-    cmd = Mixlib::ShellOut.new("su - #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 3600 })
+    # Grant the run as user read-write access to the installation directory
+    subdir = @new_resource.install_dir
+    node['arcgis']['mission_server']['install_subdir'].split("/").each do |path|
+      subdir = ::File.join(subdir, path)
+      FileUtils.mkdir_p(subdir) unless ::File.directory?(subdir)
+      FileUtils.chmod 0700, subdir
+      FileUtils.chown run_as_user, nil, subdir
+    end
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su - #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 3600 })
+    else
+      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", { :user => run_as_user, :timeout => 3600 })
+    end
+
     cmd.run_command
     cmd.error!
   end
@@ -135,9 +164,23 @@ action :stop do
       action :stop
     end
   else
-    service "agsmission" do
-      supports :status => true, :restart => true, :reload => true
-      action :stop
+    if node['arcgis']['mission_server']['configure_autostart']
+      service "agsmission" do
+        supports :status => true, :restart => true, :reload => true
+        action :stop
+      end
+    else
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['mission_server']['install_subdir'],
+                        'stopmissionserver.sh')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
     end
   end
 
@@ -152,9 +195,23 @@ action :start do
       action [:enable, :start]
     end
   else
-    service "agsmission" do
-      supports :status => true, :restart => true, :reload => true
-      action [:enable, :start]
+    if node['arcgis']['mission_server']['configure_autostart']
+      service "agsmission" do
+        supports :status => true, :restart => true, :reload => true
+        action [:enable, :start]
+      end
+    else
+      cmd = ::File.join(@new_resource.install_dir,
+                        node['arcgis']['mission_server']['install_subdir'],
+                        'startmissionserver.sh')
+
+      if node['arcgis']['run_as_superuser']
+        cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 60})
+      else
+        cmd = Mixlib::ShellOut.new(cmd, {:timeout => 60})
+      end
+      cmd.run_command
+      cmd.error!
     end
   end
 end
@@ -272,43 +329,69 @@ action :authorize do
 end
 
 action :create_site do
-  if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools', 'createsite', 'createsite.bat')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " \
-           "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\" "
-
-    env = { 'AGSMISSION' => @new_resource.install_dir + '\\' }
-
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", :timeout => 1200, :environment => env)
-    cmd.run_command
-    cmd.error!
-  else
-    install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['mission_server']['install_subdir'])
-    cmd = ::File.join(install_dir, 'tools', 'createsite', 'createsite.sh')
-    args = "-u \"#{@new_resource.username}\" -p \"#{@new_resource.password}\" " +
-           "-d \"#{@new_resource.server_directories_root}\" -c \"#{@new_resource.config_store_connection_string}\""
-
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-          { :timeout => 1200, :user => @new_resource.run_as_user })
-    cmd.run_command
-
-    # Hack the error from stdout until createsite tool exits with nonzero on error
-    if cmd.stdout.include?('Error:')
-      Chef::Log.error cmd.stdout
-      raise cmd.stdout
-    end
-
-    cmd.error!
-  end
-
-  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
-    @new_resource.username,
-    @new_resource.password)
+  admin_client = ArcGIS::MissionServerAdminClient.new(@new_resource.server_url,
+                                                      @new_resource.username,
+                                                      @new_resource.password)
 
   admin_client.wait_until_available
 
-  if !@new_resource.system_properties.empty?
-    Chef::Log.info('Updating ArcGIS Mission Server system properties...')
-    admin_client.update_system_properties(@new_resource.system_properties)
+  if admin_client.upgrade_required?
+    Chef::Log.info('Completing ArcGIS Mission Server upgrade...')
+    admin_client.complete_upgrade
+  elsif admin_client.site_exist?
+    Chef::Log.warn('ArcGIS Mission Server site already exists.')
+  else
+    Chef::Log.info('Creating ArcGIS Mission Server site...')
+
+    admin_client.create_site(@new_resource.server_directories_root,
+                             @new_resource.config_store_type,
+                             @new_resource.config_store_connection_string,
+                             @new_resource.config_store_class_name,
+                             @new_resource.log_level,
+                             @new_resource.log_dir,
+                             @new_resource.max_log_file_age)
   end
+end
+
+action :join_site do
+  admin_client = ArcGIS::MissionServerAdminClient.new(@new_resource.server_url,
+                                                      @new_resource.username,
+                                                      @new_resource.password)
+
+  admin_client.wait_until_available
+  if admin_client.site_exist?
+    Chef::Log.warn('The machine has already joined an ArcGIS Mission Server site.')
+  else
+    admin_client.join_site(@new_resource.primary_server_url)
+  end
+end
+
+action :unregister_machine do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                  @new_resource.username,
+                                                  @new_resource.password)
+
+    admin_client.wait_until_available
+
+    Chef::Log.info('Unregistering server machine...')
+
+    machine_name = @new_resource.hostname
+    machine_name = node['fqdn'] if machine_name.empty?
+
+    admin_client.unregister_machine(machine_name)
+  rescue Exception => e
+    Chef::Log.error "Failed to unregister server machine. " + e.message
+    raise e
+  end
+end
+
+action :set_system_properties do
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                @new_resource.username,
+                                                @new_resource.password)
+
+  admin_client.wait_until_available
+
+  admin_client.update_system_properties(@new_resource.system_properties)
 end

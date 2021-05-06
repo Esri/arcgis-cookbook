@@ -3,6 +3,10 @@ arcgis-repository cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-repository cookbook.
 
+3.7.0
+-----
+- Added support for ArcGIS 10.9.
+
 3.6.1
 -----
 - Added support for Chef Client 15.

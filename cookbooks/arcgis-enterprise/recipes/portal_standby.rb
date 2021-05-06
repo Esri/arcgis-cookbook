@@ -19,6 +19,11 @@
 
 include_recipe 'arcgis-enterprise::install_portal'
 
+arcgis_enterprise_portal 'Start Portal for ArcGIS after install' do
+  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
+  action :start
+end
+
 # Set hostname in hostname.properties file.
 template ::File.join(node['arcgis']['portal']['install_dir'],
                      node['arcgis']['portal']['install_subdir'],
@@ -73,6 +78,8 @@ arcgis_enterprise_portal 'Configure HTTPS' do
   keystore_file node['arcgis']['portal']['keystore_file']
   keystore_password node['arcgis']['portal']['keystore_password']
   cert_alias node['arcgis']['portal']['cert_alias']
+  root_cert node['arcgis']['portal']['root_cert']
+  root_cert_alias node['arcgis']['portal']['root_cert_alias']
   not_if { node['arcgis']['portal']['keystore_file'].empty? }
   retries 5
   retry_delay 30

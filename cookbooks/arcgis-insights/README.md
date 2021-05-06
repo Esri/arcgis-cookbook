@@ -1,23 +1,13 @@
 arcgis-insights cookbook
 ===============
 
-This cookbook installs and configures Insights for ArcGIS.
+This cookbook installs and configures ArcGIS Insights.
 
 Requirements
 ------------
 
-### Supported Insights for ArcGIS versions
+### Supported ArcGIS Insights versions
 
-* 2.0
-* 2.1
-* 2.2
-* 3.0
-* 3.1
-* 3.2
-* 3.2.1
-* 3.3
-* 3.3.1
-* 3.4
 * 3.4.1
 * 2020.1
 * 2020.2
@@ -42,10 +32,10 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['insights']['version']` = Insights for ArcGIS version. Default version is `2020.3`
-* `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS version setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
-* `node['arcgis']['insights']['setup']` = The location of Insights for ArcGIS setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
-* `node['arcgis']['insights']['setup_archive']` = Path to Insights for ArcGIS setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
+* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2020.3`
+* `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights version setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
+* `node['arcgis']['insights']['setup']` = The location of ArcGIS Insights setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
+* `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
 
 
 Recipes
@@ -53,11 +43,11 @@ Recipes
 
 ### arcgis-insights::default
 
-Installs and configures Insights for ArcGIS.
+Installs and configures ArcGIS Insights.
 
 ### arcgis-insights::uninstall
 
-Uninstalls Insights for ArcGIS.
+Uninstalls ArcGIS Insights.
 
 Usage
 -----
@@ -75,7 +65,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2020 Esri
+Copyright 2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

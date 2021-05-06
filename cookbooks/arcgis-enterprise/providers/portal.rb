@@ -31,7 +31,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'Portal for ArcGIS' do
       description 'Allows connections through all ports used by Portal for ArcGIS'
-      local_port '5701,5702,7080,7443,7005,7099,7199,7120,7220,7654'
+      local_port node['arcgis']['portal']['ports']
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -73,10 +73,10 @@ action :install do
     password = if @new_resource.run_as_msa
                  'MSA=\"True\"'
                else
-                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+                 "PASSWORD=\"#{@new_resource.run_as_password}\""
                end
 
-    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn ACCEPTEULA=Yes INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "CONTENTDIR=\"#{node['arcgis']['portal']['data_dir']}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
@@ -88,12 +88,9 @@ action :install do
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
-    install_subdir = ::File.join(@new_resource.install_dir,
-                                 node['arcgis']['portal']['install_subdir'])
-    dir_data = @new_resource.data_dir
     run_as_user = @new_resource.run_as_user
-
     subdir = @new_resource.install_dir
+
     node['arcgis']['portal']['install_subdir'].split("/").each do |path|
       subdir = ::File.join(subdir, path)
       FileUtils.mkdir_p(subdir) unless ::File.directory?(subdir)
@@ -109,19 +106,21 @@ action :install do
     cmd.run_command
     cmd.error!
 
-    if dir_data != node.default['arcgis']['portal']['data_dir']
-      properties_filename = ::File.join(install_subdir,
-                                        'framework', 'etc',
-                                        'portal-config.properties')
+    # if dir_data != node.default['arcgis']['portal']['data_dir']
+    #   properties_filename = ::File.join(install_subdir,
+    #                                     'framework', 'etc',
+    #                                     'portal-config.properties')
 
-      if ::File.exist?(properties_filename)
-        file = Chef::Util::FileEdit.new(properties_filename)
-        file.search_file_replace_line(/dir.data.*/, "dir.data=#{dir_data}")
-        file.write_file
-      else
-        ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{dir_data}") }
-      end
-    end
+    #   if ::File.exist?(properties_filename)
+    #     file = Chef::Util::FileEdit.new(properties_filename)
+    #     file.search_file_replace_line(/dir.data.*/, "dir.data=#{dir_data}")
+    #     file.write_file
+    #   else
+    #     ::File.open(properties_filename, 'w') { |f| f.write("dir.data=#{dir_data}") }
+    #     FileUtils.chmod(0755, properties_filename)
+    #     FileUtils.chown(run_as_user, nil, properties_filename)
+    #   end
+    # end
 
     # Stop Portal to start it later using SystemD service
     cmd = node['arcgis']['portal']['stop_tool']
@@ -379,28 +378,6 @@ action :create_site do
       Chef::Log.error 'Populate license failed. ' + e.message
     end
 
-    system_properties = {}
-
-    unless @new_resource.web_context_url.empty?
-      system_properties['WebContextURL'] = @new_resource.web_context_url
-    end
-
-    unless @new_resource.portal_private_url == node.default['arcgis']['portal']['private_url']
-      system_properties['privatePortalURL'] = @new_resource.portal_private_url
-    end
-
-    portal_admin_client.update_system_properties(system_properties)
-
-    portal_admin_client.edit_log_settings(@new_resource.log_level,
-                                          @new_resource.log_dir,
-                                          @new_resource.max_log_file_age)
-
-    unless @new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?
-      portal_admin_client.add_root_cert(@new_resource.root_cert, @new_resource.root_cert_alias, 'false')
-    end
-
-    sleep(60.0) # wait for portal restart
-
     new_resource.updated_by_last_action(true)
   end
 end
@@ -426,6 +403,25 @@ action :join_site do
 
     new_resource.updated_by_last_action(true)
   end
+end
+
+action :set_system_properties do
+  portal_admin_client = ArcGIS::PortalAdminClient.new(
+    @new_resource.portal_url,
+    @new_resource.username,
+    @new_resource.password)
+
+  portal_admin_client.wait_until_available
+
+  Chef::Log.info 'Setting the portal system properties...'
+
+  portal_admin_client.update_system_properties(@new_resource.system_properties)
+
+  portal_admin_client.edit_log_settings(@new_resource.log_level,
+                                        @new_resource.log_dir,
+                                        @new_resource.max_log_file_age)
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :set_identity_store do
@@ -472,6 +468,10 @@ action :configure_https do
                                                       @new_resource.username,
                                                       @new_resource.password)
 
+  unless @new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?
+    portal_admin_client.add_root_cert(@new_resource.root_cert, @new_resource.root_cert_alias, 'false')
+  end
+                                 
   cert_alias = portal_admin_client.server_ssl_certificate
 
   unless cert_alias == @new_resource.cert_alias
@@ -484,7 +484,7 @@ action :configure_https do
 
     portal_admin_client.set_server_ssl_certificate(@new_resource.cert_alias)
 
-    sleep(60.0)
+    sleep(60.0) # wait for portal restart
 
     portal_admin_client.wait_until_available
 
@@ -538,30 +538,25 @@ action :federate_server do
   portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
                                                       @new_resource.username,
                                                       @new_resource.password)
+
+  server_admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_admin_url,
+                                                      @new_resource.server_username,
+                                                      @new_resource.server_password)
+
+  # Wait until both Portal and Server are available.
   portal_admin_client.wait_until_available
+  server_admin_client.wait_until_available
 
   servers = portal_admin_client.servers
 
   server = servers.detect { |s| s['url'] == @new_resource.server_url }
 
   if server.nil?
-    # server_admin_client = ArcGIS::ServerAdminClient.new(
-    #   @new_resource.server_admin_url,
-    #   @new_resource.server_username,
-    #   @new_resource.server_password)
-
-    # server_admin_client.start_service('Utilities/PrintingTools.GPServer')
-
-    server_id = portal_admin_client.federate_server(
+    portal_admin_client.federate_server(
       @new_resource.server_url,
       @new_resource.server_admin_url,
       @new_resource.server_username,
       @new_resource.server_password)
-
-    if @new_resource.is_hosting
-      sleep(180.0)
-      portal_admin_client.update_server(server_id, 'HOSTING_SERVER', '')
-    end
 
     new_resource.updated_by_last_action(true)
   end

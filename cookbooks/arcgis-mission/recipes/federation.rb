@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Recipe:: federation
 #
-# Copyright 2020 Esri
+# Copyright 2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #
 
 arcgis_enterprise_portal 'Federate Mission Server' do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['mission_server']['web_context_url']
@@ -32,7 +32,7 @@ arcgis_enterprise_portal 'Federate Mission Server' do
 end
 
 arcgis_enterprise_portal 'Enable MissionServer server function' do
-  portal_url node['arcgis']['portal']['wa_url']
+  portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   server_url node['arcgis']['mission_server']['web_context_url']

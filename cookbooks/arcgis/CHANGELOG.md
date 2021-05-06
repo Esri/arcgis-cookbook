@@ -3,6 +3,11 @@ arcgis cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis cookbook.
 
+3.7.0
+-----
+- Added support for ArcGIS 10.9.
+- Added support for Cinc Client 15.
+
 3.6.1
 -----
 - Added support for Chef Client 15.

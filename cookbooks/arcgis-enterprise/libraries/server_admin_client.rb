@@ -278,7 +278,9 @@ module ArcGIS
 
       validate_response(response)
 
-      JSON.parse(response.body)['entryType'] == entry_type
+      sslcertificate = JSON.parse(response.body)
+
+      sslcertificate['entryType'].nil? || sslcertificate['entryType'] == entry_type
     rescue Exception
       false
     end
@@ -417,8 +419,8 @@ module ArcGIS
       validate_response(response)
     end
 
-    def register_database(data_item_path, connection_string, is_managed, connection_type)
-      return if connection_string.nil? || connection_string.empty?
+    def register_data_item(item)
+      return if item.nil? || item['path'].nil?
 
       request = Net::HTTP::Post.new(
         URI.parse(@server_url + '/admin/data/registerItem').request_uri)
@@ -426,6 +428,18 @@ module ArcGIS
       request.add_field('Referer', 'referer')
 
       token = generate_token()
+
+      request.set_form_data('item' => item.to_json,
+                            'token' => token,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def register_database(data_item_path, connection_string, is_managed, connection_type)
+      return if connection_string.nil? || connection_string.empty?
 
       item = {
         'path' => data_item_path,
@@ -438,13 +452,7 @@ module ArcGIS
         }
       }
 
-      request.set_form_data('item' => item.to_json,
-                            'token' => token,
-                            'f' => 'json')
-
-      response = send_request(request, @server_url)
-
-      validate_response(response)
+      register_data_item(item)
     end
 
     def federate(portal_url, portal_token, server_id, secret_key)

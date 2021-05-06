@@ -3,6 +3,10 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+3.7.0
+-----
+- Added support for ArcGIS License Manager 2020.1
+
 3.6.1
 -----
 - Added support for Chef Client 15.

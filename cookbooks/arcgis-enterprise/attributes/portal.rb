@@ -51,7 +51,6 @@ default['arcgis']['portal'].tap do |portal|
   end
 
   portal['private_url'] = "https://#{portal_domain_name}:7443/arcgis"
-  portal['web_context_url'] = ''
   portal['admin_username'] = 'admin'
   if ENV['ARCGIS_PORTAL_ADMIN_PASSWORD'].nil?
     portal['admin_password'] = 'changeit'
@@ -87,6 +86,8 @@ default['arcgis']['portal'].tap do |portal|
   portal['max_log_file_age'] = 90
   portal['setup_archive'] = ''
   portal['product_code'] = ''
+  portal['system_properties'] = {}
+  portal['ports'] = '5701,5702,5703,7080,7443,7005,7099,7199,7120,7220,7654'
 
   portal['living_atlas']['group_ids'] = ['81f4ed89c3c74086a99d168925ce609e', '6646cd89ff1849afa1b95ed670a298b8']
 
@@ -104,6 +105,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['data_dir'] = 'C:\\arcgisportal'
 
     case node['arcgis']['version']
+    when '10.9'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_109_177786.exe').gsub('/', '\\')
+      portal['product_code'] = '{46FDB40E-6489-42CE-88D6-D35DFC5CABAF}'
     when '10.8.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_1081_175214.exe').gsub('/', '\\')
@@ -189,6 +194,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.9'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_109_177885.tar.gz')
     when '10.8.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_1081_175300.tar.gz')

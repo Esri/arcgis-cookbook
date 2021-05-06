@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "version": "10.9",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "portal": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+            "install_system_requirements": true,
+            "data_dir": "C:\\arcgisportal"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]"
+    ]
+}

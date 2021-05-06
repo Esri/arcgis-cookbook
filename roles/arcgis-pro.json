@@ -1,10 +1,15 @@
 {
   "arcgis":{
+    "repository": {
+      "archives": "C:\\Software\\Archives"
+    },
     "pro":{
-      "version":"2.6",
-      "setup":"C:\\ArcGIS\\2.6\\ArcGISPro\\ArcGISPro.msi",
-      "seat_preference":"Fixed",
-      "allusers": 1
+      "version":"2.7",
+      "allusers": 1,
+      "software_class": "professional",
+      "authorization_type": "SINGLE_USE",
+      "authorization_file": "C:\\esri_authorization_files\\Pro_AdvancedSU.prvc",
+      "authorization_file_version": "10.8"
     }
   },
   "run_list":[

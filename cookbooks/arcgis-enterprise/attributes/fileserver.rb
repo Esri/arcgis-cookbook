@@ -19,6 +19,14 @@ include_attribute 'arcgis-enterprise::server'
 include_attribute 'arcgis-enterprise::datastore'
 include_attribute 'arcgis-enterprise::portal'
 
+
 default['arcgis']['fileserver']['shares'] = [ node['arcgis']['server']['local_directories_root'],
                                               node['arcgis']['data_store']['local_backup_dir'],
-                                              File.expand_path("..", node['arcgis']['portal']['local_content_dir']) ]
+                                              ::File.expand_path("..", node['arcgis']['portal']['local_content_dir']) ]
+
+default['arcgis']['fileserver']['directories'] = [ node['arcgis']['server']['local_directories_root'],
+                                                   node['arcgis']['data_store']['local_backup_dir'],
+                                                   ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'tilecache'),
+                                                   ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'relational'),
+                                                   ::File.expand_path("..", node['arcgis']['portal']['local_content_dir']),
+                                                   node['arcgis']['portal']['local_content_dir']]

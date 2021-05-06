@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: install_portal
 #
-# Copyright 2018 Esri
+# Copyright 2018-2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,20 +22,11 @@ if node['platform'] == 'windows'
     install_dir node['arcgis']['portal']['install_dir']
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_msa'] }
     only_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-    subscribes :update_account, "user[#{node['arcgis']['run_as_user']}]", :immediately
-    action :nothing
+    action :update_account
   end
 end
-
-# Unregister stanby machine before upgrading portal
-# arcgis_enterprise_portal 'Unregister Standby Machine' do
-#   portal_url node['arcgis']['portal']['url']
-#   username node['arcgis']['portal']['admin_username']
-#   password node['arcgis']['portal']['admin_password']
-#   not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
-#   action :unregister_standby
-# end
 
 arcgis_enterprise_portal "Install System Requirements:#{recipe_name}" do
   action :system
@@ -58,6 +49,17 @@ arcgis_enterprise_portal 'Unpack Portal for ArcGIS' do
   end
   action :unpack
 end
+
+# Create portal data directory
+# directory node['arcgis']['portal']['data_dir'] do
+#   owner node['arcgis']['run_as_user']
+#   group node['arcgis']['run_as_user']
+#   if node['platform'] != 'windows'
+#     mode '0700'
+#   end
+#   recursive true
+#   action :create
+# end
 
 arcgis_enterprise_portal 'Install Portal for ArcGIS' do
   install_dir node['arcgis']['portal']['install_dir']
@@ -121,9 +123,4 @@ arcgis_enterprise_portal 'Configure arcgisportal service' do
   install_dir node['arcgis']['portal']['install_dir']
   only_if { node['arcgis']['portal']['configure_autostart'] }
   action :configure_autostart
-end
-
-arcgis_enterprise_portal 'Start Portal for ArcGIS after install' do
-  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
-  action :start
 end

@@ -22,6 +22,6 @@ REM execute the type installation of the postgis type into the databases
 %POSTGRESBIN%\psql -U %SDEUSER% -h %RDSENDPOINT% -d <%= item['database'] %> -f %SCRIPTLOCATION%\create_sde_schema_install_postgis.sql
 
 REM enable the dbs with postgis type installed to become geodatabases
-%PYTHONPATH%\python %SCRIPTLOCATION%\enable_enterprise_gdb.py --DBMS POSTGRESQL --auth DATABASE_AUTH -u %SDEUSER% -p %SDEPASSWORD% -l "%KEYCODES%" -i %RDSENDPOINT% -D <%= item['database'] %> -c "<%= item['connection_file'] %>"
+%PYTHONPATH%\python %SCRIPTLOCATION%\enable_enterprise_gdb.py --DBMS POSTGRESQL --auth DATABASE_AUTH -u %SDEUSER% -p %SDEPASSWORD% -l %KEYCODES% -i %RDSENDPOINT% -D <%= item['database'] %> -c "<%= item['connection_file'] %>"
 
 <% end -%>

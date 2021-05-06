@@ -3,6 +3,16 @@ arcgis-enterprise cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-enterprise cookbook.
 
+3.7.0
+-----
+- Added support for ArcGIS Enterprise 10.9.
+- Added start_portal, stop_portal, start_datastore, and server_data_items recipes.
+- Increased patch install timeout to 1 hour.
+- Deprecated iptables recipe (use esri-tomcat::iptables instead).
+- Added support for configurable lists of directories and file shares in fileserver recipe.
+- Added support for setting Portal for ArcGIS system properties.
+- Updated and locked versions of dependent cookbooks.
+
 3.6.1
 -----
 - Added support for Chef Client 15.

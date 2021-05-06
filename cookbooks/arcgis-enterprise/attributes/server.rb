@@ -51,8 +51,9 @@ default['arcgis']['server'].tap do |server|
   else
     server['admin_password'] = ENV['ARCGIS_SERVER_ADMIN_PASSWORD']
   end
-  server['managed_database'] = ''
-  server['replicated_database'] = ''
+  server['managed_database'] = '' # deprecated
+  server['replicated_database'] = '' # deprecated
+  server['data_items'] = []
   server['keystore_file'] = ''
   if ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD'].nil?
     server['keystore_password'] = ''
@@ -77,6 +78,8 @@ default['arcgis']['server'].tap do |server|
   server['virtual_dirs_security_enabled'] = false
   server['allow_direct_access'] = true
   server['allowed_admin_access_ips'] = ''
+  server['ports'] = '1098,4000-4004,6006,6080,6099,6443'
+  server['geoanalytics_ports'] = '2181,2182,2190,7077,12181,12182,12190,56540-56545'
 
   # hash of environment variables to pass to the install command.
   # e.g. server['install_environment'] = { 'IATEMPDIR' => /var/tmp' }
@@ -121,13 +124,18 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '10.9'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_109_177775.exe').gsub('/', '\\')
+      server['product_code'] = '{32A62D8E-BE72-4B28-AA0E-FE546D827240}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.9").gsub('/', '\\')
     when '10.8.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1081_175203.exe').gsub('/', '\\')
       server['product_code'] = '{E9B85E31-4C31-4528-996B-F06E213F8BB3}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.8").gsub('/', '\\')
-
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
@@ -234,6 +242,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.9'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_109_177864.tar.gz')
     when '10.8.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_1081_175289.tar.gz')

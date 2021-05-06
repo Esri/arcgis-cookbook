@@ -22,11 +22,13 @@ Attributes
 
 #### General
 
-* `node['tomcat']['version']` = Tomcat version to install. Default is `8.0.33`.
+* `node['tomcat']['version']` = Tomcat version to install. Default is `8.5.63`.
 * `node['tomcat']['instance_name']` = tomcat instance name. Default is `arcgis`.
 * `node['tomcat']['install_path']` = tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
 * `node['tomcat']['tarball_path']` = tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
 * `node['tomcat']['verify_checksum']` = Verify checksum of downloaded tomcat tarball. Default value is `true`.
+* `node['tomcat']['forward_ports']` = If set to `true`, default recipe includes 'firewalld' or 'iptables' recipe. Default value is `true`.
+* `node['tomcat']['firewalld']['init_cmd']` = firewalld initialization command. The default command is `firewall-cmd --zone=public --permanent --add-port=0-65535/tcp`.
 
 #### SSL/TLS
 
@@ -34,6 +36,45 @@ Attributes
 * `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
 * `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of HTTPS listener. Default is `TLSv1.2,TLSv1.1,TLSv1`.
 * `node['tomcat']['domain_name']` = Domain name for generated self-signed SSL certificate. Default is `Fully Qualified Domain Name`.
+
+#### OpenJDK
+
+* `node['java']['version']` = Major java version. Default version is `11`.
+* `node['java']['tarball_uri']` = JDK tarball URI. Default URI is `https://download.java.net/java/ga/jdk11/openjdk-11_linux-x64_bin.tar.gz`.
+* `node['java']['tarball_path']` = JDK tarball local path. Default path is `<file_cache_path>/openjdk-11_linux-x64_bin.tar.gz`.
+* `node['java']['install_path']` = JDK installation path. Default path is `/opt`.
+
+
+Recipes
+-------
+
+### esri-tomcat::default
+
+Installs and configures Apache Tomcat application server for ArcGIS Web Adaptor. 
+
+If node['tomcat']['forward_ports'] attribute is `true` (default value), the recipe also configures port forwarding (80 to 8080 and 443 to 8443) using iptables or firewalld recipes.
+
+### esri-tomcat::install
+
+Installs Apache Tomcat application server.
+
+### esri-tomcat::configure_ssl
+
+Configures HTTPS listener in Apache Tomcat application server.
+
+### esri-tomcat::iptables
+
+Configures port forwarding (80 to 8080 and 443 to 8443) using iptables.
+
+### esri-tomcat::firewalld
+
+Configures port forwarding (80 to 8080 and 443 to 8443) using FirewallD. 
+
+> If firewalld service was started by the recipe, the recipe execute script specified by `node['tomcat']['firewalld']['init_cmd']` which by default opens all the TCP ports on the machine.
+
+### esri-tomcat::openjdk
+
+Installs OpenJDK for Apache Tomcat from a local ur remote tarball.
 
 ## Issues
 
@@ -46,7 +87,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2016-2020 Esri
+Copyright 2016-2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

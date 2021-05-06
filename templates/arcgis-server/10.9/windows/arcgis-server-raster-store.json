@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "server": {
+            "url": "https://localhost:6443/arcgis",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "data_items": [
+                {
+                    "path": "/rasterStores/RasterStore",
+                    "type": "rasterStore",
+                    "info": {
+                        "connectionString": "{\"path\":\"\\\\\\\\FILESERVER\\\\arcgisserver\\\\rasterstore\"}",
+                        "connectionType": "fileShare"
+                    }
+                }
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::server_data_items]"
+    ]
+}

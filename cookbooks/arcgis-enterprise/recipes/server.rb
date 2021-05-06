@@ -19,6 +19,10 @@
 
 include_recipe 'arcgis-enterprise::install_server'
 
+arcgis_enterprise_server 'Start ArcGIS Server after upgrade' do
+  action :start
+end
+
 arcgis_enterprise_server 'Authorize ArcGIS Server' do
   authorization_file node['arcgis']['server']['authorization_file']
   authorization_file_version node['arcgis']['server']['authorization_file_version']
@@ -51,11 +55,30 @@ template ::File.join(node['arcgis']['server']['install_dir'],
   source 'hostname.properties.erb'
   variables ( {:hostname => node['arcgis']['server']['hostname']} )
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
+  notifies :delete, 'directory[Delete ArcGIS Server certificates directory]', :immediately
   not_if { node['arcgis']['server']['hostname'].empty? }
 end
 
 # Restart ArcGIS Server
 arcgis_enterprise_server 'Stop ArcGIS Server' do
+  action :nothing
+end
+
+# Delete SSL certificates issued to the old hostname to make ArcGIS Server
+# recreate the certificates for hostname set in hostname.properties file.
+directory 'Delete ArcGIS Server certificates directory' do
+  path ::File.join(node['arcgis']['server']['install_dir'],
+                   node['arcgis']['server']['install_subdir'],
+                   'framework', 'etc', 'certificates')
+  recursive true
+  # Do not delete certificates directory if ArcGIS Server site already exists.
+  not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
+                                     node['arcgis']['server']['install_subdir'],
+                                     'framework', 'etc', 'config-store-connection.xml')) }
+  # Do not delete certificates directory if ArcGIS Server is in upgrade mode.
+  not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
+                                     node['arcgis']['server']['install_subdir'],
+                                     'framework', 'etc', 'config-store-connection-upgrade.xml')) }
   action :nothing
 end
 
@@ -78,7 +101,7 @@ end
 directory node['arcgis']['server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0775'
   end
   recursive true
   not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
@@ -91,7 +114,6 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   server_directories_root node['arcgis']['server']['directories_root']
-  system_properties node['arcgis']['server']['system_properties']
   log_level node['arcgis']['server']['log_level']
   log_dir node['arcgis']['server']['log_dir']
   max_log_file_age node['arcgis']['server']['max_log_file_age']
@@ -101,6 +123,16 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   retries 5
   retry_delay 30
   action :create_site
+end
+
+arcgis_enterprise_server 'Set ArcGIS Server system properties' do
+  server_url node['arcgis']['server']['url']
+  username node['arcgis']['server']['admin_username']
+  password node['arcgis']['server']['admin_password']
+  system_properties node['arcgis']['server']['system_properties']
+  retries 5
+  retry_delay 30
+  action :set_system_properties
 end
 
 # Make sure that PublishingTools.GPServer service is started
@@ -129,7 +161,7 @@ end
 
 arcgis_enterprise_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
-  server_admin_url node['arcgis']['server']['private_url'] + '/admin'
+  server_admin_url node['arcgis']['server']['url'] + '/admin'
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   keystore_file node['arcgis']['server']['keystore_file']

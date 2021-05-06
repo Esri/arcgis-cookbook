@@ -28,7 +28,7 @@ action :system do
     # Configure Windows firewall
     windows_firewall_rule 'ArcGIS Data Store' do
       description 'Allows connections through all ports used by ArcGIS Data Store'
-      local_port '2443,9220,9320,9876,29079-29090,4369'
+      local_port node['arcgis']['data_store']['ports']
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -102,10 +102,10 @@ action :install do
     password = if @new_resource.run_as_msa
                  'MSA=\"True\"'
                else
-                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+                 "PASSWORD=\"#{@new_resource.run_as_password}\""
                end
 
-    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn ACCEPTEULA=Yes INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
            "#{@new_resource.setup_options}"
@@ -426,7 +426,7 @@ action :configure_backup_location do
 
   # At 10.8 tilecache backup location is no longer registered by default
   # therefore --operation register needs to be used.
-  if @new_resource.store == 'tilecache' && Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8')
+  if %w[tilecache spatiotemporal].include?(@new_resource.store) && Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8')
     operation = 'register'
   end
 
@@ -509,4 +509,43 @@ action :configure_hostidentifiers_properties do
     variables ( {:hostidentifier => node['arcgis']['data_store']['hostidentifier'],
                  :preferredidentifier => node['arcgis']['data_store']['preferredidentifier']} )
   end
+end
+
+action :remove_machine do
+  hostidentifier = @new_resource.hostidentifier
+  force = @new_resource.force_remove_machine ? 'true' : 'false'
+
+  if hostidentifier.nil? || hostidentifier.empty? 
+    if @new_resource.preferredidentifier == 'hostname'
+      hostidentifier = node['hostname']
+    else
+      hostidentifier = node['ipaddress']
+    end
+  end
+
+  @new_resource.types.split(',').each do |type|
+    if node['platform'] == 'windows'
+      cmd = ::File.join(@new_resource.install_dir, 'tools\\removemachine')
+      args = "#{hostidentifier} --store #{type} --force #{force} --prompt no"
+      env = { 'AGSDATASTORE' => @new_resource.install_dir }
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                                { :timeout => 600, :environment => env })
+      cmd.run_command
+      cmd.error!
+    else
+      install_subdir = ::File.join(@new_resource.install_dir,
+                                  node['arcgis']['data_store']['install_subdir'])
+      cmd = ::File.join(install_subdir, 'tools/removemachine.sh')
+      args = "#{hostidentifier} --store #{type} --force #{force} --prompt no"
+      run_as_user = @new_resource.run_as_user
+
+      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
+                                { :timeout => 600, :user => run_as_user })
+      cmd.run_command
+      cmd.error!
+    end
+  end 
+
+  new_resource.updated_by_last_action(true)
 end

@@ -60,7 +60,7 @@ end
 
 arcgis_enterprise_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
-  server_admin_url node['arcgis']['server']['private_url'] + '/admin'
+  server_admin_url node['arcgis']['server']['url'] + '/admin'
   install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']

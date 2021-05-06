@@ -19,7 +19,7 @@
 
 actions :system, :unpack, :install, :uninstall, :update_account, :configure_autostart,
         :stop, :start, :configure, :configure_backup_location, :prepare_upgrade,
-        :configure_hostidentifiers_properties
+        :configure_hostidentifiers_properties, :remove_machine
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -39,6 +39,9 @@ attribute :password, :kind_of => String
 attribute :store, :kind_of => String, :default => 'relational'
 attribute :backup_location, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
+attribute :preferredidentifier, :kind_of => String, :default => 'hostname'
+attribute :hostidentifier, :kind_of => String, :default => ''
+attribute :force_remove_machine, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)
   super

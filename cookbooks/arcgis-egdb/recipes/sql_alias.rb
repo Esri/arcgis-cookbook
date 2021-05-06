@@ -25,6 +25,11 @@ registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo
   recursive true
 end
 
+directory node['arcgis']['misc']['scripts_dir'] do
+  recursive true
+  action :create
+end
+
 template ::File.join(node['arcgis']['misc']['scripts_dir'], 'Create-SQLAliases.ps1') do
   source 'Create-SQLAliases.ps1.erb'
   cookbook 'arcgis-egdb'

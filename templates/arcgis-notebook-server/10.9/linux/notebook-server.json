@@ -1,0 +1,33 @@
+{
+    "arcgis": {
+        "version": "10.9",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "notebook_server": {
+            "install_dir": "/",
+            "install_system_requirements": true,
+            "install_samples_data": true,
+            "authorization_file": "/opt/software/authorization_files/10.9/notebook_server.prvc",
+            "license_level": "standard",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "directories_root": "/net/FILESERVER/gisdata/notebookserver/directories",
+            "workspace": "/net/FILESERVER/gisdata/notebookserver/directories/arcgisworkspace",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "/net/FILESERVER/gisdata/notebookserver/config-store",      
+            "log_level": "WARNING",
+            "log_dir": "/arcgis/notebookserver/usr/logs",
+            "configure_autostart": true,
+            "system_properties": { }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::iptables]",
+        "recipe[arcgis-notebooks::server]"
+    ]
+}

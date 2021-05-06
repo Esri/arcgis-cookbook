@@ -19,11 +19,11 @@
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
-        :join_cluster, :configure_https, :register_database, :federate,
+        :join_cluster, :configure_https, :register_data_item, :register_database,
         :set_identity_store, :assign_privileges, :set_machine_properties,
         :stop_machine, :unregister_machine, :unregister_machines,
-        :unregister_stopped_machines, :block_data_copy,
-        :configure_security_protocol, :unregister_web_adaptors
+        :unregister_stopped_machines, :block_data_copy, :set_system_properties,
+        :configure_security_protocol, :unregister_web_adaptors, :federate 
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -58,6 +58,7 @@ attribute :config_store_connection_secret, :kind_of => String
 attribute :config_store_type, :kind_of => String
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
+attribute :data_item, :kind_of => Hash
 attribute :data_item_path, :kind_of => String
 attribute :connection_string, :kind_of => String
 attribute :is_managed, :kind_of => [TrueClass, FalseClass], :default => false

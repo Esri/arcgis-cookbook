@@ -2,7 +2,8 @@ param(
 	[string] $uname  = $(Throw "You must supply a value for -uname"),
 	[string] $passwd = $(Throw "You must supply a value for -passwd"),
 	[string] $db_uname = $(Throw "You must supply a value for -db_uname"),
-	[string] $db_passwd = $(Throw "You must supply a value for -db_passwd")
+	[string] $db_passwd = $(Throw "You must supply a value for -db_passwd"),
+	[string] $instance  = "egdbhost"
 )
 
 $create_egdb_script          = "<%=@scripts_dir%>\RDS_create_egdb_geodata.sql"
@@ -11,16 +12,16 @@ $enable_egdb_script          = "<%=@scripts_dir%>\RDS_enable_enterprise_egdb_geo
 $create_rds_conn_script      = "<%=@scripts_dir%>\RDS_create_connection_files.py"
 $transcript                  = "<%=@logs_dir%>\RDS_creation.log"
 $pythonpath                  = "<%=@pythonpath%>"
-
+$sqlcmdbin                   = "<%=@sqlcmdbin%>"
 
 Write-Output "Creating EGDB"     2>&1 > "$transcript"
-sqlcmd -i "${create_egdb_script}" -S egdbhost -U ${uname} -P ${passwd}  2>&1 >> "$transcript"
+.$sqlcmdbin\sqlcmd -i "${create_egdb_script}" -S ${instance} -U ${uname} -P ${passwd}  2>&1 >> "$transcript"
 
 Write-Output "Creating SDE Login"   2>&1 >> "$transcript"
-sqlcmd -i "${create_sdeuser_login_script}" -S egdbhost -U ${uname} -P ${passwd} -v sdepassword=${db_passwd}   2>&1 >> "$transcript"
+.$sqlcmdbin\sqlcmd -i "${create_sdeuser_login_script}" -S ${instance} -U ${uname} -P ${passwd} -v sdepassword=${db_passwd}   2>&1 >> "$transcript"
 
 Write-Output "Enable EGDB"   2>&1 >> "$transcript"
-.$pythonpath\python "${enable_egdb_script}" -u ${db_uname} -p ${db_passwd} -l "<%=@keycodes%>"  2>&1 >> "$transcript"
+.$pythonpath\python "${enable_egdb_script}" -i ${instance} -u ${db_uname} -p ${db_passwd} -l "<%=@keycodes%>"  2>&1 >> "$transcript"
 
 Write-Output "Creating RDS Connection"   2>&1 >> "$transcript"
-.$pythonpath\python "${create_rds_conn_script}" -u ${uname} -p ${passwd}    2>&1 >> "$transcript"
+.$pythonpath\python "${create_rds_conn_script}" -i ${instance} -u ${uname} -p ${passwd}    2>&1 >> "$transcript"
