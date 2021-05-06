@@ -27,7 +27,8 @@ template ::File.join(node['arcgis']['misc']['scripts_dir'],
     scripts_dir: node['arcgis']['misc']['scripts_dir'],
     logs_dir: node['arcgis']['misc']['scripts_dir'],
     keycodes: node['arcgis']['egdb']['keycodes'],
-    pythonpath: node['arcgis']['python']['runtime_environment']
+    pythonpath: node['arcgis']['python']['runtime_environment'],
+    sqlcmdbin: node['arcgis']['egdb']['sqlcmdbin']
   })
 end
 
@@ -76,7 +77,8 @@ execute 'Create EGDB in SQL Server' do
            node['arcgis']['egdb']['master_username'],
            node['arcgis']['egdb']['master_password'],
            node['arcgis']['egdb']['db_username'],
-           node['arcgis']['egdb']['db_password']].join(' ')
+           node['arcgis']['egdb']['db_password'],
+           node['arcgis']['egdb']['endpoint']].join(' ')
   only_if do
     !node['arcgis']['egdb']['endpoint'].nil? &&
       !node['arcgis']['egdb']['endpoint'].empty? &&

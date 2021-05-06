@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-arcgis_insights_insights 'Uninstall ArcGIS Insights' do
+arcgis_insights_insights 'Uninstall Insights for ArcGIS' do
   product_code node['arcgis']['insights']['product_code']
   run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'

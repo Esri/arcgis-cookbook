@@ -1,0 +1,38 @@
+{
+    "arcgis": {
+        "version": "10.9",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "install_system_requirements": true,
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\10.9\\Server.prvc",
+            "log_level": "WARNING",
+            "directories_root": "\\\\FILESERVER\\arcgisserver",
+            "log_dir": "C:\\arcgisserver\\logs",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "\\\\FILESERVER\\arcgisserver\\config-store",
+            "keystore_file" : "C:\\Software\\Certificates\\ssl_cert.pfx",
+            "keystore_password" : "change.it"
+        },
+        "python": {
+            "install_dir": "C:\\Python27"
+        },
+        "geoevent": {
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\10.9\\GeoEventServer.prvc"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::server]",
+        "recipe[arcgis-geoevent]"
+    ]
+}

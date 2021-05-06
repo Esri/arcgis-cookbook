@@ -21,6 +21,7 @@ arcgis_notebooks_server 'Unregister server machine' do
   server_url node['arcgis']['notebook_server']['url']
   username node['arcgis']['notebook_server']['admin_username']
   password node['arcgis']['notebook_server']['admin_password']
+  hostname node['arcgis']['notebook_server']['hostname']
   retries 5
   retry_delay 30
   action :unregister_machine

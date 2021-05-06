@@ -2,9 +2,12 @@
 
 This file is used to list changes made in each version of the arcgis-insights cookbook.
 
+## 3.7.0
+- Added support for Insights for ArcGIS 2020.3.
+
 ## 3.6.1
 - Added support for Chef Client 15.
-- Added support for ArcGIS Insights 2020.2/2020.3.
+- Added support for Insights for ArcGIS 2020.2.
 
 ## 3.6.0
 - Added support for Insights for ArcGIS 3.4/3.4.1/2020.1

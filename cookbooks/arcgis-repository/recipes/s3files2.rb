@@ -52,7 +52,7 @@ node['arcgis']['repository']['files'].each do |filename, props|
            end
 
     execute "Download #{filename}" do
-      command "aws s3 cp s3://#{s3_bucket}/#{s3_key} #{path} --region #{s3_region}"
+      command "aws s3 cp s3://#{s3_bucket}/#{s3_key} #{path} --region #{s3_region} --no-progress"
       environment keys
       not_if { ::File.exist?(::File.join(node['arcgis']['repository']['local_archives'], filename)) }
     end

@@ -19,11 +19,15 @@
 
 include_recipe 'arcgis-enterprise::install_server'
 
+arcgis_enterprise_server 'Start ArcGIS Server after upgrade' do
+  action :start
+end
+
 # Create local server logs directory
 directory node['arcgis']['server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0775'
   end
   recursive true
   not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
@@ -63,10 +67,29 @@ template ::File.join(node['arcgis']['server']['install_dir'],
   source 'hostname.properties.erb'
   variables ( {:hostname => node['arcgis']['server']['hostname']} )
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
+  notifies :delete, 'directory[Delete ArcGIS Server certificates directory]', :immediately
   not_if { node['arcgis']['server']['hostname'].empty? }
 end
 
 arcgis_enterprise_server 'Stop ArcGIS Server' do
+  action :nothing
+end
+
+# Delete SSL certificates issued to the old hostname to make ArcGIS Server
+# recreate the certificates for hostname set in hostname.properties file.
+directory 'Delete ArcGIS Server certificates directory' do
+  path ::File.join(node['arcgis']['server']['install_dir'],
+                   node['arcgis']['server']['install_subdir'],
+                   'framework', 'etc', 'certificates')
+  recursive true
+  # Do not delete certificates directory if ArcGIS Server site already exists.
+  not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
+                                     node['arcgis']['server']['install_subdir'],
+                                     'framework', 'etc', 'config-store-connection.xml')) }
+  # Do not delete certificates directory if ArcGIS Server is in upgrade mode.
+  not_if { ::File.exist?(::File.join(node['arcgis']['server']['install_dir'],
+                                     node['arcgis']['server']['install_subdir'],
+                                    'framework', 'etc', 'config-store-connection-upgrade.xml')) }
   action :nothing
 end
 
@@ -117,7 +140,7 @@ end
 
 arcgis_enterprise_server 'Configure HTTPS' do
   server_url node['arcgis']['server']['url']
-  server_admin_url node['arcgis']['server']['private_url'] + '/admin'
+  server_admin_url node['arcgis']['server']['url'] + '/admin'
   install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']

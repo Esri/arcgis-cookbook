@@ -3,6 +3,13 @@ arcgis-geoevent cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-geoevent cookbook.
 
+3.7.0
+-----
+- Added support for ArcGIS GeoEvent Server 10.9.
+- Added start_server and stop_server recipes.
+- Added support for installation without Linux superuser privileges.
+- Added support for group managed service Windows accounts (gMSA).
+
 3.6.1
 -----
 - Added support for Chef Client 15.

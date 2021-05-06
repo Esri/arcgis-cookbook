@@ -26,7 +26,8 @@ arcgis_geoevent_geoevent 'Authorize ArcGIS GeoEvent Server' do
   authorization_file_version node['arcgis']['geoevent']['authorization_file_version']
   retries 5
   retry_delay 60
-  not_if { ::File.exists?(node['arcgis']['geoevent']['cached_authorization_file']) &&
+  not_if { node['arcgis']['geoevent']['authorization_file'] == '' ||
+           ::File.exists?(node['arcgis']['geoevent']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['geoevent']['authorization_file'],
                                   node['arcgis']['geoevent']['cached_authorization_file']) }
   action :authorize
@@ -45,8 +46,9 @@ if node['platform'] == 'windows'
   arcgis_geoevent_geoevent 'Update ArcGISGeoEvent service logon account' do
     run_as_user node['arcgis']['run_as_user']
     run_as_password node['arcgis']['run_as_password']
+    not_if { node['arcgis']['run_as_msa'] }
     only_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
-    action :update_account #TODO: trigger update_account only when arcgis user account is updated
+    action :update_account
   end
 end
 
@@ -73,6 +75,7 @@ arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Server' do
   install_dir node['arcgis']['server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   run_as_password node['arcgis']['run_as_password']
+  run_as_msa node['arcgis']['run_as_msa']
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['geoevent']['product_code']) }
   else
@@ -86,8 +89,13 @@ end
 
 arcgis_geoevent_geoevent 'Configure ArcGISGeoEvent service' do
   install_dir node['arcgis']['server']['install_dir']
-  action :configure_autostart
   only_if { node['arcgis']['geoevent']['configure_autostart'] }
+  action :configure_autostart  
+end
+
+arcgis_geoevent_geoevent 'Stop ArcGIS GeoEvent Server' do
+  install_dir node['arcgis']['server']['install_dir']
+  action :stop
 end
 
 if node['platform'] == 'windows'
@@ -102,7 +110,7 @@ if node['platform'] == 'windows'
   end
 end
 
-arcgis_geoevent_geoevent 'Start ArcGIS GeoEvent' do
+arcgis_geoevent_geoevent 'Start ArcGIS GeoEvent Server' do
   install_dir node['arcgis']['server']['install_dir']
   action :start
 end

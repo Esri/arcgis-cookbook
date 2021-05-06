@@ -21,11 +21,11 @@
 
 ruby_block 'Register RDS EGDB' do
   block do
-    admin_client = ArcGIS::ServerAdminClient.new(node['arcgis']['server']['private_url'],
+    admin_client = ArcGIS::ServerAdminClient.new(node['arcgis']['server']['url'],
                                                  node['arcgis']['server']['admin_username'],
                                                  node['arcgis']['server']['admin_password'])
 
-    rest_client = ArcGIS::ServerRestClient.new(node['arcgis']['server']['private_url'],
+    rest_client = ArcGIS::ServerRestClient.new(node['arcgis']['server']['url'],
                                                node['arcgis']['server']['admin_username'],
                                                node['arcgis']['server']['admin_password'])
 

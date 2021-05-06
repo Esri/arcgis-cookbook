@@ -30,8 +30,10 @@ default['arcgis']['data_store'].tap do |data_store|
   data_store['mode'] = ''
   data_store['configure_autostart'] = true
   data_store['install_system_requirements'] = true
+  data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
+  data_store['ports'] = '2443,4369,9220,9320,9876,9900,29079-29090'
 
   case node['platform']
   when 'windows'
@@ -42,8 +44,13 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\DataStore').gsub('/', '\\')
     data_store['install_subdir'] = ''
     data_store['data_dir'] = 'C:\\arcgisdatastore'
+    data_store['local_backup_dir'] = 'C:\\arcgisbackup'
 
     case node['arcgis']['version']
+    when '10.9'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_109_177788.exe').gsub('/', '\\')
+      data_store['product_code'] = '{7A7D3A39-DBC0-48E8-B2C2-3466A84FE89E}'
     when '10.8.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_1081_175216.exe').gsub('/', '\\')
@@ -99,6 +106,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '10.9'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_109_177887.tar.gz')
     when '10.8.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_1081_175312.tar.gz')
@@ -134,7 +144,7 @@ default['arcgis']['data_store'].tap do |data_store|
     when '10.4'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_104_149449.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'                                                
+      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     else
       Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     end
@@ -163,15 +173,13 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['data_dir'] = ::File.join(data_store_install_dir,
                                          data_store_install_subdir,
                                          'usr/arcgisdatastore')
+    data_store['local_backup_dir'] = ::File.join(data_store_install_dir,
+                                                 data_store_install_subdir,
+                                                 'usr/arcgisbackup')
+
     data_store['sysctl_conf'] = '/etc/sysctl.conf'
     data_store['vm_max_map_count'] = 262144
     data_store['vm_swappiness'] = 1
-  end
-
-  if node['arcgis']['data_store']['data_dir'].nil?
-    data_store['local_backup_dir'] = ::File.join(data_store['data_dir'], 'backup')
-  else
-    data_store['local_backup_dir'] = ::File.join(node['arcgis']['data_store']['data_dir'], 'backup')
   end
 
   if node['arcgis']['data_store']['local_backup_dir'].nil?

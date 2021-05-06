@@ -1,0 +1,57 @@
+{
+  "java": {
+    "version": "11",
+    "tarball_path": "/opt/software/archives/openjdk-11_linux-x64_bin.tar.gz"
+  },
+  "tomcat": {
+    "version": "8.5.63",
+    "tarball_path": "/opt/software/archives/apache-tomcat-8.5.63.tar.gz",
+    "install_path": "/tomcat_arcgis",
+    "keystore_file": "/tomcat_arcgis/conf/resources/sslcerts/sslcert.pfx",
+    "keystore_type": "pkcs12",
+    "keystore_password": "change.it"
+  },
+  "arcgis": {
+    "version": "10.9",
+    "run_as_user": "arcgis",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "web_server": {
+      "webapp_dir": "/opt/tomcat_arcgis/webapps"
+    },
+    "server": {
+      "install_dir": "/",
+      "configure_autostart": true,
+      "install_system_requirements": true
+    },
+    "web_adaptor": {
+      "install_dir": "/"
+    },
+    "data_store": {
+      "install_dir": "/",
+      "data_dir": "/gisdata/arcgisdatastore",
+      "configure_autostart": true,
+      "install_system_requirements": true,
+      "types": "tileCache,relational"
+    },
+    "portal": {
+      "install_dir": "/",
+      "data_dir": "/arcgis/portal/usr/arcgisportal",
+      "configure_autostart": true,
+      "install_system_requirements": true
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[esri-tomcat::openjdk]",
+    "recipe[esri-tomcat]",
+    "recipe[arcgis-enterprise::install_portal]",
+    "recipe[arcgis-enterprise::webstyles]",
+    "recipe[arcgis-enterprise::install_portal_wa]",
+    "recipe[arcgis-enterprise::install_server]",
+    "recipe[arcgis-enterprise::install_server_wa]",
+    "recipe[arcgis-enterprise::install_datastore]"
+  ]
+}

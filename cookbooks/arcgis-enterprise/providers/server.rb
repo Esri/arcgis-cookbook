@@ -38,7 +38,7 @@ action :system do
 
     windows_firewall_rule 'ArcGIS Server' do
       description 'Allows connections through all ports used by ArcGIS Server'
-      local_port '1098,4000-4004,6006,6080,6099,6443'
+      local_port node['arcgis']['server']['ports']
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
@@ -46,12 +46,13 @@ action :system do
 
     windows_firewall_rule 'ArcGIS GeoAnalytics Server' do
       description 'Allows connections through all ports used by ArcGIS GeoAnalytics Server'
-      local_port '2181,2182,2190,7077,56540-56545'
+      local_port node['arcgis']['server']['geoanalytics_ports']
       protocol 'TCP'
       firewall_action :allow
       only_if { node['arcgis']['configure_windows_firewall'] }
     end
   end
+
   new_resource.updated_by_last_action(true)
 end
 
@@ -88,10 +89,10 @@ action :install do
     password = if @new_resource.run_as_msa
                  'MSA=\"True\"'
                else
-                 "PASSWORD=\"#{@new_resource.run_as_password.gsub('&', '^&')}\""
+                 "PASSWORD=\"#{@new_resource.run_as_password}\""
                end
 
-    args = "/qn INSTALLDIR=\"#{@new_resource.install_dir}\" "\
+    args = "/qn ACCEPTEULA=Yes INSTALLDIR=\"#{@new_resource.install_dir}\" "\
            "INSTALLDIR1=\"#{@new_resource.python_dir}\" "\
            "USER_NAME=\"#{@new_resource.run_as_user}\" "\
            "#{password} "\
@@ -264,23 +265,6 @@ action :create_site do
                                @new_resource.log_dir,
                                @new_resource.max_log_file_age)
 
-      admin_client.wait_until_available
-
-      #Restart ArcGIS Server on Linux to make sure the server machine SSL certificate is updated
-#      if node['platform'] != 'windows' && node['arcgis']['server']['configure_autostart']
-#        service 'arcgisserver' do
-#          action :restart
-#        end
-#
-#        admin_client.wait_until_available
-#      end
-
-      if !@new_resource.system_properties.empty?
-        Chef::Log.info('Updating ArcGIS Server system properties...')
-        sleep(120.0)
-        admin_client.update_system_properties(@new_resource.system_properties)
-      end
-
       new_resource.updated_by_last_action(true)
     end
   rescue Exception => e
@@ -412,6 +396,24 @@ action :join_cluster do
   end
 end
 
+action :set_system_properties do
+  begin
+    admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                                 @new_resource.username,
+                                                 @new_resource.password)
+    admin_client.wait_until_available
+
+    Chef::Log.info('Updating ArcGIS Server system properties...')
+
+    admin_client.update_system_properties(@new_resource.system_properties)
+
+    new_resource.updated_by_last_action(true)
+  rescue Exception => e
+    Chef::Log.error "Failed to update ArcGIS Server system properties. " + e.message
+    raise e
+  end
+end
+
 action :configure_https do
   begin
     if @new_resource.use_join_site_tool
@@ -492,6 +494,16 @@ action :configure_security_protocol do
     Chef::Log.error "Failed to update security configuration in ArcGIS Server." + e.message
     raise e
   end
+end
+
+action :register_data_item do
+  admin_client = ArcGIS::ServerAdminClient.new(@new_resource.server_url,
+                                               @new_resource.username,
+                                               @new_resource.password)
+
+  admin_client.register_data_item(@new_resource.data_item)
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :register_database do

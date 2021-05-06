@@ -297,10 +297,11 @@ module ArcGIS
     # Select the machine name that corresponds to the local machine IP address
     # from the list of machines returned by /portaladmin/machines call.
     def local_machine_name
-      local_ip_address = Addrinfo.ip(Socket.gethostname).ip_address
+      # Get local IP addresses as an array.
+      local_ip_addresses = Socket.ip_address_list
 
       machines.each do |machine|
-        if Addrinfo.ip(machine['machineName']).ip_address == local_ip_address
+        if local_ip_addresses.any? { |a| a.ip_address == Addrinfo.ip(machine['machineName']).ip_address }
           return machine['machineName']
         end
       end

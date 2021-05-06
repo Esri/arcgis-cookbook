@@ -19,8 +19,16 @@ Included cookbooks:
 * [esri-tomcat](cookbooks/esri-tomcat) - installs and configures Apache Tomcat for using with ArcGIS Web Adaptor
 * [esri-iis](cookbooks/esri-iis) - enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding
 
+Included ArcGIS deployment templates:
 
-Sample JSON attribute files for different ArcGIS deployment patterns are available at [roles](roles) folder.
+* [arcgis-datastore](templates/arcgis-datastore) -- Use this template to deploy and configure different [ArcGIS Data Store types](https://enterprise.arcgis.com/en/portal/latest/administer/windows/what-is-arcgis-data-store.htm).
+* [arcgis-egdb](templates/arcgis-egdb) -- Lets you to create [enterprise geodatabases](https://enterprise.arcgis.com/en/server/latest/manage-data/windows/enterprise-geodatabases-and-arcgis-enterprise.htm) and register them with an ArcGIS Server site.
+* [arcgis-enterprise-base](templates/arcgis-enterprise-base) -- Creates a [base ArcGIS Enterprise deployment](https://enterprise.arcgis.com/en/get-started/latest/windows/base-arcgis-enterprise-deployment.htm). 
+* [arcgis-geoevent](templates/arcgis-geoevent-server) -- Creates an [ArcGIS GeoEvent Server](https://enterprise.arcgis.com/en/geoevent/) deployment.
+* [arcgis-mission-server](templates/arcgis-mission-server) -- Deploys [ArcGIS Mission Server](https://enterprise.arcgis.com/en/mission/) and federates it with an ArcGIS Enterprise deployment.
+* [arcgis-notebook-server](templates/arcgis-notebook-server) -- Deploys [ArcGIS Notebook Server](https://enterprise.arcgis.com/en/notebook/) with an ArcGIS Enterprise deployment.
+* [arcgis-portal](templates/arcgis-portal) -- Deploys [Portal for ArcGIS](https://enterprise.arcgis.com/en/portal/).
+* [arcgis-server](templates/arcgis-server) -- Creates any of the following ArcGIS Server sites and federates them with an ArcGIS Enterprise deployment: GIS Server, ArcGIS GeoAnalytics Server, Raster Analytics Server, Image Server.
 
 See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages and cookbooks' README.md files for more information about using ArcGIS cookbooks.
 
@@ -35,7 +43,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2019 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
@@ -49,6 +57,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Chef Cookbooks)
-[](Esri Language: Ruby)

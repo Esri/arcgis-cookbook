@@ -18,6 +18,10 @@
 #
 include_recipe 'arcgis-enterprise::install_datastore'
 
+arcgis_enterprise_datastore 'Start ArcGIS Data Store' do
+  action :start
+end
+
 # Set hostidentifier and preferredidentifier in hostidentifier.properties file.
 arcgis_enterprise_datastore 'Configure hostidentifier.properties' do
   action :configure_hostidentifiers_properties
@@ -36,8 +40,9 @@ arcgis_enterprise_datastore 'Configure ArcGIS Data Store' do
   install_dir node['arcgis']['data_store']['install_dir']
   data_dir node['arcgis']['data_store']['data_dir']
   types node['arcgis']['data_store']['types']
+  mode node['arcgis']['data_store']['mode']
   run_as_user node['arcgis']['run_as_user']
-  server_url 'https://' + node['arcgis']['server']['domain_name'] + ':6443/arcgis'
+  server_url node['arcgis']['server']['url']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   retries 5

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Attributes:: default
 #
-# Copyright 2015-2020 Esri
+# Copyright 2015-2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '2.6'
+    pro['version'] = '2.7'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -38,6 +38,10 @@ default['arcgis']['pro'].tap do |pro|
     pro['authorization_tool'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro\\bin\\SoftwareAuthorizationPro.exe'
 
     case node['arcgis']['pro']['version']
+    when '2.7'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_27_176624.exe').gsub('/', '\\')
+      pro['product_code'] = '{FBBB144A-B4BE-49A0-95C4-1007E3A42FA5}'
     when '2.6'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_26_175036.exe').gsub('/', '\\')

@@ -19,6 +19,11 @@
 
 include_recipe 'arcgis-enterprise::install_portal'
 
+arcgis_enterprise_portal 'Start Portal for ArcGIS after install' do
+  tomcat_java_opts node['arcgis']['portal']['tomcat_java_opts']
+  action :start
+end
+
 # Set hostname in hostname.properties file.
 template ::File.join(node['arcgis']['portal']['install_dir'],
                      node['arcgis']['portal']['install_subdir'],
@@ -59,8 +64,6 @@ end
 # Create Site
 arcgis_enterprise_portal 'Create Portal Site' do
   portal_url node['arcgis']['portal']['url']
-  portal_private_url node['arcgis']['portal']['private_url']
-  web_context_url node['arcgis']['portal']['web_context_url']
   user_license_type_id node['arcgis']['portal']['user_license_type_id']
   authorization_file node['arcgis']['portal']['authorization_file']
   username node['arcgis']['portal']['admin_username']
@@ -71,21 +74,28 @@ arcgis_enterprise_portal 'Create Portal Site' do
   security_question node['arcgis']['portal']['security_question']
   security_question_answer node['arcgis']['portal']['security_question_answer']
   install_dir node['arcgis']['portal']['install_dir']
-  #content_dir node['arcgis']['portal']['content_dir']
   content_store_type node['arcgis']['portal']['content_store_type']
   content_store_provider node['arcgis']['portal']['content_store_provider']
   content_store_connection_string node['arcgis']['portal']['content_store_connection_string']
   object_store node['arcgis']['portal']['object_store']
-  log_level node['arcgis']['portal']['log_level']
-  log_dir node['arcgis']['portal']['log_dir']
-  max_log_file_age node['arcgis']['portal']['max_log_file_age']
   upgrade_backup node['arcgis']['portal']['upgrade_backup']
   upgrade_rollback node['arcgis']['portal']['upgrade_rollback']
-  root_cert node['arcgis']['portal']['root_cert']
-  root_cert_alias node['arcgis']['portal']['root_cert_alias']
   retries 5
   retry_delay 600
   action :create_site
+end
+
+arcgis_enterprise_portal 'Set Portal System Properties' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  log_level node['arcgis']['portal']['log_level']
+  log_dir node['arcgis']['portal']['log_dir']
+  max_log_file_age node['arcgis']['portal']['max_log_file_age']
+  system_properties node['arcgis']['portal']['system_properties']
+  retries 5
+  retry_delay 60
+  action :set_system_properties
 end
 
 arcgis_enterprise_portal 'Configure HTTPS' do
@@ -95,6 +105,8 @@ arcgis_enterprise_portal 'Configure HTTPS' do
   keystore_file node['arcgis']['portal']['keystore_file']
   keystore_password node['arcgis']['portal']['keystore_password']
   cert_alias node['arcgis']['portal']['cert_alias']
+  root_cert node['arcgis']['portal']['root_cert']
+  root_cert_alias node['arcgis']['portal']['root_cert_alias']
   not_if { node['arcgis']['portal']['keystore_file'].empty? }
   retries 5
   retry_delay 30

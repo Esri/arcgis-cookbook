@@ -1,8 +1,10 @@
 {
   "arcgis":{
-    "version":"2020.0",
-    "licensemanager":{
-      "setup":"C:\\ArcGIS\\2020.0\\LicenseManager\\Setup.exe"
+    "repository": {
+      "archives": "C:\\Software\\Archives"
+    },
+    "licensemanager": {
+      "version": "2020.1"
     }
   },
   "run_list":[

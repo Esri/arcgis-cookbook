@@ -27,7 +27,7 @@ end
 
 default['arcgis']['run_as_msa'] = false
 
-default['arcgis']['version'] = '10.8.1'
+default['arcgis']['version'] = '10.9'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false

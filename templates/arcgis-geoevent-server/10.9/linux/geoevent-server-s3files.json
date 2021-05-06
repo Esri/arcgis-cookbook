@@ -1,0 +1,34 @@
+{
+    "arcgis": {
+        "version": "10.9",
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "ArcGIS_GeoEvent_Server_109_177900.tar.gz": {
+                    "subfolder": "10.9/setups"
+                },                
+                "ArcGIS_Server_Linux_109_177864.tar.gz": {
+                    "subfolder": "10.9/setups"
+                },
+                "ArcGIS_Web_Adaptor_Java_Linux_109_177888.tar.gz": {
+                    "subfolder": "10.9/setups"
+                },
+                "apache-tomcat-8.5.63.tar.gz": {
+                  "subfolder": "10.9/thirdparty"
+                },
+                "openjdk-11_linux-x64_bin.tar.gz": {
+                  "subfolder": "10.9/thirdparty"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

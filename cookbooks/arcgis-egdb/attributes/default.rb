@@ -36,6 +36,7 @@ default['arcgis']['egdb']['connection_files_dir'] = ::File.join(
 # Use embedded PostgeSQL client from ArcGIS Data Store installed on ArcGIS Enterprise AMIs.
 if node['platform'] == 'windows'
   default['arcgis']['egdb']['postgresbin'] = 'C:\Program Files\ArcGIS\DataStore\framework\runtime\pgsql\bin'
+  default['arcgis']['egdb']['sqlcmdbin'] = 'C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn'
 else
   default['arcgis']['egdb']['postgresbin'] = '/arcgis/datastore/framework/runtime/pgsql/bin'
 end
@@ -47,3 +48,23 @@ default['arcgis']['egdb']['data_items'] = [{
   'is_managed' => true,
   'connection_type' => 'shared'
 }]
+
+# Microsoft Command Line Utilities 15 for SQL Server fails to recognize pre-requisite ODBC 17 
+# The workaround is to install ODBC 13 first
+
+default['arcgis']['egdb']['vc_redist_url'] = 'https://download.visualstudio.microsoft.com/download/pr/11100230/15ccb3f02745c7b206ad10373cbca89b/VC_redist.x64.exe'
+default['arcgis']['egdb']['vc_redist_path'] = ::File.join(node['arcgis']['repository']['setups'],
+                                                              'VC_redist.x64.exe').gsub('/', '\\')
+
+default['arcgis']['egdb']['msodbcsql13_msi_url'] = 'https://download.microsoft.com/download/D/5/E/D5EEF288-A277-45C8-855B-8E2CB7E25B96/x64/msodbcsql.msi'
+default['arcgis']['egdb']['msodbcsql13_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],
+                                                              'msodbcsql13.msi').gsub('/', '\\')
+
+default['arcgis']['egdb']['msodbcsql17_msi_url'] = 'https://download.microsoft.com/download/E/6/B/E6BFDC7A-5BCD-4C51-9912-635646DA801E/en-US/17.5.2.1/x64/msodbcsql.msi'
+default['arcgis']['egdb']['msodbcsql17_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],
+                                                              'msodbcsql17.msi').gsub('/', '\\')
+
+default['arcgis']['egdb']['mssqlcmdlnutils_msi_url'] = 'https://download.microsoft.com/download/4/C/C/4CC1A229-3C56-4A7F-A3BA-F903C73E5895/EN/x64/MsSqlCmdLnUtils.msi'
+default['arcgis']['egdb']['mssqlcmdlnutils_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],
+                                                              'msodbcsql.msi').gsub('/', '\\')
+                                                              

@@ -40,7 +40,8 @@ ArcPy does not support creating databases in Amazon RDS database servers. The co
 * `node['arcgis']['egdb']['master_password']` = RDS DB instance master user password. Default password is `nil`.
 * `node['arcgis']['egdb']['db_username']` = Geodatabase username. Default username is `sde`.
 * `node['arcgis']['egdb']['db_password']` = Geodatabase user password. Default password is `node['arcgis']['egdb']['master_password']`.
-* `node['arcgis']['egdb']['postgresbin']` = Path to PostgreSQL client bin directory. Default path s `C:\Program Files\ArcGIS\DataStore\framework\runtime\pgsql\bin` on wondows and `/arcgis/datastore/framework/runtime/pgsql/bin` on Linux.
+* `node['arcgis']['egdb']['postgresbin']` = Path to PostgreSQL client bin directory. Default path s `C:\Program Files\ArcGIS\DataStore\framework\runtime\pgsql\bin` on Windows and `/arcgis/datastore/framework/runtime/pgsql/bin` on Linux.
+* `node['arcgis']['egdb']['sqlcmdbin']` = Path to Miscrosoft SQL Server Client SDK ODBC Tools 17 Binn directory. Default path s `C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn` on Windows.
 * `node['arcgis']['egdb']['connection_files_dir']` = Directory path for geodatabase connection files  created by the recipes. Default directory is `node['arcgis']['misc']['scripts_dir']/connection_files`.
 * `node['arcgis']['egdb']['data_items']` = Array with properties of geodatabases. Default value is
 
@@ -78,7 +79,7 @@ Registers EGDBs with ArcGIS Server.
 
 ### arcgis-egdb::sqlcmd
 
-Installs sqlcmd utility used by SQL Server EGDB configuration scripts.
+Installs Microsoft SQL Server ODBC drivers and command line utilities used by SQL Server EGDB configuration scripts.
 
 
 ## Usage
@@ -135,7 +136,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ## Licensing
 
-Copyright 2020 Esri
+Copyright 2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
