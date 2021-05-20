@@ -1,6 +1,0 @@
-source 'https://supermarket.chef.io'
-
-metadata
-
-cookbook  'openssl', '~> 4.0'
-cookbook  'windows', '~> 1.39'
