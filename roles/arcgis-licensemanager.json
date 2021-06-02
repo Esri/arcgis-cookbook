@@ -8,6 +8,7 @@
     }
   },
   "run_list":[
-    "recipe[arcgis-desktop::licensemanager]"
+    "recipe[arcgis-desktop::licensemanager]",
+    "recipe[arcgis-desktop::licensemanager-set-port]"
   ]
 }
