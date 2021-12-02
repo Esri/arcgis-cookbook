@@ -13,6 +13,7 @@ Requirements
 * 10.8
 * 10.8.1
 * 10.9
+* 10.9.1
 
 ### Supported ArcGIS software
 
@@ -30,8 +31,12 @@ Requirements
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
-* Ubuntu 14.04, 16.04, 18.04
-* Rhel 6.5, 7.0
+* Windows Server 2022
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* SUSE Linux Enterprise Server 15
+* CentOS Linux 8
+* Oracle Linux 8
 
 ### Dependencies
 
@@ -51,7 +56,7 @@ Attributes
 
 #### General
 
-* `node['arcgis']['version']` = ArcGIS version. Default value is `10.8.1`.
+* `node['arcgis']['version']` = ArcGIS version. Default value is `10.9.1`.
 * `node['arcgis']['run_as_user']` = Account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_password']` = Password for the account used to run ArcGIS Server, 
 Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
@@ -125,6 +130,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is`Pa$$w0rdPa$$w0rd`.
 * `node['arcgis']['server']['allowed_admin_access_ips']` = A comma separated list of client machine IP addresses that are allowed access to ArcGIS Server. `''`.
 * `node['arcgis']['server']['ports]` = Ports opened in Windows firewall for ArcGIS Server. Default ports are `1098,4000-4004,6006,6080,6099,6443`.
 * `node['arcgis']['server']['geoanalytics_ports]` = Ports opened in Windows firewall for ArcGIS GeoAnalytics Server. Default ports are `2181,2182,2190,7077,12181,12182,12190,56540-56545`.
+* `node['arcgis']['server']['pull_license]` = If set to `true`, server_node recipe pulls ArcGIS Server license from other server machines in the site. The default value is `false`.
 
 #### Web Adaptor
 
@@ -396,6 +402,10 @@ Installs ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Ada
 ### arcgis-enterprise::enterprise_uninstalled
 
 Uninstalls ArcGIS Server, Portal for ArcGIS, ArcGIS Data Store, and ArcGIS Web Adaptors for server and portal.
+
+### arcgis-enterprise::unfederate_server
+
+Unfederates server from Portal for ArcGIS.
 
 ### arcgis-enterprise::unregister_machine
 

@@ -85,6 +85,13 @@ arcgis_enterprise_portal 'Create Portal Site' do
   action :create_site
 end
 
+directory node['arcgis']['portal']['log_dir'] do
+  owner node['arcgis']['run_as_user']
+  mode '0755' if node['platform'] != 'windows'
+  recursive true
+  action :create
+end
+
 arcgis_enterprise_portal 'Set Portal System Properties' do
   portal_url node['arcgis']['portal']['url']
   username node['arcgis']['portal']['admin_username']
@@ -98,6 +105,19 @@ arcgis_enterprise_portal 'Set Portal System Properties' do
   action :set_system_properties
 end
 
+arcgis_enterprise_portal 'Import Root Certificates' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  root_cert node['arcgis']['portal']['root_cert']
+  root_cert_alias node['arcgis']['portal']['root_cert_alias']
+  not_if { node['arcgis']['portal']['root_cert'].empty? ||
+           node['arcgis']['portal']['root_cert_alias'].empty?}
+  retries 5
+  retry_delay 30
+  action :import_root_cert
+end
+
 arcgis_enterprise_portal 'Configure HTTPS' do
   portal_url node['arcgis']['portal']['url']
   username node['arcgis']['portal']['admin_username']
@@ -105,9 +125,8 @@ arcgis_enterprise_portal 'Configure HTTPS' do
   keystore_file node['arcgis']['portal']['keystore_file']
   keystore_password node['arcgis']['portal']['keystore_password']
   cert_alias node['arcgis']['portal']['cert_alias']
-  root_cert node['arcgis']['portal']['root_cert']
-  root_cert_alias node['arcgis']['portal']['root_cert_alias']
-  not_if { node['arcgis']['portal']['keystore_file'].empty? }
+  not_if { node['arcgis']['portal']['keystore_file'].empty? || 
+           node['arcgis']['portal']['cert_alias'].empty? }
   retries 5
   retry_delay 30
   action :configure_https

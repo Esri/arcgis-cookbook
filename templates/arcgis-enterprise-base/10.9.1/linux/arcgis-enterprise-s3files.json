@@ -1,0 +1,42 @@
+{
+    "arcgis": {
+      "version": "10.9.1",
+      "repository": {
+        "local_archives": "/opt/software/archives",
+        "server": {
+            "s3bucket": "arcgisstore-us-east-1",
+            "region": "us-east-1",
+            "aws_access_key": "",
+            "aws_secret_access_key": ""
+
+        },
+        "files": {
+          "ArcGIS_Server_Linux_1091_180182.tar.gz": {
+            "subfolder": "10.9.1/setups"
+          },
+          "Portal_for_ArcGIS_Linux_1091_180199.tar.gz": {
+            "subfolder": "10.9.1/setups"
+          },
+          "Portal_for_ArcGIS_Web_Styles_Linux_1091_180201.tar.gz": {
+            "subfolder": "10.9.1/setups"
+          },
+          "ArcGIS_DataStore_Linux_1091_180204.tar.gz": {
+            "subfolder": "10.9.1/setups"
+          },
+          "ArcGIS_Web_Adaptor_Java_Linux_1091_180206.tar.gz": {
+            "subfolder": "10.9.1/setups"
+          },
+          "apache-tomcat-9.0.48.tar.gz": {
+            "subfolder": "10.9.1/thirdparty"
+          },
+          "openjdk-11_linux-x64_bin.tar.gz": {
+            "subfolder": "10.9.1/thirdparty"
+          }
+        }
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-repository::s3files2]"
+    ]
+  }
+  

@@ -67,6 +67,7 @@ attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
 attribute :use_join_site_tool, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :pull_license, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :user_store_config, :kind_of => Hash, :default => {}
 attribute :role_store_config, :kind_of => Hash, :default => {}
 attribute :privileges, :kind_of => Hash, :default => {}

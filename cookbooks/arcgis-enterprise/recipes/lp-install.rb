@@ -30,7 +30,7 @@ if node['platform'] == 'windows'
   windows_package 'Install webadaptorLP' do
     source node['arcgis']['web_adaptor']['lp-setup']
     action :install
-    only_if Utils.product_installed?(node['arcgis']['web_adaptor']['product_code'])
+    only_if Utils.product_installed?(node['arcgis']['web_adaptor']['product_codes'][0])
   end
   windows_package 'Install Datastore HelpLP' do
     source node['arcgis']['data_store']['lp-setup']

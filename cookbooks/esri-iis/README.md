@@ -16,6 +16,7 @@ Requirements
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
+* Windows Server 2022
 
 ### Dependencies
 
@@ -31,6 +32,17 @@ The following cookbooks are required:
 * `node['arcgis']['iis']['web_site']` = IIS web site to configure. Dafault value is `Default Web Site`.
 * `node['arcgis']['iis']['replace_https_binding']` = If false, the current HTTPS binding is not changed if it is already configured. Default value is `false`.
 * `node['arcgis']['iis']['features']` = An array of windows features to be installed with IIS. Default value depends on Windows version.
+
+Recipes
+-------
+
+## esri-iis::default
+
+Enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding.
+
+## esri-iis::install
+
+Enables IIS features required by ArcGIS Web Adaptor (IIS).
 
 ## Usage
 

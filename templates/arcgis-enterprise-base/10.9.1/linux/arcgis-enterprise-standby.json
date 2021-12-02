@@ -1,0 +1,68 @@
+{
+    "java": {
+        "version": "11",
+        "tarball_path": "/opt/software/archives/openjdk-11_linux-x64_bin.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.48",
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.48",
+        "keystore_file": "/opt/tomcat_arcgis_9.0.48/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "change.it"
+    },
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.48/webapps"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "primary_server_url": "https://primary.com:6443/arcgis",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "log_dir": "/opt/arcgis/server/usr/logs",
+            "authorization_file": "/opt/software/authorization_files/10.9/server.prvc",
+            "install_system_requirements": true,
+            "wa_name": "server"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "preferredidentifier": "hostname",
+            "install_system_requirements": true,
+            "types": "tileCache,relational"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "primary_machine_url": "https://primary.com:7443",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "install_system_requirements": true,
+            "wa_name": "portal"
+        },
+        "web_adaptor": {
+            "install_dir": "/opt",
+            "admin_access": true,
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal_standby]",
+        "recipe[arcgis-enterprise::portal_wa]",
+        "recipe[arcgis-enterprise::server_node]",
+        "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::datastore_standby]"
+    ]
+}

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 default['arcgis']['licensemanager'].tap do |licensemanager|
-  licensemanager['version'] = '2020.1'
+  licensemanager['version'] = '2021.1'
 
   case node['platform']
   when 'windows'
@@ -28,6 +28,14 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
     case node['arcgis']['licensemanager']['version']
+    when '2021.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2021_1_180127.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{DA36A877-1BF2-4E28-9CE3-D3A07FB645A3}'      
+    when '2021.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2021_0_177928.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{9DDD72DA-75D2-4FB0-BC19-25F8B53254FF}'      
     when '2020.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2020_1_176572.exe').gsub('/', '\\')
@@ -82,6 +90,12 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['licensemanager']['version']
 
     case node['arcgis']['licensemanager']['version']
+    when '2021.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2021_1_180145.tar.gz')      
+    when '2021.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2021.0_177950.tar.gz')      
     when '2020.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Linux_2020_1_176584.tar.gz')

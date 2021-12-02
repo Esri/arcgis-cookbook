@@ -23,7 +23,7 @@ include_recipe 'esri-tomcat::configure_ssl'
 if node['tomcat']['forward_ports']
   # Forward port 80 to 8080 and 443 to 8443 using firewalld or iptables.
   case node['platform']
-  when 'centos', 'redhat', 'rhel', 'amazon'
+  when 'centos', 'redhat', 'rhel', 'amazon', 'oracle', 'suse'
     include_recipe 'esri-tomcat::firewalld'
   else
     include_recipe 'esri-tomcat::iptables'

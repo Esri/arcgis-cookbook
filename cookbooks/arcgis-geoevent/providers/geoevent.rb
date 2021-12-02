@@ -187,6 +187,14 @@ action :start  do
       action [:enable, :start]
     end
 
+    # Give the service 30 - 60 seconds to complete its start-up,
+    # so that the Kafka and Zookeeper resources are initialized.
+    ruby_block 'Wait for GeoEvent gateway service to start' do
+      block do
+        sleep(30)
+      end
+    end
+
     service "ArcGISGeoEvent" do
       supports :status => true, :restart => true, :reload => true
       timeout 180
@@ -197,6 +205,12 @@ action :start  do
       service "geoeventGateway" do
         supports :status => true, :restart => true, :reload => true
         action [:enable, :start]
+      end
+
+      ruby_block 'Wait for GeoEvent gateway service to start' do
+        block do
+          sleep(30)
+        end
       end
 
       service "arcgisgeoevent" do

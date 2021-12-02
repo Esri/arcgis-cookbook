@@ -19,7 +19,7 @@
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :post_install, :create_site, :join_site,
-        :unregister_machine, :set_system_properties
+        :unregister_machine, :unregister_web_adaptors, :set_system_properties
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -396,7 +396,11 @@ action :join_site do
                                                        @new_resource.password)
 
   admin_client.wait_until_available
-  if admin_client.site_exist?
+
+  if admin_client.upgrade_required?
+    Chef::Log.info('Completing ArcGIS Notebook Server upgrade...')
+    admin_client.complete_upgrade
+  elsif admin_client.site_exist?
     Chef::Log.warn('The machine has already joined an ArcGIS Notebook Server site.')
   else
     admin_client.join_site(@new_resource.primary_server_url)
@@ -404,23 +408,30 @@ action :join_site do
 end
 
 action :unregister_machine do
-  begin
-    admin_client = ArcGIS::NotebookServerAdminClient.new(@new_resource.server_url,
-                                                         @new_resource.username,
-                                                         @new_resource.password)
+  admin_client = ArcGIS::NotebookServerAdminClient.new(@new_resource.server_url,
+                                                       @new_resource.username,
+                                                       @new_resource.password)
 
-    admin_client.wait_until_available
+  admin_client.wait_until_available
 
-    Chef::Log.info('Unregistering server machine...')
+  Chef::Log.info('Unregistering server machine...')
 
-    machine_name = @new_resource.hostname
-    machine_name = node['fqdn'] if machine_name.empty?
+  machine_name = @new_resource.hostname
+  machine_name = node['fqdn'] if machine_name.empty?
 
-    admin_client.unregister_machine(machine_name)
-  rescue Exception => e
-    Chef::Log.error "Failed to unregister server machine. " + e.message
-    raise e
-  end
+  admin_client.unregister_machine(machine_name)
+end
+
+action :unregister_web_adaptors do
+  admin_client = ArcGIS::NotebookServerAdminClient.new(@new_resource.server_url,
+                                                       @new_resource.username,
+                                                       @new_resource.password)
+
+  admin_client.wait_until_available
+
+  Chef::Log.info('Unregistering ArcGIS Notebook Server Web Adaptors...')
+
+  admin_client.unregister_web_adaptors
 end
 
 action :set_system_properties do

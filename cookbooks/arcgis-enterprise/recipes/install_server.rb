@@ -70,17 +70,39 @@ arcgis_enterprise_server 'Setup ArcGIS Server' do
   action :install
 end
 
+arcgis_enterprise_server 'Configure arcgisserver service' do
+  install_dir node['arcgis']['server']['install_dir']
+  only_if { node['arcgis']['server']['configure_autostart'] }
+  action :configure_autostart
+end
+
+# AWS specific actions to disable EC2StartupObserver Node Agent plugin.
+
 # Disable all NodeAgent plugins on AWS/EC2
 template ::File.join(node['arcgis']['server']['install_dir'],
   node['arcgis']['server']['install_subdir'],
   'framework', 'etc', 'NodeAgentExt.xml') do
   source 'NodeAgentExt.xml.erb'
+  notifies :delete, 'file[Delete hostname.properties]', :immediately
+  notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server after replacing NodeAgentExt.xml]', :immediately  
   only_if { node['arcgis']['cloud']['provider'] == 'ec2' &&
             node['arcgis']['server']['disable_nodeagent_plugins'] }
 end
 
-arcgis_enterprise_server 'Configure arcgisserver service' do
-  install_dir node['arcgis']['server']['install_dir']
-  only_if { node['arcgis']['server']['configure_autostart'] }
-  action :configure_autostart
+# Delete hostname.properties file after NodeAgentExt.xml is replaced
+file 'Delete hostname.properties' do
+  path ::File.join(node['arcgis']['server']['install_dir'],
+                   node['arcgis']['server']['install_subdir'],
+                   'framework', 'etc', 'hostname.properties')
+  action :nothing
+end
+
+# Restart ArcGIS Server after deleting hostname.properties
+arcgis_enterprise_server 'Stop ArcGIS Server after replacing NodeAgentExt.xml' do
+  notifies :start, 'arcgis_enterprise_server[Start ArcGIS Server after replacing NodeAgentExt.xml]', :immediately
+  action :nothing
+end
+
+arcgis_enterprise_server 'Start ArcGIS Server after replacing NodeAgentExt.xml' do
+  action :nothing
 end

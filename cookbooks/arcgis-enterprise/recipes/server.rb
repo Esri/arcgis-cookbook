@@ -30,7 +30,8 @@ arcgis_enterprise_server 'Authorize ArcGIS Server' do
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
-  not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
+  not_if { node['arcgis']['cache_authorization_files'] &&
+           ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
   action :authorize

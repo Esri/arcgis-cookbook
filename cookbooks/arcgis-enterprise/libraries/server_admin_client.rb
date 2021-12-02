@@ -46,8 +46,8 @@ module ArcGIS
       @generate_token_url = generate_token_url
     end
 
-    def wait_until_available
-      Utils.wait_until_url_available(@server_url + '/admin/?f=json')
+    def wait_until_available(redirects = 0)
+      Utils.wait_until_url_available(@server_url + '/admin/?f=json', redirects)
     end
 
     def site_exist?
@@ -232,13 +232,14 @@ module ArcGIS
       validate_response(response)
     end
 
-    def join_site(primary_server_url)
+    def join_site(primary_server_url, pull_license = false)
       request = Net::HTTP::Post.new(URI.parse(
         @server_url + '/admin/joinSite').request_uri)
 
       request.set_form_data('username' => @admin_username,
                             'password' => @admin_password,
                             'adminURL' => primary_server_url + '/admin',
+                            'pullLicense' => pull_license,
                             'f' => 'json')
 
       response = send_request(request, @server_url)
@@ -741,6 +742,23 @@ module ArcGIS
       response = send_request(request, @server_url)
 
       validate_response(response)
+    end
+
+    def system_properties
+      request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/system/properties').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token,
+                            'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
     end
 
     def update_system_properties(properties)

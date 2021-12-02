@@ -54,11 +54,19 @@ action :install do
   if node['platform'] == 'windows'
     # uninstall older WA versions
     installed_code = Utils.wa_product_code(@new_resource.instance_name,
-                                           node['arcgis']['web_adaptor']['product_codes'])
+                                           node['arcgis']['web_adaptor']['all_product_codes'])
     if !installed_code.nil?
+      # Stop IIS before uninstalling ArcGIS Web Adaptor to make sure the all the
+      # Web Adaptor's web apps files in C:\wwwroot directory are closed and
+      # deleted by the uninstall.
+      Utils.retry_ShellOut('net stop W3SVC /yes', 5, 60, {:timeout => 3600})
+
       cmd = Mixlib::ShellOut.new("msiexec /qn /x #{installed_code}", {:timeout => 3600})
       cmd.run_command
       cmd.error!
+
+      # Start IIS after ArcGIS Web Adaptor is uninstalled.
+      Utils.retry_ShellOut('net start W3SVC /yes', 5, 60, {:timeout => 3600})
     end
 
     cmd = @new_resource.setup

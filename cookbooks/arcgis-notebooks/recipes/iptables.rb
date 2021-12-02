@@ -32,7 +32,7 @@ when 'ubuntu', 'debian'
   execute 'iptables-save > /etc/iptables/rules.v4' do
     only_if { node['arcgis']['cloud']['provider'] == 'ec2' }
   end
-when 'rhel', 'redhat', 'centos'
+when 'rhel', 'redhat', 'centos', 'oracle'
   execute 'iptables-save > /etc/sysconfig/iptables' do
     only_if { node['arcgis']['cloud']['provider'] == 'ec2' }
   end

@@ -1,4 +1,4 @@
-default['tomcat']['version'] = '8.5.63'
+default['tomcat']['version'] = '9.0.48'
 
 default['tomcat']['instance_name'] = 'arcgis'
 default['tomcat']['install_path'] = '/opt/tomcat_' + node['tomcat']['instance_name'] + '_' + node['tomcat']['version']
@@ -7,7 +7,7 @@ default['tomcat']['tarball_path'] = "#{Chef::Config['file_cache_path']}/apache-t
 default['tomcat']['user'] = 'tomcat_' + node['tomcat']['instance_name']
 default['tomcat']['group'] = 'tomcat_' + node['tomcat']['instance_name']
 
-default['tomcat']['ssl_enabled_protocols'] ='TLSv1.2,TLSv1.1,TLSv1'
+default['tomcat']['ssl_enabled_protocols'] = 'TLSv1.3,TLSv1.2'
 default['tomcat']['keystore_file']  = ''
 if ENV['TOMCAT_KEYSTORE_PASSWORD'].nil?
   default['tomcat']['keystore_password']  = ''

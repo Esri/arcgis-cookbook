@@ -37,6 +37,7 @@ attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
 attribute :store, :kind_of => String, :default => 'relational'
+attribute :backup_type, :kind_of => String, :default => 'fs'
 attribute :backup_location, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :preferredidentifier, :kind_of => String, :default => 'hostname'

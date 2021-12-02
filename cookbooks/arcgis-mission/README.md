@@ -11,6 +11,7 @@ Requirements
 * 10.8
 * 10.8.1
 * 10.9
+* 10.9.1
 
 ### Supported ArcGIS software
 
@@ -18,11 +19,15 @@ Requirements
 
 ### Platforms
 
-* Microsoft Windows Server 2019 Standard and Datacenter
-* Microsoft Windows Server 2016 Standard and Datacenter
 * Microsoft Windows Server 2012 R2 Standard and Datacenter
-* Ubuntu 16.04, 18.04
-* Rhel 6.5, 7.0
+* Microsoft Windows Server 2016 Standard and Datacenter
+* Microsoft Windows Server 2019 Standard and Datacenter
+* Microsoft Windows Server 2022 Standard and Datacenter
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* SUSE Linux Enterprise Server 15
+* CentOS Linux 8
+* Oracle Linux 8
 
 ### Dependencies
 
@@ -51,7 +56,7 @@ Attributes
 * `node['arcgis']['mission_server']['log_dir']` = ArcGIS Mission Server log directory. Default value is `C:\arcgismissionserver\logs` on Windows and `/<install directory>/usr/logs` on Linux.
 * `node['arcgis']['mission_server']['max_log_file_age']` = ArcGIS Mission Server maximum log file age. Default value is `90`.
 * `node['arcgis']['mission_server']['setup_archive']` = Path to ArcGIS Mission Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['mission_server']['setup']` = The location of ArcGIS Mission Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS10.8\MissionServer\Setup.exe` on Windows and `/opt/arcgis/10.8/MissionServer_Linux/Setup` on Linux.
+* `node['arcgis']['mission_server']['setup']` = The location of ArcGIS Mission Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS10.9.1\MissionServer\Setup.exe` on Windows and `/opt/arcgis/10.9.1/MissionServer/Setup` on Linux.
 * `node['arcgis']['mission_server']['configure_autostart']` = If set to true, on Linux the Mission Server is configured to start with the operating system. Default value is `true`.
 * `node['arcgis']['mission_server']['admin_username']` = Primary ArcGIS Mission Server administrator user name. Default user name is `admin`.
 * `node['arcgis']['mission_server']['admin_password']` = Primary ArcGIS Mission Server administrator password. Default value is `change.it`.
@@ -71,6 +76,10 @@ Installs and configures ArcGIS Mission Server.
 ### arcgis-mission::federation
 
 Federates ArcGIS Mission Server with Portal for ArcGIS and enables Mission role.
+
+# arcgis-mission::fileserver
+
+Configures shared directories for ArcGIS Mission Server on file server machine.
 
 ### arcgis-mission::install_server
 
@@ -100,9 +109,13 @@ Uninstalls ArcGIS Mission Server.
 
 Uninstalls ArcGIS Web Adaptor for ArcGIS Mission Server.
 
-### arcgis-notebooks::unregister_machine
+### arcgis-mission::unregister_machine
 
-Unregisters server machine from the ArcGIS Notebook Server site.
+Unregisters server machine from the ArcGIS Mission Server site.
+
+### arcgis-mission::unregister_server_wa
+
+Unregisters all ArcGIS Mission Server Web Adaptors.
 
 Usage
 -----

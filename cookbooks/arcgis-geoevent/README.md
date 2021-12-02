@@ -13,6 +13,7 @@ Requirements
 * 10.8
 * 10.8.1
 * 10.9
+* 10.9.1
 
 ### Supported ArcGIS software
 
@@ -26,8 +27,13 @@ Requirements
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
-* Ubuntu 14.04, 16.04, 18.04
-* Rhel 6.5, 7.0
+* Windows Server 2022
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* SUSE Linux Enterprise Server 15
+* CentOS Linux 8
+* Oracle Linux 8
+
 
 ### Dependencies
 
@@ -49,6 +55,14 @@ Attributes
 
 Recipes
 -------
+
+### arcgis-geoevent::admin_reset
+
+Administratively resets GeoEvent Server.
+
+> Deletes the Apache ZooKeeper files (to administratively clear the GeoEvent Server configuration), the product’s runtime files (to force the system framework to be rebuilt), and removes previously received event messages (by deleting Kafka topic queues from disk) is how system administrators reset a GeoEvent Server instance to look like the product has just been installed.
+
+> If you have custom components in the C:\Program Files\ArcGIS\Server\GeoEvent\deploy folder, move these from the \deploy folder to a local temporary folder, while GeoEvent Server is running, to prevent the component from being restored (from the distributed configuration store) when GeoEvent Server is restarted. Also, make sure you have a copy of the most recent XML export of your GeoEvent Server configuration if you want to save the elements you have created.
 
 ### arcgis-geoevent::default
 

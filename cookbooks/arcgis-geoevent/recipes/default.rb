@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Recipe:: default
 #
-# Copyright 2015 Esri
+# Copyright 2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ arcgis_geoevent_geoevent 'Authorize ArcGIS GeoEvent Server' do
   retries 5
   retry_delay 60
   not_if { node['arcgis']['geoevent']['authorization_file'] == '' ||
+           node['arcgis']['cache_authorization_files'] &&
            ::File.exists?(node['arcgis']['geoevent']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['geoevent']['authorization_file'],
                                   node['arcgis']['geoevent']['cached_authorization_file']) }
@@ -39,6 +40,7 @@ file node['arcgis']['geoevent']['cached_authorization_file'] do
   end
   sensitive true
   subscribes :create, 'arcgis_geoevent_geoevent[Authorize ArcGIS GeoEvent Server]', :immediately
+  only_if { node['arcgis']['cache_authorization_files'] }
   action :nothing
 end
 

@@ -1,0 +1,20 @@
+{
+    "arcgis": {
+      "version": "10.9.1",
+      "run_as_user": "arcgis", 
+      "run_as_password": "Pa$$w0rdPa$$w0rd",
+      "repository": {
+        "archives": "C:\\Software\\Archives",
+        "setups": "C:\\Software\\Setups"
+      },
+      "mission_server": {
+        "wa_name": "mission"
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-enterprise::system]",
+      "recipe[esri-iis::install]",
+      "recipe[arcgis-mission::install_server_wa]"
+    ]
+  }
+  

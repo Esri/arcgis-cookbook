@@ -12,6 +12,7 @@ Requirements
 * 10.8
 * 10.8.1
 * 10.9
+* 10.9.1
 
 ### Supported ArcGIS software
 
@@ -19,8 +20,10 @@ Requirements
 
 ### Platforms
 
-* Ubuntu 16.04, 18.04
-* Rhel 6.5, 7.0
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* CentOS Linux 8
+* Oracle Linux 8
 
 ### Dependencies
 
@@ -83,6 +86,10 @@ Installs Docker engine.
 
 Federates ArcGIS Notebook Server with Portal for ArcGIS and enables NotebookServer role.
 
+### arcgis-notebooks::fileserver
+
+Configures shared directories for ArcGIS Notebook Server on file server machine.
+
 ### arcgis-notebooks::iptables
 
 Reject Docker containers access to EC2 instance metadata IP address.
@@ -122,6 +129,10 @@ Uninstalls ArcGIS Web Adaptor for ArcGIS Notebook Server.
 ### arcgis-notebooks::unregister_machine
 
 Unregisters server machine from the ArcGIS Notebook Server site.
+
+### arcgis-notebooks::unregister_server_wa
+
+Unregisters all ArcGIS Notebook Server Web Adaptors.
 
 Usage
 -----

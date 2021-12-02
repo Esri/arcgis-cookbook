@@ -3,6 +3,11 @@ arcgis cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis cookbook.
 
+3.8.0
+-----
+- Added support for ArcGIS 10.9.1.
+- Added arcgis-workflow-manager cookbook
+
 3.7.0
 -----
 - Added support for ArcGIS 10.9.

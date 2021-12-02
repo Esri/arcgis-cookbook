@@ -23,7 +23,5 @@ arcgis_enterprise_server 'Unregister ArcGIS Server Web Adaptors' do
   install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
-  retries 5
-  retry_delay 30
   action :unregister_web_adaptors
 end

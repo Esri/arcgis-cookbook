@@ -20,6 +20,7 @@ Consult the ArcGIS GeoEvent Server 10.9 system requirements documentation for th
 * Windows
   * Windows Server 2016 Standard and Datacenter
   * Windows Server 2019 Standard and Datacenter
+  * Windows Server 2022 Standard and Datacenter  
 * Linux
   * Ubuntu Server 18.04 LTS
   * Ubuntu Server 20.04 LTS

@@ -17,6 +17,11 @@
 # limitations under the License.
 #
 
+# Install firewalld if it's not already installed
+package 'firewalld' do
+  action :install
+end
+
 service 'enable firewalld' do
   service_name 'firewalld'
   supports :status => true, :restart => true, :reload => true

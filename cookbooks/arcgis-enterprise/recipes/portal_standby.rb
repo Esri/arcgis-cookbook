@@ -47,16 +47,11 @@ arcgis_enterprise_portal 'Start Portal for ArcGIS' do
   action :start
 end
 
-# Authorize portal on the machine or validate the license file if
-# user type licensing is used
-arcgis_enterprise_portal 'Authorize Portal for ArcGIS' do
-  authorization_file node['arcgis']['portal']['authorization_file']
-  authorization_file_version node['arcgis']['portal']['authorization_file_version']
-  user_license_type_id node['arcgis']['portal']['user_license_type_id']
-  portal_url node['arcgis']['portal']['url']
-  username node['arcgis']['portal']['admin_username']
-  password node['arcgis']['portal']['admin_password']
-  action :authorize
+directory node['arcgis']['portal']['log_dir'] do
+  owner node['arcgis']['run_as_user']
+  mode '0755' if node['platform'] != 'windows'
+  recursive true
+  action :create
 end
 
 arcgis_enterprise_portal 'Join Portal Site' do

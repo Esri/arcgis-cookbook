@@ -19,7 +19,8 @@
 
 [ node['arcgis']['server']['directories_root'],
   node['arcgis']['portal']['data_dir'],
-  node['arcgis']['data_store']['data_dir'] ].each do |dir|
+  node['arcgis']['data_store']['data_dir'],
+  node['arcgis']['data_store']['local_backup_dir'] ].each do |dir|
   directory dir do
     recursive true
     action :delete

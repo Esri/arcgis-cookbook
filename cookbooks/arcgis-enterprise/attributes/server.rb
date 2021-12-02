@@ -70,6 +70,7 @@ default['arcgis']['server'].tap do |server|
   server['configure_autostart'] = true
   server['install_system_requirements'] = true
   server['use_join_site_tool'] = false
+  server['pull_license'] = false
   server['soc_max_heap_size'] = 64
   server['protocol'] = 'HTTPS'
   server['authentication_mode'] = 'ARCGIS_TOKEN'
@@ -124,6 +125,12 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '10.9.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_1091_180041.exe').gsub('/', '\\')
+      server['product_code'] = '{E4A5FD24-5C61-4846-B084-C7AD4BB1CF19}'
+      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
+                                                                     "ArcGISx6410.9").gsub('/', '\\')
     when '10.9'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_109_177775.exe').gsub('/', '\\')
@@ -242,6 +249,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '10.9.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_1091_180182.tar.gz')
     when '10.9'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_109_177864.tar.gz')

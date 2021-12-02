@@ -12,6 +12,12 @@ Requirements
 * 2020.1
 * 2020.2
 * 2020.3
+* 2021.1
+* 2021.1.1
+* 2021.2
+* 2021.2.1
+* 2021.3
+* 2021.3.1
 
 ### Platforms
 
@@ -19,8 +25,13 @@ Requirements
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
-* Ubuntu 14.04, 16.04, 18.04
-* Rhel 6.5, 7.0
+* Windows Server 2022
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* SUSE Linux Enterprise Server 15
+* CentOS Linux 8
+* Oracle Linux 8
+
 
 ### Dependencies
 
@@ -32,7 +43,7 @@ The following cookbooks are required:
 Attributes
 ----------
 
-* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2020.3`
+* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2021.3.1`
 * `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights version setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
 * `node['arcgis']['insights']['setup']` = The location of ArcGIS Insights setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.

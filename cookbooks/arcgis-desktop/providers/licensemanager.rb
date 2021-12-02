@@ -73,7 +73,7 @@ action :install do
 
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
-    args = "/qn ADDLOCAL=ALL INSTALLDIR=\"#{@new_resource.install_dir}\" INSTALLDIR1=\"#{@new_resource.python_dir}\""
+    args = "/qn ACCEPTEULA=Yes ADDLOCAL=ALL INSTALLDIR=\"#{@new_resource.install_dir}\""
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}")
     cmd.run_command

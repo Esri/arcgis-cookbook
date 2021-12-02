@@ -84,6 +84,10 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '10.9.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_1091_180092.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{2BE7F20D-572A-4D3E-B989-DC9BDFFB75AA}'
     when '10.9'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_109_177824.exe').gsub('/', '\\')
@@ -136,6 +140,13 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '10.9.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_1091_180227.tar.gz')
+      # Setup archives of 10.9.1 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
+      # subfolder of final archives. Remove the line below for the final setup archive.
+      mission_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],	node['arcgis']['version'],
+                                            'MissionServer', 'Setup')
     when '10.9'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_109_177909.tar.gz')
