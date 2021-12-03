@@ -40,12 +40,8 @@ module ArcGIS
       @admin_password = admin_password
     end
 
-    def wait_until_available
-      Utils.wait_until_url_available(@portal_url + '/portaladmin')
-    end
-
-    def wait_until_unavailable
-      Utils.wait_until_url_unavailable(@portal_url + '/portaladmin')
+    def wait_until_available(redirects = 0)
+      Utils.wait_until_url_available(@portal_url + '/portaladmin', redirects)
     end
 
     def site_exist?
@@ -306,7 +302,8 @@ module ArcGIS
         end
       end
 
-      Socket.gethostname
+      # None of the portal machines have local IP addresses. Return the first machine name.
+      machines[0]['machineName']
     end
 
     # Returns portal admin API URL for SSL certificates.
@@ -363,7 +360,7 @@ module ArcGIS
 
       validate_response(response)
 
-      JSON.parse(response.body)['entryType'] == 'PrivateKeyEntry'
+      ['PrivateKeyEntry', 'trustedCertEntry'].include?(JSON.parse(response.body)['entryType'])
     rescue Exception
       false
     end
@@ -536,6 +533,22 @@ module ArcGIS
       JSON.parse(response.body)['serverId']
     end
 
+    def unfederate_server(server_id, force = true)
+      token = generate_token(@generate_token_url)
+
+      request = Net::HTTP::Post.new(URI.parse(@portal_url +
+        "/portaladmin/federation/servers/#{server_id}/unfederate").request_uri)
+      request.add_field('Referer', 'referer')
+
+      request.set_form_data('token' => token,
+                            'forceUnfederate' => force,
+                            'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+    end
+
     def update_server(server_id, server_role, function)
       token = generate_token(@generate_token_url)
 
@@ -553,6 +566,24 @@ module ArcGIS
       validate_response(response)
 
       JSON.parse(response.body)['serverId']
+    end
+
+    def system_properties
+      uri = URI.parse(@portal_url + '/portaladmin/system/properties')
+
+      token = generate_token(@generate_token_url)
+
+      uri.query = URI.encode_www_form('token' => token,
+                                      'f' => 'json')
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
     end
 
     def update_system_properties(system_properties)

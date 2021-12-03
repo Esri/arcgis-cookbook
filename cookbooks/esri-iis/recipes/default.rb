@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-iis
 # Recipe:: default
 #
-# Copyright 2017 Esri
+# Copyright 2021 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,27 +17,9 @@
 # limitations under the License.
 #
 
+include_recipe 'esri-iis::install'
+
 require 'openssl'
-
-# Install .Net Framework 3.5 for Windows Server 2012r2
-#windows_feature 'Net-Framework-Core' do
-#  provider Chef::Provider::WindowsFeaturePowershell
-#  all true
-#  only_if { node['platform_version'].to_f >= 6.3 &&
-#            node['kernel']['os_info']['product_type'] !=
-#            Chef::ReservedNames::Win32::API::System::VER_NT_WORKSTATION }
-#  action :install
-#end
-
-node['arcgis']['iis']['features'].each do |feature|
-  windows_feature feature do
-    action :install
-  end
-end
-
-service 'W3SVC' do
-  action [:enable, :start]
-end
 
 openssl_x509 node['arcgis']['iis']['keystore_file'].gsub(/\.pfx/, '.pem') do
   common_name node['arcgis']['iis']['domain_name']

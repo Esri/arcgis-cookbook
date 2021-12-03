@@ -8,8 +8,11 @@ Requirements
 
 ### Platforms
 
-* RHEL 6, 7
-* Ubuntu 14.04, 16.04, 18.04
+* Ubuntu Server 18.04 and 20.04 LTS
+* Red Hat Enterprise Linux Server 8
+* SUSE Linux Enterprise Server 15
+* CentOS Linux 8
+* Oracle Linux 8
 
 ### Dependencies
 
@@ -22,7 +25,7 @@ Attributes
 
 #### General
 
-* `node['tomcat']['version']` = Tomcat version to install. Default is `8.5.63`.
+* `node['tomcat']['version']` = Tomcat version to install. Default is `9.0.48`.
 * `node['tomcat']['instance_name']` = tomcat instance name. Default is `arcgis`.
 * `node['tomcat']['install_path']` = tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
 * `node['tomcat']['tarball_path']` = tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
@@ -34,7 +37,7 @@ Attributes
 
 * `node['tomcat']['keystore_file']` = Optional: Path to the keystore file. If not provided, a new file and a self-signed certificate will be created.
 * `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
-* `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of HTTPS listener. Default is `TLSv1.2,TLSv1.1,TLSv1`.
+* `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of HTTPS listener. Default is `TLSv1.3,TLSv1.2`.
 * `node['tomcat']['domain_name']` = Domain name for generated self-signed SSL certificate. Default is `Fully Qualified Domain Name`.
 
 #### OpenJDK
@@ -64,11 +67,11 @@ Configures HTTPS listener in Apache Tomcat application server.
 
 ### esri-tomcat::iptables
 
-Configures port forwarding (80 to 8080 and 443 to 8443) using iptables.
+Installs iptables and configures HTTP(S) port forwarding (80 to 8080 and 443 to 8443).
 
 ### esri-tomcat::firewalld
 
-Configures port forwarding (80 to 8080 and 443 to 8443) using FirewallD. 
+Installs FirewallD and configures HTTP(S) port forwarding (80 to 8080 and 443 to 8443).
 
 > If firewalld service was started by the recipe, the recipe execute script specified by `node['tomcat']['firewalld']['init_cmd']` which by default opens all the TCP ports on the machine.
 

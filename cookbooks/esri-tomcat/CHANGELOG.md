@@ -4,6 +4,11 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.1.9
+-----
+- Added support for Apache Tomcat 9.
+- Added support for new linux platforms.
+
 0.1.8
 -----
 - Added iptables, firewalld, and openjdk recipes.

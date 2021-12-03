@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of the arcgis-insights cookbook.
 
+## 3.8.0
+- Added support for Insights for ArcGIS 2021.1/2021.1.1/2021.2/2021.2.1/2021.3/2021.3.1.
+
 ## 3.7.0
 - Added support for Insights for ArcGIS 2020.3.
 

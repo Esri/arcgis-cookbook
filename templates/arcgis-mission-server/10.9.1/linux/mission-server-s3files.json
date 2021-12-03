@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "ArcGIS_Mission_Server_Linux_1091_180227.tar.gz": {
+                    "subfolder": "10.9.1/setups"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

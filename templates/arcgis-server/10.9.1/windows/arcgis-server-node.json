@@ -1,0 +1,31 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "install_system_requirements": true,
+            "primary_server_url": "https://primary.com:6443/arcgis",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "pull_license": false,
+            "log_dir": "C:\\arcgisserver\\logs",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\10.9\\Server.prvc",
+            "soc_max_heap_size": 64
+        },
+        "python": {
+            "install_dir": "C:\\Python27"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::server_node]"
+    ]
+}

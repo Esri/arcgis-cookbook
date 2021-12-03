@@ -29,7 +29,7 @@ module Utils
   MAX_RETRIES = 100
   SLEEP_TIME = 10.0
 
-  def self.url_available?(url)
+  def self.url_available?(url, redirects = 0)
     uri = URI.parse(url)
 
     http = Net::HTTP.new(uri.host, uri.port)
@@ -45,17 +45,33 @@ module Utils
       request.add_field('Accept-Language', 'en-US')
       response = http.request(request)
 
+      Chef::Log.debug format('%s HTTP response code: %d', url, response.code.to_i)
+
+      if redirects > 0 && response.code.to_i >= 300 && response.code.to_i < 400
+        Chef::Log.debug format('Checking availability of redirected URL: %s', response['location'])
+        return url_available?(response['location'], redirects - 1)
+      end
+
       return response.code.to_i < 400
     rescue Exception => ex
+      Chef::Log.debug ex.message
       return false
     end
   end
 
-  def self.wait_until_url_available(url)
+  def self.wait_until_url_available(url, redirects = 0)
+    starting = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     MAX_RETRIES.times do
-      break if self.url_available?(url)
+      if url_available?(url, redirects)
+        elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - starting
+        Chef::Log.debug format('URL %s became available after %0.2f seconds.', url, elapsed)
+        return
+      end
       sleep(SLEEP_TIME)
     end
+
+    elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - starting
+    Chef::Log.warn format('Util.wait_until_url_available timed out for %s after %0.2f seconds.', url, elapsed)
   end
 
   def self.product_key_exists?(path)
@@ -245,6 +261,12 @@ module Utils
     # Should be used with update_file_key_value(file,key,value) as a guard for idempotency
     ##
     return ::File.open(file).each_line.any? { |line| line.chomp == "#{key}=#{value}" }
+  end
+
+  def self.same_file?(path1, path2)
+    canonical_path1 = path1.nil? ? nil : path1.gsub('\\', '/').chomp('/')
+    canonical_path2 = path2.nil? ? nil : path2.gsub('\\', '/').chomp('/')
+    canonical_path1 == canonical_path2
   end
 
 end

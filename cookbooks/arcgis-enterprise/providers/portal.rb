@@ -82,7 +82,7 @@ action :install do
            "#{password} "\
            "#{@new_resource.setup_options}"
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 14400 })
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 28800 })
     cmd.run_command
     cmd.error!
   else
@@ -99,9 +99,9 @@ action :install do
     end
 
     if node['arcgis']['run_as_superuser']
-      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 14400 })
+      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd} #{args}\"", { :timeout => 28800 })
     else
-      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 14400})
+      cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 28800})
     end
     cmd.run_command
     cmd.error!
@@ -413,9 +413,13 @@ action :set_system_properties do
 
   portal_admin_client.wait_until_available
 
-  Chef::Log.info 'Setting the portal system properties...'
-
-  portal_admin_client.update_system_properties(@new_resource.system_properties)
+  if portal_admin_client.system_properties != @new_resource.system_properties
+    Chef::Log.info 'Setting the portal system properties...'
+    portal_admin_client.update_system_properties(@new_resource.system_properties)
+    Chef::Log.info 'Portal system properties were updated.'
+  else
+    Chef::Log.info 'Portal system properties were not changed.'
+  end
 
   portal_admin_client.edit_log_settings(@new_resource.log_level,
                                         @new_resource.log_dir,
@@ -468,10 +472,6 @@ action :configure_https do
                                                       @new_resource.username,
                                                       @new_resource.password)
 
-  unless @new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?
-    portal_admin_client.add_root_cert(@new_resource.root_cert, @new_resource.root_cert_alias, 'false')
-  end
-                                 
   cert_alias = portal_admin_client.server_ssl_certificate
 
   unless cert_alias == @new_resource.cert_alias
@@ -489,6 +489,25 @@ action :configure_https do
     portal_admin_client.wait_until_available
 
     new_resource.updated_by_last_action(true)
+  end
+end
+
+action :import_root_cert do
+  unless @new_resource.root_cert.empty? || @new_resource.root_cert_alias.empty?
+    portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
+                                                        @new_resource.username,
+                                                        @new_resource.password)
+
+    unless portal_admin_client.ssl_certificate_exist?(@new_resource.root_cert_alias)
+      portal_admin_client.add_root_cert(@new_resource.root_cert,
+                                        @new_resource.root_cert_alias, 'false')
+
+      sleep(60.0) # wait for portal restart
+
+      portal_admin_client.wait_until_available
+
+      new_resource.updated_by_last_action(true)
+    end
   end
 end
 
@@ -543,9 +562,14 @@ action :federate_server do
                                                       @new_resource.server_username,
                                                       @new_resource.server_password)
 
-  # Wait until both Portal and Server are available.
-  portal_admin_client.wait_until_available
-  server_admin_client.wait_until_available
+  # Wait until Portal admin URL is available.
+  portal_admin_client.wait_until_available(5)
+
+  # Wait until Server admin URL is available.
+  server_admin_client.wait_until_available(5)
+
+  # Wait until Server web context health check URL is available.
+  Utils.wait_until_url_available(@new_resource.server_url + '/rest/info/healthcheck?f=json')
 
   servers = portal_admin_client.servers
 
@@ -557,6 +581,29 @@ action :federate_server do
       @new_resource.server_admin_url,
       @new_resource.server_username,
       @new_resource.server_password)
+
+    new_resource.updated_by_last_action(true)
+  end
+end
+
+action :unfederate_server do
+  portal_admin_client = ArcGIS::PortalAdminClient.new(@new_resource.portal_url,
+                                                      @new_resource.username,
+                                                      @new_resource.password)
+
+  # Wait until Portal admin URL is available.
+  portal_admin_client.wait_until_available
+
+  servers = portal_admin_client.servers
+
+  server = servers.detect { |s| s['url'] == @new_resource.server_url }
+
+  if server.nil?
+    Chef::Log.info("Server #{@new_resource.server_url} is not federated with the portal")
+  else
+    portal_admin_client.unfederate_server(server['id'])
+
+    Chef::Log.info("Server #{@new_resource.server_url} is now unfederated from the portal")
 
     new_resource.updated_by_last_action(true)
   end
@@ -576,7 +623,7 @@ action :enable_server_function do
     server = servers.detect { |s| s['url'] == @new_resource.server_url }
 
     if server.nil?
-      Chef::Log.info("Server #{@new_resource.server_url} was not federated with the portal")
+      Chef::Log.info("Server #{@new_resource.server_url} is not federated with the portal")
     else
       Chef::Log.info("Enabling '#{@new_resource.server_function}' on Server (#{server['id']})...")
       server_role = @new_resource.is_hosting ? "HOSTING_SERVER" : "FEDERATED_SERVER"
@@ -590,9 +637,22 @@ end
 
 action :stop do
   if node['platform'] == 'windows'
-
     if Utils.service_started?('Portal for ArcGIS')
+      # Log server.xml file size before and after the portal service stop
+      server_xml = ::File.join(node['arcgis']['portal']['install_dir'], 
+                               'framework\\runtime\\tomcat\\conf\\server.xml')
+      server_xml_size = ::File.size(server_xml)
+      # Chef::Log.info("Portal server.xml file size before service stop is #{server_xml_size} bytes.")
+
       Utils.stop_service('Portal for ArcGIS')
+
+      server_xml_size = ::File.size(server_xml)
+      # Chef::Log.info("Portal server.xml file size after service stop is #{server_xml_size} bytes.")
+      Chef::Log.warn("Portal server.xml file is empty.") if server_xml_size == 0
+
+      # Sleep to prevent frequent restarts of the service
+      sleep(60)
+
       new_resource.updated_by_last_action(true)
     end
   else
@@ -627,8 +687,22 @@ action :start do
     end
 
     if !Utils.service_started?('Portal for ArcGIS')
+      # Log server.xml file size before and after the portal service start
+      server_xml = ::File.join(node['arcgis']['portal']['install_dir'], 
+                              'framework\\runtime\\tomcat\\conf\\server.xml')
+      server_xml_size = ::File.size(server_xml)
+      # Chef::Log.info("Portal server.xml file size before service start is #{server_xml_size} bytes.")
+
       Utils.sc_enable('Portal for ArcGIS')
       Utils.start_service('Portal for ArcGIS')
+
+      server_xml_size = ::File.size(server_xml)
+      # Chef::Log.info("Portal server.xml file size after service start is #{server_xml_size} bytes.")
+      Chef::Log.warn("Portal server.xml file is empty.") if server_xml_size == 0
+
+      # Sleep to prevent frequent restarts of the service
+      sleep(60)
+      
       new_resource.updated_by_last_action(true)
     end
   else

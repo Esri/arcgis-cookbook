@@ -24,7 +24,6 @@ attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :install_dir, :kind_of => String
-attribute :python_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
 
 def initialize(*args)

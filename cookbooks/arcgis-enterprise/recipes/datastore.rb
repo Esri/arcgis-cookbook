@@ -60,9 +60,9 @@ node['arcgis']['data_store']['types'].split(',').each do |type|
       install_dir node['arcgis']['data_store']['install_dir']
       run_as_user node['arcgis']['run_as_user']
       store store_type
+      backup_type store_type_backup_type
       backup_location store_type_backup_location
       only_if { store_type_backup_type != 'none' }
-      ignore_failure true # Temporary workaround
       action :configure_backup_location
     end
   end

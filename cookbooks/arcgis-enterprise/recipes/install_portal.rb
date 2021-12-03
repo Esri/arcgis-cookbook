@@ -50,17 +50,6 @@ arcgis_enterprise_portal 'Unpack Portal for ArcGIS' do
   action :unpack
 end
 
-# Create portal data directory
-# directory node['arcgis']['portal']['data_dir'] do
-#   owner node['arcgis']['run_as_user']
-#   group node['arcgis']['run_as_user']
-#   if node['platform'] != 'windows'
-#     mode '0700'
-#   end
-#   recursive true
-#   action :create
-# end
-
 arcgis_enterprise_portal 'Install Portal for ArcGIS' do
   install_dir node['arcgis']['portal']['install_dir']
   product_code node['arcgis']['portal']['product_code']

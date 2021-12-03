@@ -17,6 +17,21 @@
 # limitations under the License.
 #
 
+# Import public key of ArcGIS Notebook Server SSL certificate into portal as 
+# root/intermediate certificate.
+arcgis_enterprise_portal 'Import Root Certificates' do
+  portal_url node['arcgis']['portal']['private_url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  root_cert node['arcgis']['portal']['root_cert']
+  root_cert_alias node['arcgis']['portal']['root_cert_alias']
+  not_if { node['arcgis']['portal']['root_cert'].empty? ||
+           node['arcgis']['portal']['root_cert_alias'].empty?}
+  retries 5
+  retry_delay 30
+  action :import_root_cert
+end
+
 arcgis_enterprise_portal 'Federate Notebook Server' do
   portal_url node['arcgis']['portal']['private_url']
   username node['arcgis']['portal']['admin_username']

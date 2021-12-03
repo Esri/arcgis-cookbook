@@ -21,8 +21,9 @@ actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
         :create_site, :join_site, :set_system_properties, :configure_https,
         :unregister_standby, :register_server, :federate_server,
-        :enable_server_function, :set_allssl, :set_identity_store,
-        :configure_hostidentifiers_properties
+        :unfederate_server, :enable_server_function, :set_allssl,
+        :set_identity_store, :configure_hostidentifiers_properties,
+        :import_root_cert
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String

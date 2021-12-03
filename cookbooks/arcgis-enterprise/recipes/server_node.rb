@@ -42,7 +42,9 @@ arcgis_enterprise_server 'Authorize ArcGIS Server' do
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server]', :immediately
-  not_if { ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
+  not_if { node['arcgis']['server']['pull_license'] }
+  not_if { node['arcgis']['cache_authorization_files'] &&
+           ::File.exists?(node['arcgis']['server']['cached_authorization_file']) &&
            FileUtils.compare_file(node['arcgis']['server']['authorization_file'],
                                   node['arcgis']['server']['cached_authorization_file']) }
   action :authorize
@@ -58,6 +60,14 @@ file 'Cache server authorization file' do
   subscribes :create, 'arcgis_enterprise_server[Authorize ArcGIS Server]', :immediately
   only_if { node['arcgis']['cache_authorization_files'] }
   action :nothing
+end
+
+# Create 'C:\Program Files\ESRI' directory with read/write access for run_as_user
+if node['platform'] == 'windows'
+  directory ::File.join(ENV['ProgramW6432'], 'ESRI') do
+    rights :full_control, node['arcgis']['run_as_user']
+    only_if { node['arcgis']['server']['pull_license'] }
+  end
 end
 
 # Set hostname in hostname.properties file
@@ -101,6 +111,7 @@ arcgis_enterprise_server 'Join ArcGIS Server Site' do
   server_url node['arcgis']['server']['url']
   install_dir node['arcgis']['server']['install_dir']
   use_join_site_tool node['arcgis']['server']['use_join_site_tool']
+  pull_license node['arcgis']['server']['pull_license']
   if node['arcgis']['server']['use_join_site_tool']
     config_store_connection_string node['arcgis']['server']['config_store_connection_string']
     config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']

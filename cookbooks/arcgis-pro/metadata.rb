@@ -4,16 +4,17 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Pro'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.7.0'
+version          '3.8.0'
 chef_version     '>= 13.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 3.7'
+depends          'arcgis-repository', '~> 3.8'
 depends          'windows', '~> 5.3'
 
 supports         'windows'
 
 recipe 'arcgis-pro::default', 'Installs and authorizes ArcGIS Pro'
 recipe 'arcgis-pro::install_pro', 'Installs ArcGIS Pro'
+recipe 'arcgis-pro::ms_dotnet', 'Installs Microsoft .NET Framework'
 recipe 'arcgis-pro::uninstall', 'Uninstalls ArcGIS Pro'
 recipe 'arcgis-pro::patches', 'Installs ArcGIS Pro Patches'
 

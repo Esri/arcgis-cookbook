@@ -20,15 +20,26 @@
 iptables_packages 'install iptables'
 
 # Add iptables rules to forward ports 80 to 8080 and 443 to 8443.
-execute "iptables -A PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 80 -j REDIRECT --to-port 8080"
-execute "iptables -A PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 443 -j REDIRECT --to-port 8443"
-execute "iptables -A OUTPUT -t nat -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080"
-execute "iptables -A OUTPUT -t nat -o lo -p tcp --dport 443 -j REDIRECT --to-port 8443"
+execute "iptables -A PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 80 -j REDIRECT --to-port 8080" do
+  not_if "iptables -C PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 80 -j REDIRECT --to-port 8080"
+end
+
+execute "iptables -A PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 443 -j REDIRECT --to-port 8443"  do
+  not_if "iptables -C PREROUTING -t nat -i #{node['network']['default_interface']} -p tcp --dport 443 -j REDIRECT --to-port 8443"
+end
+
+execute "iptables -A OUTPUT -t nat -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080" do
+  not_if "iptables -C OUTPUT -t nat -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080"
+end
+
+execute "iptables -A OUTPUT -t nat -o lo -p tcp --dport 443 -j REDIRECT --to-port 8443" do
+  not_if "iptables -C OUTPUT -t nat -o lo -p tcp --dport 443 -j REDIRECT --to-port 8443"
+end
 
 # Save the iptables rules
 case node['platform']
 when 'ubuntu', 'debian'
   execute 'iptables-save > /etc/iptables/rules.v4'
-when 'rhel', 'redhat', 'centos'
+when 'rhel', 'redhat', 'centos', 'oracle'
   execute 'iptables-save > /etc/sysconfig/iptables'
 end

@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the arcgis-mission cookbook.
 
+# 3.8.0
+
+- Added support for ArcGIS Mission Server 10.9.1.
+
 # 3.7.0
 
 - Added support for ArcGIS Mission Server 10.9.

@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Desktop and ArcGIS License Manager'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.7.0'
+version          '3.8.0'
 chef_version     '>= 13.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 3.7'
+depends          'arcgis-repository', '~> 3.8'
 depends          'windows', '~> 5.3'
 depends          'limits', '~> 1.0'
 

@@ -1,0 +1,16 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "data_store": {
+            "install_dir": "/opt",
+            "preferredidentifier": "hostname",
+            "hostidentifier": "",
+            "types": "spatiotemporal",
+            "force_remove_machine": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::remove_datastore_machine]"
+    ]
+}

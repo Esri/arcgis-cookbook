@@ -1,0 +1,15 @@
+{
+    "arcgis": {
+        "server": {
+            "web_context_url": "https://domain.com/server"
+        },
+        "portal": {
+            "private_url": "https://domain.com/portal",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::unfederate_server]"
+    ]
+}

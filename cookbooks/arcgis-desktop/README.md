@@ -19,6 +19,7 @@ Requirements
    * 10.7.1
    * 10.8
    * 10.8.1
+   * 10.8.2
    
 * ArcGIS License Manager
    * 2018.0
@@ -28,6 +29,8 @@ Requirements
    * 2019.2
    * 2020.0
    * 2020.1
+   * 2021.0
+   * 2021.1
 
 ### Platforms
 
@@ -35,12 +38,14 @@ Requirements
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
+* Windows Server 2022
 * Ubuntu 16.04, 18.04
 * Rhel 6.5, 7.0
 
 ArcGIS Desktop is supported only on Windows platforms.
 
 ### Dependencies
+
 The following cookbooks are required:
 
 * windows
@@ -60,24 +65,28 @@ Attributes
 * `node['arcgis']['desktop']['esri_license_host']` = Hostname of ArcGIS License Manager. Default hostname is `%COMPUTERNAME%`.
 * `node['arcgis']['desktop']['software_class']` = ArcGIS Desktop software class <Viewer|Editor|Professional>. Default value is `Viewer`.
 * `node['arcgis']['desktop']['seat_preference']` = ArcGIS Desktop license seat preference <Fixed|Float>. Default value is `Fixed`.
-* `node['arcgis']['licensemanager']['version']` = ArcGIS License Manager version. Default value is `2020.1`.
+* `node['arcgis']['licensemanager']['version']` = ArcGIS License Manager version. Default value is `2021.1`.
 * `node['arcgis']['licensemanager']['setup_archive']` = The location of ArcGIS License Manager setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS License Manager 2020.1\LicenseManager\Setup.exe` on Windows, and `/opt/arcgis/2020.1/LicenseManager_Linux/Setup` on Linux.
+* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS License Manager 2021.0\LicenseManager\Setup.exe` on Windows, and `/opt/arcgis/2021.1/LicenseManager_Linux/Setup` on Linux.
 * `node['arcgis']['licensemanager']['lp-setup']` = The location of language pack for ArcGIS License Manager. Default location is `C:\ArcGIS\LicenseManager\SetupFiles\setup.msi`.
 * `node['arcgis']['licensemanager']['install_dir']` = ArcGIS License Manager installation directory. By default, the license manager is installed to `%ProgramFiles(x86)%\ArcGIS` on Windows and `/` on Linux.
 
 Recipes
 -------
 ### arcgis-desktop::default
+
 Installs and configures ArcGIS Desktop.
 
 ### arcgis-desktop::licensemanager
+
 Installs and configures ArcGIS License Manager.
 
 ### arcgis-desktop::lp-install
+
 Installs language packs for ArcGIS Desktop and ArcGIS License Manager.
 
 ### arcgis-desktop::uninstall
+
 Uninstalls ArcGIS Desktop and ArcGIS License Manager.
 
 Usage

@@ -1,0 +1,23 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "notebook_server": {
+            "install_dir": "/opt",
+            "install_system_requirements": true,
+            "install_samples_data": true,
+            "license_level": "standard",
+            "configure_autostart": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::iptables]",
+        "recipe[arcgis-notebooks::install_server]"
+    ]
+}

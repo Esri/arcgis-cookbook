@@ -12,7 +12,7 @@ Recommended ArcGIS Chef Cookbooks versions:
 
 Supported Platforms:
 
-* Windows Server 2019
+* Windows Server 2019 Standard and Datacenter
 * Ubuntu 18.04
 
 ## Machine Roles

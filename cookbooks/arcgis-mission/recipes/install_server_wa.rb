@@ -25,8 +25,7 @@ arcgis_enterprise_webadaptor 'Unpack ArcGIS Web Adaptor' do
             !::File.exist?(node['arcgis']['web_adaptor']['setup']) }
   if node['platform'] == 'windows'
     not_if { !Utils.wa_product_code(node['arcgis']['mission_server']['wa_name'],
-                                    [node['arcgis']['web_adaptor']['product_code'],
-                                     node['arcgis']['web_adaptor']['product_code2']]).nil? }
+                                    node['arcgis']['web_adaptor']['product_codes']).nil? }
   else
     not_if { ::File.exist?(::File.join(node['arcgis']['web_adaptor']['install_dir'],
                                        node['arcgis']['web_adaptor']['install_subdir'],
@@ -42,8 +41,7 @@ arcgis_enterprise_webadaptor 'Install Web Adaptor for Mission Server' do
   instance_name node['arcgis']['mission_server']['wa_name']
   if node['platform'] == 'windows'
     not_if { !Utils.wa_product_code(node['arcgis']['mission_server']['wa_name'],
-                                    [node['arcgis']['web_adaptor']['product_code'],
-                                     node['arcgis']['web_adaptor']['product_code2']]).nil? }
+                                    node['arcgis']['web_adaptor']['product_codes']).nil? }
   else
     not_if { ::File.exist?(::File.join(node['arcgis']['web_adaptor']['install_dir'],
                                        node['arcgis']['web_adaptor']['install_subdir'],

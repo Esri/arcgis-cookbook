@@ -212,16 +212,14 @@ end
 
 action :update_account do
   if node['platform'] == 'windows'
-    configureserviceaccount = ::File.join(@new_resource.install_dir, 'tools',
-                                          'configureserviceaccount.bat')
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/username \"#{@new_resource.run_as_user}\" "\
-           "/password \"#{run_as_password}\""
+    datastore_tools = ArcGIS::DataStoreTools.new(node['arcgis']['version'],
+                                                 node['platform'],
+                                                 @new_resource.install_dir,
+                                                 node['arcgis']['data_store']['install_subdir'],
+                                                 @new_resource.run_as_user)
 
-    cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{configureserviceaccount}\" #{args}\"",
-                               { :timeout => 3600 })
-    cmd.run_command
-    cmd.error!
+    datastore_tools.configure_service_account(@new_resource.run_as_user,
+                                              @new_resource.run_as_password)
 
     # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
     Utils.sc_config('ArcGIS Data Store', @new_resource.run_as_user, @new_resource.run_as_password)
@@ -373,55 +371,33 @@ action :start do
 end
 
 action :configure do
-  begin
-    server_admin_url = "#{@new_resource.server_url}/admin"
+  server_admin_url = "#{@new_resource.server_url}/admin"
 
-    Utils.wait_until_url_available(server_admin_url)
+  Utils.wait_until_url_available(server_admin_url)
 
-    if node['platform'] == 'windows'
-      cmd = ::File.join(@new_resource.install_dir, 'tools\\configuredatastore')
-      args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
+  datastore_tools = ArcGIS::DataStoreTools.new(node['arcgis']['version'],
+                                               node['platform'],
+                                               @new_resource.install_dir,
+                                               node['arcgis']['data_store']['install_subdir'],
+                                               @new_resource.run_as_user)
 
-      if !@new_resource.mode.nil? && !@new_resource.mode.empty? &&
-         Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8.1') &&
-         @new_resource.types.downcase.include?('tilecache')
-        args += " --mode #{@new_resource.mode}"
-      end
+  datastore_tools.configure_datastore(@new_resource.types,
+                                      server_admin_url,
+                                      @new_resource.username,
+                                      @new_resource.password,
+                                      @new_resource.data_dir,
+                                      @new_resource.mode)
 
-      env = { 'AGSDATASTORE' => @new_resource.install_dir }
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-            { :timeout => 10800, :environment => env })
-      cmd.run_command
-      cmd.error!
-    else
-      install_subdir = ::File.join(@new_resource.install_dir,
-                                   node['arcgis']['data_store']['install_subdir'])
-      cmd = ::File.join(install_subdir, 'tools/configuredatastore.sh')
-      args = "\"#{server_admin_url}\" \"#{@new_resource.username}\" \"#{@new_resource.password}\" \"#{@new_resource.data_dir}\" --stores #{@new_resource.types}"
-
-      if !@new_resource.mode.nil? && !@new_resource.mode.empty? &&
-        Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8.1') &&
-        @new_resource.types.downcase.include?('tilecache')
-       args += " --mode #{@new_resource.mode}"
-      end
-
-      run_as_user = @new_resource.run_as_user
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-            { :timeout => 10800, :user => run_as_user })
-      cmd.run_command
-      cmd.error!
-    end
-
-    new_resource.updated_by_last_action(true)
-  rescue Exception => e
-    Chef::Log.error "Failed to configure ArcGIS Data Store. " + e.message
-    raise e
-  end
+  new_resource.updated_by_last_action(true)
 end
 
 action :configure_backup_location do
+  datastore_tools = ArcGIS::DataStoreTools.new(node['arcgis']['version'],
+                                               node['platform'],
+                                               @new_resource.install_dir,
+                                               node['arcgis']['data_store']['install_subdir'],
+                                               @new_resource.run_as_user)
+
   operation = 'change'
 
   # At 10.8 tilecache backup location is no longer registered by default
@@ -430,75 +406,36 @@ action :configure_backup_location do
     operation = 'register'
   end
 
-  if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools\\configurebackuplocation')
-    args = "--location \"#{@new_resource.backup_location}\" --operation #{operation} --store #{@new_resource.store} --prompt no"
-    env = { 'AGSDATASTORE' => @new_resource.install_dir }
-
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                               { :timeout => 600, :environment => env })
-    cmd.run_command
-    if cmd.error? && (cmd.stderr.include?('Operation is not supported under this configuration.') ||
-                      cmd.stderr.include?('Backup location already exists.'))
-      Chef::Log.debug(cmd.stderr)
-
-      cmd = ::File.join(@new_resource.install_dir, 'tools\\configurebackuplocation')
-      args = "--location \"#{@new_resource.backup_location}\" --operation change --store #{@new_resource.store} --prompt no"
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                                 { :timeout => 600, :environment => env })
-      cmd.run_command
-    end
-
-    cmd.error!
-  else
-    install_subdir = ::File.join(@new_resource.install_dir,
-                                 node['arcgis']['data_store']['install_subdir'])
-    cmd = ::File.join(install_subdir, 'tools/configurebackuplocation.sh')
-    args = "--location \"#{@new_resource.backup_location}\" --operation #{operation} --store #{@new_resource.store} --prompt no"
-    run_as_user = @new_resource.run_as_user
-
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                               { :timeout => 600, :user => run_as_user })
-    cmd.run_command
-
-    if cmd.error? && (cmd.stderr.include?('Operation is not supported under this configuration.') ||
-                      cmd.stderr.include?('Backup location already exists.'))
-      Chef::Log.debug(cmd.stderr)
-
-      cmd = ::File.join(install_subdir, 'tools/configurebackuplocation.sh')
-      args = "--location \"#{@new_resource.backup_location}\" --operation change --store #{@new_resource.store} --prompt no"
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                                 { :timeout => 600, :user => run_as_user })
-      cmd.run_command
-    end
-
-    cmd.error!
+  # Because relational data stores always have default backups of 'fs' type,
+  # configuring backup locations of 's3' type for relational data stores
+  # need to use '--operation register' rather than '--operation change'.
+  if @new_resource.store == 'relational' && @new_resource.backup_type == 's3'
+    operation = 'register'
   end
+
+  datastore_tools.configure_backup_location(@new_resource.store, @new_resource.backup_location, operation)
 
   new_resource.updated_by_last_action(true)
 end
 
 action :prepare_upgrade do
-  @new_resource.types.split(',').each do |type| 
-    if node['platform'] == 'windows'
-      cmd = ::File.join(@new_resource.install_dir, 'tools\\prepareupgrade.bat')
-      args = "--store \"#{type}\" --server-url \"#{@new_resource.server_url}\" --server-admin \"#{@new_resource.username}\" --server-password \"#{@new_resource.password}\" --data-dir \"#{@new_resource.data_dir}\" --prompt no"
-      env = { 'AGSDATASTORE' => @new_resource.install_dir }
-    else
-      install_subdir = ::File.join(@new_resource.install_dir,
-                                  node['arcgis']['data_store']['install_subdir'])
-      cmd = ::File.join(install_subdir, 'tools/prepareupgrade.sh')
-      args = "--store \"#{type}\" --server-url \"#{@new_resource.server_url}\" --server-admin \"#{@new_resource.username}\" --server-password \"#{@new_resource.password}\" --data-dir \"#{@new_resource.data_dir}\" --prompt no"
-    end
+  server_admin_url = "#{@new_resource.server_url}/admin"
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                              { :timeout => 600,
-                                :environment => env})
-    cmd.run_command
-    cmd.error!
-  end 
+  Utils.wait_until_url_available(server_admin_url)
 
-  new_resource.updated_by_last_action(true)
+  datastore_tools = ArcGIS::DataStoreTools.new(node['arcgis']['version'],
+                                               node['platform'],
+                                               @new_resource.install_dir,
+                                               node['arcgis']['data_store']['install_subdir'],
+                                               @new_resource.run_as_user)
+
+  @new_resource.types.split(',').each do |store|
+    datastore_tools.prepare_upgrade(store,
+                                    server_admin_url,
+                                    @new_resource.username,
+                                    @new_resource.password,
+                                    @new_resource.data_dir)
+  end
 end
 
 action :configure_hostidentifiers_properties do
@@ -515,37 +452,20 @@ action :remove_machine do
   hostidentifier = @new_resource.hostidentifier
   force = @new_resource.force_remove_machine ? 'true' : 'false'
 
-  if hostidentifier.nil? || hostidentifier.empty? 
-    if @new_resource.preferredidentifier == 'hostname'
-      hostidentifier = node['hostname']
-    else
-      hostidentifier = node['ipaddress']
-    end
+  if hostidentifier.nil? || hostidentifier.empty?
+    hostidentifier = @new_resource.preferredidentifier == 'hostname' ? 
+                     node['hostname'] : node['ipaddress']
   end
 
-  @new_resource.types.split(',').each do |type|
-    if node['platform'] == 'windows'
-      cmd = ::File.join(@new_resource.install_dir, 'tools\\removemachine')
-      args = "#{hostidentifier} --store #{type} --force #{force} --prompt no"
-      env = { 'AGSDATASTORE' => @new_resource.install_dir }
+  datastore_tools = ArcGIS::DataStoreTools.new(node['arcgis']['version'],
+                                               node['platform'],
+                                               @new_resource.install_dir,
+                                               node['arcgis']['data_store']['install_subdir'],
+                                               @new_resource.run_as_user)
 
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                                { :timeout => 600, :environment => env })
-      cmd.run_command
-      cmd.error!
-    else
-      install_subdir = ::File.join(@new_resource.install_dir,
-                                  node['arcgis']['data_store']['install_subdir'])
-      cmd = ::File.join(install_subdir, 'tools/removemachine.sh')
-      args = "#{hostidentifier} --store #{type} --force #{force} --prompt no"
-      run_as_user = @new_resource.run_as_user
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-                                { :timeout => 600, :user => run_as_user })
-      cmd.run_command
-      cmd.error!
-    end
-  end 
+  @new_resource.types.split(',').each do |store|
+    datastore_tools.remove_machine(store, hostidentifier, force)
+  end
 
   new_resource.updated_by_last_action(true)
 end

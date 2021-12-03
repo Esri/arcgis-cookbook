@@ -12,6 +12,7 @@ depends    'arcgis-enterprise', '~> 3.7'
 supports   'windows'
 supports   'ubuntu'
 supports   'redhat'
+supports   'oracle'
 
 recipe     'arcgis-egdb::default', 'Creates EGDBs in the specified DBMS and registers them with ArcGIS Server'
 recipe     'arcgis-egdb::sql_alias', 'Creates EGDBHOST alias for SQL Server endpoint domain'

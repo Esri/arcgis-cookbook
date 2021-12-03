@@ -1,0 +1,31 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "server": {
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "url": "https://SERVER:6443/arcgis"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "install_system_requirements": true,
+            "types": "tileCache",
+            "mode": "primaryStandby",
+            "preferredidentifier": "hostname",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "tilecache": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/tilecache"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::datastore]"
+    ]
+}

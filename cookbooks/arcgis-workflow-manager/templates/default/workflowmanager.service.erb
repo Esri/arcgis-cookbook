@@ -1,0 +1,43 @@
+# ------------------------------------------------------------------
+# Workflow Manager systemd unit file
+# ------------------------------------------------------------------
+#
+# Configure Workflow Manager to be started with the operating system by
+# following these instructions:
+#
+# 1) Switch to the root user.
+#
+# 2) Copy this file to /etc/systemd/system
+#
+# 3) Enable the Workflow Manager service to be started with the operating
+#    system:
+#
+#     # systemctl enable workflowmanager.service
+#
+# 4) Verify the systemd service is setup correctly:
+#
+#    # systemctl stop workflowmanager.service
+#    # systemctl start workflowmanager.service
+#    # systemctl status workflowmanager.service
+#
+# 5) Reboot the system and verify that Workflow Manager restarts properly.
+#
+# ------------------------------------------------------------------
+
+[Unit]
+Description=ArcGIS Workflow Manager
+Wants=arcgisserver.service
+After=network.target arcgisserver.service
+
+[Service]
+Type=forking
+User=<%=@agsuser%>
+#PIDFile=<%=@agshome%>/WorkflowManager/ArcGISWorkflowManager.wrapper.pid
+GuessMainPID=false
+ExecStart=<%=@agshome%>/WorkflowManager/bin/ArcGISWorkflowManager-service start
+ExecReload=<%=@agshome%>/WorkflowManager/bin/ArcGISWorkflowManager-service restart
+ExecStop=<%=@agshome%>/WorkflowManager/bin/ArcGISWorkflowManager-service stop
+
+[Install]
+Alias=ArcGISWorkflowManager
+WantedBy=multi-user.target

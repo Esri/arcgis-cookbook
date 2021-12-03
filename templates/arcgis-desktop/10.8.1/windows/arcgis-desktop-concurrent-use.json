@@ -1,0 +1,27 @@
+{
+  "ms_dotnet": {
+    "v4": {
+      "version": "4.5.2"
+    }
+  },
+  "arcgis": {
+    "version": "10.8.1",
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "desktop": {
+      "software_class": "Professional",
+      "seat_preference": "Float",
+      "desktop_config": true,
+      "install_features": "ALL",
+      "install_dir": "C:\\Program Files (x86)\\ArcGIS",
+      "modifyflexdacl": false,
+      "esri_license_host": "lm-host.domain.com"
+    }
+  },
+  "run_list": [
+    "recipe[ms_dotnet::ms_dotnet4]",
+    "recipe[arcgis-desktop]"
+  ]
+}

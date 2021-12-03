@@ -3,9 +3,14 @@ arcgis-pro cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-pro cookbook.
 
+3.8.0
+-----
+- Added support for ArcGIS Pro 2.8/2.9.
+- Added ms_dotnet recipe.
+
 3.7.0
 -----
-- Added support for ArcGIS Pro 2.7
+- Added support for ArcGIS Pro 2.7.
 
 3.6.1
 -----

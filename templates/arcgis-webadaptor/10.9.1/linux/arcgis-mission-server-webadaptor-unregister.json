@@ -1,0 +1,12 @@
+{
+  "arcgis": {
+    "version": "10.9.1",
+    "mission_server": {
+      "admin_username": "siteadmin",
+      "admin_password": "change.it"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-mission::unregister_server_wa]"
+  ]
+}

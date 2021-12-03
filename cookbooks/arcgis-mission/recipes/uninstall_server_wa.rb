@@ -23,12 +23,10 @@ arcgis_enterprise_webadaptor 'Uninstall Web Adaptor for Mission Server' do
   run_as_user node['arcgis']['run_as_user']
   if node['platform'] == 'windows'
     product_code Utils.wa_product_code(node['arcgis']['mission_server']['wa_name'],
-                                      [node['arcgis']['web_adaptor']['product_code'],
-                                       node['arcgis']['web_adaptor']['product_code2']])
+                                       node['arcgis']['web_adaptor']['product_codes'])
     only_if {
       !Utils.wa_product_code(node['arcgis']['mission_server']['wa_name'],
-                            [node['arcgis']['web_adaptor']['product_code'],
-                             node['arcgis']['web_adaptor']['product_code2']]).nil?
+                             node['arcgis']['web_adaptor']['product_codes']).nil?
     }
   else
     only_if {

@@ -1,0 +1,23 @@
+{
+  "arcgis": {
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "pro": {
+      "version": "2.8",
+      "allusers": 1,
+      "software_class": "Professional",
+      "authorization_type": "CONCURRENT_USE",
+      "esri_license_host": "lm-host.domain.com",
+      "authorization_file_version": "10.8",
+      "portal_list": "https://www.arcgis.com/",
+      "blockaddins": "0",
+      "lock_auth_settings": false,
+      "install_dir": "C:\\Program Files\\ArcGIS\\Pro"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-pro]"
+  ]
+}

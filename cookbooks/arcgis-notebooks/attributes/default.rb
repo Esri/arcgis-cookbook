@@ -90,6 +90,17 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['log_dir'] = 'C:\\arcgisnotebookserver\\logs'
 
     case node['arcgis']['version']
+    when '10.9.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Windows_1091_180089.exe').gsub('/', '\\')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_1091_180090.tar.gz').gsub('/', '\\')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_1091_180091.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{39DA210D-DE33-4223-8268-F81D2674B501}'
+      notebook_server['data_setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                          'ArcGIS_Notebook_Server_Samples_Data_Windows_1091_180107.exe').gsub('/', '\\')
+      notebook_server['data_product_code'] = '{02AB631F-4427-4426-B515-8895F9315D22}'
     when '10.9'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Windows_109_177821.exe').gsub('/', '\\')
@@ -176,6 +187,15 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
                                              'usr', 'logs')
 
     case node['arcgis']['version']
+    when '10.9.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_1091_180226.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_1091_180090.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_1091_180091.tar.gz')
+      notebook_server['data_setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                          'ArcGIS_Notebook_Server_Samples_Data_Linux_1091_180232.tar.gz')
     when '10.9'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_109_177908.tar.gz')

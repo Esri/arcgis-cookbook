@@ -1,0 +1,28 @@
+{
+  "ms_dotnet": {
+    "v4": {
+      "version": "4.5.2"
+    }
+  },
+  "arcgis": {
+    "version": "10.8.2",
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "desktop": {
+      "software_class": "Professional",
+      "seat_preference": "Fixed",
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\DTAdvanced.prvc",
+      "desktop_config": true,
+      "install_features": "ALL",
+      "install_dir": "C:\\Program Files (x86)\\ArcGIS",
+      "authorization_file_version": "10.8",
+      "modifyflexdacl": false
+    }
+  },
+  "run_list": [
+    "recipe[ms_dotnet::ms_dotnet4]",
+    "recipe[arcgis-desktop]"
+  ]
+}

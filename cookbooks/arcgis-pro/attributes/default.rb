@@ -21,23 +21,39 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '2.7'
+    pro['version'] = '2.9'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
                                'ArcGISPro',
                                'ArcGISPro.msi').gsub('/', '\\')
-    pro['install_dir'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
-    pro['blockaddins'] = '#0'
+    pro['blockaddins'] = '0'
     pro['portal_list'] = 'https://www.arcgis.com/'
-    pro['allusers'] = 2
+    pro['allusers'] = 1
     pro['software_class'] = 'Viewer'
     pro['authorization_type'] = 'NAMED_USER'
     pro['esri_license_host'] = ENV['COMPUTERNAME']
     pro['authorization_file'] = ''
     pro['authorization_tool'] = ENV['ProgramW6432'] + '\\ArcGIS\\Pro\\bin\\SoftwareAuthorizationPro.exe'
+    pro['lock_auth_settings'] = false
+
+    pro['install_dir'] = if node['arcgis']['pro']['allusers'] == 2
+                           ENV['USERPROFILE'] + '\\ArcGIS\\Pro'
+                         else
+                           ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
+                         end
+
+    default['ms_dotnet']['version'] = '4.8'
 
     case node['arcgis']['pro']['version']
+    when '2.9'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_29_179927.exe').gsub('/', '\\')
+      pro['product_code'] = '{AD53732E-507C-4A7F-B451-BE7EA01D0832}'
+    when '2.8'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_28_177688.exe').gsub('/', '\\')
+      pro['product_code'] = '{26C745E6-B3C1-467B-9523-727D1803EE07}'
     when '2.7'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_27_176624.exe').gsub('/', '\\')
@@ -75,6 +91,15 @@ default['arcgis']['pro'].tap do |pro|
     end
 
     pro['authorization_file_version'] = node['arcgis']['pro']['version'].to_f.to_s
+
+    case node['ms_dotnet']['version']
+    when '4.8'
+      default['ms_dotnet']['url'] = 'https://go.microsoft.com/fwlink/?linkid=2088631'
+      default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'ndp48-x86-x64-allos-enu.exe').gsub('/', '\\')
+    else
+      Chef::Log.warn 'Unsupported Microsoft .NET version'
+    end
   else
     Chef::Log.warn "ArcGIS Pro is not supported on #{node['platform']} platform."
   end

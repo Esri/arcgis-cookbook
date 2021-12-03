@@ -41,7 +41,7 @@ directory '/home/' + node['tomcat']['user'] do
 end
 
 tomcat_service instance_name do
-  action [:start, :enable]
+  action [:enable, :restart]
   tomcat_user node['tomcat']['user']
   tomcat_group node['tomcat']['group']
   retries 5

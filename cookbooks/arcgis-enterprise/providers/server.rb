@@ -123,9 +123,6 @@ action :install do
     cmd.error!
   end
 
-  # Wait for Server installation to finish
-  sleep(180.0)
-
   new_resource.updated_by_last_action(true)
 end
 
@@ -366,7 +363,8 @@ action :join_site do
 
         primary_admin_client.wait_until_site_exist
 
-        admin_client.join_site(@new_resource.primary_server_url)
+        admin_client.join_site(@new_resource.primary_server_url,
+                               @new_resource.pull_license)
       end
 
       new_resource.updated_by_last_action(true)
@@ -403,13 +401,17 @@ action :set_system_properties do
                                                  @new_resource.password)
     admin_client.wait_until_available
 
-    Chef::Log.info('Updating ArcGIS Server system properties...')
-
-    admin_client.update_system_properties(@new_resource.system_properties)
-
-    new_resource.updated_by_last_action(true)
+    if admin_client.system_properties != @new_resource.system_properties
+      Chef::Log.info('Updating ArcGIS Server system properties...')
+      admin_client.update_system_properties(@new_resource.system_properties)
+      Chef::Log.info 'ArcGIS Server system properties were updated.'
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.info 'ArcGIS Server system properties were not changed.'
+      new_resource.updated_by_last_action(false)
+    end
   rescue Exception => e
-    Chef::Log.error "Failed to update ArcGIS Server system properties. " + e.message
+    Chef::Log.error 'Failed to update ArcGIS Server system properties. ' + e.message
     raise e
   end
 end
@@ -452,8 +454,9 @@ action :configure_https do
       admin_client.set_server_admin_url(machine_name, @new_resource.server_admin_url)
       admin_client.set_server_ssl_certificate(machine_name, @new_resource.cert_alias)
 
+      # Editing the machine configuration causes the machine to be restarted.
+      admin_client.wait_until_available
       sleep(60.0)
-
       admin_client.wait_until_available
 
       new_resource.updated_by_last_action(true)
@@ -487,6 +490,12 @@ action :configure_security_protocol do
                                                @new_resource.virtual_dirs_security_enabled,
                                                @new_resource.allow_direct_access,
                                                @new_resource.allowed_admin_access_ips)
+
+    # Security configuration update causes the SOAP and REST service endpoints 
+    # to be redeployed with the new configuration on every server machine in the site.                                           
+    admin_client.wait_until_available
+    sleep(60.0)
+    admin_client.wait_until_available
 
     new_resource.updated_by_last_action(true)
 

@@ -1,0 +1,21 @@
+{
+  "arcgis": {
+    "version": "10.9.1",
+    "run_as_user": "arcgis",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "portal": {
+      "install_dir": "/opt",
+      "configure_autostart": true,
+      "install_system_requirements": true
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::install_portal]",
+    "recipe[arcgis-enterprise::start_portal]",
+    "recipe[arcgis-enterprise::webstyles]"
+  ]
+}
