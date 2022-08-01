@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }}</title>
+  <meta name="description" content="Documentation site for Chef Cookbooks for ArcGIS." />
+  <script type="module" src="https://js.arcgis.com/calcite-components/1.0.0-beta.81/calcite.esm.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.0.0-beta.81/calcite.css" />
+  <link rel="stylesheet" type="text/css" href="/arcgis-cookbook/css/style.css">
+</head>
+
+<body onload="showMe()">
+  <div id="viewDiv" class="hideMe">
+  <div class="calcite-theme-light">
+  <calcite-shell>
+    <div slot="header" class="secondary-nav-module">
+      <h3 class="secondary-nav-module-title">
+        <a href="{{ site.baseurl }}/" class="secondary-nav-module-title-link">Chef Cookbooks for ArcGIS</a>
+      </h3>
+      <nav class="secondary-nav-module-list">
+        <ul class="secondary-nav-module-items">
+          <li class="secondary-nav-module-item"><a class="secondary-nav-module-title-link" href="{{ site.baseurl }}/cookbooks.html">Cookbooks</a></li>
+          <li class="secondary-nav-module-item"><a class="secondary-nav-module-title-link" href="{{ site.baseurl }}/templates.html">Templates</a></li>
+          <li class="secondary-nav-module-item">
+            <a class="secondary-nav-module-title-link" href="https://github.com/Esri/arcgis-cookbook">GitHub
+              <calcite-icon icon="launch" scale="s"></calcite-icon>
+          </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <calcite-shell-panel slot="primary-panel" position="start">
+      <div class="shell-panel">
+      <div class="toc">
+      <calcite-tree>
+        {% for category in site.data.categories %}
+          {%- if page.category == category.name -%}
+            <calcite-tree-item expanded="true">
+          {%- else -%}
+          <calcite-tree-item>
+          {%- endif -%}
+            {{ category.title }}
+            <calcite-tree slot="children">
+              {% assign sorted_pages = site.pages | sort: category.sort -%}
+              {%- for p in sorted_pages -%}
+              {%- if p.category == category.name and p.latest -%}
+              {% if page.category == p.category and page.item == p.item -%}
+              <calcite-tree-item selected="true">
+              {%- else -%}
+              <calcite-tree-item>
+              {%- endif -%}
+                <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a></calcite-tree-item>
+              {% endif %}
+              {%- endfor -%}
+            </calcite-tree>
+          </calcite-tree-item>
+          {% endfor %}
+      </calcite-tree>
+      </calcite-panel>
+      </div>
+      </div>
+    </calcite-shell-panel>
+
+    <!-- <calcite-shell-panel slot="contextual-panel" position="end"> 
+      Trailing panel! (right side)
+    </calcite-shell-panel> -->
+
+    <div class="shell-panel">
+    <div class="content">
+      {%- if page.version -%}
+    <div class="content-versions">
+    <div class="content-versions-title">Versions:</div>
+    <ul class="content-versions-select">
+    {%- assign sorted_pages = site.pages | sort: 'version' -%}
+    {%- for p in sorted_pages reversed -%}
+    {%- if p.category == page.category and p.item == page.item -%}
+    {%- if p.version == page.version -%}
+    <li class="content-version-latest">{{ p.version }}</li>
+    {%- else -%}
+    <li class="content-version"><a href="{{ site.baseurl }}{{ p.url }}">{{ p.version }}</a></li>
+    {%- endif -%}
+    {%- endif -%}
+    {%- endfor -%}
+    </ul>    
+    </div>
+    {%- endif -%}
+
+    <div id="content" class="content-body">
+    {% include anchor_headings.html html=content anchorBody="#" anchorClass="anchor-link" %}
+    </div>    
+
+    </div>
+    </div>
+    <!-- <div slot="footer">
+      Copyright © 2022 Esri. All rights reserved.
+    </div> -->
+
+  </calcite-shell>
+  </div>
+  </div>
+  <script>
+    function showMe() {
+      document.getElementById("viewDiv").classList.remove("hideMe");
+    }
+  </script>
+</body>
+
+</html>
