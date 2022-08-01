@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet"
+    href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
+
+  <script type="module" src="https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.esm.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css" />
+</head>
+
+<body>
+  <div class="wrapper">
+    <header class="top-nav">
+      <div class="grid-container">
+        <div class="column-24">
+          <div class="tablet-hide">
+            <!-- <a class="skip-to-content" href="#skip-to-content">Skip To Content</a> -->
+            <a href="/" class="top-nav-title dark-purple">Chef Cookbooks for ArcGIS</a>
+            <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
+              <a class="top-nav-link" href="/cookbooks/">Cookbooks</a>
+              <a class="top-nav-link" href="/templates/">Templates</a>
+              <a class="top-nav-link" href="/support/">Support</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+    <section>
+      <div class="panel panel-white panel-no-padding padding-leader-1 padding-trailer-1">
+        <div class="grid-container">
+          <aside class="column-6 post-1 panel">
+            <calcite-tree>
+              {% for category in site.data.categories %}
+                {%- if page.category == category.name -%}
+                  <calcite-tree-item expanded="true">
+                {%- else -%}
+                <calcite-tree-item>
+                {%- endif -%}
+                  {{ category.title }}
+                  <calcite-tree slot="children">
+                    {%- assign sorted_pages = site.pages | sort: category.sort -%}
+                    {%- for p in sorted_pages -%}
+                    {%- if p.category == category.name and p.latest -%}
+                    {% if page.category == p.category and page.item == p.item %}
+                    <calcite-tree-item selected="true">
+                    {%- else -%}
+                    <calcite-tree-item>
+                    {%- endif -%}
+                      <a href="{{ p.url }}">{{ p.title }}</a>
+                    </calcite-tree-item>
+                    {% endif %}
+                    {%- endfor -%}
+                  </calcite-tree>
+                </calcite-tree-item>
+                {% endfor %}
+            </calcite-tree>
+          </aside>
+
+          <main class="column-17" role="main">
+            {%- if page.version -%}
+            <span>Versions:</span>
+            {%- for p in site.pages -%}
+            {%- if p.category == page.category and p.item == page.item -%}
+            {%- if p.version == page.version -%}
+            <b>{{ p.version }}</b>
+            {%- else -%}
+            <a href="{{ p.version }}">{{ p.version }}</a>
+            {%- endif -%}
+            {%- endif -%}
+            {%- endfor -%}
+            {%- endif -%}
+
+            {{ content }}
+          </main>
+        </div>
+      </div>
+    </section>
+  </div>
+  <footer>
+    Copyright © 2022 Esri. All rights reserved.
+  </footer>
+</body>
+
+</html>

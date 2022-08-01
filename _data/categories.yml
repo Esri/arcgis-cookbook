@@ -1,0 +1,19 @@
+- name: overview
+  title: Overview
+  sort: order
+
+- name: cookbooks
+  title: Chef Cookbooks
+  sort: item
+
+- name: templates
+  title: Deployment Templates
+  sort: item
+
+- name: tutorials
+  title: Tutorials
+  sort: item
+
+- name: support
+  title: Support
+  sort: item
