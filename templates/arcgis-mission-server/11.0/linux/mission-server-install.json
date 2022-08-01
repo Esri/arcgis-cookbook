@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "mission_server": {
+            "install_dir": "/opt",
+            "install_system_requirements": true,
+            "configure_autostart": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-mission::install_server]"
+    ]
+}

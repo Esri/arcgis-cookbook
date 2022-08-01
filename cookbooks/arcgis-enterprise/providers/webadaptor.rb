@@ -70,7 +70,7 @@ action :install do
     end
 
     cmd = @new_resource.setup
-    args = "/qn ACCEPTEULA=Yes VDIRNAME=#{@new_resource.instance_name} #{@new_resource.setup_options}"
+    args = "/qn ACCEPTEULA=Yes CONFIGUREIIS=TRUE VDIRNAME=#{@new_resource.instance_name} #{@new_resource.setup_options}"
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
     cmd.run_command

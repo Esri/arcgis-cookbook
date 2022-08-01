@@ -1,0 +1,21 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "shared": false,
+            "server": {
+                "username": "changeit",
+                "password": "changeit"
+            },
+            "files": {
+                "ArcGIS_Web_Adaptor_for_Microsoft_IIS_110_182888.exe": {
+                    "subfolder": "software/arcgis/11.0"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

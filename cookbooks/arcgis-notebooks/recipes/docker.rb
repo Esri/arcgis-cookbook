@@ -1,7 +1,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: docker
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,12 +17,7 @@
 #
 
 docker_service 'default' do
+  only_if { node['arcgis']['notebook_server']['install_docker'] }
   action [:create, :start]
-end
-
-# Restart docker service if iptables were rebuilt after docker was started
-docker_service 'default' do
-  only_if { ::File.exist?("/lib/systemd/system/docker.service") }
-  subscribes :restart, 'execute[rebuild-iptables]', :immediately
 end
    

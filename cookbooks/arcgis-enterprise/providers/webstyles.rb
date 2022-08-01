@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: webstyles
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -74,6 +74,32 @@ action :install do
       cmd = Mixlib::ShellOut.new("su #{node['arcgis']['run_as_user']} -c \"#{cmd}\"", {:timeout => 30})
     else
       cmd = Mixlib::ShellOut.new(cmd, {:timeout => 30})
+    end
+    cmd.run_command
+    cmd.error!
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :uninstall do
+  if node['platform'] == 'windows'
+    cmd = 'msiexec'
+    args = "/qn /x #{@new_resource.product_code}"
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 10800})
+    cmd.run_command
+    cmd.error!
+  else
+    install_subdir = ::File.join(@new_resource.install_dir,
+                                 node['arcgis']['portal']['install_subdir'])
+    cmd = ::File.join(install_subdir, 'uninstall_WebStyles.sh')
+    run_as_user = @new_resource.run_as_user
+
+    if node['arcgis']['run_as_superuser']
+      cmd = Mixlib::ShellOut.new("su #{run_as_user} -c \"#{cmd}\"", { :timeout => 3600 })
+    else
+      cmd = Mixlib::ShellOut.new("#{cmd}", {:user => run_as_user, :timeout => 3600})
     end
     cmd.run_command
     cmd.error!

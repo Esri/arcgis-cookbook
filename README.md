@@ -32,7 +32,7 @@ Included ArcGIS deployment templates:
 * [arcgis-notebook-server](templates/arcgis-notebook-server) - deploys [ArcGIS Notebook Server](https://enterprise.arcgis.com/en/notebook/) with an ArcGIS Enterprise deployment.
 * [arcgis-portal](templates/arcgis-portal) - deploys [Portal for ArcGIS](https://enterprise.arcgis.com/en/portal/).
 * [arcgis-pro](templates/arcgis-pro) - deploys [ArcGIS Pro](https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview).
-* [arcgis-server](templates/arcgis-server) - deploys ArcGIS Server in GIS Server, ArcGIS GeoAnalytics Server, Raster Analytics Server or Image Server roles and federates it with Portal for ArcGIS.
+* [arcgis-server](templates/arcgis-server) - deploys ArcGIS Server in GIS Server, ArcGIS GeoAnalytics Server, Raster Analytics Server, Image Server, or Knowledge Server roles and federates it with Portal for ArcGIS.
 * [arcgis-webadaptor](templates/arcgis-webadaptor) - deploys [ArcGIS Web Adaptor](https://enterprise.arcgis.com/en/server/latest/install/windows/about-the-arcgis-web-adaptor.htm).
 * [arcgis-workflow-manager](templates/arcgis-workflow-manager) - deploys [ArcGIS Workflow Manager Server](https://enterprise.arcgis.com/en/workflow/).
 

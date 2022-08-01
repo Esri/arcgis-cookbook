@@ -1,0 +1,16 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "repository": {
+            "patches": "C:\\Software\\Archives\\Patches"
+        },
+        "server": {
+            "patches": [
+                "ArcGIS-110-S-*.msp"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

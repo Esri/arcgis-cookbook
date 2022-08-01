@@ -4,11 +4,11 @@ maintainer_email 'contracts@esri.com'
 license 'Apache-2.0'
 description 'Installs/Configures ArcGIS Mission Server'
 long_description 'Installs/Configures ArcGIS Mission Server'
-version '3.8.0'
-chef_version '>= 13.0' if defined? chef_version
+version '4.0.0'
+chef_version '>= 14.0' if defined? chef_version
 
-depends          'arcgis-enterprise', '~> 3.8'
-depends          'arcgis-repository', '~> 3.8'
+depends          'arcgis-enterprise', '~> 4.0'
+depends          'arcgis-repository', '~> 4.0'
 
 supports         'ubuntu'
 supports         'redhat'
@@ -20,6 +20,7 @@ supports         'windows'
 recipe 'arcgis-mission::default', 'Installs and configures ArcGIS Mission Server'
 recipe 'arcgis-mission::federation', 'Federates ArcGIS Mission Server with Portal for ArcGIS and enables MissionServer role'
 recipe 'arcgis-mission::fileserver', 'Configures shared directories for ArcGIS Mission Server on file server machine'
+recipe 'arcgis-mission::install_patches', 'Installs patches for ArcGIS Mission Server'
 recipe 'arcgis-mission::install_server', 'Installs ArcGIS Mission Server'
 recipe 'arcgis-mission::install_server_wa', 'Installs ArcGIS Web Adaptor for ArcGIS Mission Server'
 recipe 'arcgis-mission::server', 'Installs and configures ArcGIS Mission Server'

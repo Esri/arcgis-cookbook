@@ -4,11 +4,11 @@ maintainer_email 'contracts@esri.com'
 license 'Apache-2.0'
 description 'Installs/Configures ArcGIS Notebook Server'
 long_description 'Installs/Configures ArcGIS Notebook Server'
-version '3.8.0'
-chef_version '>= 13.0' if defined? chef_version
+version '4.0.0'
+chef_version '>= 14.0' if defined? chef_version
 
-depends          'arcgis-enterprise', '~> 3.8'
-depends          'arcgis-repository', '~> 3.8'
+depends          'arcgis-enterprise', '~> 4.0'
+depends          'arcgis-repository', '~> 4.0'
 depends          'docker', '~> 4.9'
 depends          'iptables', '~> 7.1'
 
@@ -23,9 +23,11 @@ recipe 'arcgis-notebooks::default', 'Installs and configures ArcGIS Notebook Ser
 recipe 'arcgis-notebooks::docker', 'Installs Docker engine'
 recipe 'arcgis-notebooks::federation', 'Federates ArcGIS Notebook Server with Portal for ArcGIS and enables NotebookServer role'
 recipe 'arcgis-notebooks::fileserver', 'Configures shared directories for ArcGIS Notebook Server on file server machine'
+recipe 'arcgis-notebooks::install_patches', 'Installs patches for ArcGIS Notebook Server'
 recipe 'arcgis-notebooks::install_server', 'Installs ArcGIS Notebook Server'
 recipe 'arcgis-notebooks::install_server_wa', 'Installs ArcGIS Web Adaptor for ArcGIS Notebook Server'
 recipe 'arcgis-notebooks::iptables', 'Reject Docker containers access to EC2 instance metadata IP address'
+recipe 'arcgis-notebooks::restart_docker', 'Restarts Docker service'
 recipe 'arcgis-notebooks::samples_data', 'Installs ArcGIS Notebook Server Samples Data'
 recipe 'arcgis-notebooks::server', 'Installs and configures ArcGIS Notebook Server'
 recipe 'arcgis-notebooks::server_node', 'Joins additional machines to an ArcGIS Notebook Server site'

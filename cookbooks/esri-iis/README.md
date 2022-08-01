@@ -1,11 +1,17 @@
+---
+layout: default
+title: "esri-iis cookbook"
+category: cookbooks
+item: esri-iis
+version: 0.2.0
+latest: true
+---
+
 # esri-iis Cookbook
 
 This cookbook enables IIS, installs features required by ArcGIS Web Adaptor (IIS), configures HTTPS, and starts IIS.
 
-Requirements
-------------
-
-### Platforms
+## Platforms
 
 * Windows 7
 * Windows 8 (8.1)
@@ -18,7 +24,7 @@ Requirements
 * Windows Server 2019
 * Windows Server 2022
 
-### Dependencies
+## Dependencies
 
 The following cookbooks are required:
 * openssl
@@ -26,37 +32,38 @@ The following cookbooks are required:
 
 ## Attributes
 
-* `node['arcgis']['iis']['domain_name']` = Domain name used for generating self-signed SSL certificate. By default, `<node FQDN>` is used.
+* `node['arcgis']['iis']['domain_name']` = Domain name used for generating a self-signed SSL certificate. By default, `<node FQDN>` is used.
 * `node['arcgis']['iis']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with server SSL certificate for IIS. Default value is `nil`.
 * `node['arcgis']['iis']['keystore_password']` = Password for keystore file with server SSL certificate for IIS. Default value is `nil`.
-* `node['arcgis']['iis']['web_site']` = IIS web site to configure. Dafault value is `Default Web Site`.
+* `node['arcgis']['iis']['web_site']` = IIS web site to configure. Default value is `Default Web Site`.
 * `node['arcgis']['iis']['replace_https_binding']` = If false, the current HTTPS binding is not changed if it is already configured. Default value is `false`.
-* `node['arcgis']['iis']['features']` = An array of windows features to be installed with IIS. Default value depends on Windows version.
+* `node['arcgis']['iis']['features']` = An array of Windows features to be installed. Default value is `['Web-Server', 'Web-WebServer']`.
 
-Recipes
--------
+## Recipes
 
-## esri-iis::default
+### default
 
 Enables IIS features required by ArcGIS Web Adaptor (IIS) and configures HTTPS binding.
 
-## esri-iis::install
+The default list of features depends on the Windows version.
 
-Enables IIS features required by ArcGIS Web Adaptor (IIS).
-
-## Usage
-
-Include `esri-iis` in your node's `run_list`:
-
-```json
+```JSON
 {
   "arcgis": {
     "iis": {
+      "appid": "{00112233-4455-6677-8899-AABBCCDDEEFF}",
       "domain_name": "domain.com",
-      "keystore_file" : "C:\\domain_com.pfx",
+      "keystore_file": "C:\\chef\\cache\\domain.com.pfx",
       "keystore_password": "test",
       "web_site": "Default Web Site",
-      "replace_https_binding": false
+      "replace_https_binding": false,
+      "features": [ "IIS-WebServerRole", "IIS-ISAPIFilter",
+                    "IIS-ISAPIExtensions", "NetFx4Extended-ASPNET45", "IIS-NetFxExtensibility45",
+                    "IIS-ASPNET45", "IIS-WebServerManagementTools", "IIS-ManagementConsole",
+                    "IIS-ManagementService", "IIS-IIS6ManagementCompatibility",
+                    "IIS-ManagementScriptingTools", "IIS-StaticContent", "IIS-BasicAuthentication",
+                    "IIS-WindowsAuthentication", "IIS-Metabase", "IIS-WebSockets" 
+      ]
     }
   },
   "run_list": [
@@ -65,33 +72,29 @@ Include `esri-iis` in your node's `run_list`:
 }
 ```
 
-See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
+If the specified keystore file does not exists, the recipe generates a self-signed SSL certificate for the specified domain.
 
-## Issues
+### install
 
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
+Enables IIS features required by ArcGIS Web Adaptor (IIS).
 
-## Contributing
+The default list of features depends on the Windows version.
 
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
-
-Licensing
----------
-
-Copyright 2017 Esri
-
-Licensed under the Apache License, Version 2.0 (the "License");
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Web Adaptor IIS Chef Cookbook)
-[](Esri Language: Ruby)
+```json
+{
+    "arcgis": {
+      "iis": {
+        "features": [ "IIS-WebServerRole", "IIS-ISAPIFilter",
+                      "IIS-ISAPIExtensions", "NetFx4Extended-ASPNET45", "IIS-NetFxExtensibility45",
+                      "IIS-ASPNET45", "IIS-WebServerManagementTools", "IIS-ManagementConsole",
+                      "IIS-ManagementService", "IIS-IIS6ManagementCompatibility",
+                      "IIS-ManagementScriptingTools", "IIS-StaticContent", "IIS-BasicAuthentication",
+                      "IIS-WindowsAuthentication", "IIS-Metabase", "IIS-WebSockets" 
+        ]
+      }
+    },
+    "run_list": [
+        "recipe[esri-iis::install]"
+    ]
+}
+```

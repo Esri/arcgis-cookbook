@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-110-S-*.tar",
+                "ArcGIS-110-S-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

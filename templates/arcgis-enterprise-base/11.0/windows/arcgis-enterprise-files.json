@@ -1,0 +1,33 @@
+{
+  "arcgis": {
+    "repository": {
+      "local_archives": "C:\\Software\\Archives",
+      "shared": false,
+      "server": {
+        "username": "changeit",
+        "password": "changeit"
+      },
+      "files": {
+        "ArcGIS_Server_Windows_110_182874.exe": {
+          "subfolder": "software/arcgis/11.0"
+        },
+        "Portal_for_ArcGIS_Windows_110_182885.exe": {
+          "subfolder": "software/arcgis/11.0"
+        },
+        "Portal_for_ArcGIS_Web_Styles_Windows_110_182886.exe": {
+          "subfolder": "software/arcgis/11.0"
+        },
+        "ArcGIS_DataStore_Windows_110_182887.exe": {
+          "subfolder": "software/arcgis/11.0"
+        },
+        "ArcGIS_Web_Adaptor_for_Microsoft_IIS_110_182888.exe": {
+          "subfolder": "software/arcgis/11.0"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::fileserver]",
+    "recipe[arcgis-repository::files]"
+  ]
+}

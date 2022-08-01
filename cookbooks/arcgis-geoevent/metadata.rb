@@ -4,11 +4,11 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS GeoEvent Server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '3.8.0'
-chef_version     '>= 13.0' if defined? chef_version
+version          '4.0.0'
+chef_version     '>= 14.0' if defined? chef_version
 
-depends          'arcgis-enterprise', '~> 3.8'
-depends          'arcgis-repository', '~> 3.8'
+depends          'arcgis-enterprise', '~> 4.0'
+depends          'arcgis-repository', '~> 4.0'
 
 supports         'windows'
 supports         'ubuntu'
@@ -19,6 +19,7 @@ supports         'suse'
 
 recipe           'arcgis-geoevent::admin_reset', 'Administratively resets GeoEvent Server'
 recipe           'arcgis-geoevent::default', 'Installs and configures ArcGIS GeoEvent Server'
+recipe           'arcgis-geoevent::install_patches', 'Installs patches for ArcGIS GeoEvent Server'
 recipe           'arcgis-geoevent::lp-install', 'Installs language pack for ArcGIS GeoEvent Server'
 recipe           'arcgis-geoevent::start_server', 'Starts ArcGIS GeoEvent Server' 
 recipe           'arcgis-geoevent::stop_server', 'Stops ArcGIS GeoEvent Server' 

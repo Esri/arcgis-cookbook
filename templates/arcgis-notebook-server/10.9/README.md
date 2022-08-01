@@ -19,10 +19,9 @@ Consult the ArcGIS Notebook Server 10.9 system requirements documentation for th
 
 * Ubuntu Server 18.04 LTS
 * Ubuntu Server 20.04 LTS
-* Red Hat Enterprise Linux Server 7
-* Red Hat Enterprise Linux Server 8
+* Red Hat Enterprise Linux Server 7 (Mirantis Container Runtime must be installed before running Chef)
+* Red Hat Enterprise Linux Server 8 (Mirantis Container Runtime must be installed before running Chef)
 * CentOS Linux 7
-* CentOS Linux 8
 
 Enable running sudo without password for the user running the Chef client.
 

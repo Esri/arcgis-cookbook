@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-desktop
 # Attributes:: licensemanager
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 
 default['arcgis']['licensemanager'].tap do |licensemanager|
-  licensemanager['version'] = '2021.1'
+  licensemanager['version'] = '2022.0'
 
   case node['platform']
   when 'windows'
@@ -28,6 +28,10 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
     case node['arcgis']['licensemanager']['version']
+    when '2022.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2022_0_182116.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{A3AC9C93-E045-4CAE-AAE4-F62A8E669E02}'
     when '2021.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2021_1_180127.exe').gsub('/', '\\')
@@ -90,6 +94,9 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['licensemanager']['version']
 
     case node['arcgis']['licensemanager']['version']
+    when '2022.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2022_0_182145.tar.gz')
     when '2021.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Linux_2021_1_180145.tar.gz')      

@@ -1,0 +1,14 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "C:\\Software\\Archives\\Patches"
+        },
+        "mission_server": {
+            "patches": []
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-mission::install_patches]"
+    ]
+}

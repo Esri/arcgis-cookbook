@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "repository": {
+            "local_patches": "/opt/software/archives/patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Server",
+                    "ArcGIS Workflow Manager Server, ArcGIS Server"
+                ]
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::patches]"
+    ]
+}

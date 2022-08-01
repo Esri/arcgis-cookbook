@@ -1,14 +1,18 @@
-arcgis-insights cookbook
-===============
+---
+layout: default
+title: "arcgis-insights cookbook"
+category: cookbooks
+item: arcgis-insights
+version: 4.0.0
+latest: true
+---
+
+# arcgis-insights cookbook
 
 This cookbook installs and configures ArcGIS Insights.
 
-Requirements
-------------
+## Supported ArcGIS Insights versions
 
-### Supported ArcGIS Insights versions
-
-* 3.4.1
 * 2020.1
 * 2020.2
 * 2020.3
@@ -18,8 +22,11 @@ Requirements
 * 2021.2.1
 * 2021.3
 * 2021.3.1
+* 2022.1
+* 2022.1.1
+* 2022.2
 
-### Platforms
+## Platforms
 
 * Windows 10
 * Windows Server 2012 (R2)
@@ -29,67 +36,94 @@ Requirements
 * Ubuntu Server 18.04 and 20.04 LTS
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
-* CentOS Linux 8
 * Oracle Linux 8
 
-
-### Dependencies
+## Dependencies
 
 The following cookbooks are required:
 
 * arcgis-enterprise
 * arcgis-repository
 
-Attributes
-----------
+## Attributes
 
-* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2021.3.1`
-* `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights version setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
-* `node['arcgis']['insights']['setup']` = The location of ArcGIS Insights setup executable. Default location is `%USERPROFILE%\Documents\Insights <version>\Insights\setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
-* `node['arcgis']['insights']['setup_archive']` = Path to ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
+* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2022.2`
+* `node['arcgis']['insights']['setup_archive']` = Path to the ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
+* `node['arcgis']['insights']['setup']` = The location of the ArcGIS Insights setup executable. Default location is `%USERPROFILE%\\Documents\\ArcGIS Insights 2022.2\\Insights\Setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
+* `node['arcgis']['insights']['patches]` = File names of ArcGIS Insights patches to install. Default value is `[]`.
 
+## Recipes
 
-Recipes
--------
-
-### arcgis-insights::default
+### default
 
 Installs and configures ArcGIS Insights.
 
-### arcgis-insights::uninstall
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "run_as_password": "Pa$$w0rdPa$$w0rd",
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS",
+    },
+    "insights": {
+      "version": "2022.2",
+      "setup": "%USERPROFILE%\\Documents\\ArcGIS Insights 2022.2\\Insights\\Setup.exe"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-insights]"
+  ]
+}
+```
+
+> ArcGIS Server or Portal for ArcGIS must be installed on the machine before running the arcgis-insights::default recipe.
+
+### install_patches
+
+Installs patches for ArcGIS Insights. The recipe installs patches from the patches folder specified by the arcgis.insights.patches attribute. The patch names may contain a wildcard '\*'. For example, "ArcGIS-1091-\*.msp" specifies all .msp patches that start with "ArcGIS-1091-".
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis" : {
+    "repository" : {
+      "patches" : "%USERPROFILE%\\Software\\Esri\\patches"
+    },
+    "insights": {
+      "patches": ["patch1.msp", "patch2.msp"]
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-insights::install_patches]"
+  ]
+}
+```
+
+### uninstall
 
 Uninstalls ArcGIS Insights.
 
-Usage
------
+Attributes used by the recipe:
 
-See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
-
-## Issues
-
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
-
-## Contributing
-
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
-
-Licensing
----------
-
-Copyright 2021 Esri
-
-Licensed under the Apache License, Version 2.0 (the "License");
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Insights Chef Cookbook)
-[](Esri Language: Ruby)
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "server": {
+      "install_dir": "C:\\Program Files (x86)\\ArcGIS"
+    },
+    "insights": {
+      "version": "2022.2"
+     }
+  },
+  "run_list":[
+    "recipe[arcgis-insights::uninstall]"
+  ]
+}
+```

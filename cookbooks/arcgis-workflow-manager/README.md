@@ -1,102 +1,211 @@
+---
+layout: default
+title: "arcgis-workflow-manager cookbook"
+category: cookbooks
+item: arcgis-workflow-manager
+version: 4.0.0
+latest: true
+---
+
 # arcgis-workflow-manager cookbook
 
 This cookbook installs and configures ArcGIS Workflow Manager Server and Web App.
 
-## Requirements
-
-### Supported ArcGIS Workflow Manager Server versions
+## Supported ArcGIS Workflow Manager Server versions
 
 * 10.8.1
 * 10.9
 * 10.9.1
+* 11.0
 
-### Supported ArcGIS software
+## Supported ArcGIS software
 
 * ArcGIS Workflow Manager Server
 * ArcGIS Workflow Manager Web App
 
-### Platforms
+## Platforms
 
 * Microsoft Windows Server 2019 Standard and Datacenter
 * Microsoft Windows Server 2022 Standard and Datacenter
 * Ubuntu Server 18.04 and 20.04 LTS
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
-* CentOS Linux 8
 * Oracle Linux 8
 
-### Dependencies
+## Dependencies
 
 The following cookbooks are required:
 
 * arcgis-enterprise
 * arcgis-repository
 
-Attributes
-----------
+## Attributes
 
-* `node['arcgis']['workflow_manager_server']['setup_archive']` = Path to ArcGIS Workflow Manager Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['workflow_manager_server']['setup']` = The location of ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS10.9\WorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/10.9/WorkflowManagerServer/Setup.sh` on Linux.
+* `node['arcgis']['workflow_manager_server']['setup_archive']` = Path to the ArcGIS Workflow Manager Server setup archive. Default value depends on the `node['arcgis']['version']` attribute value.
+* `node['arcgis']['workflow_manager_server']['setup']` = The location of the ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS10.9\WorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/10.9/WorkflowManagerServer/Setup.sh` on Linux.
 * `node['arcgis']['workflow_manager_server']['authorization_file']` = ArcGIS Workflow Manager Server authorization file path. Default value is set to the value of `node['arcgis']['server']['authorization_file']`
 * `node['arcgis']['workflow_manager_server']['authorization_file_version']` = ArcGIS Workflow Manager Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
 * `node['arcgis']['workflow_manager_server']['ports']` = Ports used by ArcGIS Workflow Manager Server. Default ports are `9830,9820,9840,9880,13443`.
+* `node['arcgis']['workflow_manager_server']['patches]` = File names of ArcGIS Workflow Manager Server patches to install. Default value is `[]`.
+  
+## Recipes
 
-Recipes
--------
+### default
 
-### arcgis-workflow-manager::default
+Calls the arcgis-workflow-manager::server recipe.
 
-Installs and authorizes ArcGIS Workflow Manager Server.
+### federation
 
-### arcgis-workflow-manager::federation
+Federates ArcGIS Workflow Manager Server with an ArcGIS Enterprise portal and enables the Workflow Manager Server function.
 
-Federates ArcGIS Workflow Manager Server and enables Workflow Manager server function.
+Attributes used by the recipe:
 
-### arcgis-workflow-manager::install_server
+```JSON
+{
+    "arcgis": {
+        "portal": {
+            "private_url": "https://portal.domain.com:7443/arcgis",
+            "admin_username": "admin",
+            "admin_password": "changeit",
+            "root_cert": "",
+            "root_cert_alias": ""
+        },
+        "server": {
+            "web_context_url": "https://domain.com/server",
+            "private_url": "https://domain.com:6443/arcgis",
+            "admin_username": "admin",
+            "admin_password": "changeit",
+            "is_hosting": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-workflow-manager::federation]"
+    ]
+}
+```
+
+### install_server
 
 Installs ArcGIS Workflow Manager Server.
 
-### arcgis-workflow-manager::install_webapp
+Attributes used by the recipe:
 
-Installs ArcGIS Workflow Manager Web App.
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "run_as_password": "Pa$$w0rdPa$$w0rd",
+    "configure_windows_firewall": true,
+    "repository": {
+      "setups": "C:\\Software\\Setups"
+    },
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+      "install_system_requirements": true
+    },
+    "workflow_manager_server": {
+      "setup_archive": "C:\\Software\\Archives\\ArcGIS_Workflow_Manager_Server_110_182937.exe",
+      "setup": "C:\\Software\\Setups\\ArcGIS11.0\\WorkflowManagerServer\\Setup.exe",
+      "ports": "9830,9820,9840,9880,13443"      
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-workflow-manager::install_server]"
+  ]
+}
+```
 
-### arcgis-workflow-manager::server
+### install_patches
+
+Installs patches for ArcGIS Workflow Manager Server. The recipe installs patches from the patches folder specified by the arcgis.notebook_server.patches attribute. The patch names may contain a wildcard '\*'. For example, "ArcGIS-1091-\*.msp" specifies all .msp patches that start with "ArcGIS-1091-".
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis" : {
+    "repository" : {
+      "patches" : "%USERPROFILE%\\Software\\Esri\\patches"
+    },
+    "workflow_manager_server": {
+      "patches": ["patch1.msp", "patch2.msp"]
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-workflow-manager::install_patches]"
+  ]
+}
+```
+
+### server
 
 Installs and authorizes ArcGIS Workflow Manager Server.
 
-### arcgis-workflow-manager::uninstall_server
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "run_as_password": "Pa$$w0rdPa$$w0rd",
+    "configure_windows_firewall": true,
+    "repository": {
+      "setups": "C:\\Software\\Setups"
+    },
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+      "install_system_requirements": true
+    },
+    "workflow_manager_server": {
+      "setup_archive": "C:\\Software\\Archives\\ArcGIS_Workflow_Manager_Server_110_182937.exe",
+      "setup": "C:\\Software\\Setups\\ArcGIS11.0\\WorkflowManagerServer\\Setup.exe",
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.0\\Workflow_Manager_Server.prvc",
+      "authorization_file_version": "11.0",
+      "ports": "9830,9820,9840,9880,13443"      
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-workflow-manager::server]"
+  ]
+}
+```
+
+### uninstall_server
 
 Uninstalls ArcGIS Workflow Manager Server.
 
-### arcgis-workflow-manager::uninstall_webapp
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-workflow-manager::uninstall_server]"
+  ]
+}
+```
+
+### uninstall_webapp
 
 Uninstalls ArcGIS Workflow Manager Web App.
 
-## Issues
-
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
-
-## Contributing
-
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
-
-Licensing
----------
-
-Copyright 2021 Esri
-
-Licensed under the Apache License, Version 2.0 (the "License");
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Enterprise Workflow Server Chef Cookbook)
-[](Esri Language: Ruby)
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "portal": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Portal"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-workflow-manager::uninstall_webapp]"
+  ]
+}
+```

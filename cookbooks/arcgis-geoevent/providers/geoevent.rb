@@ -64,12 +64,13 @@ action :install do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup
 
-    args = if @new_resource.run_as_msa
-             args = "/qn MSA=\"True\""
-           else
-             args = "/qn PASSWORD=\"#{@new_resource.run_as_password}\""
-           end
- 
+    password = if @new_resource.run_as_msa
+                 'MSA=\"True\"'
+               else
+                 "PASSWORD=\"#{@new_resource.run_as_password}\""
+               end
+    args = "/qn #{password} #{@new_resource.setup_options}"
+
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
     cmd.error!
@@ -77,9 +78,10 @@ action :install do
     sleep(450.0)  # Wait for GeoEvent Service to build dependency tree...
   else
     cmd = @new_resource.setup
+    args = @new_resource.setup_options
     run_as_user = @new_resource.run_as_user
 
-    cmd = Mixlib::ShellOut.new("su - #{run_as_user} -c \"#{cmd}\"",
+    cmd = Mixlib::ShellOut.new("su - #{run_as_user} -c \"#{cmd} #{args}\"",
                                { :timeout => 3600 })
     cmd.run_command
     cmd.error!

@@ -26,7 +26,6 @@ Consult the ArcGIS Mission Server 10.9 system requirements documentation for the
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
 Enable running sudo without password for the user running the Chef client.
 

@@ -20,7 +20,11 @@
             "config_store_type": "FILESYSTEM",
             "config_store_connection_string": "\\\\FILESERVER\\arcgisserver\\config-store",
             "keystore_file" : "C:\\Software\\Certificates\\ssl_cert.pfx",
-            "keystore_password" : "change.it"
+            "keystore_password" : "change.it",
+            "system_properties": {
+                "WebSocketContextURL":"https://domain.com:6143/arcgis",
+                "WebContextURL":"https://domain.com:6443/arcgis"
+            }
         },
         "python": {
             "install_dir": "C:\\Python27"

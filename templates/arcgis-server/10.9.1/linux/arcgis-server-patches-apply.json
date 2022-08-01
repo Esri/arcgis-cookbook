@@ -1,0 +1,23 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-1091-S-MR-PatchB-linux.tar",
+                "ArcGIS-1091-S-Log4j-PatchB-linux.tar",
+                "ArcGIS-1091-S-UNDM1-Patch-linux.tar",
+                "ArcGIS-1091-S-VRPG-Patch-linux.tar",
+                "ArcGIS-1091-S-K1-Patch-linux.tar",
+                "ArcGIS-1091-S-SQ-Patch-linux.tar"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

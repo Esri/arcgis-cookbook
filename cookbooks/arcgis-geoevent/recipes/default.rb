@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Recipe:: default
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ end
 
 arcgis_geoevent_geoevent 'Setup ArcGIS GeoEvent Server' do
   setup node['arcgis']['geoevent']['setup']
+  setup_options node['arcgis']['geoevent']['setup_options']
   product_code node['arcgis']['geoevent']['product_code']
   install_dir node['arcgis']['server']['install_dir']
   run_as_user node['arcgis']['run_as_user']

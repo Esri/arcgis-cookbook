@@ -26,7 +26,6 @@ The machines must have ArcGIS Server 10.9 installed and authorized. Consult the 
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
 SQL Server is only supported on Windows.
 

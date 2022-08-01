@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: portal
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,10 +87,12 @@ default['arcgis']['portal'].tap do |portal|
   portal['setup_archive'] = ''
   portal['product_code'] = ''
   portal['system_properties'] = {}
-  portal['ports'] = '5701,5702,5703,7080,7443,7005,7099,7199,7120,7220,7654'
+  portal['ports'] = '5701,5702,5703,7080,7443,7005,7099,7120,7220,7654'
 
   portal['living_atlas']['group_ids'] = ['81f4ed89c3c74086a99d168925ce609e', '6646cd89ff1849afa1b95ed670a298b8']
 
+  portal['patches'] = []
+  
   case node['platform']
   when 'windows'
     portal['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
@@ -103,8 +105,13 @@ default['arcgis']['portal'].tap do |portal|
     portal['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\Portal').gsub('/', '\\')
     portal['install_subdir'] = ''
     portal['data_dir'] = 'C:\\arcgisportal'
+    portal['patch_registry'] ='SOFTWARE\\ESRI\\Portal for ArcGIS\\Updates'
 
     case node['arcgis']['version']
+    when '11.0'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_110_182885.exe').gsub('/', '\\')
+      portal['product_code'] = '{EB809599-C650-486A-85C6-D37618754AE4}'
     when '10.9.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_1091_180052.exe').gsub('/', '\\')
@@ -121,44 +128,6 @@ default['arcgis']['portal'].tap do |portal|
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_108_172870.exe').gsub('/', '\\')
       portal['product_code'] = '{7D432555-69F9-4945-8EE7-FC4503A94D6A}'
-    when '10.7.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_1071_169688.exe').gsub('/', '\\')
-      portal['product_code'] = '{7FDEEE00-6641-4E27-A54E-82ACCCE14D00}'
-    when '10.7'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_107_167632.exe').gsub('/', '\\')
-      portal['product_code'] = '{6A640642-4D74-4A2F-8350-92B6371378C5}'
-    when '10.6.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_1061_163979.exe').gsub('/', '\\')
-      portal['product_code'] = '{ECC6B3B9-A875-4AE3-9C03-8664EB38EED9}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.6'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_106_161831.exe').gsub('/', '\\')
-      portal['product_code'] = '{FFE4808A-1AD2-41A6-B5AD-2BA312BE6AAA}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.5.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_1051_156365.exe').gsub('/', '\\')
-      portal['product_code'] = '{C7E44FBE-DFA6-4A95-8779-B6C40F3947B7}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.5'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_105_154005.exe').gsub('/', '\\')
-      portal['product_code'] = '{43EF63C6-957B-4DA7-A222-6904053BF222}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.4.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_1041_151932.exe').gsub('/', '\\')
-      portal['product_code'] = '{31373E04-9B5A-4CD7-B668-0B1DE7F0D45F}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.4'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Windows_104_149434.exe').gsub('/', '\\')
-      portal['product_code'] = '{FA6FCD2D-114C-4C04-A8DF-C2E43979560E}'
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
     else
       Chef::Log.warn 'Unsupported Portal for ArcGIS version'
     end
@@ -190,6 +159,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['data_dir'] = ::File.join(portal_install_dir,
                                      portal_install_subdir,
                                      'usr/arcgisportal')
+    portal['patch_log'] = ::File.join(portal_install_dir,
+                                      portal_install_subdir,
+                                      '.ESRI_P_PATCH_LOG')
 
     portal['authorization_file'] = ''
     portal['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -198,6 +170,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.0'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_110_182984.tar.gz')
     when '10.9.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_1091_180199.tar.gz')
@@ -210,36 +185,6 @@ default['arcgis']['portal'].tap do |portal|
     when '10.8'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_108_172989.tar.gz')
-    when '10.7.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_1071_169807.tar.gz')
-    when '10.7'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_107_167718.tar.gz')
-    when '10.6.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_1061_164055.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.6'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_106_161809.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.5.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_1051_156440.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.5'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_105_154053.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.4.1'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_1041_151999.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
-    when '10.4'
-      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'Portal_for_ArcGIS_Linux_104_149447.tar.gz')
-      Chef::Log.warn 'Unsupported Portal for ArcGIS version'
     else
       Chef::Log.warn 'Unsupported Portal for ArcGIS version'
     end

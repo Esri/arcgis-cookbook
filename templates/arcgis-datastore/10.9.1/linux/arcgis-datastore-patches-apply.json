@@ -1,0 +1,18 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-1091-DS-Log4j-Patch-linux.tar"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

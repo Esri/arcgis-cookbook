@@ -1,0 +1,14 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "notebook_server": {
+            "patches": []
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-notebooks::install_patches]"
+    ]
+}

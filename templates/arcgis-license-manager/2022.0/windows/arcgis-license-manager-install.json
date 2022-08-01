@@ -1,0 +1,15 @@
+{
+  "arcgis": {
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "licensemanager": {
+      "version": "2022.0",
+      "install_dir": "C:\\Program Files\\ArcGIS"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-desktop::licensemanager]"
+  ]
+}

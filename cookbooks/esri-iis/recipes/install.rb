@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-iis
 # Recipe:: install
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@
 #
 
 node['arcgis']['iis']['features'].each do |feature|
-  windows_feature feature do
-    timeout 1200
-    retries 2
-    retry_delay 60
-    action :install
+  powershell_script "Enable-WindowsOptionalFeature #{feature}" do
+    code "Enable-WindowsOptionalFeature -Online -FeatureName #{feature} -All"
   end
 end
 

@@ -26,7 +26,7 @@ try:
 
 #Check if no system arguments (options) entered
 	if len(sys.argv) == 1:
-		print "%s: error: %s\n" % (sys.argv[0], "No command options given")
+		print("%s: error: %s\n" % (sys.argv[0], "No command options given"))
 		parser.print_help()
 		sys.exit(3)
 
@@ -41,7 +41,7 @@ try:
 	product_license=arcpy.ProductInfo()
 	
 	#if (license == ""):
-	#	print " \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+	#	print(" \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified."))
 	#	parser.print_help()
 	#	sys.exit(3)
 
@@ -59,7 +59,7 @@ try:
 	if os.path.exists(Connection_File_Name_full_path):
 		os.remove(Connection_File_Name_full_path)
 
-	print "\nCreating <%= item['database'] %> Database Connection File...\n"	
+	print("\nCreating <%= item['database'] %> Database Connection File...\n")	
 	# Process: Create Database Connection File...
 	# Usage:  out_file_location, out_file_name, DBMS_TYPE, instnace, database, account_authentication, username, password, save_username_password(must be true)
 	arcpy.CreateDatabaseConnection_management(out_folder_path=Conn_File_Path, out_name=Connection_File_Name, database_platform=database_type, instance=instance, account_authentication=account_authentication, username=username, password=password, save_user_pass="TRUE", database=database)
@@ -80,6 +80,6 @@ try:
 except SystemExit as e:
 	if e.code == 2:
 		parser.usage = ""
-		print "\n"
+		print("\n")
 		parser.print_help() 
 		parser.exit(2)

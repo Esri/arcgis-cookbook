@@ -1,0 +1,18 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-1091-PFA-Log4j-PatchB-linux.tar"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

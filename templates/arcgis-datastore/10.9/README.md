@@ -25,8 +25,6 @@ Consult the ArcGIS Data Store 10.9 system requirements documentation for the req
   * Ubuntu Server 20.04 LTS
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
-  * CentOS Linux 7
-  * CentOS Linux 8
 
 For Linux deployments enable running sudo without password for the user running the Chef client.
 

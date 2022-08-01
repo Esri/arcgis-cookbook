@@ -2,7 +2,7 @@
 # Cookbook:: arcgis-repository
 # Recipe:: default
 #
-# Copyright 2018 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,22 +17,4 @@
 # limitations under the License.
 #
 
-# Create archives directory
-directory node['arcgis']['repository']['local_archives'] do
-  mode '0755' if node['platform'] != 'windows'
-  recursive true
-  action :create
-end
-
-node['arcgis']['repository']['files'].each do |filename, props|
-  # Download the remote file
-  remote_file filename do
-    path ::File.join(node['arcgis']['repository']['local_archives'], filename)
-    source ArcGIS.get_download_url(node['arcgis']['repository']['server']['url'],
-                                   node['arcgis']['repository']['server']['key'],
-                                   filename, props['subfolder'])
-    checksum props['checksum']
-    not_if { ::File.exist?(::File.join(node['arcgis']['repository']['local_archives'], filename)) }
-    action :create
-  end
-end
+include_recipe 'arcgis-repository::files'

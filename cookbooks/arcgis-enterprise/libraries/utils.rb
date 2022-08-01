@@ -20,6 +20,7 @@ require 'pathname'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/registry'
+  require 'win32ole'
 end
 
 #
@@ -88,6 +89,74 @@ module Utils
   def self.product_installed?(product_code)
     self.product_key_exists?('SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code) ||
     self.product_key_exists?('SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code)
+  end
+
+  # Retrieves patch display name from MSP file
+  def self.get_patch_info(msp_path)
+    installer = WIN32OLE.new('WindowsInstaller.Installer')
+    database = installer.OpenDatabase(msp_path, 32)
+    summary = database.SummaryInformation
+    return {
+      :display_name => summary.Property(2),
+      :qfe_id => summary.Property(3),
+      :product_code => summary.Property(7),
+      :patch_code => summary.Property(9)
+    }
+  end
+
+  def self.windows_patch_installed?(msp_path, patch_registry)
+    begin
+      patch_info = self.get_patch_info(msp_path)
+
+      if patch_registry.nil?
+        key = Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall', ::Win32::Registry::KEY_READ | 0x100)
+
+        key.each_key() do |subkey|
+          reg = key.open(subkey, ::Win32::Registry::KEY_READ | 0x100)
+          
+          begin
+            if reg['DisplayName'] == patch_info[:display_name]
+              reg.close()
+              key.close()
+              return true 
+            end
+          rescue
+          end
+
+          reg.close()
+        end
+    
+        key.close()
+      else # Look for the QFE ID in HKLM:\SOFTWARE\ESRI\* registry keys
+        key = Win32::Registry::HKEY_LOCAL_MACHINE.open(patch_registry, ::Win32::Registry::KEY_READ | 0x100)
+
+        key.each_key() do |subkey|
+          reg = key.open(subkey, ::Win32::Registry::KEY_READ | 0x100)
+          
+          begin
+            if reg['QFE_ID'] == patch_info[:qfe_id]
+              reg.close()
+              key.close()
+              return true 
+            end
+          rescue
+          end
+
+          reg.close()
+        end
+    
+        key.close()
+      end
+    rescue
+    end
+
+    return false
+  end
+
+  def self.linux_patch_installed?(patch_path, patch_log)
+    return false if patch_log.nil? || !::File.exists?(patch_log)
+    qfe_file = ::File.basename(patch_path)
+    return ::File.open(patch_log).each_line.any? { |line| line.include?(qfe_file) }
   end
 
   def self.wa_instance(product_code)

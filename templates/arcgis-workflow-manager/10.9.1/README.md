@@ -1,3 +1,12 @@
+---
+layout: default
+title: "arcgis-workflow-manager template"
+category: templates
+item: arcgis-workflow-manager
+version: 10.9.1
+latest: false
+---
+
 # arcgis-workflow-manager Deployment Template
 
 The template contains Chef Zero JSON files with sample recipes and attributes for different ArcGIS Workflow Manager machine roles.
@@ -27,9 +36,8 @@ Consult the ArcGIS Workflow Manager Server 10.9.1 system requirements documentat
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
-Enable running sudo without password for the user running the Chef client.
+For Linux deployments, enable running sudo without password for the user running the Chef client.
 
 ### Required ArcGIS Software Repository Content
 
@@ -45,20 +53,20 @@ Linux
 * ArcGIS_Server_Linux_1091_180182.tar.gz
 * ArcGIS_Workflow_Manager_Server_1091_180228.tar.gz
 
-> ArcGIS software repository directory is specified by arcgis.repository.archives attribute. By default it is set to local directory C:\Software\Archives on Windows and /opt/software/archives on Linux. However, it is recommended to create an ArcGIS software repository located on a separate file server that is accessible from all the machines in the deployment for the user account used to run Chef client.
+> The ArcGIS software repository directory is specified by the arcgis.repository.archives attribute. By default, it is set to local directory C:\Software\Archives on Windows and /opt/software/archives on Linux. However, it is recommended to create an ArcGIS software repository located on a separate file server that is accessible from all the machines in the deployment for the user account used to run the Chef client.
 
-> Ensure that the directory specified by arcgis.repository.setups attribute has enough space for setups extracted from the setup archives.
+> Ensure that the directory specified by the arcgis.repository.setups attribute has enough space for setups extracted from the setup archives.
 
 ## Initial Deployment Workflow
 
-The recommended initial deployment workflow for the template machine roles:
+The following is the recommended initial deployment workflow for the template machine roles:
 
 1. Install the recommended version of [Chef Client](https://docs.chef.io/chef_install_script/) or [Cinc Client](https://cinc.sh/start/client/).
 2. Download and extract [ArcGIS Chef cookbooks](https://github.com/Esri/arcgis-cookbook/releases) into the Chef workspace directory.
 3. Update the required attributes within the template JSON files.
-4. Run Chef client on machines as administrator/superuser using the json files specific to the machine roles (one machine can be used in multiple roles).
+4. Run the Chef client on the machines as administrator/superuser using the JSON files specific to the machine roles (one machine can be used in multiple roles).
 
-> For additional customization options see the list of supported attributes described in arcgis-mission cookbook README file.
+> For additional customization options, see the list of supported attributes described in the arcgis-workflow-manager cookbook README file.
 
 ### File Server Machine
 
@@ -72,7 +80,7 @@ chef-client -z -j workflow-manager-fileserver.json
 chef-client -z -j workflow-manager-server.json
 ```
 
-To federate ArcGIS Workflow Manager Server with Portal for ArcGIS and enable Workflow manager server function.
+To federate ArcGIS Workflow Manager Server with Portal for ArcGIS and enable the Workflow Manager server function, run the following:
 
 ```shell
 chef-client -z -j workflow-manager-server-federation.json
@@ -84,11 +92,20 @@ chef-client -z -j workflow-manager-server-federation.json
 chef-client -z -j workflow-manager-server-node.json
 ```
 
-## Upgrade Workflow
+## Install ArcGIS Workflow Manager Server Patches and Updates
 
-> It's not recommended to use the templates for upgrades if the sites were not initially deployed using the templates.
+To install software patches and updates after the initial installation or upgrade of ArcGIS Workflow Manager Server, download ArcGIS Workflow Manager Server patches from the global ArcGIS software repository into a local patches folder:
 
-This is the first release of arcgis-workflow-manager deployment template. The recommended upgrade workflow for this template will be provided in the subsequent releases.
+```shell
+chef-client -z -j workflow-manager-server-patches.json
+```
+
+Check the list of patches specified by the arcgis.workflow_manager_server.patches attribute in the workflow-manager-server-patches-apply.json and apply the patches:
+
+```shell
+chef-client -z -j workflow-manager-server-patches-apply.json
+```
+
 
 ## Machine Roles
 
@@ -96,41 +113,49 @@ The JSON files included in the template provide recipes for the deployment machi
 
 ### workflow-manager-fileserver
 
-Configures file shares for ArcGIS Workflow Manager Server config store and server directories.
+Configures file shares for the ArcGIS Workflow Manager Server configuration store and server directories.
 
-Required attributes changes:
+Required attribute changes:
 
-* arcgis.run_as_password - (Windows only) password of 'arcgis' windows user account
+* arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 
 ### workflow-manager-server-install
 
 Installs ArcGIS Workflow Manager Server without configuring it.
 
-Required attributes changes:
+Required attribute changes:
 
-* arcgis.run_as_password - (Windows only) password of 'arcgis' windows user account
+* arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
+
+### workflow-manager-server-patches
+
+Downloads ArcGIS Workflow Manager Server patches from the global ArcGIS software repository into a local patch folder.
+
+### workflow-manager-server-patches-apply
+
+Applies ArcGIS Workflow Manager Server patches.
 
 ### workflow-manager-server
 
 Installs and configures ArcGIS Workflow Manager Server.
 
-Required attributes changes:
+Required attribute changes:
 
-* arcgis.run_as_password - (Windows only) password of 'arcgis' windows user account
+* arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account.
 * arcgis.server.admin_username - Specify primary site administrator account user name.
 * arcgis.server.admin_password - Specify primary site administrator account password.
 * arcgis.server.authorization_file - Specify path to the ArcGIS Server software authorization file.
-* arcgis.server.directories_root - Replace 'FILESERVER' by the file server machine hostname or static IP address.
-* arcgis.server.config_store_connection_string - Replace 'FILESERVER' by the file server machine hostname or static IP address.
+* arcgis.server.directories_root - Replace 'FILESERVER' with the file server machine hostname or static IP address.
+* arcgis.server.config_store_connection_string - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 * arcgis.workflow_manager_server.authorization_file - Specify path to the ArcGIS Workflow Manager Server role software authorization file.
 
 ### workflow-manager-server-node
 
 Installs ArcGIS Workflow Manager Server on the machine, authorizes the software, and joins the machine to an existing ArcGIS Server site.
 
-Required attributes changes:
+Required attribute changes:
 
-* arcgis.run_as_password - (Windows only) password of 'arcgis' windows user account
+* arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account.
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password - Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.authorization_file - Specify path to the ArcGIS Server role software authorization file.
@@ -139,21 +164,21 @@ Required attributes changes:
 
 ### workflow-manager-server-federation
 
-Federates ArcGIS Workflows Manager Server with Portal for ArcGIS and enables Workflow Manager server function.
+Federates ArcGIS Workflows Manager Server with Portal for ArcGIS and enables the Workflow Manager Server function.
 
-Required attributes changes:
+Required attribute changes:
 
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.private_url - Specify ArcGIS Server private URL that will be used as the admin URL during federation.
-* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation..
+* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that will be used as the services URL during federation.
 * arcgis.portal.admin_username - Specify Portal for ArcGIS administrator user name.
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator password.
 * arcgis.portal.private_url - Specify Portal for ArcGIS private URL.
 
 ### workflow-manager-s3files
 
-The role downloads ArcGIS Workflow Manager Server and Web App setups archives from S3 bucket specified by arcgis.repository.server.s3bucket attribute to the local ArcGIS software repository.
+The role downloads ArcGIS Workflow Manager Server and Web App setup archives from the S3 bucket specified by the arcgis.repository.server.s3bucket attribute to the local ArcGIS software repository.
 
 The role requires AWS Tools for PowerShell to be installed on Windows machines and AWS Command Line Interface on Linux machines.  
 

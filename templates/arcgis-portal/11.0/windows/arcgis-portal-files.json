@@ -1,0 +1,24 @@
+{
+  "arcgis": {
+    "repository": {
+      "local_archives": "C:\\Software\\Archives",
+      "shared": false,
+      "server": {
+        "username": "changeit",
+        "password": "changeit"
+      },
+      "files": {
+        "Portal_for_ArcGIS_Windows_110_182885.exe": {
+          "subfolder": "software/arcgis/11.0"
+        },
+        "Portal_for_ArcGIS_Web_Styles_Windows_110_182886.exe": {
+          "subfolder": "software/arcgis/11.0"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::fileserver]",
+    "recipe[arcgis-repository::files]"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "portal": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+            "install_system_requirements": true,
+            "admin_username": "siteadmin",
+            "admin_password": "change.it",
+            "admin_email": "admin@mydomain.com",
+            "admin_full_name": "Administrator",
+            "admin_description": "Initial account administrator",
+            "security_question": "Your favorite ice cream flavor?",
+            "security_question_answer": "bacon",
+            "data_dir": "C:\\arcgisportal",
+            "log_dir": "C:\\arcgisportal\\logs",
+            "log_level": "WARNING",
+            "content_store_type": "fileStore",
+            "content_store_provider": "FileSystem",
+            "content_store_connection_string": "\\\\FILESERVER\\arcgisportal\\content",
+            "object_store": "",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.0\\Portal.json",
+            "user_license_type_id": "",
+            "system_properties": {
+                "privatePortalURL": "https://domain.com:7443/arcgis",
+                "WebContextURL": "https://domain.com/portal"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal]"
+    ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: webstyles
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,10 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'ArcGISWebStyles', 'Setup.exe').tr('/', '\\')
 
     case node['arcgis']['version']
+    when '11.0'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Windows_110_182886.exe').tr('/', '\\')
+      webstyles['product_code'] = '{CCA0635D-E306-4C42-AB81-F4032D731397}'
     when '10.9.1'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Windows_1091_180053.exe').tr('/', '\\')
@@ -40,10 +44,6 @@ default['arcgis']['webstyles'].tap do |webstyles|
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Windows_108_172871.exe').tr('/', '\\')
       webstyles['product_code'] = '{EF31CB36-2EB4-4FD3-A451-AC12FD22A582}'
-    when '10.7.1'
-      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                               'ArcGIS_Web_Styles_Windows_1071_170272.exe').tr('/', '\\')
-      webstyles['product_code'] = '{B2E42A8D-1EE9-4610-9932-D0FCFD06D2AF}'
     else
       Chef::Log.warn 'Unsupported ArcGIS Web Styles version'
     end
@@ -53,10 +53,12 @@ default['arcgis']['webstyles'].tap do |webstyles|
                                      'WebStyles', 'WebStyles-Setup.sh')
 
     case node['arcgis']['version']
+    when '11.0'
+      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'Portal_for_ArcGIS_Web_Styles_Linux_110_182985.tar.gz')
     when '10.9.1'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Linux_1091_180201.tar.gz')
-
     when '10.9'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Linux_109_177886.tar.gz')
@@ -66,9 +68,6 @@ default['arcgis']['webstyles'].tap do |webstyles|
     when '10.8'
       webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                'Portal_for_ArcGIS_Web_Styles_Linux_108_172990.tar.gz')
-    when '10.7.1'
-      webstyles['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                               'ArcGIS_Web_Styles_Linux_1071_170273.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS Web Styles version'
     end

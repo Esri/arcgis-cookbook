@@ -26,7 +26,6 @@ Consult the ArcGIS Server 10.9 system requirements documentation for the require
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
 For Linux deployments enable running sudo without password for the user running the Chef client.
 
@@ -221,7 +220,7 @@ Required attributes changes:
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.private_url - Specify ArcGIS Server private URL that will be used as the admin URL during federation.
-* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation..
+* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation.
 * arcgis.portal.admin_username - Specify Portal for ArcGIS administrator user name.
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator password.
 * arcgis.portal.private_url - Specify Portal for ArcGIS private URL.
@@ -235,7 +234,7 @@ Required attributes changes:
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.private_url - Specify ArcGIS Server private URL that will be used as the admin URL during federation.
-* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation..
+* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation.
 * arcgis.portal.admin_username - Specify Portal for ArcGIS administrator user name.
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator password.
 * arcgis.portal.private_url - Specify Portal for ArcGIS private URL.
@@ -249,7 +248,7 @@ Required attributes changes:
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.private_url - Specify ArcGIS Server private URL that will be used as the admin URL during federation.
-* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation..
+* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation.
 * arcgis.portal.admin_username - Specify Portal for ArcGIS administrator user name.
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator password.
 * arcgis.portal.private_url - Specify Portal for ArcGIS private URL.
@@ -263,7 +262,7 @@ Required attributes changes:
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
 * arcgis.server.private_url - Specify ArcGIS Server private URL that will be used as the admin URL during federation.
-* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation..
+* arcgis.server.web_context_url - Specify ArcGIS Server Web Context URL that be used as the services URL during federation.
 * arcgis.portal.admin_username - Specify Portal for ArcGIS administrator user name.
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator password.
 * arcgis.portal.private_url - Specify Portal for ArcGIS private URL.
