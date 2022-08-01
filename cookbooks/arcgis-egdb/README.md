@@ -1,6 +1,15 @@
-# arcgis-egdb
+---
+layout: default
+title: "arcgis-egdb cookbook"
+category: cookbooks
+item: arcgis-egdb
+version: 1.1.0
+latest: true
+---
 
-arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or PostgreSQL DBMS and registers them with ArcGIS Server.
+# arcgis-egdb cookbook
+ 
+The arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or PostgreSQL databases and registers them with ArcGIS Server as the site's managed database.
 
 ## Platforms
 
@@ -14,7 +23,6 @@ arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or PostgreSQL
 * Ubuntu Server 18.04 and 20.04 LTS
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
-* CentOS Linux 8
 * Oracle Linux 8
 
 ## Database Servers
@@ -22,8 +30,8 @@ arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or PostgreSQL
 The cookbook was tested with:
 
 * Amazon RDS for SQL Server
-* Amazon RDS for PostgerSQL
-* Amazon Aurora PostgerSQL-compatible
+* Amazon RDS for PostgreSQL
+* Amazon Aurora PostgreSQL-compatible
 
 ## Dependencies
 
@@ -31,23 +39,23 @@ The following cookbooks are required:
 
 * arcgis-enterprise
 
-The cookbook uses ArcPy to create and enable geodatabases. ArcPy is installed by ArcGIS Server setup.
+The cookbook uses ArcPy to create and enable geodatabases. ArcPy is installed by the ArcGIS Server setup.
 
-ArcPy does not support creating databases in Amazon RDS database servers. The cookbook uses sqlcmd and pqsl utility for SQL Server and PostgreSQL database servers to create the databases. 'sqlcmd' and 'psql' recipes could be used to install these utilities. ArcGIS DataStore and Portal for ArcGIS include embedded PostgreSQl client with psql utility, that can be used by arcgis-egdb cookbook.
+ArcPy does not support creating databases in Amazon RDS database servers. The cookbook uses the sqlcmd and the psql utility for SQL Server and PostgreSQL database servers respectively to create the databases. The 'sqlcmd' and 'psql' recipes could be used to install these utilities. ArcGIS Data Store and Portal for ArcGIS include an embedded PostgreSQL client with psql utility that can be used by the arcgis-egdb cookbook.
 
 ## Attributes
 
-* `node['arcgis']['egdb']['engine']` = DB engine <nil|postgres|sqlserver-se>. Default DB engine is `nil`.
+* `node['arcgis']['egdb']['engine']` = DB engine `<nil|postgres|sqlserver-se>`. Default DB engine is `nil`.
 * `node['arcgis']['egdb']['endpoint']` = DB instance endpoint domain name. Default endpoint is `nil`.
-* `node['arcgis']['egdb']['keycodes']` = Geodatabase license file path. Default path is `node['arcgis']['server']['keycodes']`.
+* `node['arcgis']['egdb']['keycodes']` = ArcGIS Server license file path. Default path is `node['arcgis']['server']['keycodes']`.
 * `node['arcgis']['egdb']['master_username']` = RDS DB instance master username. Default username is `EsriRDSAdmin`.
 * `node['arcgis']['egdb']['master_password']` = RDS DB instance master user password. Default password is `nil`.
 * `node['arcgis']['egdb']['db_username']` = Geodatabase username. Default username is `sde`.
 * `node['arcgis']['egdb']['db_password']` = Geodatabase user password. Default password is `node['arcgis']['egdb']['master_password']`.
-* `node['arcgis']['egdb']['postgresbin']` = Path to PostgreSQL client bin directory. Default path s `C:\Program Files\ArcGIS\DataStore\framework\runtime\pgsql\bin` on Windows and `/arcgis/datastore/framework/runtime/pgsql/bin` on Linux.
-* `node['arcgis']['egdb']['sqlcmdbin']` = Path to Miscrosoft SQL Server Client SDK ODBC Tools 17 Binn directory. Default path s `C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn` on Windows.
-* `node['arcgis']['egdb']['connection_files_dir']` = Directory path for geodatabase connection files  created by the recipes. Default directory is `node['arcgis']['misc']['scripts_dir']/connection_files`.
-* `node['arcgis']['egdb']['data_items']` = Array with properties of geodatabases. Default value is
+* `node['arcgis']['egdb']['postgresbin']` = Path to PostgreSQL client bin directory. Default path is `C:\Program Files\ArcGIS\DataStore\framework\runtime\pgsql\bin` on Windows and `/arcgis/datastore/framework/runtime/pgsql/bin` on Linux.
+* `node['arcgis']['egdb']['sqlcmdbin']` = Path to Microsoft SQL Server Client SDK ODBC Tools 17 Binn directory. Default path is `C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn` on Windows.
+* `node['arcgis']['egdb']['connection_files_dir']` = Directory path for geodatabase connection files (.sde) created by the recipes. Default directory is `node['arcgis']['misc']['scripts_dir']/connection_files`.
+* `node['arcgis']['egdb']['data_items']` = Array with properties of geodatabases. Default value is as follows:
 
   ```JSON
   [{
@@ -61,45 +69,21 @@ ArcPy does not support creating databases in Amazon RDS database servers. The co
 
 ## Recipes
 
-### arcgis-egdb::default
+### default
 
-Creates EGDBs and registers them with ArcGIS Server.
+Creates an enterprise geodatabase and registers it with ArcGIS Server.
 
-### arcgis-egdb::sql_alias
+Attributes used by the recipe:
 
-Creates EGDBHOST alias for SQL Server endpoint domain.
-
-### arcgis-egdb::egdb_postgres
-
-Creates EGDBs in PostgreSQL.
-
-### arcgis-egdb::egdb_sqlserver
-
-Creates EGDBs in SQL Server.
-
-### arcgis-egdb::register_egdb
-
-Registers EGDBs with ArcGIS Server.
-
-### arcgis-egdb::sqlcmd
-
-Installs Microsoft SQL Server ODBC drivers and command line utilities used by SQL Server EGDB configuration scripts.
-
-
-## Usage
-
-
-```json
+```JSON
 {
   "arcgis": {
-    "version": "10.7",
+    "version": "11.0",
     "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
       "private_url": "https://domain.com:6443/arcgis",
       "admin_username": "admin",
       "admin_password": "changeit"
-    },
-    "python": {
-      "runtime_environment": "C:\\Python27\\ArcGISx6410.7"
     },
     "misc": {
       "scripts_dir": "C:\\chef\\misc_scripts"
@@ -107,10 +91,10 @@ Installs Microsoft SQL Server ODBC drivers and command line utilities used by SQ
     "egdb": {
       "engine": "postgres",
       "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
-      "keycodes": "C:\\Program Files\\ESRI\\License10.7\\sysgen\\keycodes",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.0\\sysgen\\keycodes",
+      "postgresbin" : "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
       "master_username": "EsriRDSAdmin",
       "master_password": "changeit",
-      "db_username": "sde",
       "db_password": "changeit",
       "connection_files_dir": "C:\\chef\\misc_scripts\\connection_files",
       "data_items": [{
@@ -128,32 +112,146 @@ Installs Microsoft SQL Server ODBC drivers and command line utilities used by SQ
 }
 ```
 
-See [wiki](https://github.com/Esri/arcgis-cookbook/wiki) pages for more information about using ArcGIS cookbooks.
+### egdb_postgres
 
-## Issues
+Creates an enterprise geodatabase in PostgreSQL.
 
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
+Attributes used by the recipe:
 
-## Contributing
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "run_as_user": "arcgis",
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server"
+    },
+    "misc": {
+      "scripts_dir": "C:\\chef\\misc_scripts"
+    },
+    "egdb": {
+      "engine": "postgres",
+      "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.0\\sysgen\\keycodes",
+      "postgresbin" : "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
+      "master_username": "EsriRDSAdmin",
+      "master_password": "changeit",
+      "db_password": "changeit",
+      "connection_files_dir": "C:\\chef\\misc_scripts\\connection_files",
+      "postgresbin": "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
+      "data_items": [{
+        "database": "egdb",
+        "data_item_path": "/enterpriseDatabases/registeredDatabase",
+        "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
+        "is_managed": true,
+        "connection_type": "shared"
+      }]
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-egdb::egdb_postgres]"
+  ]
+}
+```
 
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
+### egdb_sqlserver
 
-## Licensing
+Creates an enterprise geodatabase in SQL Server.
 
-Copyright 2021 Esri
+Attributes used by the recipe:
 
-Licensed under the Apache License, Version 2.0 (the "License");
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-   http://www.apache.org/licenses/LICENSE-2.0
+```JSON
+{
+  "arcgis": {
+    "version": "11.0",
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server"
+    },
+    "misc": {
+      "scripts_dir": "C:\\chef\\misc_scripts"
+    },
+    "egdb": {
+      "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.0\\sysgen\\keycodes",
+      "master_username": "EsriRDSAdmin",
+      "master_password": "changeit",
+      "db_password": "changeit",
+      "data_items": [{
+        "database": "egdb",
+        "data_item_path": "/enterpriseDatabases/registeredDatabase",
+        "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
+        "is_managed": true,
+        "connection_type": "shared"
+      }]
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-egdb::egdb_sqlserver]"
+  ]
+}
+```
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+### register_egdb
 
-A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
+Registers the database connection file with the specified ArcGIS Server site as the site's managed database.
 
-[](Esri Tags: ArcGIS GeoDatabase Server Chef Cookbook)
-[](Esri Language: Ruby)
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "server": {
+      "private_url": "https://domain.com:6443/arcgis",
+      "admin_username": "admin",
+      "admin_password": "changeit"
+    },
+    "egdb": {
+      "data_items": [{
+        "database": "egdb",
+        "data_item_path": "/enterpriseDatabases/registeredDatabase",
+        "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
+        "is_managed": true,
+        "connection_type": "shared"
+      }]
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-egdb::register_egdb]"
+  ]
+}
+```
+
+### sql_alias
+
+Creates EGDBHOST alias for SQL Server endpoint domain.
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "egdb": {
+      "engine": "sqlserver-se",
+      "endpoint": "xxx.us-east-2.rds.amazonaws.com"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-egdb::sql_alias]"
+  ]
+}
+```
+
+### sqlcmd
+
+Installs the SQL Server ODBC driver and sqlcmd utility used by SQL Server enterprise geodatabase configuration scripts.
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "run_list": [
+    "recipe[arcgis-egdb::sqlcmd]"
+  ]
+}
+```
+

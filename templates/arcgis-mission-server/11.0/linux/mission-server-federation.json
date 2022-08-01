@@ -1,0 +1,20 @@
+{
+    "arcgis": {
+        "portal": {
+            "private_url": "https://portal.domain.com/portal",
+            "admin_username": "portaladmin",
+            "admin_password": "change.it",
+            "root_cert": "",
+            "root_cert_alias": "missionserver"
+        },
+        "mission_server": {
+            "web_context_url": "https://server.domain.com/mission",
+            "private_url": "https://server.domain.com/mission",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-mission::federation]"
+    ]
+}

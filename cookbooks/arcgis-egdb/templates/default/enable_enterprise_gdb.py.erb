@@ -31,7 +31,7 @@ try:
 	
 #Check if no system arguments (options) entered
 	if len(sys.argv) == 1:
-		print "%s: error: %s\n" % (sys.argv[0], "No command options given")
+		print("%s: error: %s\n" % (sys.argv[0], "No command options given"))
 		parser.print_help()
 		sys.exit(3)
 	
@@ -47,12 +47,12 @@ try:
 	Connection_File_Name_full_path = options.Connection_file
 
 	if( database_type ==""):	
-		print " \n%s: error: \n%s\n" % (sys.argv[0], "DBMS type (--DBMS) must be specified.")
+		print(" \n%s: error: \n%s\n" % (sys.argv[0], "DBMS type (--DBMS) must be specified."))
 		parser.print_help()
 		sys.exit(3)		
 		
 	if (license == ""):
-		print " \n%s: error: \n%s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+		print(" \n%s: error: \n%s\n" % (sys.argv[0], "Authorization file (-l) must be specified."))
 		parser.print_help()
 		sys.exit(3)
 
@@ -63,16 +63,16 @@ try:
 	product_license=arcpy.ProductInfo()
 	
 	if (license == ""):
-		print " \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified.")
+		print(" \n%s: error: %s\n" % (sys.argv[0], "Authorization file (-l) must be specified."))
 		parser.print_help()
 		sys.exit(3)
 	
 	# Checks required license level
 	if product_license.upper() == "ARCVIEW" or product_license.upper() == 'ENGINE':
-		print "\n" + product_license + " license found!" + " Enabling an enterprise geodatabase requires an ArcGIS for Desktop Standard or Advanced, ArcGIS Engine with the Geodatabase Update extension, or ArcGIS Server license."
+		print("\n" + product_license + " license found!" + " Enabling an enterprise geodatabase requires an ArcGIS for Desktop Standard or Advanced, ArcGIS Engine with the Geodatabase Update extension, or ArcGIS Server license.")
 		sys.exit("Re-authorize ArcGIS before enabling enterprise geodatabase.")
 	else:
-		print "\n" + product_license + " license available!  Continuing to enable..."
+		print("\n" + product_license + " license available!  Continuing to enable...")
 		arcpy.AddMessage("+++++++++")
 	
 	Conn_File_Path, Connection_File_Name = os.path.split(Connection_File_Name_full_path)
@@ -82,7 +82,7 @@ try:
 	if os.path.exists(Connection_File_Name_full_path):
 		os.remove(Connection_File_Name_full_path)
 	
-	print "\nCreating Database Connection File...\n"	
+	print("\nCreating Database Connection File...\n")	
 	# Process: Create Database Connection File...
 	# Usage:  out_file_location, out_file_name, DBMS_TYPE, instnace, database, account_authentication, username, password, save_username_password(must be true)
 	arcpy.CreateDatabaseConnection_management(out_folder_path=Conn_File_Path, out_name=Connection_File_Name, database_platform=database_type, instance=instance, database=database, account_authentication=account_authentication, username=username, password=password, save_user_pass="TRUE")
@@ -100,7 +100,7 @@ try:
 	
 	# Process: Enable geodatabase...
 	try:
-		print "Enabling Enterprise Geodatabase...\n"
+		print("Enabling Enterprise Geodatabase...\n")
 		arcpy.EnableEnterpriseGeodatabase_management(input_database=Connection_File_Name_full_path, authorization_file=license)
 		for i in range(arcpy.GetMessageCount()):
 			arcpy.AddReturnMessage(i)
@@ -116,6 +116,6 @@ try:
 except SystemExit as e:
 	if e.code == 2:
 		parser.usage = ""
-		print "\n"
+		print("\n")
 		parser.print_help() 
 		parser.exit(2)

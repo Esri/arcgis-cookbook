@@ -1,0 +1,40 @@
+{
+    "arcgis": {
+      "repository": {
+        "local_archives": "/opt/software/archives",
+        "shared": false,
+        "server": {
+          "username": "changeit",
+          "password": "changeit"
+        },
+        "files": {
+          "ArcGIS_Server_Linux_110_182973.tar.gz": {
+            "subfolder": "software/arcgis/11.0"
+          },
+          "Portal_for_ArcGIS_Linux_110_182984.tar.gz": {
+            "subfolder": "software/arcgis/11.0"
+          },
+          "Portal_for_ArcGIS_Web_Styles_Linux_110_182985.tar.gz": {
+            "subfolder": "software/arcgis/11.0"
+          },
+          "ArcGIS_DataStore_Linux_110_182986.tar.gz": {
+            "subfolder": "software/arcgis/11.0"
+          },
+          "ArcGIS_Web_Adaptor_Java_Linux_110_182987.tar.gz": {
+            "subfolder": "software/arcgis/11.0"
+          },
+          "apache-tomcat-9.0.48.tar.gz": {
+            "url": "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.48/bin/apache-tomcat-9.0.48.tar.gz"
+          },
+          "openjdk-11_linux-x64_bin.tar.gz": {
+            "url": "https://download.java.net/java/ga/jdk11/openjdk-11_linux-x64_bin.tar.gz"
+          }
+        }
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-repository::fileserver]",
+      "recipe[arcgis-repository::files]"
+    ]
+  }
+  

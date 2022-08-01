@@ -18,7 +18,11 @@
             "config_store_type": "FILESYSTEM",
             "config_store_connection_string": "/net/FILESERVER/gisdata/arcgisserver/config-store",
             "keystore_file" : "/opt/software/certificates/ssl_cert.pfx",
-            "keystore_password" : "change.it"
+            "keystore_password" : "change.it",
+            "system_properties": {
+                "WebSocketContextURL":"https://domain.com:6143/arcgis",
+                "WebContextURL":"https://domain.com:6443/arcgis"
+            }
         },
         "geoevent": {
             "authorization_file": "/opt/software/authorization_files/10.9/geoevent_server.prvc"

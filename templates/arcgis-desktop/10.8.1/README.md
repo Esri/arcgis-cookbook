@@ -1,3 +1,12 @@
+---
+layout: default
+title: arcgis-desktop template
+category: templates
+item: arcgis-desktop
+version: 10.8.1
+latest: false
+---
+
 # arcgis-desktop Deployment Template
 
 Installs ArcGIS Desktop. 
@@ -27,38 +36,32 @@ The following ArcGIS setup archives must be available in the ArcGIS software rep
 
 * ArcGIS_Desktop_1081_175110.exe
 
-> ArcGIS software repository directory is specified by arcgis.repository.archives attribute. By default it is set to local directory C:\Software\Archives. However, it is recommended to create an ArcGIS software repository located on a separate file server that is accessible from all the machines in the deployment for the user account used to run Chef client.
+> The ArcGIS software repository directory is specified by the arcgis.repository.archives attribute. By default, it is set to local directory C:\Software\Archives. However, it is recommended to create an ArcGIS software repository located on a separate file server that is accessible from all the machines in the deployment for the user account used to run Chef client.
 
-> Ensure that the directory specified by arcgis.repository.setups attribute has enough space for the setups extracted from the setup archives.
+> Ensure that the directory specified by the arcgis.repository.setups attribute has enough space for the setups extracted from the setup archives.
 
 ## Initial Deployment Workflow
 
-The recommended initial deployment workflow for the template machine roles:
+The following is the recommended initial deployment workflow for the template machine roles:
 
 1. Install [Chef Client](https://docs.chef.io/chef_install_script/) or [Cinc Client](https://cinc.sh/start/client/).
 2. Download and extract [ArcGIS Chef cookbooks](https://github.com/Esri/arcgis-cookbook/releases) into the Chef workspace directory.
 3. Update the required attributes within the template JSON files.
-4. Run Chef client on machines as administrator using the json files specific to the machine roles (one machine can be used in multiple roles).
+4. Run the Chef client on machines as administrator using the json files specific to the machine roles (one machine can be used in multiple roles).
 
-> For additional customization options see the list of supported attributes described in arcgis-desktop cookbook README file.
+> For additional customization options, see the list of supported attributes described in the arcgis-desktop cookbook README file.
 
-### Concurrent Use ArcGIS Desktop
+### Concurrent-Use ArcGIS Desktop
 
 ```shell
 chef-client -z -j arcgis-desktop-concurrent-use.json
 ```
 
-### Single Use ArcGIS Desktop
+### Single-Use ArcGIS Desktop
 
 ```shell
 chef-client -z -j arcgis-desktop-single-use.json
 ```
-
-## Upgrade Workflow
-
-> It's not recommended to use the templates for upgrades if the sites were not initially deployed using the templates.
-
-This is the first release of arcgis-desktop deployment template. The recommended upgrade workflow for this template will be provided in the subsequent releases.
 
 ## Machine Roles
 
@@ -68,16 +71,16 @@ The JSON files included in the template provide recipes for the deployment machi
 
 Installs ArcGIS Desktop and configures it with an existing ArcGIS License Manager.
 
-> The concurrent use license must be either already authorized via License Manager or needs to be done manually.
+> The concurrent-use license must be either already authorized via License Manager or needs to be done manually.
 
-Required attributes changes:
+Required attribute changes:
 
 * arcgis.desktop.esri_license_host - ArcGIS License Server host name
 
 ### arcgis-desktop-single-use
 
-Installs ArcGIS Desktop with single use license.
+Installs ArcGIS Desktop with a single-use license.
 
-Required attributes changes:
+Required attribute changes:
 
 * arcgis.desktop.authorization_file - ArcGIS Desktop authorization file path

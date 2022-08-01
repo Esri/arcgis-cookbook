@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "portal": {
+            "wa_name": "portal"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-iis::install]",
+        "recipe[arcgis-enterprise::install_portal_wa]"
+    ]
+}

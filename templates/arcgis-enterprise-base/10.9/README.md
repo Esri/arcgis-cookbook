@@ -35,7 +35,6 @@ Consult the ArcGIS Enterprise 10.9 system requirements documentation for the req
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
 For Linux deployments enable running sudo without password for the user running the Chef client.
 
@@ -168,13 +167,13 @@ Required attributes changes:
 * arcgis.server.url - ArcGIS Server URL on the machine
 * arcgis.server.wa_url - ArcGIS Server Web Adaptor URL on the machine
 * arcgis.server.private_url - ArcGIS Server load balanced admin URL that will be used as the federated server admin URL
-* arcgis.server.web_context_url - ArcGIS Server web context URL
+* arcgis.server.web_context_url - ArcGIS Server web context URL that will be used for the federated server services URL
 * arcgis.server.admin_username - Specify primary site administrator account user name
 * arcgis.server.admin_password - Specify primary site administrator account password
 * arcgis.server.authorization_file - Specify path to the ArcGIS Server role software authorization file
 * arcgis.server.directories_root - Replace 'FILESERVER' by the file server machine hostname or static IP address
 * arcgis.server.config_store_connection_string - Replace 'FILESERVER' by the file server machine hostname or static IP address
-* arcgis.server.system_properties.WebContextURL - ArcGIS Server web context URL that will be used for the federated server services URL
+* arcgis.server.system_properties.WebContextURL - ArcGIS Server web context URL used if there is a reverse proxy and\or load balancer
 * arcgis.portal.url - Portal for ArcGIS URL on the machine
 * arcgis.portal.wa_url - Portal for ArcGIS Web Adaptor URL
 * arcgis.portal.private_url - Portal for ArcGIS load balanced admin URL

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: webstyles
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 # limitations under the License.
 #
 
-actions :unpack, :install
+actions :unpack, :install, :uninstall
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :product_code, :kind_of => String
+attribute :install_dir, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
 

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: enterprise_uninstalled
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,6 +53,21 @@ arcgis_enterprise_webadaptor 'Uninstall Web Adaptor for Server' do
       ::File.exist?(::File.join(node['arcgis']['web_server']['webapp_dir'],
                                 node['arcgis']['server']['wa_name'] + '.war'))
     }
+  end
+  action :uninstall
+end
+
+arcgis_enterprise_webstyles 'Uninstall ArcGIS Web Styles' do
+  install_dir node['arcgis']['portal']['install_dir']
+  product_code node['arcgis']['webstyles']['product_code']
+  run_as_user node['arcgis']['run_as_user']
+  if node['platform'] == 'windows'
+    only_if { Utils.product_installed?(node['arcgis']['webstyles']['product_code']) }
+  else
+    only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                node['arcgis']['version'],
+                                                :ArcGISPortal_WebStyles) }
   end
   action :uninstall
 end

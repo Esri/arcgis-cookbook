@@ -1,0 +1,38 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "url": "https://localhost:6443/arcgis",
+            "admin_username": "siteadmin",
+            "admin_password": "change.it"
+        },
+        "misc": {
+            "scripts_dir": "C:\\Temp\\Scripts"
+        },
+        "egdb": {
+            "engine": "sqlserver-se",
+            "endpoint": "",
+            "keycodes": "C:\\Program Files\\ESRI\\License11.0\\sysgen\\keycodes",
+            "master_username": "esrirdsadmin",
+            "master_password": "change.it",
+            "db_password": "change.it",
+            "connection_files_dir": "C:\\Temp\\ConnectionFiles",
+            "data_items": [
+                {
+                    "database": "egdb",
+                    "data_item_path": "/enterpriseDatabases/sqlserverRDS",
+                    "connection_file": "C:\\Temp\\ConnectionFiles\\sqlserver_rds_egdb.sde",
+                    "is_managed": false,
+                    "connection_type": "shared"
+                }
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-egdb]"
+    ]
+}

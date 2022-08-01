@@ -1,0 +1,24 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis", 
+        "run_as_password": "Pa$$w0rdPa$$w0rd",
+        "fileserver": {
+            "directories": [
+                "C:\\data\\arcgisbackup",
+                "C:\\data\\arcgisbackup\\tilecache",
+                "C:\\data\\arcgisbackup\\relational",
+                "C:\\data\\arcgisbackup\\spatiotemporal",
+                "C:\\data\\arcgisbackup\\graph"
+            ],
+            "shares": [
+                "C:\\data\\arcgisbackup"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}

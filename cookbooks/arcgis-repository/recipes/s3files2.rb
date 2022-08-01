@@ -24,10 +24,19 @@ directory node['arcgis']['repository']['local_archives'] do
   action :create
 end
 
-node['arcgis']['repository']['files'].each do |filename, props|
-  # Download the remote file from S3
+if node['arcgis']['repository']['server']['s3bucket'].empty?
+  # Get S3 bucket name and AWS region from the ArcGIS Software Repository service info.
+  repository = ArcGIS::RepositoryClient.new(node['arcgis']['repository']['server']['url'], nil, nil)
+  repository_info = repository.info
+  s3_bucket = repository_info['bucket']
+  s3_region = repository_info['region']
+else
   s3_bucket = node['arcgis']['repository']['server']['s3bucket']
   s3_region = node['arcgis']['repository']['server']['region']
+end
+
+node['arcgis']['repository']['files'].each do |filename, props|
+  # Download the remote file from S3
   s3_key = props['subfolder'].nil? ? filename : ::File.join(props['subfolder'], filename)
   path = ::File.join(node['arcgis']['repository']['local_archives'], filename)
 

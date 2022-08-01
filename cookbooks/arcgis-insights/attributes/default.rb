@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-insights
 # Attributes:: default
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '2021.3.1'
+  insights['version'] = '2022.2'
+
+  insights['patches'] = []
 
   case node['platform']
   when 'windows'
@@ -28,6 +30,18 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '2022.2'
+      insights['product_code'] = '{C16053FC-0F7A-4819-95C6-FB14B05782AE}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2022_2_183474.exe')
+    when '2022.1.1'
+      insights['product_code'] = '{33B5B7A9-448D-4DEA-92C0-F8046E685553}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2022_1_1_181548.exe')
+    when '2022.1'
+      insights['product_code'] = '{76A44AB1-68B5-4762-8C1C-5CBD97AC5E2C}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2022_1_181546.exe')
     when '2021.3.1'
       insights['product_code'] = '{2EFCCCED-8C84-4A76-B2B7-4680195E9FD4}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -66,10 +80,6 @@ default['arcgis']['insights'].tap do |insights|
       insights['product_code'] = '{5293D733-7F85-48C8-90A2-7506E51773DB}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Windows_2020_1_173526.exe')
-    when '3.4.1'
-      insights['product_code'] = '{F3B91D92-3DD8-4F0B-B43B-6F9DA2C1830A}'
-      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_Insights_Windows_341_171410.exe')
     else
       Chef::Log.warn 'Unsupported Insights for ArcGIS version'
     end
@@ -79,6 +89,15 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '2022.2'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2022_2_183475.tar.gz')
+    when '2022.1.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2022_1_1_181549.tar.gz')
+    when '2022.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2022_1_181547.tar.gz')
     when '2021.3.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Linux_2021_3_1_179511.tar.gz')
@@ -106,9 +125,6 @@ default['arcgis']['insights'].tap do |insights|
     when '2020.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Linux_2020_1_173527.tar.gz')
-    when '3.4.1'
-      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_Insights_Linux_341_171471.tar.gz')
     else
       Chef::Log.warn 'Unsupported Insights for ArcGIS version'
     end

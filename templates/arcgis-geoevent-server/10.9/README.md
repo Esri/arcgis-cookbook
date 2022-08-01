@@ -27,7 +27,6 @@ Consult the ArcGIS GeoEvent Server 10.9 system requirements documentation for th
   * Red Hat Enterprise Linux Server 7
   * Red Hat Enterprise Linux Server 8
   * CentOS Linux 7
-  * CentOS Linux 8
 
 For Linux deployments enable running sudo without password for the user running the Chef client.
 
@@ -138,6 +137,8 @@ Required attributes changes:
 * arcgis.server.config_store_connection_string - Replace 'FILESERVER' by the file server machine hostname or static IP address.
 * arcgis.server.keystore_file - Specify path to the SSL certificate file in PKCS12 format that will installed at ArcGIS Server.
 * arcgis.server.keystore_password - Specify password of the SSL certificate file.
+* arcgis.server.system_properties.WebSocketContextURL - Specify web socket reverse proxy server URL.
+* arcgis.server.system_properties.WebContextURL - Specify reverse proxy server URL.
 
 ### geoevent-server-webadaptor
 

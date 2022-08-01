@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-repository
 # Attributes:: default
 #
-# Copyright 2018 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,31 +19,34 @@
 # Local ArcGIS Software Repository attributes
 
 default['arcgis']['repository'].tap do |repository|
-  case node['platform']
-  when 'windows'
-    repository['setups'] = ::File.join(ENV['USERPROFILE'],
-                                       'Documents')
-    repository['local_archives'] = ::File.join(ENV['USERPROFILE'],
-                                               'Software\\Esri')
-    repository['archives'] = repository['local_archives']
-    repository['patches'] = ::File.join(ENV['USERPROFILE'],
-                                        'Software\\Esri\\Patches')
-  else # node['platform'] == 'linux'
+  if node['platform'] == 'windows'
+    repository['setups'] = ::File.join(ENV['USERPROFILE'], 'Documents')
+    repository['local_archives'] = ::File.join(ENV['USERPROFILE'], 'Software\\Esri')
+  else 
     repository['setups'] = '/opt/arcgis'
     repository['local_archives'] = '/opt/software/esri'
-    repository['archives'] = repository['local_archives']
-    repository['patches'] = '/opt/software/esri/patches'
   end
 
+  repository['archives'] = repository['local_archives']
+  repository['local_patches'] = ::File.join(node['arcgis']['repository']['local_archives'], 'patches')
+  repository['patches'] = repository['local_patches']
+
+  repository['shared'] = false
+
   # Remote ArcGIS Software Repository attributes
-  repository['server']['url'] = 'https://downloads.arcgis.com/dms/rest/download/secured'
-  repository['server']['key'] = ''
+  repository['server']['url'] = 'https://downloads.arcgis.com'
+  repository['server']['token_service_url'] = 'https://www.arcgis.com/sharing/rest/generateToken'
+  repository['server']['username'] = nil
+  repository['server']['password'] = nil
 
   # ArcGIS Software Repository in S3 attributes
-  repository['server']['region'] = ''
-  repository['server']['s3bucket'] = ''
-
+  repository['server']['region'] = 'us-east-1'
+  repository['server']['s3bucket'] = 'arcgisstore-us-east-1'
   # AWS access keys are required to download files form ArcGIS software repository S3 buckets
-  repository['server']['aws_access_key'] = ''
-  repository['server']['aws_secret_access_key'] = ''
+  repository['server']['aws_access_key'] = nil
+  repository['server']['aws_secret_access_key'] = nil
+
+  repository['patch_notification']['url'] = 'https://downloads.esri.com/patch_notification/patches.json'
+  repository['patch_notification']['versions'] = [node['arcgis']['version']]
+  repository['patch_notification']['products'] = []
 end

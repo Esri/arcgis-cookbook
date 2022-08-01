@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "version": "11.0",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f Complete",
+            "install_system_requirements": true,
+            "preferredidentifier": "hostname",
+            "data_dir": "/gisdata/arcgisdatastore"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-enterprise::start_datastore]"
+    ]
+}

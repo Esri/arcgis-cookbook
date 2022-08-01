@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: server
 #
-# Copyright 2018 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,8 +79,8 @@ default['arcgis']['server'].tap do |server|
   server['virtual_dirs_security_enabled'] = false
   server['allow_direct_access'] = true
   server['allowed_admin_access_ips'] = ''
-  server['ports'] = '1098,4000-4004,6006,6080,6099,6443'
-  server['geoanalytics_ports'] = '2181,2182,2190,7077,12181,12182,12190,56540-56545'
+  server['ports'] = '1098,6006,6080,6099,6443'
+  server['geoanalytics_ports'] = '7077,12181,12182,12190,56540-56545'
 
   # hash of environment variables to pass to the install command.
   # e.g. server['install_environment'] = { 'IATEMPDIR' => /var/tmp' }
@@ -108,6 +108,8 @@ default['arcgis']['server'].tap do |server|
   # disable nodeagent plugins on aws ec2
   server['disable_nodeagent_plugins'] = true
 
+  server['patches'] = []
+
   case node['platform']
   when 'windows'
     server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
@@ -125,84 +127,44 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '11.0'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_110_182874.exe').gsub('/', '\\')
+      server['product_code'] = '{A14CF942-415B-461C-BE3C-5B37E34BC6AE}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        node['arcgis']['server']['install_dir'], 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.0\\Updates'        
     when '10.9.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1091_180041.exe').gsub('/', '\\')
       server['product_code'] = '{E4A5FD24-5C61-4846-B084-C7AD4BB1CF19}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.9").gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.9\\Updates'
     when '10.9'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_109_177775.exe').gsub('/', '\\')
       server['product_code'] = '{32A62D8E-BE72-4B28-AA0E-FE546D827240}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.9").gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.9\\Updates'
     when '10.8.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1081_175203.exe').gsub('/', '\\')
       server['product_code'] = '{E9B85E31-4C31-4528-996B-F06E213F8BB3}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.8").gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.8\\Updates'
+      server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
       server['product_code'] = '{458BF5FF-2DF8-426B-AEBC-BE4C47DB6B54}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.8").gsub('/', '\\')
-    when '10.7.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_1071_169677.exe').gsub('/', '\\')
-      server['product_code'] = '{08E03E6F-95D3-4D33-A171-E0DC996E08E3}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.7").gsub('/', '\\')
-    when '10.7'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_107_167621.exe').gsub('/', '\\')
-      server['product_code'] = '{98D5572E-C435-4841-A747-B4C72A8F76BB}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.7").gsub('/', '\\')
-    when '10.6.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_1061_163968.exe').gsub('/', '\\')
-      server['product_code'] = '{F62B418D-E9E4-41CE-9E02-167BE4276105}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.6").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
-    when '10.6'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_106_159940.exe').gsub('/', '\\')
-      server['product_code'] = '{07606F78-D997-43AE-A9DC-0738D91E8D02}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
-                                                                     "ArcGISx6410.6").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
-    when '10.5.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_1051_156124.exe').gsub('/', '\\')
-      server['product_code'] = '{40CC6E89-93A4-4D87-A3FB-11413C218D2C}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
-                                                                     "ArcGISx6410.5").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
-    when '10.5'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_105_154004.exe').gsub('/', '\\')
-      server['product_code'] = '{CD87013B-6559-4804-89F6-B6F1A7B31CBC}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
-                                                                     "ArcGISx6410.5").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."                                                                     
-    when '10.4.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_for_Server_Windows_1041_151921.exe').gsub('/', '\\')
-      server['product_code'] = '{88A617EF-89AC-418E-92E1-926908C4D50F}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'],
-                                                                     "ArcGISx6410.4").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
-    when '10.4'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_for_Server_Windows_104_149433.exe').gsub('/', '\\')
-      server['product_code'] = '{687897C7-4795-4B17-8AD0-CB8C364778AD}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.4").gsub('/', '\\')
-      Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.8\\Updates'
+      server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
     else
       Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
     end
@@ -237,6 +199,9 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = ::File.join(server_install_dir,
                                                    server_install_subdir,
                                                    'usr')
+    server['patch_log'] = ::File.join(server_install_dir,
+                                      server_install_subdir,
+                                      '.ESRI_S_PATCH_LOG')
 
     server['authorization_file'] = ''
     server['keycodes'] = ::File.join(node['arcgis']['server']['install_dir'], 
@@ -249,6 +214,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.0'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_110_182973.tar.gz')
     when '10.9.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_1091_180182.tar.gz')
@@ -261,36 +229,6 @@ default['arcgis']['server'].tap do |server|
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_108_172977.tar.gz')
-    when '10.7.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_1071_169796.tar.gz')
-    when '10.7'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_107_167707.tar.gz')
-    when '10.6.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_1061_164044.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version' 
-    when '10.6'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_106_159989.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version' 
-    when '10.5.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_1051_156429.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version'
-    when '10.5'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_105_154052.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version' 
-    when '10.4.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_for_Server_Linux_1041_151978.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version' 
-    when '10.4'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_for_Server_Linux_104_149446.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Server version' 
     else
       Chef::Log.warn 'Unsupported ArcGIS Server version'
     end

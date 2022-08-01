@@ -1,0 +1,30 @@
+{
+  "arcgis": {
+    "run_as_user": "arcgis",
+    "version": "11.0",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "server": {
+      "install_dir": "/opt",
+      "install_system_requirements": true,
+      "admin_username": "siteadmin",
+      "admin_password": "change.it",
+      "authorization_file": "/opt/software/authorization_files/11.0/server.prvc",
+      "log_level": "WARNING",
+      "log_dir": "/opt/arcgis/server/usr/logs",
+      "directories_root": "/net/FILESERVER/gisdata/arcgisserver",
+      "config_store_type": "FILESYSTEM",
+      "config_store_connection_string": "/net/FILESERVER/gisdata/arcgisserver/config-store"
+    },
+    "workflow_manager_server": {
+      "authorization_file": "/opt/software/authorization_files/11.0/workflow_manager_server.prvc"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-workflow-manager::server]"
+  ]
+}

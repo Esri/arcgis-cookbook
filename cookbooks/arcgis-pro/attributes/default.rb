@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Attributes:: default
 #
-# Copyright 2015-2021 Esri
+# Copyright 2015-2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '2.9'
+    pro['version'] = '3.0'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -43,9 +43,13 @@ default['arcgis']['pro'].tap do |pro|
                            ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
                          end
 
-    default['ms_dotnet']['version'] = '4.8'
+    default['ms_dotnet']['version'] = '6.0.5'
 
     case node['arcgis']['pro']['version']
+    when '3.0'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_30_182209.exe').gsub('/', '\\')
+      pro['product_code'] = '{FE78CD1B-4B17-4634-BBF7-3A597FFFAA69}' 
     when '2.9'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_29_179927.exe').gsub('/', '\\')
@@ -90,9 +94,13 @@ default['arcgis']['pro'].tap do |pro|
       Chef::Log.warn 'Unsupported ArcGIS Pro version'
     end
 
-    pro['authorization_file_version'] = node['arcgis']['pro']['version'].to_f.to_s
+    pro['authorization_file_version'] = '11.0'
 
     case node['ms_dotnet']['version']
+    when '6.0.5'
+      default['ms_dotnet']['url'] = 'https://download.visualstudio.microsoft.com/download/pr/5681bdf9-0a48-45ac-b7bf-21b7b61657aa/bbdc43bc7bf0d15b97c1a98ae2e82ec0/windowsdesktop-runtime-6.0.5-win-x64.exe'
+      default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'windowsdesktop-runtime-6.0.5-win-x64.exe').gsub('/', '\\')
     when '4.8'
       default['ms_dotnet']['url'] = 'https://go.microsoft.com/fwlink/?linkid=2088631'
       default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],

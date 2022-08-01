@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-iis
 # Attributes:: default
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,37 +20,7 @@ default['arcgis']['iis'].tap do |iis|
 
   case node['platform']
   when 'windows'
-    if node['platform_version'].to_f < 6.1
-      # Windows Server 2008
-      iis['features'] = ['Web-Server', 'Web-Mgmt-Tools', 'Web-Mgmt-Console',
-        'Web-Mgmt-Service', 'Web-Mgmt-Service', 'Web-Mgmt-Compat', 'Web-Scripting-Tools',
-        'Web-Static-Content', 'Web-ISAPI-Filter', 'Web-ISAPI-Ext', 'Web-Basic-Auth',
-        'Web-Windows-Auth', 'Web-Net-Ext', 'Web-Asp-Net', 'Web-Metabase']
-    elsif node['platform_version'].to_f < 6.2
-      # Windows Server 2008 R2, Windows 7
-      iis['features'] = ['IIS-WebServerRole', 'IIS-ISAPIFilter',
-        'IIS-ISAPIExtensions', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
-        'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility', 'IIS-ManagementScriptingTools',
-        'IIS-StaticContent', 'IIS-BasicAuthentication', 'IIS-WindowsAuthentication',
-        'IIS-NetFxExtensibility', 'IIS-ASPNET', 'IIS-Metabase']
-    else
-      if node['kernel']['os_info']['product_type'] != Chef::ReservedNames::Win32::API::System::VER_NT_WORKSTATION
-        iis['features'] = ['NetFx3ServerFeatures',
-          'IIS-WebServerRole', 'IIS-ApplicationDevelopment', 'IIS-ISAPIFilter',
-          'IIS-ISAPIExtensions', 'NetFx4Extended-ASPNET45', 'IIS-NetFxExtensibility45',
-          'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
-          'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
-          'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
-          'IIS-WindowsAuthentication', 'IIS-Metabase', 'IIS-WebSockets']
-      elsif
-        iis['features'] = ['IIS-WebServerRole', 'IIS-ISAPIFilter',
-          'IIS-ISAPIExtensions', 'NetFx4Extended-ASPNET45', 'IIS-NetFxExtensibility45',
-          'IIS-ASPNET45', 'IIS-WebServerManagementTools', 'IIS-ManagementConsole',
-          'IIS-ManagementService', 'IIS-IIS6ManagementCompatibility',
-          'IIS-ManagementScriptingTools', 'IIS-StaticContent', 'IIS-BasicAuthentication',
-          'IIS-WindowsAuthentication', 'IIS-Metabase', 'IIS-WebSockets']
-      end
-    end
+    iis['features'] = ['IIS-WebServerRole', 'IIS-WebServer']
     iis['appid'] = '{00112233-4455-6677-8899-AABBCCDDEEFF}'
     iis['domain_name'] = node['fqdn']
     iis['keystore_file'] = ::File.join(Chef::Config[:file_cache_path],

@@ -99,7 +99,7 @@
          Either JSSE or OpenSSL style configuration may be used. OpenSSL style
          configuration is used below.
     -->
-    <Connector protocol="org.apache.coyote.http11.Http11NioProtocol"
+    <Connector protocol="org.apache.coyote.http11.Http11Nio2Protocol"
                port="8443" maxThreads="200"
                scheme="https" secure="true" SSLEnabled="true"
                sslEnabledProtocols="<%= node['tomcat']['ssl_enabled_protocols'] %>"

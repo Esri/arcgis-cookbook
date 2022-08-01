@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Attributes:: default
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,10 @@ default['arcgis']['geoevent'].tap do |geoevent|
 
   geoevent['setup_archive'] = ''
 
+  geoevent['patches'] = []
+
+  geoevent['setup_options'] = ''
+
   case node['platform']
   when 'windows'
     geoevent['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -39,30 +43,31 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
     case node['arcgis']['version']
+    when '11.0'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_110_182914.exe').gsub('/', '\\')
+      geoevent['product_code'] = '{98B0A1CC-5CE4-4311-85DD-46ABD08232C5}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent11.0\Server\Updates'
     when '10.9.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_1091_180081.exe').gsub('/', '\\')
       geoevent['product_code'] = '{F5C3D729-0B74-419D-9154-D05C63606A94}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent10.9\Server\Updates'
     when '10.9'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_109_177813.exe').gsub('/', '\\')
       geoevent['product_code'] = '{B73748C3-DD75-4376-B4DA-D52C59121A10}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent10.9\Server\Updates'      
     when '10.8.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_1081_175242.exe').gsub('/', '\\')
       geoevent['product_code'] = '{C98F8E6F-A6D0-479A-B80E-C173996DD70B}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent10.8\Server\Updates'
     when '10.8'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_108_172924.exe').gsub('/', '\\')
       geoevent['product_code'] = '{10F38ED5-B9A1-4F0C-B8E2-06AD1365814C}'
-    when '10.7.1'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1071_169716.exe').gsub('/', '\\')
-      geoevent['product_code'] = '{3AE4EE62-B5ED-45CB-8917-F761B9335F33}'
-    when '10.7'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_107_167668.exe').gsub('/', '\\')
-      geoevent['product_code'] = '{7430C9C3-7D96-429E-9F47-04938A1DC37E}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent10.8\Server\Updates'
     else
       Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
     end
@@ -73,6 +78,9 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
     case node['arcgis']['version']
+    when '11.0'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_110_183031.tar.gz')
     when '10.9.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_1091_180218.tar.gz')
@@ -85,14 +93,24 @@ default['arcgis']['geoevent'].tap do |geoevent|
     when '10.8'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_108_173004.tar.gz')
-    when '10.7.1'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_1071_169919.tar.gz')
-    when '10.7'
-      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                              'ArcGIS_GeoEvent_Server_107_167732.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS GeoEvent Server version'
     end
+
+    if node['arcgis']['server']['install_dir'].nil?
+      server_install_dir = default['arcgis']['server']['install_dir']
+    else
+      server_install_dir = node['arcgis']['server']['install_dir']
+    end
+
+    if node['arcgis']['server']['install_subdir'].nil?
+      server_install_subdir = default['arcgis']['server']['install_subdir']
+    else
+      server_install_subdir = node['arcgis']['server']['install_subdir']
+    end
+
+    geoevent['patch_log'] = ::File.join(server_install_dir,
+                                        server_install_subdir,
+                                        'GeoEvent', '.ESRI_GES_PATCH_LOG')
   end
 end

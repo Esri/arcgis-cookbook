@@ -1,109 +1,177 @@
-esri-tomcat cookbook
-====================
+---
+layout: default
+title: "esri-tomcat cookbook"
+category: cookbooks
+item: esri-tomcat
+version: 0.2.0
+latest: true
+---
 
-This cookbook installs and configures Apache Tomcat for using with ArcGIS Web Adaptor.
+# esri-tomcat cookbook
+
+This cookbook installs and configures Apache Tomcat for use with ArcGIS Web Adaptor.
 
 Requirements
 ------------
 
-### Platforms
+## Platforms
 
 * Ubuntu Server 18.04 and 20.04 LTS
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
-* CentOS Linux 8
 * Oracle Linux 8
 
-### Dependencies
+## Dependencies
 
 The following cookbooks are required:
 * tomcat
 * openssl
 
-Attributes
-----------
+## Attributes
 
-#### General
+### General
 
 * `node['tomcat']['version']` = Tomcat version to install. Default is `9.0.48`.
-* `node['tomcat']['instance_name']` = tomcat instance name. Default is `arcgis`.
-* `node['tomcat']['install_path']` = tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
-* `node['tomcat']['tarball_path']` = tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
-* `node['tomcat']['verify_checksum']` = Verify checksum of downloaded tomcat tarball. Default value is `true`.
-* `node['tomcat']['forward_ports']` = If set to `true`, default recipe includes 'firewalld' or 'iptables' recipe. Default value is `true`.
-* `node['tomcat']['firewalld']['init_cmd']` = firewalld initialization command. The default command is `firewall-cmd --zone=public --permanent --add-port=0-65535/tcp`.
+* `node['tomcat']['instance_name']` = Tomcat instance name. Default is `arcgis`.
+* `node['tomcat']['install_path']` = Tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
+* `node['tomcat']['tarball_path']` = Tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
+* `node['tomcat']['verify_checksum']` = Verify checksum of downloaded Tomcat tarball. Default value is `true`.
+* `node['tomcat']['forward_ports']` = If set to `true`, default recipe includes the 'firewalld' or 'iptables' recipe. Default value is `true`.
+* `node['tomcat']['firewalld']['init_cmd']` = The firewalld initialization command. The default command is `firewall-cmd --zone=public --permanent --add-port=0-65535/tcp`.
 
-#### SSL/TLS
+### SSL/TLS
 
 * `node['tomcat']['keystore_file']` = Optional: Path to the keystore file. If not provided, a new file and a self-signed certificate will be created.
 * `node['tomcat']['keystore_password']` = Optional: Password to the keystore.
-* `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of HTTPS listener. Default is `TLSv1.3,TLSv1.2`.
+* `node['tomcat']['ssl_enabled_protocols']` = SSL protocols of the HTTPS listener. Default is `TLSv1.3,TLSv1.2`.
 * `node['tomcat']['domain_name']` = Domain name for generated self-signed SSL certificate. Default is `Fully Qualified Domain Name`.
 
-#### OpenJDK
+### OpenJDK
 
-* `node['java']['version']` = Major java version. Default version is `11`.
+* `node['java']['version']` = Major Java version. Default version is `11`.
 * `node['java']['tarball_uri']` = JDK tarball URI. Default URI is `https://download.java.net/java/ga/jdk11/openjdk-11_linux-x64_bin.tar.gz`.
 * `node['java']['tarball_path']` = JDK tarball local path. Default path is `<file_cache_path>/openjdk-11_linux-x64_bin.tar.gz`.
 * `node['java']['install_path']` = JDK installation path. Default path is `/opt`.
 
+## Recipes
 
-Recipes
--------
+### configure_ssl
 
-### esri-tomcat::default
+Configures the HTTPS listener in Apache Tomcat application server.
 
-Installs and configures Apache Tomcat application server for ArcGIS Web Adaptor. 
+```JSON
+{
+  "tomcat": {
+    "version" : "9.0.48",
+    "instance_name" : "arcgis",
+    "user": "tomcat_arcgis",
+    "group": "tomcat_arcgis",
+    "install_path" : "/opt/tomcat_arcgis_9.0.48",
+    "keystore_type" : "PKCS12",
+    "keystore_file" : "/tomcat_arcgis/conf/resources/sslcerts/sslcert.pfx",
+    "keystore_password": "change.it",
+    "domain_name": "domain.com",
+    "ssl_enabled_protocols" : "TLSv1.2,TLSv1.1,TLSv1"
+  },
+  "run_list" : [
+    "recipe[esri-tomcat::configure_ssl]"
+  ]
+}
+```
 
-If node['tomcat']['forward_ports'] attribute is `true` (default value), the recipe also configures port forwarding (80 to 8080 and 443 to 8443) using iptables or firewalld recipes.
+> Note: If the specified keystore file does not exist, the recipe generates a self-signed SSL certificate for the specified domain.
 
-### esri-tomcat::install
+### default
+
+Installs Apache Tomcat and configures the HTTPS listener. If the `node['tomcat']['forward_ports']` attribute is true (default value), the recipe also configures port forwarding (80 to 8080 and 443 to 8443) using the iptables or firewalld recipes.
+
+```JSON
+{
+  "tomcat": {
+    "version" : "9.0.48",
+    "instance_name" : "arcgis",
+    "user": "tomcat_arcgis",
+    "group": "tomcat_arcgis",
+    "install_path" : "/opt/tomcat_arcgis_9.0.48",
+    "keystore_type" : "PKCS12",
+    "keystore_file" : "/tomcat_arcgis/conf/resources/sslcerts/sslcert.pfx",
+    "keystore_password": "change.it",
+    "domain_name": "domain.com",
+    "ssl_enabled_protocols" : "TLSv1.2,TLSv1.1,TLSv1",
+    "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz",
+    "forward_ports": true
+  },
+  "run_list" : [
+    "recipe[esri-tomcat]"
+  ]
+}
+```
+
+> Note: If the specified keystore file does not exist, the recipe generates a self-signed SSL certificate for the specified domain.
+
+### firewalld
+
+Configures port forwarding (80 to 8080 and 443 to 8443) using FirewallD.
+
+> Note: If the firewalld service was started by the recipe, the recipe runs the script specified by node['tomcat']['firewalld']['init_cmd'], which, by default, opens all the TCP ports on the machine.
+
+```JSON
+{
+  "tomcat": {
+    "firewalld": {
+      "init_cmd": "firewall-cmd --zone=public --permanent --add-port=0-65535/tcp"
+    }
+  },
+  "run_list" : [
+    "recipe[esri-tomcat::firewalld]"
+  ]
+}
+```
+
+### install
 
 Installs Apache Tomcat application server.
 
-### esri-tomcat::configure_ssl
+```JSON
+{
+  "tomcat": {
+    "version" : "9.0.48",
+    "instance_name" : "arcgis",
+    "user": "tomcat_arcgis",
+    "group": "tomcat_arcgis",
+    "install_path" : "/opt/tomcat_arcgis_9.0.48",
+    "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz"
+  },
+  "run_list" : [
+    "recipe[esri-tomcat::install]"
+  ]
+}
+```
 
-Configures HTTPS listener in Apache Tomcat application server.
+### iptables
 
-### esri-tomcat::iptables
+Configures port forwarding (80 to 8080 and 443 to 8443) using iptables.
 
-Installs iptables and configures HTTP(S) port forwarding (80 to 8080 and 443 to 8443).
+```JSON
+{
+  "run_list" : [
+    "recipe[esri-tomcat::iptables]"
+  ]
+}
+```
 
-### esri-tomcat::firewalld
+### openjdk
 
-Installs FirewallD and configures HTTP(S) port forwarding (80 to 8080 and 443 to 8443).
+Installs OpenJDK for Apache Tomcat from a local or remote tarball.
 
-> If firewalld service was started by the recipe, the recipe execute script specified by `node['tomcat']['firewalld']['init_cmd']` which by default opens all the TCP ports on the machine.
-
-### esri-tomcat::openjdk
-
-Installs OpenJDK for Apache Tomcat from a local ur remote tarball.
-
-## Issues
-
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
-
-## Contributing
-
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
-
-Licensing
----------
-
-Copyright 2016-2021 Esri
-
-Licensed under the Apache License, Version 2.0 (the "License");
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-A copy of the license is available in the repository's [License.txt](https://github.com/Esri/arcgis-cookbook/blob/master/License.txt?raw=true) file.
-
-[](Esri Tags: ArcGIS Chef Cookbook Tomcat)
-[](Esri Language: Ruby)
+```JSON
+{
+  "java": {
+    "version": "11",
+    "tarball_path": "/opt/software/archives/openjdk-11_linux-x64_bin.tar.gz"
+  },
+  "run_list": [
+    "recipe[esri-tomcat::openjdk]"
+  ]
+}
+```

@@ -1,0 +1,16 @@
+{
+    "arcgis": {
+        "version": "10.9.1",
+        "repository": {
+            "local_patches": "C:\\Software\\Archives\\Patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Server"
+                ]
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::patches]"
+    ]
+}

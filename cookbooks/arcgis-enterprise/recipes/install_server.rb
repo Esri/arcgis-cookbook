@@ -87,6 +87,8 @@ template ::File.join(node['arcgis']['server']['install_dir'],
   notifies :stop, 'arcgis_enterprise_server[Stop ArcGIS Server after replacing NodeAgentExt.xml]', :immediately  
   only_if { node['arcgis']['cloud']['provider'] == 'ec2' &&
             node['arcgis']['server']['disable_nodeagent_plugins'] }
+  retries 5
+  retry_delay 60
 end
 
 # Delete hostname.properties file after NodeAgentExt.xml is replaced
@@ -94,6 +96,8 @@ file 'Delete hostname.properties' do
   path ::File.join(node['arcgis']['server']['install_dir'],
                    node['arcgis']['server']['install_subdir'],
                    'framework', 'etc', 'hostname.properties')
+  retries 5
+  retry_delay 60
   action :nothing
 end
 

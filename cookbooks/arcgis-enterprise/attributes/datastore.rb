@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: datastore
 #
-# Copyright 2018 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,8 +33,10 @@ default['arcgis']['data_store'].tap do |data_store|
   data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
-  data_store['ports'] = '2443,4369,9220,9320,9876,9900,29079-29090'
+  data_store['ports'] = '2443,4369,9220,9320,9829,9876,9900,29079-29090'
 
+  data_store['patches'] = []
+  
   case node['platform']
   when 'windows'
     data_store['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -45,8 +47,13 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['install_subdir'] = ''
     data_store['data_dir'] = 'C:\\arcgisdatastore'
     data_store['local_backup_dir'] = 'C:\\arcgisbackup'
+    data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '11.0'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_110_182887.exe').gsub('/', '\\')
+      data_store['product_code'] = '{ABCEFF81-861D-482A-A20E-8542814C03BD}'
     when '10.9.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_1091_180054.exe').gsub('/', '\\')
@@ -63,43 +70,6 @@ default['arcgis']['data_store'].tap do |data_store|
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_108_172872.exe').gsub('/', '\\')
       data_store['product_code'] = '{2018A7D8-CBE8-4BCF-AF0E-C9AAFB4C9B6D}'
-    when '10.7.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_1071_169689.exe').gsub('/', '\\')
-      data_store['product_code'] = '{112E5FD0-9DD2-45DA-ACD5-A21AA45F67E2}'
-    when '10.7'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_107_167633.exe').gsub('/', '\\')
-      data_store['product_code'] = '{2B19AB45-1A17-45CD-8001-0608E8D72447}'
-    when '10.6.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_1061_163980.exe').gsub('/', '\\')
-      data_store['product_code'] = '{53160721-93D8-48F8-9EDD-038794AE756E}'
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.6'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_106_161832.exe').gsub('/', '\\')
-      data_store['product_code'] = '{846636C1-53BB-459D-B66D-524F79E40396}'
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.5.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Windows_1051_156366.exe').gsub('/', '\\')
-      data_store['product_code'] = '{75276C83-E88C-43F6-B481-100DA4D64F71}'
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.5'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Windows_105_154006.exe').gsub('/', '\\')
-      data_store['product_code'] = '{5EA81114-6FA7-4B4C-BD72-D1C882088AAC}'
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.4.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Windows_1041_151782.exe').gsub('/', '\\')
-      data_store['product_code'] = '{A944E0A7-D268-41CA-B96E-8434457B051B}'
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.4'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_DataStore_Windows_104_149437.exe').gsub('/', '\\')
-      data_store['product_code'] = '{C351BC6D-BF25-487D-99AB-C963D590A8E8}'
     else
       Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     end
@@ -110,6 +80,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '11.0'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_110_182986.tar.gz')
     when '10.9.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_1091_180204.tar.gz')
@@ -122,36 +95,6 @@ default['arcgis']['data_store'].tap do |data_store|
     when '10.8'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_108_172991.tar.gz')
-    when '10.7.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_1071_169808.tar.gz')
-    when '10.7'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_107_167719.tar.gz')
-    when '10.6.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_1061_164056.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.6'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_106_161810.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.5.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_1051_156441.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.5'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_105_154054.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.4.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_1041_152011.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
-    when '10.4'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_104_149449.tar.gz')
-      Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     else
       Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     end
@@ -183,6 +126,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['local_backup_dir'] = ::File.join(data_store_install_dir,
                                                  data_store_install_subdir,
                                                  'usr/arcgisbackup')
+    data_store['patch_log'] = ::File.join(data_store_install_dir,
+                                          data_store_install_subdir,
+                                          '.ESRI_DS_PATCH_LOG')
 
     data_store['sysctl_conf'] = '/etc/sysctl.conf'
     data_store['vm_max_map_count'] = 262144

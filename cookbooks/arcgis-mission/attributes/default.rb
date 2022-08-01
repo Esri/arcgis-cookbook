@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Attributes:: default
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ default['arcgis']['mission_server'].tap do |mission_server|
   mission_server['private_url'] = "https://#{node['arcgis']['mission_server']['domain_name']}:20443/arcgis"
   mission_server['web_context_url'] = "https://#{node['arcgis']['mission_server']['domain_name']}/#{node['arcgis']['mission_server']['wa_name']}"
 
-  mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
+  mission_server['ports'] = '20443,20301,20160'
   mission_server['authorization_file'] = node['arcgis']['server']['authorization_file']
   mission_server['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
   mission_server['configure_autostart'] = true
@@ -67,6 +67,8 @@ default['arcgis']['mission_server'].tap do |mission_server|
 
   mission_server['system_properties'] = {}
 
+  mission_server['patches'] = []
+
   case node['platform']
   when 'windows'
     mission_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -84,6 +86,10 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '11.0'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_110_182935.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{1B27C0F2-81E9-4F1F-9506-46F937605674}'
     when '10.9.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_1091_180092.exe').gsub('/', '\\')
@@ -92,14 +98,17 @@ default['arcgis']['mission_server'].tap do |mission_server|
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_109_177824.exe').gsub('/', '\\')
       mission_server['product_code'] = '{94280A6F-6501-42CE-A627-FCE20B01A9D7}'
+      mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
     when '10.8.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_1081_175253.exe').gsub('/', '\\')
       mission_server['product_code'] = '{26F574C6-C9F8-487C-977A-A906AAA60136}'
+      mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
     when '10.8'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_108_172945.exe').gsub('/', '\\')
       mission_server['product_code'] = '{A1A58B32-2ADF-4EAD-AC84-BE97318CA569}'
+      mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
     else
       Chef::Log.warn 'Unsupported ArcGIS Mission Server version'
     end
@@ -140,13 +149,16 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '11.0'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_110_183045.tar.gz')
+      # Setup archives of 11.0 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
+      # subfolder of final archives. Remove the line below for the final setup archive.                                                    
+      # mission_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],	node['arcgis']['version'],
+      #                                       'MissionServer_Linux', 'Setup')
     when '10.9.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_1091_180227.tar.gz')
-      # Setup archives of 10.9.1 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
-      # subfolder of final archives. Remove the line below for the final setup archive.
-      mission_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],	node['arcgis']['version'],
-                                            'MissionServer', 'Setup')
     when '10.9'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_109_177909.tar.gz')
