@@ -22,7 +22,7 @@ Available Chef deployment templates:
 * [arcgis-egdb]({{ site.baseurl }}/templates/arcgis-egdb/11.0.html) - creates [enterprise GeoDatabases](https://enterprise.arcgis.com/en/server/11.0/manage-data/windows/enterprise-geodatabases-and-arcgis-enterprise.htm) and registers them with ArcGIS Server.
 * [arcgis-enterprise-base]({{ site.baseurl }}/templates/arcgis-enterprise-base/11.0.html) - deploys [base ArcGIS Enterprise](https://enterprise.arcgis.com/en/get-started/11.0/windows/base-arcgis-enterprise-deployment.htm).
 * [arcgis-geoevent]({{ site.baseurl }}/templates/arcgis-geoevent-server/11.0.html) - deploys [ArcGIS GeoEvent Server](https://enterprise.arcgis.com/en/geoevent/).
-* [arcgis-license-manager]({{ site.baseurl }}/templates/arcgis-license-manager/2021.1.html) - deploys [ArcGIS License Manager](https://desktop.arcgis.com/en/license-manager/11.0/welcome.htm).
+* [arcgis-license-manager]({{ site.baseurl }}/templates/arcgis-license-manager/2021.1.html) - deploys [ArcGIS License Manager](https://desktop.arcgis.com/en/license-manager/latest/welcome.htm).
 * [arcgis-mission-server]({{ site.baseurl }}/templates/arcgis-mission-server/11.0.html) - deploys [ArcGIS Mission Server](https://enterprise.arcgis.com/en/mission/) and federates it with  Portal for ArcGIS.
 * [arcgis-notebook-server]({{ site.baseurl }}/templates/arcgis-notebook-server/11.0.html) - deploys [ArcGIS Notebook Server](https://enterprise.arcgis.com/en/notebook/) with an ArcGIS Enterprise deployment.
 * [arcgis-portal]({{ site.baseurl }}/templates/arcgis-portal/11.0.html) - deploys [Portal for ArcGIS](https://enterprise.arcgis.com/en/portal/).
