@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-geoevent-server template"
 category: templates
 item: arcgis-geoevent-server
-version: 11.0
+version: "11.0"
 latest: true
 ---
 

@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-pro template"
 category: templates
 item: arcgis-pro
-version: 2.8
+version: "2.8"
 latest: false
 ---
 
