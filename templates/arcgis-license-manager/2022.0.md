@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-license-manager template"
 category: templates
 item: arcgis-license-manager
-version: 2022.0
+version: "2022.0"
 latest: true
 ---
 

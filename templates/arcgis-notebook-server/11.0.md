@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-notebook-server template"
 category: templates
 item: arcgis-notebook-server
-version: 11.0
+version: "11.0"
 latest: true
 ---
 

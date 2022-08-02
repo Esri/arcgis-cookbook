@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-egdb template"
 category: templates
 item: arcgis-egdb
-version: 11.0
+version: "11.0"
 latest: true
 ---
 

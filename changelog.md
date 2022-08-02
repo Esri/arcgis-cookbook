@@ -216,5 +216,3 @@ Fixed issues:
 ## 1.1.1
 
 - First release of the cookbook.
-
-
