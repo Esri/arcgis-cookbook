@@ -4,7 +4,7 @@ title: "arcgis-egdb template"
 category: templates
 item: arcgis-egdb
 version: "11.0"
-latest: true
+latest: false
 ---
 
 # arcgis-egdb Deployment Template

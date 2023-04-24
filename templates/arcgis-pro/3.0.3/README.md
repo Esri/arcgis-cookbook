@@ -4,7 +4,7 @@ title: "arcgis-pro template"
 category: templates
 item: arcgis-pro
 version: "3.0.3"
-latest: true
+latest: false
 ---
 
 # arcgis-pro Deployment Template

@@ -4,7 +4,7 @@ title: "arcgis-enterprise-base template"
 category: templates
 item: arcgis-enterprise-base
 version: "11.0"
-latest: true
+latest: false
 ---
 
 # arcgis-enterprise-base Deployment Template

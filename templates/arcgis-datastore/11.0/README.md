@@ -4,7 +4,7 @@ title: "arcgis-datastore template"
 category: templates
 item: arcgis-datastore
 version: "11.0"
-latest: true
+latest: false
 ---
 
 # arcgis-datastore Deployment Template
