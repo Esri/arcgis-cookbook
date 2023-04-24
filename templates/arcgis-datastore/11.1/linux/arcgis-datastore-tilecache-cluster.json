@@ -1,0 +1,32 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "server": {
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "url": "https://SERVER:6443/arcgis"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f TileCache",
+            "install_system_requirements": true,
+            "types": "tileCache",
+            "mode": "cluster",
+            "preferredidentifier": "hostname",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "tilecache": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/tilecache"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::datastore]"
+    ]
+}

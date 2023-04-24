@@ -1,0 +1,30 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Notebook_Docker_Advanced_111_185263.tar.gz": {
+                    "subfolder": "software/arcgis/11.1"
+                },
+                "ArcGIS_Notebook_Docker_Standard_111_185262.tar.gz": {
+                    "subfolder": "software/arcgis/11.1"
+                },
+                "ArcGIS_Notebook_Server_Linux_111_185323.tar.gz": {
+                    "subfolder": "software/arcgis/11.1"
+                },
+                "ArcGIS_Notebook_Server_Samples_Data_Linux_111_185328.tar.gz": {	
+                    "subfolder": "software/arcgis/11.1"	
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

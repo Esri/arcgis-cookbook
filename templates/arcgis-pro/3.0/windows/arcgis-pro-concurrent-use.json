@@ -10,7 +10,7 @@
       "software_class": "Professional",
       "authorization_type": "CONCURRENT_USE",
       "esri_license_host": "lm-host.domain.com",
-      "authorization_file_version": "11.0",
+      "authorization_file_version": "11.1",
       "portal_list": "https://www.arcgis.com/",
       "blockaddins": "0",
       "lock_auth_settings": false,

@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-pro template"
 category: templates
 item: arcgis-pro
-version: 3.0
-latest: true
+version: "3.0"
+latest: false
 ---
 
 # arcgis-pro Deployment Template

@@ -1,5 +1,5 @@
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ module ArcGIS
 
     def configure_service_account(run_as_user, run_as_password)
       if @platform == 'windows'
-        args = "/username \"#{run_as_user}\" /password \"#{run_as_password.gsub("&", "^&")}\""
+        args = "--username \"#{run_as_user}\" --password \"#{run_as_password.gsub("&", "^&")}\""
 
         tool = ::File.join(@tools_dir, 'configureserviceaccount')
         cmd = Mixlib::ShellOut.new("\"#{tool}\" #{args}",
@@ -63,10 +63,10 @@ module ArcGIS
 
         cmd.run_command
 
-        Chef::Log.debug('STDOUT < ' + cmd.stdout)
-        Chef::Log.debug('STDERR < ' + cmd.stderr)
+        # Chef::Log.debug('STDOUT < ' + cmd.stdout)
+        # Chef::Log.debug('STDERR < ' + cmd.stderr)
 
-        cmd.error!
+        Utils.sensitive_command_error(cmd, [ run_as_password.gsub("&", "^&") ])
       end
     end
 
@@ -107,10 +107,10 @@ module ArcGIS
 
       cmd.run_command
 
-      Chef::Log.debug('STDOUT < ' + cmd.stdout)
-      Chef::Log.debug('STDERR < ' + cmd.stderr)
+      # Chef::Log.debug('STDOUT < ' + cmd.stdout)
+      # Chef::Log.debug('STDERR < ' + cmd.stderr)
 
-      cmd.error!
+      Utils.sensitive_command_error(cmd, [ password ])
     end
 
     def describe_datastore(store)
@@ -214,10 +214,10 @@ module ArcGIS
 
       cmd.run_command
 
-      Chef::Log.debug('STDOUT < ' + cmd.stdout)
-      Chef::Log.debug('STDERR < ' + cmd.stderr)
+      # Chef::Log.debug('STDOUT < ' + cmd.stdout)
+      # Chef::Log.debug('STDERR < ' + cmd.stderr)
 
-      cmd.error!
+      Utils.sensitive_command_error(cmd, [ password ])
     end
 
     def remove_machine(store, hostidentifier, force)

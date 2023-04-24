@@ -1,0 +1,28 @@
+{
+  "arcgis": {
+    "version": "11.1",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "server": {
+      "install_dir": "/opt",
+      "install_system_requirements": true,
+      "primary_server_url": "https://primary.com:6443/arcgis",
+      "admin_username": "<server_admin_username>",
+      "admin_password": "<server_admin_password>",
+      "pull_license": false,
+      "log_dir": "/opt/arcgis/server/usr/logs",
+      "authorization_file": "/opt/software/authorization_files/11.1/server.prvc"
+    },
+    "workflow_manager_server": {
+      "authorization_file": "/opt/software/authorization_files/11.1/workflow_manager_server.prvc",
+      "distributed_data_provider": true
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::server_node]",
+    "recipe[arcgis-workflow-manager::server]"
+  ]
+}

@@ -33,7 +33,7 @@ default['arcgis']['data_store'].tap do |data_store|
   data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
-  data_store['ports'] = '2443,4369,9220,9320,9829,9876,9900,29079-29090'
+  data_store['ports'] = '2443,4369,9220,9320,9829,9876,9900,25672,44369,45671,45672,29079-29090'
 
   data_store['patches'] = []
   
@@ -50,6 +50,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '11.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_111_185221.exe').gsub('/', '\\')
+      data_store['product_code'] = '{391B3A39-0951-43E3-991D-82C82CA6E4A4}'
     when '11.0'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_110_182887.exe').gsub('/', '\\')
@@ -80,6 +84,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '11.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_111_185305.tar.gz')
     when '11.0'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_110_182986.tar.gz')

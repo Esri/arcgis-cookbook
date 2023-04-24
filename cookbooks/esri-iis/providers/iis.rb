@@ -49,7 +49,9 @@ action :configure_https do
 
     cmd = Mixlib::ShellOut.new("certutil -f -p \"#{keystore_pass}\" -importpfx \"#{pfx_file}\"")
     cmd.run_command
-    cmd.error!
+    if cmd.error?
+      raise "Failed to execute: certutil -f -p \"*****\" -importpfx \"#{pfx_file}\""
+    end
 
     cmd = Mixlib::ShellOut.new("netsh http delete sslcert ipport=0.0.0.0:443")
     cmd.run_command

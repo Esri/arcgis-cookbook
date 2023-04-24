@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-insights
 # Attributes:: default
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '2022.2'
+  insights['version'] = '2022.3'
 
   insights['patches'] = []
 
@@ -30,8 +30,12 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '2022.3'
+      insights['product_code'] = '{09230105-BBD4-401B-AB77-3E221BAD668F}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2022_3_184093.exe')
     when '2022.2'
-      insights['product_code'] = '{C16053FC-0F7A-4819-95C6-FB14B05782AE}'
+      insights['product_code'] = '{E1B018A2-C615-4CDA-AC51-8F1EDE8492AF}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Windows_2022_2_183474.exe')
     when '2022.1.1'
@@ -89,6 +93,9 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '2022.3'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2022_3_184094.tar.gz')
     when '2022.2'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Linux_2022_2_183475.tar.gz')

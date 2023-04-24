@@ -1,0 +1,19 @@
+{
+  "arcgis": {
+    "run_as_user": "arcgis",
+    "version": "11.1",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "server": {
+      "install_dir": "/opt",
+      "install_system_requirements": true
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::install_server]",
+    "recipe[arcgis-workflow-manager::install_server]"
+  ]
+}

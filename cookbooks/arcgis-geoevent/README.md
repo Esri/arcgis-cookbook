@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-geoevent cookbook"
 category: cookbooks
 item: arcgis-geoevent
-version: 4.0.0
+version: 4.1.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 * 10.9
 * 10.9.1
 * 11.0
+* 11.1
 
 ## Supported ArcGIS software
 
@@ -27,7 +28,6 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 
 * Windows 8 (8.1)
 * Windows 10
-* Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
@@ -49,7 +49,7 @@ The following cookbooks are required:
 * `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Server authorization file path. 
 * `node['arcgis']['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
 * `node['arcgis']['geoevent']['setup_archive']` = Path to the ArcGIS GeoEvent Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['geoevent']['setup']` = The location of the ArcGIS GeoEvent Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.0\ArcGISGeoEventServer\Setup.exe` on Windows and `/opt/arcgis/11.0/geoevent/Setup.sh` on Linux.
+* `node['arcgis']['geoevent']['setup']` = The location of the ArcGIS GeoEvent Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.1\ArcGISGeoEventServer\Setup.exe` on Windows and `/opt/arcgis/11.1/geoevent/Setup.sh` on Linux.
 * `node['arcgis']['geoevent']['setup_options']` = Additional ArcGIS GeoEvent Server setup command line options. Default options are `''`.
 * `node['arcgis']['geoevent']['configure_autostart']` = If set to true, on Linux the GeoEvent Server is configured to start with the operating system.  Default value is `true`.
 * `node['arcgis']['geoevent']['ports']` = Ports to open for GeoEvent. Default depends on `node['arcgis']['version']`.
@@ -70,7 +70,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.0",
+        "version": "11.1",
         "run_as_user": "arcgis",
         "server": {
             "install_dir": "C:\\Program Files\\ArcGIS\\Server"
@@ -91,16 +91,16 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.0",
+    "version": "11.1",
     "run_as_user": "arcgis",
-    "run_as_password": "Pa$$w0rdPa$$w0rd",
+    "run_as_password": "<password>",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS",
     },
     "geoevent": {
-      "setup": "C:\\ArcGIS\\11.0\\GeoEvent\\Setup.exe",
-      "authorization_file": "C:\\ArcGIS\\11.0\\Authorization_Files\\GeoEvent.prvc",
-      "authorization_file_version": "11.0"
+      "setup": "C:\\ArcGIS\\11.1\\GeoEvent\\Setup.exe",
+      "authorization_file": "C:\\ArcGIS\\11.1\\Authorization_Files\\GeoEvent.prvc",
+      "authorization_file_version": "11.1"
     }
   },
   "run_list": [
@@ -140,9 +140,9 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.0",
+    "version": "11.1",
     "geoevent": {
-      "lp-setup": "C:\\ArcGIS\\11.0\\GeoEvent\\Japanese\\Setup.exe"
+      "lp-setup": "C:\\ArcGIS\\11.1\\GeoEvent\\Japanese\\Setup.exe"
     }
   },
   "run_list":[
@@ -160,7 +160,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.0",
+    "version": "11.1",
     "run_as_user": "arcgis",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS"

@@ -1,0 +1,24 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "setup_options": "ADDLOCAL=ALL",
+            "install_system_requirements": true,
+            "preferredidentifier": "hostname",
+            "data_dir": "C:\\arcgisdatastore"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-enterprise::start_datastore]"
+    ]
+}

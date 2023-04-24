@@ -26,7 +26,7 @@ attribute :setup, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :install_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String

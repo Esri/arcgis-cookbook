@@ -1,0 +1,42 @@
+{
+    "java": {
+        "version": "11",
+        "tarball_path": "/opt/software/archives/openjdk-11_linux-x64_bin.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.48",
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.48",
+        "keystore_file": "/opt/tomcat_arcgis_9.0.48/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "<keystore_password>"
+    },
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.48/webapps"
+        },
+        "notebook_server": {
+            "wa_name": "notebooks",
+            "url": "https://localhost:11443/arcgis",
+            "wa_url": "https://localhost/notebooks",
+            "admin_username": "<notebook_server_admin_username>",
+            "admin_password": "<notebook_server_admin_password>"
+        },
+        "web_adaptor": {
+            "install_dir": "/opt"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-notebooks::restart_docker]",
+        "recipe[arcgis-notebooks::server_wa]"
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "java": {
+        "version": "11",
+        "tarball_path": "/opt/software/archives/openjdk-11_linux-x64_bin.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.48",
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.48"
+    },
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.48/webapps"
+        },
+        "notebook_server": {
+            "wa_name": "notebooks"
+        },        
+        "web_adaptor": {
+            "install_dir": "/opt"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat::install]",
+        "recipe[arcgis-notebooks::restart_docker]",
+        "recipe[arcgis-notebooks::install_server_wa]"
+    ]
+}

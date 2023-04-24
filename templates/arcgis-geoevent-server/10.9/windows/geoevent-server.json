@@ -22,7 +22,7 @@
             "keystore_file" : "C:\\Software\\Certificates\\ssl_cert.pfx",
             "keystore_password" : "change.it",
             "system_properties": {
-                "WebSocketContextURL":"https://domain.com:6143/arcgis",
+                "WebSocketContextURL":"wss://domain.com:6143/arcgis",
                 "WebContextURL":"https://domain.com:6443/arcgis"
             }
         },

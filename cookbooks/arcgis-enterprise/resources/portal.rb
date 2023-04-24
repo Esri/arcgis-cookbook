@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: portal
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ attribute :content_store_provider, :kind_of => String, :default => 'FileSystem'
 attribute :content_store_connection_string, :kind_of => [String, Hash]
 attribute :object_store, :kind_of => [String, nil]
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
@@ -47,23 +47,23 @@ attribute :portal_private_url, :kind_of => String
 attribute :primary_machine_url, :kind_of => String
 attribute :web_context_url, :kind_of => String
 attribute :keystore_file, :kind_of => String
-attribute :keystore_password, :kind_of => String
+attribute :keystore_password, :kind_of => String, :sensitive => true
 attribute :cert_alias, :kind_of => String
 attribute :root_cert, :kind_of => String
 attribute :root_cert_alias, :kind_of => String
 attribute :tomcat_java_opts, :kind_of => String
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :email, :kind_of => String
 attribute :full_name, :kind_of => String
 attribute :description, :kind_of => String
 attribute :security_question, :kind_of => String
-attribute :security_question_answer, :kind_of => String
+attribute :security_question_answer, :kind_of => String, :sensitive => true
 attribute :allssl, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :server_admin_url, :kind_of => String
 attribute :server_username, :kind_of => String
-attribute :server_password, :kind_of => String
+attribute :server_password, :kind_of => String, :sensitive => true
 attribute :is_hosting, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String

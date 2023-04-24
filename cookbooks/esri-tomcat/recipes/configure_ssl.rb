@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-tomcat
 # Recipe:: configure_ssl
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ keystore_file = node['tomcat']['keystore_file']
 keystore_password = node['tomcat']['keystore_password']
 certs_dir = install_path + '/certificates'
 
-# Generate Self Signed if no keystore is provided
-if keystore_file.empty? && keystore_password.empty?
+# Generate self-signed SSL certificate if no keystore file and password are provided.
+if keystore_file.empty? && (keystore_password.nil? || keystore_password.empty?)
   directory certs_dir do
     owner node['tomcat']['user']
     group node['tomcat']['group']
@@ -36,7 +36,7 @@ if keystore_file.empty? && keystore_password.empty?
   end
 
   keystore_file = node.override['tomcat']['keystore_file'] = ::File.join(certs_dir, dn) + '.pfx'
-  keystore_password = node.override['tomcat']['keystore_password'] = 'changeit'
+  keystore_password = node.override['tomcat']['keystore_password'] = dn
 
   openssl_x509_certificate keystore_file.gsub(/\.pfx/, '.pem') do
     common_name node['tomcat']['domain_name']
@@ -67,8 +67,8 @@ if keystore_file.empty? && keystore_password.empty?
     action :nothing
   end
 # Warn for providing keystore w/o password
-elsif !keystore_file.empty? && keystore_password.empty?
-  Chef::Log.warn("node['tomcat']['keystore_password'] is empty! SSL will not be configured!")
+elsif !keystore_file.empty? && (keystore_password.nil? || keystore_password.empty?)
+  Chef::Log.warn("node['tomcat']['keystore_password'] is not set! SSL will not be configured!")
 end
 
 template install_path + '/conf/server.xml' do

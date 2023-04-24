@@ -26,7 +26,7 @@ default['arcgis']['iis'].tap do |iis|
     iis['keystore_file'] = ::File.join(Chef::Config[:file_cache_path],
                                        node['arcgis']['iis']['domain_name'] + '.pfx')
     if ENV['ARCGIS_IIS_KEYSTORE_PASSWORD'].nil?
-      iis['keystore_password'] = 'test'
+      iis['keystore_password'] = nil
     else
       iis['keystore_password'] = ENV['ARCGIS_IIS_KEYSTORE_PASSWORD']
     end

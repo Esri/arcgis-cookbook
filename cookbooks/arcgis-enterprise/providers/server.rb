@@ -100,7 +100,7 @@ action :install do
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 7200, :environment => @new_resource.install_environment })
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd, [ @new_resource.run_as_password ])
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
@@ -120,7 +120,7 @@ action :install do
       cmd = Mixlib::ShellOut.new("#{cmd} #{args}", {:user => run_as_user, :timeout => 3600, :environment => @new_resource.install_environment })
     end
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd)
   end
 
   new_resource.updated_by_last_action(true)
@@ -155,18 +155,31 @@ end
 
 action :update_account do
   if node['platform'] == 'windows'
-    configureserviceaccount = ::File.join(@new_resource.install_dir,
-                                          'bin', 'ServerConfigurationUtility.exe')
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/username \"#{@new_resource.run_as_user}\" "\
-           "/password \"#{run_as_password}\""
+    if Utils.sc_logon_account('ArcGIS Server') != @new_resource.run_as_user
+      configureserviceaccount = ::File.join(@new_resource.install_dir,
+                                            'bin', 'ServerConfigurationUtility.exe')
+      run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+      args = "/username \"#{@new_resource.run_as_user}\""\
+             " /password \"#{run_as_password}\" "
+      
+      unless @new_resource.server_directories_root.nil?
+        args += " /rsdir \"#{@new_resource.server_directories_root}\"" 
+      end
 
-    cmd = Mixlib::ShellOut.new("\"#{configureserviceaccount}\" #{args}",
-                               {:timeout => 3600})
-    cmd.run_command
-    cmd.error!
+      unless @new_resource.log_dir.nil?
+        args += " /logsdir \"#{@new_resource.log_dir}\" " 
+      end
+      
+      unless @new_resource.config_store_connection_string.nil? || 
+             @new_resource.config_store_type != 'FILESYSTEM'
+        args += " /csdir \"#{@new_resource.config_store_connection_string}\"" 
+      end
 
-    # Chef::Log.info "ServerConfigurationUtility.exe output: #{cmd.stdout}"
+      cmd = Mixlib::ShellOut.new("\"#{configureserviceaccount}\" #{args}",
+                                {:timeout => 3600})
+      cmd.run_command
+      Utils.sensitive_command_error(cmd, [ run_as_password ])
+    end
 
     # Update logon account of the windows service directly in addition to running ServerConfigurationUtility.exe
     Utils.sc_config('ArcGIS Server', @new_resource.run_as_user, @new_resource.run_as_password)
@@ -563,6 +576,10 @@ action :federate do
 end
 
 action :stop do
+  # Stoppig of ArcGIS Server while it's being started may corrupt configuration files.
+  # Wait for 15 seconds to let ArcGIS Server start complete before stopping it.
+  sleep(15.0)
+ 
   if node['platform'] == 'windows'
     if Utils.service_started?('ArcGIS Server')
       #Stop ArcGIS Server windows service and dependent services.
@@ -640,6 +657,7 @@ action :configure_autostart do
     end
   else
     Chef::Log.info('Configure ArcGIS Server to be started with the operating system.')
+
     agsuser = node['arcgis']['run_as_user']
     agshome = ::File.join(@new_resource.install_dir,
                           node['arcgis']['server']['install_subdir'])

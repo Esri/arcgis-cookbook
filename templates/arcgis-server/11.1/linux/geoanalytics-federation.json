@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "server": {
+            "private_url": "https://domain.com:6443/arcgis",
+            "web_context_url": "https://domain.com/server",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "is_hosting": false
+        },
+        "portal": {
+            "private_url": "https://domain.com/portal",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "root_cert": "",
+            "root_cert_alias": "geoanalytics"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::federation]",
+        "recipe[arcgis-enterprise::enable_geoanalytics]"
+    ]
+}

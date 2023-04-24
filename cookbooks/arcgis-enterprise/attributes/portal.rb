@@ -53,7 +53,7 @@ default['arcgis']['portal'].tap do |portal|
   portal['private_url'] = "https://#{portal_domain_name}:7443/arcgis"
   portal['admin_username'] = 'admin'
   if ENV['ARCGIS_PORTAL_ADMIN_PASSWORD'].nil?
-    portal['admin_password'] = 'changeit'
+    portal['admin_password'] = nil
   else
     portal['admin_password'] = ENV['ARCGIS_PORTAL_ADMIN_PASSWORD']
   end
@@ -64,7 +64,7 @@ default['arcgis']['portal'].tap do |portal|
   portal['security_question_answer'] = 'bacon'
   portal['keystore_file'] = ''
   if ENV['ARCGIS_PORTAL_KEYSTORE_PASSWORD'].nil?
-    portal['keystore_password'] = ''
+    portal['keystore_password'] = nil
   else
     portal['keystore_password'] = ENV['ARCGIS_PORTAL_KEYSTORE_PASSWORD']
   end
@@ -108,6 +108,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['patch_registry'] ='SOFTWARE\\ESRI\\Portal for ArcGIS\\Updates'
 
     case node['arcgis']['version']
+    when '11.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_111_185219.exe').gsub('/', '\\')
+      portal['product_code'] = '{BED48866-C615-4790-AD87-01F114C1A999}'
     when '11.0'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_110_182885.exe').gsub('/', '\\')
@@ -170,6 +174,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_111_185303.tar.gz')
     when '11.0'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_110_182984.tar.gz')

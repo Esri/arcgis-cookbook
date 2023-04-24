@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Pro'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '4.0.0'
+version          '4.1.0'
 chef_version     '>= 14.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 4.0'
+depends          'arcgis-repository', '~> 4.1'
 depends          'windows', '~> 5.3'
 
 supports         'windows'

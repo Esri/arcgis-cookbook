@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "notebook_server": {
+            "shares": [
+                "/gisdata/notebookserver/directories",
+                "/gisdata/notebookserver/config-store"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-notebooks::fileserver]"
+    ]
+}

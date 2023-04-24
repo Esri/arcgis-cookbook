@@ -1,6 +1,7 @@
 #!/bin/sh
 
 POSTGRESBIN="<%=@postgres_bin%>";export POSTGRESBIN
+LD_LIBRARY_PATH="<%=@postgres_bin%>/../lib:<%=@postgres_bin%>/../lib64";export LD_LIBRARY_PATH
 SCRIPTLOCATION="<%=@scripts_dir%>";export SCRIPTLOCATION
 KEYCODES="<%=@keycodes%>";export KEYCODES
 PYTHONPATH="<%=@pythonpath%>";export PYTHONPATH

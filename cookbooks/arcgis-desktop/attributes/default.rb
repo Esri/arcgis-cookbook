@@ -19,7 +19,7 @@
 include_attribute 'arcgis-repository'
 
 default['arcgis']['run_as_user'] = 'arcgis'
-default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
+default['arcgis']['run_as_password'] = nil
 default['arcgis']['version'] = '10.8.1'
 
 case node['platform']

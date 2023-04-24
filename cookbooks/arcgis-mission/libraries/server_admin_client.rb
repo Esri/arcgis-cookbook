@@ -1,5 +1,5 @@
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -187,7 +187,7 @@ module ArcGIS
                             'logsSettings' => log_settings.to_json,
                             'f' => 'json')
 
-      response = send_request(request, @server_url)
+      response = send_request(request, @server_url, true)
 
       validate_response(response)
     end
@@ -201,7 +201,7 @@ module ArcGIS
                             'adminURL' => primary_server_url + '/admin',
                             'f' => 'json')
 
-      response = send_request(request, @server_url)
+      response = send_request(request, @server_url, true)
 
       validate_response(response)
     end
@@ -218,7 +218,7 @@ module ArcGIS
                             'expiration' => '600',
                             'f' => 'json')
 
-      response = send_request(request, @generate_token_url)
+      response = send_request(request, @generate_token_url, true)
 
       validate_response(response)
 
@@ -348,7 +348,7 @@ module ArcGIS
 
     private
 
-    def send_request(request, url)
+    def send_request(request, url, sensitive = false)
       uri = URI.parse(url)
 
       http = Net::HTTP.new(uri.host, uri.port)
@@ -361,7 +361,11 @@ module ArcGIS
 
       Chef::Log.debug("Request: #{request.method} #{uri.scheme}://#{uri.host}:#{uri.port}#{request.path}")
 
-      Chef::Log.debug(request.body) unless request.body.nil?
+      if sensitive
+        Chef::Log.debug("Request body was not logged because it contains sensitive information.") 
+      else
+        Chef::Log.debug(request.body) unless request.body.nil?
+      end
 
       response = http.request(request)
 

@@ -70,44 +70,6 @@ arcgis_enterprise_portal 'Install Portal for ArcGIS' do
   action :install
 end
 
-# Workaround for BUG-000121142
-# Upgrade to Portal for ArcGIS 10.7 fails if the content store is in AWS S3.
-
-if node['platform'] == 'windows'
-  template ::File.join(node['arcgis']['misc']['scripts_dir'], 'install_portal.bat') do
-    source 'install_portal.bat.erb'
-    cookbook 'arcgis-enterprise'
-    only_if { node['arcgis']['version'] == '10.7' && node['arcgis']['portal']['content_store_provider'] == 'Amazon' }
-    subscribes :create, 'arcgis_enterprise_portal[Install Portal for ArcGIS]', :immediately
-    notifies :run, 'execute[BUG-000121142]', :immediately
-    action :nothing
-  end
-
-  execute 'BUG-000121142' do
-    command ::File.join(node['arcgis']['misc']['scripts_dir'], 'install_portal.bat')
-    action :nothing
-  end
-else
-  template ::File.join(node['arcgis']['misc']['scripts_dir'], 'install_portal.sh') do
-    source 'install_portal.sh.erb'
-    mode '0777'
-    cookbook 'arcgis-enterprise'
-    only_if { node['arcgis']['version'] == '10.7' && node['arcgis']['portal']['content_store_provider'] == 'Amazon' }
-    subscribes :create, 'arcgis_enterprise_portal[Install Portal for ArcGIS]', :immediately
-    notifies :run, 'execute[BUG-000121142]', :immediately
-    action :nothing
-  end
-
-  execute 'BUG-000121142' do
-    cwd ::File.join(node['arcgis']['portal']['install_dir'], node['arcgis']['portal']['install_subdir'])
-    user node['arcgis']['run_as_user']
-    command ::File.join(node['arcgis']['misc']['scripts_dir'], 'install_portal.sh')
-    action :nothing
-  end
-end
-
-# End workaround for BUG-000121142
-
 arcgis_enterprise_portal 'Configure arcgisportal service' do
   install_dir node['arcgis']['portal']['install_dir']
   only_if { node['arcgis']['portal']['configure_autostart'] }

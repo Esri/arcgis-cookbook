@@ -73,7 +73,7 @@ action :install do
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd, [ @new_resource.run_as_password ])
 
     sleep(450.0)  # Wait for GeoEvent Service to build dependency tree...
   else

@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-webadaptor template"
 category: templates
 item: arcgis-webadaptor
-version: 11.0
+version: "11.0"
 latest: true
 ---
 

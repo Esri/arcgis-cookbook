@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: gis_service
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ actions :publish, :start, :stop, :delete, :add_permission, :clean_permissions, :
 
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :folder, :kind_of => String
 attribute :name, :kind_of => String
 attribute :type, :kind_of => String

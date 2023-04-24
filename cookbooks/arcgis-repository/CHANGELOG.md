@@ -3,6 +3,18 @@ arcgis-repository cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-repository cookbook.
 
+4.1.0
+-----
+- Added support for ArcGIS 11.1.
+
+4.0.0
+-----
+- Added support for ArcGIS 11.0.
+
+3.8.0
+-----
+- Added support for ArcGIS 10.9.1.
+
 3.7.0
 -----
 - Added support for ArcGIS 10.9.

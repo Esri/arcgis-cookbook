@@ -20,7 +20,7 @@ group :release do
   # Lock versions of the dependent cookbooks  
   cookbook 'apt', '~> 7.4'
   cookbook 'docker', '~> 4.12'
-  cookbook 'homebrew', '~> 5.2'
+  cookbook 'homebrew', '5.3.6'
   cookbook 'hostsfile', '~> 3.0'
   cookbook 'iptables', '~> 7.1'
   cookbook 'java', '~> 6.0'

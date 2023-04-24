@@ -2,7 +2,7 @@
 # Cookbook:: arcgis-repository
 # Recipe:: files
 #
-# Copyright 2021 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,5 +30,6 @@ arcgis_repository_files 'Download files from remote repository' do
   local_archives node['arcgis']['repository']['local_archives']
   retries 5
   retry_delay 10
+  sensitive true
   action :download
 end

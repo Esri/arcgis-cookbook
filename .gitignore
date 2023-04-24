@@ -64,3 +64,16 @@ cookbooks/arcgis/Berksfile.lock
 local-mode-cache
 chef_guid
 nodes
+
+# Terraform
+.terraform
+.terraform.*
+*.tfstate
+*.tfstate.*
+
+# Packer
+packer-manifest.json
+packer-manifest.json.lock
+
+# Python
+*.pyc

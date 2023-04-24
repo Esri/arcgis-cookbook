@@ -1,0 +1,50 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "url": "https://localhost:6443/arcgis",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>"
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "setup_options": "ADDLOCAL=relational",
+            "types": "relational",
+            "configure_autostart": false
+        },
+        "misc": {
+            "scripts_dir": "C:\\Temp\\Scripts"
+        },
+        "egdb": {
+            "engine": "postgres",
+            "endpoint": "",
+            "keycodes": "C:\\Program Files\\ESRI\\License11.1\\sysgen\\keycodes",
+            "postgresbin": "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
+            "master_username": "esrirdsadmin",
+            "master_password": "<master_password>",
+            "db_password": "<db_password>",
+            "connection_files_dir": "C:\\Temp\\ConnectionFiles",
+            "data_items": [
+                {
+                    "database": "egdb",
+                    "data_item_path": "/enterpriseDatabases/postgresRDS",
+                    "connection_file": "C:\\Temp\\ConnectionFiles\\postgres_rds_egdb.sde",
+                    "is_managed": false,
+                    "connection_type": "shared"
+                }
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-enterprise::stop_datastore]",
+        "recipe[arcgis-egdb]"
+    ]
+}

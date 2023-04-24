@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-repository
 # Attributes:: default
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,8 +45,12 @@ default['arcgis']['repository'].tap do |repository|
   # AWS access keys are required to download files form ArcGIS software repository S3 buckets
   repository['server']['aws_access_key'] = nil
   repository['server']['aws_secret_access_key'] = nil
+  # AWS CLI v2 URLs
+  repository['server']['aws_cli_msi_url'] = 'https://awscli.amazonaws.com/AWSCLIV2.msi'
+  repository['server']['aws_cli_zip_url'] = 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip'
 
   repository['patch_notification']['url'] = 'https://downloads.esri.com/patch_notification/patches.json'
   repository['patch_notification']['versions'] = [node['arcgis']['version']]
   repository['patch_notification']['products'] = []
 end
+

@@ -4,7 +4,7 @@ maintainer_email 'contracts@esri.com'
 license          'Apache-2.0'
 description      'Downloads ArcGIS software setups from remote to local repositories'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '4.0.0'
+version          '4.1.0'
 chef_version     '>= 14.0' if defined? chef_version
 
 depends 's3_file', '~> 2.8'
@@ -17,6 +17,7 @@ supports 'redhat'
 supports 'centos'
 supports 'suse'
 
+recipe 'arcgis-repository::aws_cli', 'Downloads and installs AWS CLI on the machine.'
 recipe 'arcgis-repository::default', 'Downloads files from remote ArcGIS software repository to local repository.'
 recipe 'arcgis-repository::files', 'Downloads files from ArcGIS software repository.'
 recipe 'arcgis-repository::fileserver', 'Creates repository directory and a network share for it.'
