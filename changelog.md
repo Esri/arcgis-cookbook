@@ -11,6 +11,15 @@ order: 6
 
 Changes made in each version of the Chef Cookbooks for ArcGIS.
 
+## 4.1.0
+
+- Added support for ArcGIS Enterprise 11.1.
+- Added support for ArcGIS Pro 3.0.3/3.1.
+- Added support for ArcGIS Insights 2022.3.
+- Added support for ArcGIS License Manager 2022.1.
+- Improved handling of sensitive attributes.
+- Added ability to define the UID and GID for arcgis user on linux systems.
+  
 ## 4.0.0
 
 - Added support for ArcGIS Enterprise 11.0.
