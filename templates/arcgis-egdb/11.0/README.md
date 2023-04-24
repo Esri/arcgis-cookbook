@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-egdb template"
 category: templates
 item: arcgis-egdb
-version: 11.0
-latest: true
+version: "11.0"
+latest: false
 ---
 
 # arcgis-egdb Deployment Template

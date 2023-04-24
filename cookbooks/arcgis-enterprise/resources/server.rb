@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: server
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,29 +33,29 @@ attribute :install_dir, :kind_of => String
 attribute :install_environment, :kind_of => [Hash, nil], :default => nil
 attribute :python_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :server_admin_url, :kind_of => String
 attribute :wa_url, :kind_of => String
 attribute :primary_server_url, :kind_of => String
 attribute :keystore_file, :kind_of => [String, nil]
-attribute :keystore_password, :kind_of => [String, nil]
+attribute :keystore_password, :kind_of => [String, nil], :sensitive => true
 attribute :cert_alias, :kind_of => String
 attribute :root_cert, :kind_of => String
 attribute :root_cert_alias, :kind_of => String
 attribute :cluster, :kind_of => String
 attribute :server_id, :kind_of => String
-attribute :secret_key, :kind_of => String
+attribute :secret_key, :kind_of => String, :sensitive => true
 attribute :portal_url, :kind_of => String
 attribute :portal_username, :kind_of => String
-attribute :portal_password, :kind_of => String
+attribute :portal_password, :kind_of => String, :sensitive => true
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :server_directories_root, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
 attribute :config_store_connection_secret, :kind_of => String
-attribute :config_store_type, :kind_of => String
+attribute :config_store_type, :kind_of => String, :default => 'FILESYSTEM'
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :data_item, :kind_of => Hash

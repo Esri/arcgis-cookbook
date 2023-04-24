@@ -71,6 +71,7 @@ template ::File.join(node['arcgis']['misc']['scripts_dir'],
 end
 
 execute 'Create EGDB in SQL Server' do
+  sensitive true
   command ['PowerShell.exe', '-file',
            "\"#{::File.join(node['arcgis']['misc']['scripts_dir'],
                             'RDS_Creation.ps1')}\"",

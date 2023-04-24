@@ -57,6 +57,19 @@ arcgis_workflow_manager_server 'Setup ArcGIS Workflow Manager Server' do
   action :install
 end
 
+arcgis_workflow_manager_server 'Stop ArcGIS Workflow Manager Server' do
+  action :stop
+end
+
+arcgis_workflow_manager_server 'Update WorkflowManager.conf' do
+  run_as_user node['arcgis']['run_as_user']
+  enabled_modules node['arcgis']['workflow_manager_server']['enabled_modules']
+  disabled_modules node['arcgis']['workflow_manager_server']['disabled_modules']
+  not_if { node['arcgis']['workflow_manager_server']['enabled_modules'].nil? && 
+           node['arcgis']['workflow_manager_server']['disabled_modules'].nil? }
+  action :configure
+end
+
 arcgis_workflow_manager_server 'Configure workflowmanager service' do
   install_dir node['arcgis']['server']['install_dir']
   action :configure_autostart

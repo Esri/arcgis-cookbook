@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: portal
 #
-# Copyright 2015 Esri
+# Copyright 2015-2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ action :install do
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 28800 })
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd, [ @new_resource.run_as_password ])
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\" #{@new_resource.setup_options}"
@@ -222,17 +222,19 @@ end
 
 action :update_account do
   if node['platform'] == 'windows'
-    configureserviceaccount = ::File.join(@new_resource.install_dir,
-                                          'tools', 'ConfigUtility',
-                                          'configureserviceaccount.bat')
-    run_as_password = @new_resource.run_as_password.gsub("&", "^&")
-    args = "/username \"#{@new_resource.run_as_user}\" "\
-           "/password \"#{run_as_password}\""
+    if Utils.sc_logon_account('Portal for ArcGIS') != @new_resource.run_as_user
+      configureserviceaccount = ::File.join(@new_resource.install_dir,
+                                            'tools', 'ConfigUtility',
+                                            'configureserviceaccount.bat')
+      run_as_password = @new_resource.run_as_password.gsub("&", "^&")
+      args = "--username \"#{@new_resource.run_as_user}\" "\
+             "--password \"#{run_as_password}\""
 
-    cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{configureserviceaccount}\" #{args}\"",
-                               {:timeout => 3600})
-    cmd.run_command
-    cmd.error!
+      cmd = Mixlib::ShellOut.new("cmd.exe /C \"\"#{configureserviceaccount}\" #{args}\"",
+                                {:timeout => 3600})
+      cmd.run_command
+      Utils.sensitive_command_error(cmd, [ run_as_password ])
+    end
 
     # Update logon account of the windows service directly in addition to running configureserviceaccount.bat
     Utils.sc_config('Portal for ArcGIS', @new_resource.run_as_user, @new_resource.run_as_password)
@@ -253,47 +255,24 @@ action :authorize do
 
   portal_admin_client.wait_until_available
 
-  if portal_admin_client.is_user_type_licensing
-    # Validate user type license
-    license_info = portal_admin_client.validate_license(@new_resource.authorization_file)
+  # Validate user type license
+  license_info = portal_admin_client.validate_license(@new_resource.authorization_file)
 
-    # if license_info['MyEsri']['version'] != @new_resource.authorization_file_version
-    #   throw "Authorization file version '#{license_info['MyEsri']['version']}' does not match ArcGIS version '#{@new_resource.authorization_file_version}'."
-    # end
+  # if license_info['MyEsri']['version'] != @new_resource.authorization_file_version
+  #   throw "Authorization file version '#{license_info['MyEsri']['version']}' does not match ArcGIS version '#{@new_resource.authorization_file_version}'."
+  # end
 
-    # user_type = license_info['MyEsri']['definitions']['userTypes'].detect { |u| u['id'] == @new_resource.user_license_type_id }
+  # user_type = license_info['MyEsri']['definitions']['userTypes'].detect { |u| u['id'] == @new_resource.user_license_type_id }
 
-    # if (user_type == nil)
-    #   throw "Unrecognized user license type id '#{@new_resource.user_license_type_id}'."
-    # end
+  # if (user_type == nil)
+  #   throw "Unrecognized user license type id '#{@new_resource.user_license_type_id}'."
+  # end
 
-    # if (user_type['level'] != '2')
-    #   throw "The specified user license type id '#{@new_resource.user_license_type_id}' is invalid. The user license type for your Initial Administrator must have Level 2 capabilities."
-    # end
+  # if (user_type['level'] != '2')
+  #   throw "The specified user license type id '#{@new_resource.user_license_type_id}' is invalid. The user license type for your Initial Administrator must have Level 2 capabilities."
+  # end
 
-    new_resource.updated_by_last_action(false)
-  else
-    # Authorize Portal
-    cmd = node['arcgis']['portal']['authorization_tool']
-
-    if node['platform'] == 'windows'
-      args = "/VER #{@new_resource.authorization_file_version} "\
-             "/LIF \"#{@new_resource.authorization_file}\" /S"
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600} )
-      cmd.run_command
-      cmd.error!
-    else
-      args = "-f \"#{@new_resource.authorization_file}\""
-
-      cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
-            { :user => node['arcgis']['run_as_user'], :timeout => 600 })
-      cmd.run_command
-      cmd.error!
-    end
-
-    new_resource.updated_by_last_action(true)
-  end
+  new_resource.updated_by_last_action(false)
 end
 
 action :create_site do
@@ -314,23 +293,17 @@ action :create_site do
       break if !Utils.url_available?(@new_resource.portal_url + '/portaladmin')
       sleep(1.0)
     end
+  end
 
-    portal_admin_client.wait_until_available
+  portal_admin_client.wait_until_available
 
+  if portal_admin_client.site_exist? && portal_admin_client.post_upgrade_required? 
     begin
       portal_admin_client.post_upgrade()
     rescue Exception => e
       Chef::Log.error 'Portal post upgrade failed. ' + e.message
       raise e
     end
-
-    # portal_admin_client.wait_until_available
-
-    # begin
-    #   portal_admin_client.reindex()
-    # rescue Exception => e
-    #   Chef::Log.error 'Portal content reindex failed. ' + e.message
-    # end
 
     # Wait for portal to restart after post upgrade
     sleep(60.0)

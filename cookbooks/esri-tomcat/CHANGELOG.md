@@ -4,6 +4,16 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.2.1
+-----
+
+- Added new attributes to control tomcat user and group creation.
+
+0.2.0
+-----
+
+- Updated HTTPS connector in server.xml.
+
 0.1.9
 -----
 - Added support for Apache Tomcat 9.

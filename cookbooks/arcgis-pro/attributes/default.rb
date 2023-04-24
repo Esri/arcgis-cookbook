@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '3.0'
+    pro['version'] = '3.1'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -46,6 +46,14 @@ default['arcgis']['pro'].tap do |pro|
     default['ms_dotnet']['version'] = '6.0.5'
 
     case node['arcgis']['pro']['version']
+    when '3.1'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_31_184994.exe').gsub('/', '\\')
+      pro['product_code'] = '{A61AD307-865F-429F-B2A3-5618BD333F7E}' 
+    when '3.0.3'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_303_184244.exe').gsub('/', '\\')
+      pro['product_code'] = '{690B606E-8A38-4CB9-B088-241F60A86072}' 
     when '3.0'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_30_182209.exe').gsub('/', '\\')

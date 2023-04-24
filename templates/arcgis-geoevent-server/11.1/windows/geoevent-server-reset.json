@@ -1,0 +1,12 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-geoevent::admin_reset]"
+    ]
+}

@@ -20,7 +20,7 @@
 actions :configure_https
 
 attribute :keystore_file, :kind_of => String
-attribute :keystore_password, :kind_of => String
+attribute :keystore_password, :kind_of => String, :sensitive => true
 attribute :web_site, :kind_of => String, :default => 'Default Web Site'
 attribute :replace_https_binding, :kind_of => [TrueClass, FalseClass], :default => false
 

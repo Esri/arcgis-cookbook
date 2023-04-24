@@ -1,0 +1,21 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Mission_Server_Linux_111_185324.tar.gz": {
+                    "subfolder": "software/arcgis/11.1"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

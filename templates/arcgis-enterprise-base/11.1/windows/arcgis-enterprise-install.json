@@ -1,0 +1,50 @@
+{
+  "arcgis": {
+    "version": "11.1",
+    "run_as_user": "arcgis", 
+    "run_as_password": "<run_as_password>",
+    "configure_windows_firewall": true,
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+      "install_system_requirements": true,
+      "wa_name": "server"
+    },
+    "web_adaptor": {
+      "install_system_requirements": true,
+      "dotnet_setup_path": "C:\\Software\\Archives\\dotnet-hosting-6.0.9-win.exe",
+      "web_deploy_setup_path": "C:\\Software\\Archives\\WebDeploy_amd64_en-US.msi",
+      "admin_access": true,
+      "reindex_portal_content": false
+    },
+    "data_store": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+      "setup_options": "ADDLOCAL=relational,tilecache",
+      "data_dir": "C:\\arcgisdatastore",
+      "install_system_requirements": true,
+      "preferredidentifier": "hostname"
+    },
+    "portal": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+      "install_system_requirements": true,
+      "data_dir": "C:\\arcgisportal",
+      "wa_name": "portal"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[esri-iis::install]",
+    "recipe[arcgis-enterprise::install_portal]",
+    "recipe[arcgis-enterprise::start_portal]",
+    "recipe[arcgis-enterprise::webstyles]",
+    "recipe[arcgis-enterprise::install_portal_wa]",
+    "recipe[arcgis-enterprise::install_server]",
+    "recipe[arcgis-enterprise::start_server]",
+    "recipe[arcgis-enterprise::install_server_wa]",
+    "recipe[arcgis-enterprise::install_datastore]",
+    "recipe[arcgis-enterprise::start_datastore]"
+  ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: system
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,16 +31,24 @@ if platform?('windows')
     action :create
   end
 else
-  
   node['arcgis']['packages'].each do |package_install|
     package package_install
   end 
+
+  group node['arcgis']['run_as_user'] do
+    gid node['arcgis']['run_as_gid']
+    not_if "getent group #{node['arcgis']['run_as_user']}"
+    action :create
+  end
 
   user node['arcgis']['run_as_user'] do
     comment 'ArcGIS user account'
     manage_home true
     home '/home/' + node['arcgis']['run_as_user']
     shell '/bin/bash'
+    uid node['arcgis']['run_as_uid']
+    gid node['arcgis']['run_as_gid']
+    not_if "getent passwd #{node['arcgis']['run_as_user']}"
     action :create
   end
 
@@ -95,5 +103,16 @@ else
     only_if { ENV['arcgis_cloud_platform'] == 'aws' }
   end
 
+  # Remove comment from #/net in /etc/auto.master
+  file "/etc/auto.master" do
+    content lazy { IO.read("/etc/auto.master").gsub("#/net", "/net") }
+    only_if { node['arcgis']['configure_autofs'] }
+  end
+
+  service 'autofs' do
+    only_if { node['arcgis']['configure_autofs'] }
+    action [:enable, :reload, :restart]
+  end
 end
+
 include_recipe 'arcgis-enterprise::hosts'

@@ -47,7 +47,7 @@ default['arcgis']['mission_server'].tap do |mission_server|
 
   mission_server['admin_username'] = 'siteadmin'
   if ENV['ARCGIS_MISSION_SERVER_ADMIN_PASSWORD'].nil?
-    mission_server['admin_password'] = 'change.it'
+    mission_server['admin_password'] = nil
   else
     mission_server['admin_password'] = ENV['ARCGIS_MISSION_SERVER_ADMIN_PASSWORD']
   end
@@ -86,6 +86,10 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '11.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_111_185264.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{C8723ED4-272B-43B5-88D6-98F484DFFF09}'
     when '11.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_110_182935.exe').gsub('/', '\\')
@@ -149,13 +153,14 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '11.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_111_185324.tar.gz')
+      # Setup archives of 11.0 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
+      # subfolder of final archives. Remove the line below for the final setup archive.                                                    
     when '11.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_110_183045.tar.gz')
-      # Setup archives of 11.0 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
-      # subfolder of final archives. Remove the line below for the final setup archive.                                                    
-      # mission_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],	node['arcgis']['version'],
-      #                                       'MissionServer_Linux', 'Setup')
     when '10.9.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_1091_180227.tar.gz')

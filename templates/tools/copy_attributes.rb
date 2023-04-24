@@ -23,17 +23,28 @@ class Attributes
   ]
 
   # Recursively updates values of dst attributes using values of src attributes.
-  def self.copy(src, dst, prefix = '')
-    dst.each do |key, value|
+  def self.copy(src, dst, add_new, prefix = '')
+    src.each do |key, value|
       key_path = prefix + '.' + key
       unless @ignored.include? key_path
         if (value.class == Hash) && (!@complex.include? key_path)
-          # Call Attributes.copy recursively.
-          copy src[key], value, key_path
-        elsif !src[key].nil? && (value != src[key])
+          if !dst[key].nil? || add_new
+            # Call Attributes.copy recursively.
+            if dst[key].nil?
+              dst[key] = {}
+            end  
+            copy value, dst[key], add_new, key_path
+          end
+        elsif value != dst[key]
           # Copy the modified value from src to dst attribute.
-          dst[key] = src[key]
-          puts "#{key_path} -> #{src[key].to_json}"
+          if !dst[key].nil? || add_new 
+            dst[key] = value
+            if key_path.include?('password')
+              puts "#{key_path} -> \"*****\""
+            else
+              puts "#{key_path} -> #{value.to_json}"
+            end
+          end
         end
       end
     end
@@ -42,12 +53,13 @@ end
 
 if ARGV.length < 2
   puts 'Copies attributes from source to destination JSON file.'
-  puts 'Only attributes defined in the destination JSON file are copied.'
-  puts 'Usage: chef-apply copy_attributes.rb <source file> <destination file>'
+  puts 'Usage: chef-apply copy_attributes.rb <source file> <destination file> [(false|true)]'
+  puts 'If the last parametr is not set or set to false, only attributes defined in the destination JSON file are copied.'
   exit 1
 else
   src_file = ARGV[1]
   dst_file = ARGV[2]
+  add_new = ARGV.length > 2 && ARGV[3] == 'true' ? true : false
 
   unless ::File.exist?(src_file)
     puts "File '#{src_file}' does not exist."
@@ -62,7 +74,7 @@ else
   src_attrs = JSON.parse(::File.read(src_file))
   dst_attrs = JSON.parse(::File.read(dst_file))
 
-  Attributes.copy src_attrs, dst_attrs
+  Attributes.copy src_attrs, dst_attrs, add_new
 
   ::File.write dst_file, JSON.pretty_generate(dst_attrs)
 

@@ -47,7 +47,7 @@ default['arcgis']['server'].tap do |server|
   server['web_context_url'] = "https://#{server_domain_name}/#{server_wa_name}"
   server['admin_username'] = 'admin'
   if ENV['ARCGIS_SERVER_ADMIN_PASSWORD'].nil?
-    server['admin_password'] = 'changeit'
+    server['admin_password'] = nil
   else
     server['admin_password'] = ENV['ARCGIS_SERVER_ADMIN_PASSWORD']
   end
@@ -56,7 +56,7 @@ default['arcgis']['server'].tap do |server|
   server['data_items'] = []
   server['keystore_file'] = ''
   if ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD'].nil?
-    server['keystore_password'] = ''
+    server['keystore_password'] = nil
   else
     server['keystore_password'] = ENV['ARCGIS_SERVER_KEYSTORE_PASSWORD']
   end
@@ -127,6 +127,14 @@ default['arcgis']['server'].tap do |server|
     server['local_directories_root'] = 'C:\\arcgisserver'
 
     case node['arcgis']['version']
+    when '11.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_111_185208.exe').gsub('/', '\\')
+      server['product_code'] = '{0F6C2D4F-9D41-4D25-A8AF-51E328D7CD8F}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        node['arcgis']['server']['install_dir'], 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.1\\Updates'        
     when '11.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_110_182874.exe').gsub('/', '\\')
@@ -214,6 +222,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_111_185292.tar.gz')
     when '11.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_110_182973.tar.gz')

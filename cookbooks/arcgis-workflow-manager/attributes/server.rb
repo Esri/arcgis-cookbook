@@ -28,6 +28,12 @@ default['arcgis']['workflow_manager_server'].tap do |server|
 
   server['patches'] = []
 
+  server['distributed_data_provider'] = false
+  server['enabled_modules'] = node['arcgis']['workflow_manager_server']['distributed_data_provider'] ? 
+                              'esri.workflow.utils.inject.DistributedDataProvider' :  nil
+  server['disabled_modules'] = node['arcgis']['workflow_manager_server']['distributed_data_provider'] ? 
+                               'esri.workflow.utils.inject.LocalDataProvider' : nil
+
   case node['platform']
   when 'windows'
     server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -35,6 +41,14 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   'WorkflowManagerServer', 'Setup.exe')
 
     case node['arcgis']['version']
+    when '11.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_111_185267.exe').gsub('/', '\\')
+      server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                    'ArcGIS ' + node['arcgis']['version'],
+                                    'ArcGISWorkflowManagerServer', 'Setup.exe')
+      server['product_code'] = '{BCCADE20-4363-4D62-AE55-BB51329210CF}'
+      server['patch_registry'] ='SOFTWARE\\ESRI\\workflowmanager\\Server\\11.1\\Updates'
     when '11.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_110_182937.exe').gsub('/', '\\')
@@ -66,6 +80,12 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   node['arcgis']['version'],
                                   'WorkflowManagerServer', 'Setup.sh')
     case node['arcgis']['version']
+    when '11.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_111_185325.tar.gz')
+      server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                    node['arcgis']['version'],
+                                    'ArcGISWorkflowManagerServer', 'Setup.sh')
     when '11.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_110_183046.tar.gz')

@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the arcgis-notebooks cookbook.
 
+# 4.1.0
+
+- Added support for ArcGIS Notebook Server 11.1.
+
 # 4.0.0
 
 - Added support for ArcGIS Notebook Server 11.0.

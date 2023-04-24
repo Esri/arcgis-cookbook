@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "mission_server": {
+            "patches": [
+                "ArcGIS-111-MS-*.tar",
+                "ArcGIS-111-MS-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-mission::install_patches]"
+    ]
+}

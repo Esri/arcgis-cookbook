@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-workflow-manager
 # Resource:: server
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,19 +18,21 @@
 #
 
 actions :system, :unpack, :install, :uninstall, :authorize, 
-        :configure_autostart, :stop, :start
+        :configure_autostart, :stop, :start, :configure
 
 attribute :install_dir, :kind_of => String
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
 attribute :setup, :kind_of => String
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :ports, :kind_of => String
+attribute :enabled_modules, :kind_of => String
+attribute :disabled_modules, :kind_of => String
 
 def initialize(*args)
   super
@@ -38,6 +40,8 @@ def initialize(*args)
 end
 
 use_inline_resources if defined?(use_inline_resources)
+
+require 'fileutils'
 
 action :system do
   ports = @new_resource.ports
@@ -93,7 +97,7 @@ action :install do
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd, [ @new_resource.run_as_password ])
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes"
@@ -108,6 +112,44 @@ action :install do
     cmd.run_command
     cmd.error!
   end
+end
+
+# Set play.modules.disabled and play.modules.enabled properties in WorkflowManager.conf 
+action :configure do
+  if node['platform'] == 'windows'
+    workflowmanager_conf = ::File.join(ENV['ProgramData'], 'ESRI\\workflowmanager\\WorkflowManager.conf')
+  else
+    run_as_user = @new_resource.run_as_user
+    hostname = `uname -n`.strip
+    workflowmanager_conf = "/home/#{run_as_user}/.esri/WorkflowManager/#{hostname}/workflowManager.conf"
+  end
+
+  workflowmanager_conf_tmp = workflowmanager_conf + '.tmp'
+
+  open(workflowmanager_conf, 'r') do |src|
+    open(workflowmanager_conf_tmp, 'w') do |dst|
+      src.each_line do |line|
+        unless ((line.start_with?('play.modules.disabled') && !@new_resource.disabled_modules.nil?) || 
+                (line.start_with?('play.modules.enabled') && !@new_resource.enabled_modules.nil?)) 
+          dst.write(line)
+          unless line.end_with?("\n")
+            dst.write("\n")
+          end
+        end
+      end
+      
+      unless @new_resource.disabled_modules.nil?
+        dst.write("play.modules.disabled += \"#{@new_resource.disabled_modules}\"\n")
+      end
+
+      unless @new_resource.enabled_modules.nil?
+        dst.write("play.modules.enabled += \"#{@new_resource.enabled_modules}\"\n")
+      end
+    end
+  end
+  
+  FileUtils.mv(workflowmanager_conf_tmp, workflowmanager_conf)
+  FileUtils.chown(@new_resource.run_as_user, nil, workflowmanager_conf)
 end
 
 action :uninstall do

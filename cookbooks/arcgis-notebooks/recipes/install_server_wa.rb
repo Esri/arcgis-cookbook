@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: install_server_wa
 #
-# Copyright 2019 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+arcgis_enterprise_webadaptor 'Install System Requirements for ArcGIS Web Adaptor' do
+  only_if { node['arcgis']['web_adaptor']['install_system_requirements'] }
+  action :system
+end
 
 arcgis_enterprise_webadaptor 'Unpack ArcGIS Web Adaptor' do
   setup_archive node['arcgis']['web_adaptor']['setup_archive']

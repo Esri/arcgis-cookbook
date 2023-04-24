@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-mission-server template"
 category: templates
 item: arcgis-mission-server
-version: 11.0
-latest: true
+version: "11.0"
+latest: false
 ---
 
 # arcgis-mission-server Deployment Template

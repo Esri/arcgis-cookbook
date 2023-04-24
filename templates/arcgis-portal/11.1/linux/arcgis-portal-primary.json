@@ -1,0 +1,39 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "admin_email": "admin@mydomain.com",
+            "admin_full_name": "Administrator",
+            "admin_description": "Initial account administrator",
+            "security_question": "Your favorite ice cream flavor?",
+            "security_question_answer": "bacon",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "log_level": "WARNING",
+            "content_store_type": "fileStore",
+            "content_store_provider": "FileSystem",
+            "content_store_connection_string": "/net/FILESERVER/gisdata/arcgisportal/content",
+            "object_store": "",
+            "authorization_file": "/opt/software/authorization_files/11.1/portal.json",
+            "user_license_type_id": "",
+            "install_system_requirements": true,
+            "system_properties": {
+                "privatePortalURL": "https://domain.com:7443/arcgis",
+                "WebContextURL": "https://domain.com/portal"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal]"
+    ]
+}

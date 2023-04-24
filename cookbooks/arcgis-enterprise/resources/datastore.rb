@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: datastore
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ attribute :backup_dir, :kind_of => String
 attribute :types, :kind_of => String, :default => 'tileCache,relational'
 attribute :mode, :kind_of => String
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :store, :kind_of => String, :default => 'relational'
 attribute :backup_type, :kind_of => String, :default => 'fs'
 attribute :backup_location, :kind_of => String

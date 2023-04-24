@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-tomcat
 # Recipe:: install
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,13 @@ tomcat_install instance_name do
   verify_checksum node['tomcat']['verify_checksum']
   tomcat_user node['tomcat']['user']
   tomcat_group node['tomcat']['group']
+  create_user node['tomcat']['create_user']
+  create_group node['tomcat']['create_group']
+  tomcat_user_shell node['tomcat']['tomcat_user_shell']  
+  create_symlink node['tomcat']['create_symlink']  
+  symlink_path node['tomcat']['symlink_path'] 
+  exclude_manager true
+  exclude_hostmanager true 
   not_if { ::File.exist?(::File.join(node['tomcat']['install_path'], 'LICENSE')) }
 end
 

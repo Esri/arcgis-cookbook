@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: webadaptor
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-actions :unpack, :install, :uninstall, :deploy, :configure_with_server,
-        :configure_with_portal
+actions :system, :unpack, :install, :uninstall, :deploy,
+        :configure_with_server, :configure_with_portal
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -32,7 +32,7 @@ attribute :portal_url, :kind_of => String
 attribute :server_wa_url, :kind_of => String
 attribute :server_url, :kind_of => String
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :admin_access, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :mode, :kind_of => String, :default => 'server'
 attribute :setup_options, :kind_of => String, :default => ''

@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-webadaptor template"
 category: templates
 item: arcgis-webadaptor
-version: 11.0
-latest: true
+version: "11.0"
+latest: false
 ---
 
 # arcgis-webadaptor Deployment Template

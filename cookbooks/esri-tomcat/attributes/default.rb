@@ -4,13 +4,19 @@ default['tomcat']['instance_name'] = 'arcgis'
 default['tomcat']['install_path'] = '/opt/tomcat_' + node['tomcat']['instance_name'] + '_' + node['tomcat']['version']
 default['tomcat']['tarball_path'] = "#{Chef::Config['file_cache_path']}/apache-tomcat-#{node['tomcat']['version']}.tar.gz"
 
+default['tomcat']['create_symlink'] = true
+default['tomcat']['symlink_path'] = "/opt/tomcat_#{node['tomcat']['instance_name']}"
+
+default['tomcat']['tomcat_user_shell'] = '/bin/false'
+default['tomcat']['create_user'] = true
+default['tomcat']['create_group'] = true
 default['tomcat']['user'] = 'tomcat_' + node['tomcat']['instance_name']
 default['tomcat']['group'] = 'tomcat_' + node['tomcat']['instance_name']
 
 default['tomcat']['ssl_enabled_protocols'] = 'TLSv1.3,TLSv1.2'
 default['tomcat']['keystore_file']  = ''
 if ENV['TOMCAT_KEYSTORE_PASSWORD'].nil?
-  default['tomcat']['keystore_password']  = ''
+  default['tomcat']['keystore_password']  = nil
 else
   default['tomcat']['keystore_password']  = ENV['TOMCAT_KEYSTORE_PASSWORD']
 end

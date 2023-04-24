@@ -19,15 +19,18 @@
 include_attribute 'arcgis-repository'
 
 default['arcgis']['run_as_user'] = 'arcgis'
+default['arcgis']['run_as_uid'] = 1100
+default['arcgis']['run_as_gid'] = 1100
+
 if ENV['ARCGIS_RUN_AS_PASSWORD'].nil?
-  default['arcgis']['run_as_password'] = 'Pa$$w0rdPa$$w0rd'
+  default['arcgis']['run_as_password'] = nil
 else
   default['arcgis']['run_as_password'] = ENV['ARCGIS_RUN_AS_PASSWORD']
 end
 
 default['arcgis']['run_as_msa'] = false
 
-default['arcgis']['version'] = '11.0'
+default['arcgis']['version'] = '11.1'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
@@ -51,14 +54,22 @@ when 'windows'
   default['arcgis']['python']['install_dir'] = 'C:\\Python27'
   default['arcgis']['post_install_script'] = 'C:\\imageryscripts\\deploy.bat'
 else # node['platform'] == 'linux'
+  default['arcgis']['configure_autofs'] = true
+
   default['arcgis']['packages'] =
     case node['platform']
     when 'redhat', 'centos', 'amazon', 'oracle'
-      ['gettext']
+      node['arcgis']['configure_autofs'] ?
+        ['gettext', 'nfs-utils', 'autofs'] :
+        ['gettext']
     when 'suse'
-      ['gettext-runtime']
+      node['arcgis']['configure_autofs'] ?
+        ['gettext-runtime', 'autofs'] :
+        ['gettext-runtime']
     else
-      ['autofs', 'gettext-base']
+      node['arcgis']['configure_autofs'] ? 
+        ['gettext-base', 'libxrender1', 'libxtst6', 'libxi6', 'autofs'] :
+        ['gettext-base', 'libxrender1', 'libxtst6', 'libxi6']
     end
   if node['current_user'] != node['arcgis']['run_as_user']
     has_sudo_privilege = `id -u`

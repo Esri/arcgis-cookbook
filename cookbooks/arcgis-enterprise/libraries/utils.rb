@@ -1,5 +1,5 @@
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -161,9 +161,15 @@ module Utils
 
   def self.wa_instance(product_code)
     begin
-      key = Win32::Registry::HKEY_LOCAL_MACHINE.open(
-        'SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code,
-        ::Win32::Registry::KEY_READ | 0x100)
+      path = 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code
+
+      unless self.product_key_exists?(path)
+        # Registry key used by ArcGIS Web Adaptors before 11.1
+        path = 'SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' + product_code
+        return nil unless self.product_key_exists?(path)
+      end
+       
+      key = Win32::Registry::HKEY_LOCAL_MACHINE.open(path, ::Win32::Registry::KEY_READ | 0x100)
       install_location = Pathname.new(key['InstallLocation'])
       key.close()
       install_location.basename.to_s
@@ -177,6 +183,23 @@ module Utils
       return code if wa_instance(code) == instance
     end
     return nil
+  end
+
+  # Replaces passwords in the error message by '*****'.
+  def self.sensitive_command_error(cmd, passwords = [])
+    if cmd.error?
+      msg = "Expected process to exit with #{cmd.valid_exit_codes.inspect}, but received '#{cmd.exitstatus}'."
+      str = cmd.format_for_exception
+      
+      passwords.each do |password|
+        unless password.nil? || password.empty?
+          str.gsub!("\"#{password}\"", "\"*****\"")
+          str.gsub!("'#{password}'", "'*****'")
+        end
+      end
+
+      raise "#{msg}\n#{str}"
+    end
   end
 
   def self.retry_ShellOut(command, retries, retry_delay, hash = {})
@@ -260,6 +283,25 @@ module Utils
       break if self.directory_accessible?(dir, user, password)
       sleep(SLEEP_TIME)
     end
+  end
+
+  # Get windows service logon account
+  def self.sc_logon_account(service)
+    cmd = Mixlib::ShellOut.new("sc.exe qc \"#{service}\"")
+    cmd.run_command
+    cmd.error?
+
+    # Parse stdout lines to get SERVICE_START_NAME property value
+    cmd.stdout.each_line do |line|
+      tokens = line.split(':', -1)
+      if tokens.length() > 1 and tokens[0].strip == 'SERVICE_START_NAME'
+        logon_account = tokens[1].strip
+        logon_account.slice!('.\\')
+        return logon_account
+      end
+    end
+
+    return nil
   end
 
   # Update windows service logon account

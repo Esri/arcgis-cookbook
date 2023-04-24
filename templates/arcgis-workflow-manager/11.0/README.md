@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-workflow-manager template"
 category: templates
 item: arcgis-workflow-manager
-version: 11.0
-latest: true
+version: "11.0"
+latest: false
 ---
 
 # arcgis-workflow-manager Deployment Template

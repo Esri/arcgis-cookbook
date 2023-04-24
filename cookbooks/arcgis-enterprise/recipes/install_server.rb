@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: install_server
 #
-# Copyright 2018-2021 Esri
+# Copyright 2018-2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-if node['platform'] == 'windows'
-  arcgis_enterprise_server 'Update ArcGIS Server service logon account' do
-    install_dir node['arcgis']['server']['install_dir']
-    run_as_user node['arcgis']['run_as_user']
-    run_as_password node['arcgis']['run_as_password']
-    not_if { node['arcgis']['run_as_msa'] }
-    only_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
-    action :update_account
-  end
-end
 
 arcgis_enterprise_server "Install System Requirements:#{recipe_name}" do
   action :system

@@ -15,7 +15,6 @@ The arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or Postgr
 
 * Windows 8 (8.1)
 * Windows 10
-* Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019

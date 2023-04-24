@@ -1,0 +1,28 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "portal": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+            "install_system_requirements": true,
+            "primary_machine_url": "https://primary.com:7443",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "data_dir": "C:\\arcgisportal",
+            "log_dir": "C:\\arcgisportal\\logs"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal_standby]"
+    ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: datasources
 #
-# Copyright 2018 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ actions :create_ags_connection_file, :delete_ags_connection_file,
         :register_sde_files, :register_sde_files_from_folder
 
 attribute :admin_user, :kind_of => String
-attribute :admin_password, :kind_of => String
+attribute :admin_password, :kind_of => String, :sensitive => true
 attribute :folder, :kind_of => Hash
 attribute :authorize_arcgis_service_account, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :publish_with_alternative_path, :kind_of => [TrueClass, FalseClass], :default => false

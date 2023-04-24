@@ -4,11 +4,11 @@ maintainer_email 'contracts@esri.com'
 license 'Apache-2.0'
 description 'Installs/Configures ArcGIS Mission Server'
 long_description 'Installs/Configures ArcGIS Mission Server'
-version '4.0.0'
+version '4.1.0'
 chef_version '>= 14.0' if defined? chef_version
 
-depends          'arcgis-enterprise', '~> 4.0'
-depends          'arcgis-repository', '~> 4.0'
+depends          'arcgis-enterprise', '~> 4.1'
+depends          'arcgis-repository', '~> 4.1'
 
 supports         'ubuntu'
 supports         'redhat'

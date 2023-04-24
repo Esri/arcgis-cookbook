@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "fileserver": {
+            "directories": [
+                "/gisdata/arcgisserver",
+                "/gisdata/arcgisserver/rasterstore"
+            ],            
+            "shares": [
+                "/gisdata/arcgisserver"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}

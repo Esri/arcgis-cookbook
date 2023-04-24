@@ -50,7 +50,7 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
 
   notebook_server['admin_username'] = 'siteadmin'
   if ENV['ARCGIS_NOTEBOOK_SERVER_ADMIN_PASSWORD'].nil?
-    notebook_server['admin_password'] = 'change.it'
+    notebook_server['admin_password'] = nil
   else
     notebook_server['admin_password'] = ENV['ARCGIS_NOTEBOOK_SERVER_ADMIN_PASSWORD']
   end
@@ -182,6 +182,15 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['patches'] = []
 
     case node['arcgis']['version']
+    when '11.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_111_185323.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_111_185262.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_111_185263.tar.gz')
+      notebook_server['data_setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                          'ArcGIS_Notebook_Server_Samples_Data_Linux_111_185328.tar.gz')
     when '11.0'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_110_183044.tar.gz')

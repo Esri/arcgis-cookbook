@@ -3,7 +3,7 @@ layout: default
 title: "esri-tomcat cookbook"
 category: cookbooks
 item: esri-tomcat
-version: 0.2.0
+version: 0.2.1
 latest: true
 ---
 
@@ -38,6 +38,13 @@ The following cookbooks are required:
 * `node['tomcat']['verify_checksum']` = Verify checksum of downloaded Tomcat tarball. Default value is `true`.
 * `node['tomcat']['forward_ports']` = If set to `true`, default recipe includes the 'firewalld' or 'iptables' recipe. Default value is `true`.
 * `node['tomcat']['firewalld']['init_cmd']` = The firewalld initialization command. The default command is `firewall-cmd --zone=public --permanent --add-port=0-65535/tcp`.
+* `node['tomcat']['create_symlink']` = Create symlink at `node['tomcat']['symlink_path']` to `node['tomcat']['install_path']`. Default is `true`.
+* `node['tomcat']['symlink_path']` = Full path to where the symlink will be created targeting `node['tomcat']['install_path']`. Default path is `/opt/tomcat_<instance name>`.
+* `node['tomcat']['tomcat_user_shell']` = Shell of the tomcat user. Default is `/bin/false`.
+* `node['tomcat']['create_user']` = Create the specified tomcat user within the OS. Default is `true`.
+* `node['tomcat']['create_group']` = Create the specified tomcat group within the OS. Default is `true`.
+* `node['tomcat']['user']` = User to run tomcat as. Default is `tomcat_<instance name>`.
+* `node['tomcat']['group']` = Group of the tomcat user. Default is `tomcat_<instance name>`.
 
 ### SSL/TLS
 
@@ -69,7 +76,7 @@ Configures the HTTPS listener in Apache Tomcat application server.
     "install_path" : "/opt/tomcat_arcgis_9.0.48",
     "keystore_type" : "PKCS12",
     "keystore_file" : "/tomcat_arcgis/conf/resources/sslcerts/sslcert.pfx",
-    "keystore_password": "change.it",
+    "keystore_password": "<password>",
     "domain_name": "domain.com",
     "ssl_enabled_protocols" : "TLSv1.2,TLSv1.1,TLSv1"
   },
@@ -95,7 +102,7 @@ Installs Apache Tomcat and configures the HTTPS listener. If the `node['tomcat']
     "install_path" : "/opt/tomcat_arcgis_9.0.48",
     "keystore_type" : "PKCS12",
     "keystore_file" : "/tomcat_arcgis/conf/resources/sslcerts/sslcert.pfx",
-    "keystore_password": "change.it",
+    "keystore_password": "<password>",
     "domain_name": "domain.com",
     "ssl_enabled_protocols" : "TLSv1.2,TLSv1.1,TLSv1",
     "tarball_path": "/opt/software/archives/apache-tomcat-9.0.48.tar.gz",

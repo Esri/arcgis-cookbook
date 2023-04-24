@@ -1,0 +1,28 @@
+{
+    "arcgis": {
+        "version": "11.1",
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "ArcGIS_Web_Adaptor_Java_Linux_111_185233.tar.gz": {
+                    "subfolder": "11.1/setups"
+                },
+                "apache-tomcat-9.0.48.tar.gz": {
+                    "subfolder": "11.1/thirdparty"
+                },
+                "openjdk-11_linux-x64_bin.tar.gz": {
+                  "subfolder": "11.1/thirdparty"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

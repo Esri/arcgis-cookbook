@@ -3,8 +3,8 @@ layout: default
 title: "arcgis-portal template"
 category: templates
 item: arcgis-portal
-version: 11.0
-latest: true
+version: "11.0"
+latest: false
 ---
 
 # arcgis-portal Deployment Template

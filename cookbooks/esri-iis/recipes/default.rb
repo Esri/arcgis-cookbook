@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-iis
 # Recipe:: default
 #
-# Copyright 2021 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,9 @@ end
 ruby_block 'Convert to PKCS12' do
   block do
     pfx_file = node['arcgis']['iis']['keystore_file']
-    keystore_pass = node['arcgis']['iis']['keystore_password']
+    keystore_pass = node['arcgis']['iis']['keystore_password'].nil? ? 
+                    node['arcgis']['iis']['domain_name'] :
+                    node['arcgis']['iis']['keystore_password']
     cert_file = pfx_file.gsub(/\.pfx/, '.pem')
     key_file = pfx_file.gsub(/\.pfx/, '.key')
 
@@ -52,7 +54,9 @@ end
 
 esri_iis_iis 'Configure HTTPS Binding' do
   keystore_file node['arcgis']['iis']['keystore_file']
-  keystore_password node['arcgis']['iis']['keystore_password']
+  keystore_password node['arcgis']['iis']['keystore_password'].nil? ? 
+                    node['arcgis']['iis']['domain_name'] :
+                    node['arcgis']['iis']['keystore_password']
   web_site node['arcgis']['iis']['web_site']
   replace_https_binding node['arcgis']['iis']['replace_https_binding']
   action :configure_https

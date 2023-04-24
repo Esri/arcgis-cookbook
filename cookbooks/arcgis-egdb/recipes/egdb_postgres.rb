@@ -69,6 +69,7 @@ end
 execute 'Create EGDB in PostgreSQL' do
   cwd node['arcgis']['misc']['scripts_dir']
   live_stream true
+  sensitive true
   if node['platform'] == 'windows'
     command [::File.join(node['arcgis']['misc']['scripts_dir'],'RDS_postgres.bat'),
              node['arcgis']['egdb']['endpoint'],

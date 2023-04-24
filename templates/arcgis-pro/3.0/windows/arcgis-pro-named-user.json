@@ -9,7 +9,7 @@
       "allusers": 1,
       "software_class": "Professional",
       "authorization_type": "NAMED_USER",
-      "authorization_file_version": "11.0",
+      "authorization_file_version": "11.1",
       "portal_list": "https://www.arcgis.com/",
       "blockaddins": "0",
       "lock_auth_settings": false,

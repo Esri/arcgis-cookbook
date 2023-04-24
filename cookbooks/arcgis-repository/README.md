@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-repository cookbook"
 category: cookbooks
 item: arcgis-repository
-version: 4.0.0
+version: 4.1.0
 latest: true
 ---
 
@@ -13,19 +13,17 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 
 ## Supported ArcGIS versions
 
-* 10.7
-* 10.7.1
 * 10.8
 * 10.8.1
 * 10.9
 * 10.9.1
 * 11.0
+* 11.1
 
 ## Platforms
 
 * Windows 8 (8.1)
 * Windows 10
-* Windows Server 2008 (R2)
 * Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
@@ -61,6 +59,18 @@ The following cookbooks are required:
 
 ## Recipes
 
+### aws_cli
+
+Downloads and installs AWS CLI on the machine.
+
+```
+{
+  "run_list": [
+    "recipe[arcgis-repository::aws_cli]"
+  ]
+}
+```
+
 ### default
 
 Calls arcgis-repository::files recipe.
@@ -84,7 +94,9 @@ Attributes used by the recipe:
       },
       "files": {
         "<file name>": {
-          "subfolder": "<folder>"
+          "subfolder": "<folder>",
+          "md5": "<MD5 checksum>",
+          "sha256": "<SHA256 checksum>"
         }
       }
     }
@@ -122,7 +134,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "10.9.1",
+    "version": "11.1",
     "repository": {
       "local_patches": "C:\\Software\\Archives\\Patches",
       "patch_notification": {
@@ -170,7 +182,7 @@ Attributes used by the recipe:
 
 Downloads files from the ArcGIS software repository in S3 to the local repository specified by the node['arcgis']['repository']['local_archives'] attribute.
 
-The s3files2 recipe requires AWS Tools for PowerShell to be installed on Windows machines and AWS Command Line Interface to be installed on Linux machines.
+The s3files2 recipe invokes arcgis-repository::aws_cli recipe to install AWS CLI on the machine.
 
 Attributes used by the recipe:
 

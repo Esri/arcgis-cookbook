@@ -1,5 +1,5 @@
 #
-# Copyright 2015 Esri
+# Copyright 2022 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -94,37 +94,84 @@ module ArcGIS
       false
     end
 
-    def complete_upgrade(is_backup_required, is_rollback_required, license_file)
+    def poll_upgrade_status(auth = false)
+      upgrade_uri = URI.parse(@portal_url + '/portaladmin/upgrade')
+
+      if auth
+        token = generate_token(@generate_token_url)
+        upgrade_uri.query = URI.encode_www_form('token' => token, 'f' => 'json')
+      else
+        upgrade_uri.query = URI.encode_www_form('f' => 'json')
+      end
+
+      request = Net::HTTP::Get.new(upgrade_uri.request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request)
+
+      validate_response(response)
+
+      response
+    end
+
+    def complete_upgrade(is_backup_required, is_rollback_required, license_file, enable_debug = false)
       if upgrade_required?
         Chef::Log.info("Completing portal upgrade...")
 
         upgrade_uri = URI.parse(@portal_url + '/portaladmin/upgrade')
 
-        if is_user_type_licensing
-          request = Net::HTTP::Post::Multipart.new(
-            upgrade_uri.path,
-            'isBackupRequired' => is_backup_required,
-            'isRollbackRequired' => is_rollback_required,
-            'isReindexRequired' => true,
-            'file' => UploadIO.new(File.new(license_file),
-                                   'application/json',
-                                   File.basename(license_file)),
-            'f' => 'json'
-          )
-        else
-          request = Net::HTTP::Post.new(upgrade_uri.request_uri)
-          request.set_form_data('f' => 'json',
-                                'isBackupRequired' => is_backup_required,
-                                'isRollbackRequired' => is_rollback_required)
-        end
+        request = Net::HTTP::Post::Multipart.new(
+          upgrade_uri.path,
+          'isBackupRequired' => is_backup_required,
+          'isRollbackRequired' => is_rollback_required,
+          'isReindexRequired' => true,
+          'file' => UploadIO.new(File.new(license_file),
+                                  'application/json',
+                                  File.basename(license_file)),
+          'async' => true,
+          'enableDebug' => enable_debug,
+          'f' => 'json'
+        )
 
         response = send_request(request)
-
         validate_response(response)
+        upgrade_status = JSON.parse(response.body)
 
-        Chef::Log.info('Portal upgrade completed successfully.')
+        while upgrade_status['status'] == 'in progress'
+          sleep(5.0)
+          response = poll_upgrade_status(false)
+          validate_response(response)
+          upgrade_status = JSON.parse(response.body)
+        end
 
-        return true
+        unless upgrade_status['stages'].nil?
+          # Log upgrade stages
+          upgrade_status['stages'].each do |stage|
+            Chef::Log.info("#{stage['name']}: #{stage['state']}")
+          end
+        end
+
+        unless upgrade_status['warnings'].nil?
+          # Log upgrade warnings
+          upgrade_status['warnings'].each do |warning|
+            Chef::Log.warn(warning)
+          end
+        end
+
+        messages = upgrade_status['messages'].nil? ? '' : upgrade_status['messages'].join(' ')
+
+        if upgrade_status['status'] == 'success' || upgrade_status['status'] == 'success with warnings'
+          unless upgrade_status['upgradeFromVersion'].nil? || upgrade_status['upgradeToVersion'].nil?
+            Chef::Log.info("Portal upgrade from #{upgrade_status['upgradeFromVersion']} to #{upgrade_status['upgradeToVersion']} completed successfully.")
+          else
+            Chef::Log.info("Portal upgrade completed successfully.")
+          end
+
+          return true
+        else
+          raise "Portal upgrade failed. #{messages}"
+        end
       end
 
       return false
@@ -222,37 +269,23 @@ module ArcGIS
                     license_file)
       create_site_uri = URI.parse(@portal_url + '/portaladmin/createNewSite')
 
-      if is_user_type_licensing
-        request = Net::HTTP::Post::Multipart.new(
-          create_site_uri.path,
-          'username' => @admin_username,
-          'password' => @admin_password,
-          'email' => admin_email,
-          'fullname' => admin_full_name,
-          'description' => admin_description,
-          'securityQuestion' => security_question,
-          'securityQuestionAns' => security_question_answer,
-          'contentStore' => content_store,
-          'userLicenseTypeId' => user_license_type_id,
-          'file' => UploadIO.new(File.new(license_file),
-                                 'application/json',
-                                 File.basename(license_file)),
-          'f' => 'json')
-      else
-        request = Net::HTTP::Post.new(create_site_uri.request_uri)
+      request = Net::HTTP::Post::Multipart.new(
+        create_site_uri.path,
+        'username' => @admin_username,
+        'password' => @admin_password,
+        'email' => admin_email,
+        'fullname' => admin_full_name,
+        'description' => admin_description,
+        'securityQuestion' => security_question,
+        'securityQuestionAns' => security_question_answer,
+        'contentStore' => content_store,
+        'userLicenseTypeId' => user_license_type_id,
+        'file' => UploadIO.new(File.new(license_file),
+                                'application/json',
+                                File.basename(license_file)),
+        'f' => 'json')
 
-        request.set_form_data('username' => @admin_username,
-                              'password' => @admin_password,
-                              'email' => admin_email,
-                              'fullname' => admin_full_name,
-                              'description' => admin_description,
-                              'securityQuestion' => security_question,
-                              'securityQuestionAns' => security_question_answer,
-                              'contentStore' => content_store,
-                              'f' => 'json')
-      end
-
-      response = send_request(request)
+      response = send_request(request, true)
 
       validate_response(response)
     end
@@ -267,7 +300,7 @@ module ArcGIS
                             'machineAdminUrl' => machine_admin_url,
                             'f' => 'json')
 
-      response = send_request(request)
+      response = send_request(request, true)
 
       validate_response(response)
     end
@@ -385,7 +418,7 @@ module ArcGIS
 
       request.add_field('Referer', 'referer')
 
-      response = send_request(request)
+      response = send_request(request, true)
 
       if response.code.to_i == 200
         error_info = JSON.parse(response.body)
@@ -526,7 +559,7 @@ module ArcGIS
                             'password' => password,
                             'f' => 'json')
 
-      response = send_request(request)
+      response = send_request(request, true)
 
       validate_response(response)
 
@@ -669,7 +702,7 @@ module ArcGIS
                             'expiration' => '600',
                             'f' => 'json')
 
-      response = send_request(request)
+      response = send_request(request, true)
 
       validate_response(response)
 
@@ -818,25 +851,23 @@ module ArcGIS
     end
 
     def populate_license
-      if is_user_type_licensing
-        request = Net::HTTP::Post.new(URI.parse(@portal_url + '/portaladmin/license/populateLicense').request_uri)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url + '/portaladmin/license/populateLicense').request_uri)
 
-        request.add_field('Referer', 'referer')
+      request.add_field('Referer', 'referer')
 
-        token = generate_token(@generate_token_url)
+      token = generate_token(@generate_token_url)
 
-        request.set_form_data('token' => token,
-                              'f' => 'json')
+      request.set_form_data('token' => token,
+                            'f' => 'json')
 
-        response = send_request(request)
+      response = send_request(request)
 
-        validate_response(response)
-      end
+      validate_response(response)
     end
 
     private
 
-    def send_request(request)
+    def send_request(request, sensitive = false)
       uri = URI.parse(@portal_url)
 
       http = Net::HTTP.new(uri.host, uri.port)
@@ -849,7 +880,11 @@ module ArcGIS
 
       Chef::Log.debug("Request: #{request.method} #{uri.scheme}://#{uri.host}:#{uri.port}#{request.path}")
 
-      Chef::Log.debug(request.body) unless request.body.nil?
+      if sensitive
+        Chef::Log.debug("Request body was not logged because it contains sensitive information.") 
+      else
+        Chef::Log.debug(request.body) unless request.body.nil?
+      end
 
       response = http.request(request)
 

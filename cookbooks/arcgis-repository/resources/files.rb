@@ -23,6 +23,8 @@ attribute :server, kind_of: Hash, default: {}
 attribute :files, kind_of: Hash, default: {}
 attribute :local_archives, kind_of: String
 
+require "digest"
+
 def initialize(*args)
   super
   @action = :download
@@ -45,8 +47,10 @@ action :download do
     )
   end
 
+  Chef::Log.info("Downloading files from #{@new_resource.server['url']}...")
+
   @new_resource.files.each do |file, props|
-    Chef::Log.debug("Downloading #{file}.")
+    Chef::Log.debug("Downloading '#{file}'.")
 
     if props['url'].nil?
       url = downloads_service.generate_url(file, props['subfolder'], token)
@@ -60,15 +64,22 @@ action :download do
       Downloader.download(url, path)
     end
 
-    # Download the remote file
-    # remote_file file do
-    #   path path
-    #   source url
-    #   mode '0755' if node['platform'] != 'windows'
-    #   backup false
-    #   # checksum props['checksum']
-    #   not_if { ::File.exist?(path) }
-    #   action :create
-    # end
+    size = ::File.size(path)
+    sha256 = Digest::SHA256.file(path).hexdigest    
+
+    Chef::Log.info("'#{file}' downloaded. Size = #{size}, SHA256 checksum = #{sha256}")
+
+    if props['sha256'] != nil && props['sha256'].casecmp(sha256) != 0
+      ::File.delete(path)
+      raise "SHA256 checksum validation failed for file '#{file}'."
+    end
+
+    if props['md5'] != nil
+      md5 = Digest::MD5.file(path).hexdigest
+      if props['md5'].casecmp(md5) != 0
+        ::File.delete(path)
+        raise "MD5 checksum validation failed for file '#{file}'."
+      end
+    end
   end
 end

@@ -24,6 +24,48 @@ require 'json'
 
 use_inline_resources
 
+action :system do
+  if node['platform'] == 'windows'
+    unless node['arcgis']['web_adaptor']['dotnet_setup_path'].nil?
+      directory ::File.dirname(node['arcgis']['web_adaptor']['dotnet_setup_path']) do
+        recursive true
+        not_if { ::File.exist?(::File.dirname(node['arcgis']['web_adaptor']['dotnet_setup_path'])) }
+        action :create
+      end
+
+      remote_file node['arcgis']['web_adaptor']['dotnet_setup_path'] do
+        source node['arcgis']['web_adaptor']['dotnet_setup_url']
+        not_if { ::File.exist?(node['arcgis']['web_adaptor']['dotnet_setup_path']) }
+      end
+
+      windows_package 'ASP.NET Core Runtime Hosting Bundle' do
+        source node['arcgis']['web_adaptor']['dotnet_setup_path']
+        installer_type :custom
+        options '/Q'
+        returns [0, 3010, 1638]
+      end
+    end
+
+    unless node['arcgis']['web_adaptor']['web_deploy_setup_path'].nil?
+      directory ::File.dirname(node['arcgis']['web_adaptor']['web_deploy_setup_path']) do
+        recursive true
+        not_if { ::File.exist?(::File.dirname(node['arcgis']['web_adaptor']['web_deploy_setup_path'])) }        
+        action :create
+      end
+
+      remote_file node['arcgis']['web_adaptor']['web_deploy_setup_path'] do
+        source node['arcgis']['web_adaptor']['web_deploy_setup_url']
+        not_if { ::File.exist?(node['arcgis']['web_adaptor']['web_deploy_setup_path']) }
+      end
+
+      windows_package 'Web Deploy' do
+        source node['arcgis']['web_adaptor']['web_deploy_setup_path']
+        returns [0, 3010, 1638]
+      end
+    end
+  end
+end
+
 action :unpack do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup_archive
@@ -61,7 +103,7 @@ action :install do
       # deleted by the uninstall.
       Utils.retry_ShellOut('net stop W3SVC /yes', 5, 60, {:timeout => 3600})
 
-      cmd = Mixlib::ShellOut.new("msiexec /qn /x #{installed_code}", {:timeout => 3600})
+      cmd = Mixlib::ShellOut.new("msiexec /qn /x #{installed_code}", {:timeout => 3600, :returns => [0, 1641]})
       cmd.run_command
       cmd.error!
 
@@ -106,7 +148,7 @@ action :uninstall do
     cmd = 'msiexec'
     args = "/qn /x #{@new_resource.product_code}"
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600})
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 3600, :returns => [0, 1641]})
     cmd.run_command
     cmd.error!
   else
@@ -162,13 +204,12 @@ action :configure_with_server do
     Utils.wait_until_url_available(server_url)
 
     if node['platform'] == 'windows'
-      cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-          node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
+      cmd = node['arcgis']['web_adaptor']['config_web_adaptor_exe']
       args = "/m #{@new_resource.mode} /w \"#{wa_url}\" /g \"#{server_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\" /a #{@new_resource.admin_access}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", {:timeout => 600})
       cmd.run_command
-      cmd.error!
+      Utils.sensitive_command_error(cmd, [ @new_resource.password ])
     else
       cmd = 'java'
       wareg_jar_path = ::File.join(@new_resource.install_dir,
@@ -178,7 +219,7 @@ action :configure_with_server do
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command
-      cmd.error!
+      Utils.sensitive_command_error(cmd, [ @new_resource.password ])
     end
 
     new_resource.updated_by_last_action(true)
@@ -199,8 +240,7 @@ action :configure_with_portal do
     Utils.wait_until_url_available(wa_url)
 
     if node['platform'] == 'windows'
-      cmd = ::File.join(ENV['CommonProgramFiles(x86)'],
-                        node['arcgis']['web_adaptor']['config_web_adaptor_exe'])
+      cmd = node['arcgis']['web_adaptor']['config_web_adaptor_exe']
       args = "/m portal /w \"#{wa_url}\" /g \"#{portal_url}\" /u \"#{@new_resource.username}\" /p \"#{@new_resource.password}\""
 
       args += ' /r false' unless @new_resource.reindex_portal_content
@@ -214,7 +254,7 @@ action :configure_with_portal do
         sleep(600.0)
         Utils.wait_until_url_available(wa_url)
       else
-        cmd.error!
+        Utils.sensitive_command_error(cmd, [ @new_resource.password ])
       end
     else
       cmd = 'java'
@@ -234,7 +274,7 @@ action :configure_with_portal do
         sleep(600.0)
         Utils.wait_until_url_available(wa_url)
       else
-        cmd.error!
+        Utils.sensitive_command_error(cmd, [ @new_resource.password ])
       end
     end
 

@@ -27,13 +27,13 @@ attribute :setup, :kind_of => String
 attribute :docker_images, :kind_of => String
 attribute :install_dir, :kind_of => String
 attribute :run_as_user, :kind_of => String
-attribute :run_as_password, :kind_of => String
+attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :product_code, :kind_of => String
 attribute :username, :kind_of => String
-attribute :password, :kind_of => String
+attribute :password, :kind_of => String, :sensitive => true
 attribute :server_directories_root, :kind_of => String
 attribute :config_store_type, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
@@ -120,7 +120,7 @@ action :install do
 
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
-    cmd.error!
+    Utils.sensitive_command_error(cmd, [ @new_resource.run_as_password ])
   else
     cmd = @new_resource.setup
     args = "-m silent -l yes -d \"#{@new_resource.install_dir}\""
