@@ -53,7 +53,7 @@ Cookbook Version | ArcGIS Desktop | ArcGIS License Manager | Supported Chef Clie
 
 Cookbook Version | ArcGIS Pro | Supported Chef Client Versions | Recommended Chef Client Version |Recommended Cinc Client Version
 :---: | --- | :---: | :---: |:---: |
-4.1.0 | 3.0.3, 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 14.0 | 16.16.13 | 16.16.13
+4.1.0 | 3.1, 3.0.3, 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 14.0 | 16.16.13 | 16.16.13
 4.0.0 | 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 14.0 | 16.16.13 | 16.16.13
 3.8.0 | 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 13.0 | 16.16.13 | 16.16.13
 3.7.0 | 2.7, 2.6, 2.5, 2.4 | >= 13.0 | 15.14.0 | 15.14.0
