@@ -404,7 +404,7 @@ action :configure_backup_location do
 
   # At 10.8 tilecache backup location is no longer registered by default
   # therefore --operation register needs to be used.
-  if %w[tilecache spatiotemporal graph].include?(@new_resource.store) && Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8')
+  if %w[tilecache spatiotemporal graph].include?(@new_resource.store) && Gem::Version.new(node['arcgis']['version'].gsub(/\s+/, '-')) >= Gem::Version.new('10.8')
     operation = 'register'
   end
 
