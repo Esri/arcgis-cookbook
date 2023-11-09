@@ -54,7 +54,7 @@ end
 if ARGV.length < 2
   puts 'Copies attributes from source to destination JSON file.'
   puts 'Usage: chef-apply copy_attributes.rb <source file> <destination file> [(false|true)]'
-  puts 'If the last parametr is not set or set to false, only attributes defined in the destination JSON file are copied.'
+  puts 'If the last parameter is not set or set to false, only attributes defined in the destination JSON file are copied.'
   exit 1
 else
   src_file = ARGV[1]

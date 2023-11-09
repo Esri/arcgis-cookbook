@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Attributes:: default
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,8 +76,15 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                            'MissionServer', 'Setup.exe')
     mission_server['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\Mission').gsub('/', '\\')
     mission_server['install_subdir'] = ''
-    mission_server['authorization_tool'] = ::File.join(node['arcgis']['mission_server']['install_dir'],
-      'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
+
+    if node['arcgis']['mission_server']['install_dir'].nil?
+      mission_server_install_dir = mission_server['install_dir']
+    else
+      mission_server_install_dir = node['arcgis']['mission_server']['install_dir']
+    end
+
+    mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+      'tools\\SoftwareAuthorization\\SoftwareAuthorization.exe').gsub('/', '\\')
     mission_server['keycodes'] = ::File.join(ENV['ProgramW6432'],
       "ESRI\\License#{node['arcgis']['mission_server']['authorization_file_version']}\\sysgen\\keycodes").gsub('/', '\\')
 
@@ -86,33 +93,49 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '11.2'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_112_188286.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{5721BCA3-D4BB-42D3-A719-787D0B11F478}'
     when '11.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_111_185264.exe').gsub('/', '\\')
       mission_server['product_code'] = '{C8723ED4-272B-43B5-88D6-98F484DFFF09}'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     when '11.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_110_182935.exe').gsub('/', '\\')
       mission_server['product_code'] = '{1B27C0F2-81E9-4F1F-9506-46F937605674}'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     when '10.9.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_1091_180092.exe').gsub('/', '\\')
       mission_server['product_code'] = '{2BE7F20D-572A-4D3E-B989-DC9BDFFB75AA}'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     when '10.9'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_109_177824.exe').gsub('/', '\\')
       mission_server['product_code'] = '{94280A6F-6501-42CE-A627-FCE20B01A9D7}'
       mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     when '10.8.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_1081_175253.exe').gsub('/', '\\')
       mission_server['product_code'] = '{26F574C6-C9F8-487C-977A-A906AAA60136}'
       mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     when '10.8'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_108_172945.exe').gsub('/', '\\')
       mission_server['product_code'] = '{A1A58B32-2ADF-4EAD-AC84-BE97318CA569}'
       mission_server['ports'] = '20443,20300,20301,20302,20158,20159,20160'
+      mission_server['authorization_tool'] = ::File.join(mission_server_install_dir,
+                                                         'bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     else
       Chef::Log.warn 'Unsupported ArcGIS Mission Server version'
     end
@@ -153,11 +176,12 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '11.2'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_112_188361.tar.gz')
     when '11.1'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_111_185324.tar.gz')
-      # Setup archives of 11.0 daily builds have 'MissionServer_Linix' subfolder instead of 'MissionServer'
-      # subfolder of final archives. Remove the line below for the final setup archive.                                                    
     when '11.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_110_183045.tar.gz')

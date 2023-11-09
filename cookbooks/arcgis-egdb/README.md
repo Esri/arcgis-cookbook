@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-egdb cookbook"
 category: cookbooks
 item: arcgis-egdb
-version: 1.1.0
+version: 1.1.1
 latest: true
 ---
 

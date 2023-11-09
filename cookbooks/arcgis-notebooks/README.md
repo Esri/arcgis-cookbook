@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-notebooks cookbook"
 category: cookbooks
 item: arcgis-notebooks
-version: 4.1.0
+version: 4.2.0
 latest: true
 ---
 
@@ -19,6 +19,7 @@ This cookbook installs and configures ArcGIS Notebook Server.
 * 10.9.1
 * 11.0
 * 11.1
+* 11.2
 
 ## Supported ArcGIS software
 
@@ -51,16 +52,16 @@ The following cookbooks are required:
 * `node['arcgis']['notebook_server']['authorization_file_version']` = ArcGIS Notebook Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
 * `node['arcgis']['notebook_server']['license_level']` = License level of ArcGIS Notebook Server. Allowed values are `standard` and `advanced`. Default license level is `standard`.
 * `node['arcgis']['notebook_server']['install_dir']` = ArcGIS Notebook Server installation directory. By default, ArcGIS Notebook Server is installed to  `%ProgramW6432%\ArcGIS\NotebookServer` on Windows machines and to `/home/arcgis` on Linux machines.
-* `node['arcgis']['notebook_server']['directories_root']` = The root ArcGIS Notebook Server site's server directory location. The default value is `C:\arcgisnotebookserver\directories` on Windows and `/<ArcGIS Notebook Server install directory>/notebookserver/usr/directories` on Linux.
+* `node['arcgis']['notebook_server']['directories_root']` = The root ArcGIS Notebook Server site's server directory location. The default value is `C:\arcgisnotebookserver` on Windows and `/gisdata/notebookserver` on Linux.
 * `node['arcgis']['notebook_server']['config_store_type']` = The ArcGIS Notebook Server configuration store type `<FILESYSTEM|AMAZON|AZURE>`. Default value is `FILESYSTEM`.
-* `node['arcgis']['notebook_server']['config_store_connection_string']` = The configuration store location for the ArcGIS Notebook Server site. By default, the configuration store is created in the local directory `C:\arcgisnotebookserver\config-store` on Windows and `/<ArcGIS Notebook Server install directory>/usr/config-store` on Linux.
+* `node['arcgis']['notebook_server']['config_store_connection_string']` = The configuration store location for the ArcGIS Notebook Server site. By default, the configuration store is created in the local directory `C:\arcgisnotebookserver\config-store` on Windows and `/gisdata/notebookserver/config-store` on Linux.
 * `node['arcgis']['notebook_server']['config_store_class_name']` = The ArcGIS Notebook Server configuration store persistence class name. Default value is `com.esri.arcgis.carbon.persistence.impl.filesystem.FSConfigPersistence`.
 * `node['arcgis']['notebook_server']['log_level']` = ArcGIS Notebook Server log level. Default value is `WARNING`.
-* `node['arcgis']['notebook_server']['log_dir']` = ArcGIS Notebook Server log directory. Default value is `C:\arcgisnotebookserver\logs` on Windows and `/<ArcGIS Notebook Server install directory>/usr/logs` on Linux.
+* `node['arcgis']['notebook_server']['log_dir']` = ArcGIS Notebook Server log directory. Default value is `C:\arcgisnotebookserver\logs` on Windows and `/gisdata/notebookserver/logs` on Linux.
 * `node['arcgis']['notebook_server']['max_log_file_age']` = ArcGIS Notebook Server maximum log file age. Default value is `90`.
-* `node['arcgis']['notebook_server']['workspace']` = The workspace directory location. This must be a local path; if the site will have additional machines joined to it, a replication method must be set up between the workspace directories of each machine. By default, the workspace directory is set to `C:\arcgisnotebookserver\arcgisworkspace` on Windows and to `/<ArcGIS Notebook Server install directory>/usr/arcgisworkspace` on Linux.
+* `node['arcgis']['notebook_server']['workspace']` = The workspace directory location. This must be a local path; if the site will have additional machines joined to it, a replication method must be set up between the workspace directories of each machine. By default, the workspace directory is set to `C:\arcgisnotebookserver\arcgisworkspace` on Windows and to `/gisdata/notebookserver/directories/arcgisworkspace` on Linux.
 * `node['arcgis']['notebook_server']['setup_archive']` = Path to the ArcGIS Notebook Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['notebook_server']['setup']` = The location of the ArcGIS Notebook Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.1\NotebookServer\Setup.exe` on Windows and `/opt/arcgis/11.1/NotebookServer_Linux/Setup` on Linux.
+* `node['arcgis']['notebook_server']['setup']` = The location of the ArcGIS Notebook Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.2\NotebookServer\Setup.exe` on Windows and `/opt/arcgis/11.2/NotebookServer_Linux/Setup` on Linux.
 * `node['arcgis']['notebook_server']['standard_images']` = Standard Docker container images for notebooks. Default value depends on `node['arcgis']['version']` attribute value.
 * `node['arcgis']['notebook_server']['advanced_images']` = Advanced Docker container images for notebooks. Default value depends on `node['arcgis']['version']` attribute value.
 * `node['arcgis']['notebook_server']['configure_autostart']` = If set to true, on Linux ArcGIS Notebook Server is configured to start with the operating system. Default value is `true`.
@@ -73,7 +74,7 @@ The following cookbooks are required:
 * `node['arcgis']['notebook_server']['ports']` = Ports to open for Notebook Servier in the Windows firewall. Default is `11443`.
 * `node['arcgis']['notebook_server']['hostname']` = Host name or IP address of ArcGIS Notebook Server machine. Default value is  `''`.
 * `node['arcgis']['notebook_server']['system_properties']` = ArcGIS Notebook Server system properties. Default value is `{}`.
-* `node['arcgis']['notebook_server']['data_setup']` = The location of the ArcGIS Notebook Server Samples Data setup. Default location is `%USERPROFILE%\Documents\ArcGIS11.1\NotebookServerData\Setup.exe` on Windows and `/opt/arcgis/11.1/NotebookServerData_Linux/ArcGISNotebookServerSamplesData-Setup.sh` on Linux.
+* `node['arcgis']['notebook_server']['data_setup']` = The location of the ArcGIS Notebook Server Samples Data setup. Default location is `%USERPROFILE%\Documents\ArcGIS11.2\NotebookServerData\Setup.exe` on Windows and `/opt/arcgis/11.2/NotebookServerData_Linux/ArcGISNotebookServerSamplesData-Setup.sh` on Linux.
 * `node['arcgis']['notebook_server']['data_setup_archive']` = Path to the ArcGIS Notebook Server Samples Data setup archive. Default value depends on `node['arcgis']['version']` attribute value.
 * `node['arcgis']['notebook_server']['patches]` = File names of ArcGIS Notebook Server patches to install. Default value is `[]`.
   
@@ -135,7 +136,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "notebook_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Notebook_Server_Linux_110_183044.tar.gz",
@@ -167,7 +168,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"
@@ -231,7 +232,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "notebook_server": {
             "data_setup_archive": "/opt/software/esri/ArcGIS_Notebook_Server_Samples_Data_Linux_110_183049.tar.gz",
@@ -253,7 +254,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "notebook_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Notebook_Server_Linux_110_183044.tar.gz",
@@ -292,7 +293,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "notebook_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Notebook_Server_Linux_110_183044.tar.gz",
@@ -325,7 +326,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"
@@ -357,7 +358,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "notebook_server": {
             "install_dir": "/home/arcgis"
@@ -378,7 +379,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"

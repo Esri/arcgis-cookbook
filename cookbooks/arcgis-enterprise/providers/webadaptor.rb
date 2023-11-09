@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: webadaptor
 #
-# Copyright 2015 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ action :system do
 
       windows_package 'Web Deploy' do
         source node['arcgis']['web_adaptor']['web_deploy_setup_path']
-        returns [0, 3010, 1638]
+        returns [0, 3010, 1638, 1603]
       end
     end
   end
@@ -101,14 +101,14 @@ action :install do
       # Stop IIS before uninstalling ArcGIS Web Adaptor to make sure the all the
       # Web Adaptor's web apps files in C:\wwwroot directory are closed and
       # deleted by the uninstall.
-      Utils.retry_ShellOut('net stop W3SVC /yes', 5, 60, {:timeout => 3600})
+      Utils.stop_service('W3SVC')
 
       cmd = Mixlib::ShellOut.new("msiexec /qn /x #{installed_code}", {:timeout => 3600, :returns => [0, 1641]})
       cmd.run_command
       cmd.error!
 
       # Start IIS after ArcGIS Web Adaptor is uninstalled.
-      Utils.retry_ShellOut('net start W3SVC /yes', 5, 60, {:timeout => 3600})
+      Utils.start_service('W3SVC')
     end
 
     cmd = @new_resource.setup
@@ -211,11 +211,8 @@ action :configure_with_server do
       cmd.run_command
       Utils.sensitive_command_error(cmd, [ @new_resource.password ])
     else
-      cmd = 'java'
-      wareg_jar_path = ::File.join(@new_resource.install_dir,
-                                    node['arcgis']['web_adaptor']['install_subdir'],
-                                    'java/tools/arcgis-wareg.jar')
-      args = "-jar \"#{wareg_jar_path}\" -m #{@new_resource.mode} -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
+      cmd = node['arcgis']['web_adaptor']['config_web_adaptor_sh']
+      args = "-m #{@new_resource.mode} -w '#{wa_url}' -g '#{server_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}' -a #{@new_resource.admin_access}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command
@@ -257,12 +254,8 @@ action :configure_with_portal do
         Utils.sensitive_command_error(cmd, [ @new_resource.password ])
       end
     else
-      cmd = 'java'
-      wareg_jar_path = ::File.join(@new_resource.install_dir,
-                                    node['arcgis']['web_adaptor']['install_subdir'],
-                                    'java/tools/arcgis-wareg.jar')
-      args = "-jar \"#{wareg_jar_path}\" -m portal -w '#{wa_url}' -g '#{portal_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}'"
-
+      cmd = node['arcgis']['web_adaptor']['config_web_adaptor_sh']
+      args = "-m portal -w '#{wa_url}' -g '#{portal_url}' -u '#{@new_resource.username}' -p '#{@new_resource.password}'"
       args += ' -r false' unless @new_resource.reindex_portal_content
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })

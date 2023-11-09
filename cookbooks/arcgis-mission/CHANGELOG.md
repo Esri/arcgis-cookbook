@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the arcgis-mission cookbook.
 
+# 4.2.0
+
+- Added support for ArcGIS Mission Server 11.2.
+
 # 4.1.0
 
 - Added support for ArcGIS Mission Server 11.1.

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: default
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ else
 end
 
 default['arcgis']['run_as_msa'] = false
+default['arcgis']['run_as_user_auth_keys'] = nil
 
-default['arcgis']['version'] = '11.1'
+default['arcgis']['version'] = '11.2'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false
@@ -58,10 +59,14 @@ else # node['platform'] == 'linux'
 
   default['arcgis']['packages'] =
     case node['platform']
-    when 'redhat', 'centos', 'amazon', 'oracle'
+    when 'redhat', 'centos', 'amazon', 'oracle', 'rocky'
       node['arcgis']['configure_autofs'] ?
         ['gettext', 'nfs-utils', 'autofs'] :
         ['gettext']
+    when 'almalinux'
+      node['arcgis']['configure_autofs'] ?
+        ['gettext', 'glibc-langpack-en', 'nfs-utils', 'autofs'] :
+        ['gettext', 'glibc-langpack-en']
     when 'suse'
       node['arcgis']['configure_autofs'] ?
         ['gettext-runtime', 'autofs'] :
@@ -85,3 +90,4 @@ else # node['platform'] == 'linux'
 end
 
 default['arcgis']['python']['runtime_environment'] = ''
+default['arcgis']['clean_install_dirs'] = false # Delete install dirs in 'clean' recipe

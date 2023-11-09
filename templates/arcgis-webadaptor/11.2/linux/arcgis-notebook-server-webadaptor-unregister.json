@@ -1,0 +1,12 @@
+{
+  "arcgis": {
+    "version": "11.2",
+    "notebook_server": {
+      "admin_username": "<notebook_server_admin_username>",
+      "admin_password": "<notebook_server_admin_password>"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-notebooks::unregister_server_wa]"
+  ]
+}

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 default['arcgis']['licensemanager'].tap do |licensemanager|
-  licensemanager['version'] = '2022.1'
+  licensemanager['version'] = '2023.0'
 
   case node['platform']
   when 'windows'
@@ -28,6 +28,10 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
     case node['arcgis']['licensemanager']['version']
+    when '2023.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2023_0_187870.exe').gsub('/', '\\')
+      licensemanager['product_code'] = 'C5E546F7-5E07-4AAB-A367-15FF52D0C683'
     when '2022.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2022_1_184717.exe').gsub('/', '\\')
@@ -98,6 +102,12 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['licensemanager']['version']
 
     case node['arcgis']['licensemanager']['version']
+    when '2023.0'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2023_0_187909.tar.gz')
+      licensemanager['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                            node['arcgis']['licensemanager']['version'],
+                                            'Setup')
     when '2022.1'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Linux_2022_1_184756.tar.gz')

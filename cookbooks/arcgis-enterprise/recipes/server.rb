@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: server
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -145,6 +145,7 @@ arcgis_enterprise_server 'Set ArcGIS Server system properties' do
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
   system_properties node['arcgis']['server']['system_properties']
+  services_dir_enabled node['arcgis']['server']['services_dir_enabled']
   retries 5
   retry_delay 30
   action :set_system_properties
@@ -203,6 +204,8 @@ arcgis_enterprise_server 'Configure Security Protocol' do
   virtual_dirs_security_enabled node['arcgis']['server']['virtual_dirs_security_enabled']
   allow_direct_access node['arcgis']['server']['allow_direct_access']
   allowed_admin_access_ips node['arcgis']['server']['allowed_admin_access_ips']
+  https_protocols node['arcgis']['server']['https_protocols']
+  cipher_suites node['arcgis']['server']['cipher_suites']
   retries 5
   retry_delay 30
   action :configure_security_protocol

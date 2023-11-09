@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Attributes:: default
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
       'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
 
-    notebook_server['directories_root'] = 'C:\\arcgisnotebookserver\\directories'
+    notebook_server['directories_root'] = 'C:\\arcgisnotebookserver'
     notebook_server['config_store_connection_string'] = 'C:\\arcgisnotebookserver\\config-store'
     notebook_server['workspace'] = 'C:\\arcgisnotebookserver\\arcgisworkspace'
     notebook_server['log_dir'] = 'C:\\arcgisnotebookserver\\logs'
@@ -166,22 +166,23 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
                                               node['arcgis']['notebook_server']['authorization_file_version'] +
                                               '/sysgen/keycodes')
 
-    notebook_server['directories_root'] = ::File.join(notebook_server_install_dir,
-                                                      notebook_server_install_subdir,
-                                                      'usr', 'directories')
-    notebook_server['config_store_connection_string'] = ::File.join(notebook_server_install_dir,
-                                                                    notebook_server_install_subdir,
-                                                                    'usr', 'config-store')
-    notebook_server['workspace'] = ::File.join(notebook_server_install_dir,
-                                               notebook_server_install_subdir,
-                                               'usr', 'arcgisworkspace')
-    notebook_server['log_dir'] = ::File.join(notebook_server_install_dir,
-                                             notebook_server_install_subdir,
-                                             'usr', 'logs')
+    notebook_server['directories_root'] = '/gisdata/notebookserver'
+    notebook_server['config_store_connection_string'] = '/gisdata/notebookserver/config-store'
+    notebook_server['workspace'] = '/gisdata/notebookserver/directories/arcgisworkspace'
+    notebook_server['log_dir'] = '/gisdata/notebookserver/logs'
 
     notebook_server['patches'] = []
 
     case node['arcgis']['version']
+    when '11.2'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_112_188362.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_112_188288.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_112_188289.tar.gz')
+      notebook_server['data_setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                          'ArcGIS_Notebook_Server_Samples_Data_Linux_112_188367.tar.gz')
     when '11.1'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_111_185323.tar.gz')

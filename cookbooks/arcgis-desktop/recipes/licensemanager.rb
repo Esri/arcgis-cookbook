@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-desktop
 # Recipe:: licensemanager
 #
-# Copyright 2015 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,11 +40,10 @@ arcgis_desktop_licensemanager 'Install ArcGIS License Manager' do
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['licensemanager']['product_code']) }
   else
-    not_if { 
-      subdir = ::File.join(node['arcgis']['licensemanager']['install_dir'],
-                           node['arcgis']['licensemanager']['install_subdir'])
-      !::Dir.glob("#{subdir}/License*").empty? 
-    }
+    not_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                               node['hostname'],
+                                               node['arcgis']['licensemanager']['version'],
+                                               :LicenseManager) }
   end
   action :install
 end

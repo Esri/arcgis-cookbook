@@ -4,10 +4,10 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '4.1.0'
+version          '4.2.0'
 chef_version     '>= 14.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 4.1'
+depends          'arcgis-repository', '~> 4.2'
 depends          'hostsfile', '~> 3.0'
 depends          'limits', '~> 1.0'
 depends          'windows', '~> 5.3'
@@ -21,6 +21,8 @@ supports         'ubuntu'
 supports         'redhat'
 supports         'centos'
 supports         'oracle'
+supports         'rocky'
+supports         'almalinux'
 supports         'suse'
 
 recipe 'arcgis-enterprise::clean', 'Deletes local directories created by ArcGIS software'

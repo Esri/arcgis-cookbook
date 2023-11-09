@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: server
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,12 +73,15 @@ default['arcgis']['server'].tap do |server|
   server['pull_license'] = false
   server['soc_max_heap_size'] = 64
   server['protocol'] = 'HTTPS'
-  server['authentication_mode'] = 'ARCGIS_TOKEN'
-  server['authentication_tier'] = 'GIS_SERVER'
+  server['authentication_mode'] = ''
+  server['authentication_tier'] = ''
   server['hsts_enabled'] = false
   server['virtual_dirs_security_enabled'] = false
   server['allow_direct_access'] = true
   server['allowed_admin_access_ips'] = ''
+  server['https_protocols'] = ''
+  server['cipher_suites'] = ''
+
   server['ports'] = '1098,6006,6080,6099,6443'
   server['geoanalytics_ports'] = '7077,12181,12182,12190,56540-56545'
 
@@ -108,12 +111,12 @@ default['arcgis']['server'].tap do |server|
   # disable nodeagent plugins on aws ec2
   server['disable_nodeagent_plugins'] = true
 
+  server['services_dir_enabled'] = true
+
   server['patches'] = []
 
   case node['platform']
   when 'windows'
-    server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-                                               'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     server['authorization_file'] = ''
     server['keycodes'] = ::File.join(ENV['ProgramW6432'],
                                      "ESRI\\License#{node['arcgis']['server']['authorization_file_version']}\\sysgen\\keycodes").gsub('/', '\\')
@@ -124,55 +127,99 @@ default['arcgis']['server'].tap do |server|
     server['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\Server').gsub('/', '\\')
     server['install_subdir'] = ''
 
+    if node['arcgis']['server']['install_dir'].nil?
+      server_install_dir = server['install_dir']
+    else
+      server_install_dir = node['arcgis']['server']['install_dir']
+    end
+
     server['local_directories_root'] = 'C:\\arcgisserver'
+    server['authorization_tool'] = ::File.join(server_install_dir,
+                                               'tools\\SoftwareAuthorization',
+                                               'SoftwareAuthorization.exe').gsub('/', '\\')
+
+    server['configuration_utility'] = ::File.join(server_install_dir, 
+                                                  'framework\\runtime\\ArcGIS\\bin',
+                                                  'ServerConfigurationUtility.exe').gsub('/', '\\')    
 
     case node['arcgis']['version']
+    when '11.2'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_112_188239.exe').gsub('/', '\\')
+      server['product_code'] = '{4130E39E-FD8C-4DE0-AE91-AFEC71063B2D}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        server_install_dir, 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.2\\Updates'        
     when '11.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_111_185208.exe').gsub('/', '\\')
       server['product_code'] = '{0F6C2D4F-9D41-4D25-A8AF-51E328D7CD8F}'
       default['arcgis']['python']['runtime_environment'] = File.join(
-        node['arcgis']['server']['install_dir'], 
+        server_install_dir, 
         'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.1\\Updates'        
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server11.1\\Updates'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')    
+      server['configuration_utility'] = ::File.join(server_install_dir, 
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')    
     when '11.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_110_182874.exe').gsub('/', '\\')
       server['product_code'] = '{A14CF942-415B-461C-BE3C-5B37E34BC6AE}'
-      default['arcgis']['python']['runtime_environment'] = File.join(
-        node['arcgis']['server']['install_dir'], 
-        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.0\\Updates'        
+      default['arcgis']['python']['runtime_environment'] = File.join(server_install_dir, 
+                                                                     'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server11.0\\Updates'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
+      server['configuration_utility'] = ::File.join(server_install_dir,
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
     when '10.9.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1091_180041.exe').gsub('/', '\\')
       server['product_code'] = '{E4A5FD24-5C61-4846-B084-C7AD4BB1CF19}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.9").gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.9\\Updates'
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.9\\Updates'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
+      server['configuration_utility'] = ::File.join(server_install_dir,
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
     when '10.9'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_109_177775.exe').gsub('/', '\\')
       server['product_code'] = '{32A62D8E-BE72-4B28-AA0E-FE546D827240}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.9").gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.9\\Updates'
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.9\\Updates'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
+      server['configuration_utility'] = ::File.join(server_install_dir,
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
     when '10.8.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_1081_175203.exe').gsub('/', '\\')
       server['product_code'] = '{E9B85E31-4C31-4528-996B-F06E213F8BB3}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.8").gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.8\\Updates'
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.8\\Updates'
       server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
+      server['configuration_utility'] = ::File.join(server_install_dir,
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
     when '10.8'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
       server['product_code'] = '{458BF5FF-2DF8-426B-AEBC-BE4C47DB6B54}'
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.8").gsub('/', '\\')
-      server['patch_registry'] ='SOFTWARE\\ESRI\\Server10.8\\Updates'
+      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.8\\Updates'
       server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
+      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
+                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
+      server['configuration_utility'] = ::File.join(server_install_dir,
+                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
     else
       Chef::Log.warn "Unsupported ArcGIS Server version '#{node['arcgis']['version']}'."
     end
@@ -212,8 +259,8 @@ default['arcgis']['server'].tap do |server|
                                       '.ESRI_S_PATCH_LOG')
 
     server['authorization_file'] = ''
-    server['keycodes'] = ::File.join(node['arcgis']['server']['install_dir'], 
-                                     node['arcgis']['server']['install_subdir'], 
+    server['keycodes'] = ::File.join(server_install_dir, 
+                                     server_install_subdir, 
                                      'framework/runtime/.wine/drive_c/Program Files/ESRI/License' +
                                      node['arcgis']['server']['authorization_file_version'] + '/sysgen/keycodes')
     server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -222,6 +269,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.2'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_112_188327.tar.gz')
     when '11.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_111_185292.tar.gz')

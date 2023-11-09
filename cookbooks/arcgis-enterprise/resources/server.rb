@@ -63,6 +63,7 @@ attribute :data_item_path, :kind_of => String
 attribute :connection_string, :kind_of => String
 attribute :is_managed, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :system_properties, :kind_of => Hash, :default => {}
+attribute :services_dir_enabled, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
@@ -79,6 +80,8 @@ attribute :hsts_enabled, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :virtual_dirs_security_enabled, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :allow_direct_access, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :allowed_admin_access_ips, :kind_of => String, :default => ''
+attribute :https_protocols, :kind_of => String, :default => ''
+attribute :cipher_suites, :kind_of => String, :default => ''
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :authorization_options, :kind_of => String, :default => ''
 

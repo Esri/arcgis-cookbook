@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "version": "11.2",
+        "repository": {
+            "local_patches": "C:\\Software\\Archives\\Patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Server",
+                    "ArcGIS GeoEvent Server"
+                ]
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::patches]"
+    ]
+}
