@@ -3,7 +3,7 @@ layout: default
 title: "Get Started"
 category: overview
 item: get-started
-version: 4.1.0
+version: 4.2.0
 latest: true
 order: 2
 ---
@@ -44,7 +44,7 @@ $ curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 16
 
 ## Download Chef Cookbooks and Deployment Templates
 
-Download [arcgis-4.1.0-cookbooks.zip/tar.gz](https://github.com/Esri/arcgis-cookbook/releases/tag/v4.1.0) from Chef Cookbooks for ArcGIS [releases](https://github.com/Esri/arcgis-cookbook/releases) on GitHub to the machine and extract the contents of the archive to `/var/cinc` on Linux and `C:\cinc` on Windows.
+Download [arcgis-4.2.0-cookbooks.zip/tar.gz](https://github.com/Esri/arcgis-cookbook/releases/tag/v4.2.0) from Chef Cookbooks for ArcGIS [releases](https://github.com/Esri/arcgis-cookbook/releases) on GitHub to the machine and extract the contents of the archive to `/var/cinc` on Linux and `C:\cinc` on Windows.
 
 The archive contains ArcGIS-specific [Chef cookbooks]({{ site.baseurl }}/cookbooks.html), required third-party cookbooks, and [deployment templates]({{ site.baseurl }}/templates.html) for various ArcGIS configurations. The deployment templates located in 'templates' directory inside the archive provide template JSON files for different machine roles, ArcGIS software versions, and platforms.
 

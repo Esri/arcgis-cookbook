@@ -48,6 +48,16 @@ chef-solo -j filename.json --config-option cookbook_path=C:\chef\cookbooks
 
 > Note that the cookbooks archives in the arcgis-cookbook GitHub releases contain Chef cookbooks maintained by Esri and all the required dependent cookbooks, while the GitHub repository itself only contains Chef cookbooks maintained by Esri.
 
+### Cannot read from directory path '/gisdata/arcgisportal'
+
+```
+RuntimeError:
+    ------------
+    Cannot read from directory path '/gisdata/arcgisportal'. Please check that the location is valid and that the Portal service account has permissions to the location.
+```
+
+> Portal for ArcGIS content directory must exist before running arcgis-enterprise-primary.json. It can either be created manually or by using arcgis-enterprise-fileserver.json.
+
 ## Issues
 
 Found a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/Esri/arcgis-cookbook/issues).
