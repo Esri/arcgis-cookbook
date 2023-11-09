@@ -1,0 +1,38 @@
+{
+  "arcgis": {
+    "version": "11.2",
+    "run_as_user": "arcgis",
+    "run_as_password": "<run_as_password>",
+    "configure_windows_firewall": true,
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+      "install_system_requirements": true,
+      "admin_username": "<server_admin_username>",
+      "admin_password": "<server_admin_password>",
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.2\\Server.prvc",
+      "log_level": "WARNING",
+      "directories_root": "\\\\FILESERVER\\arcgisserver",
+      "log_dir": "C:\\arcgisserver\\logs",
+      "config_store_type": "FILESYSTEM",
+      "config_store_connection_string": "\\\\FILESERVER\\arcgisserver\\config-store",
+      "system_properties": {
+        "WebSocketContextURL":"wss://domain.com/wa_name",
+        "WebContextURL":"https://domain.com/wa_name"
+      }
+    },
+    "workflow_manager_server": {
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.2\\Workflow_Manager_Server.prvc",
+      "distributed_data_provider": true
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::disable_loopback_check]",
+    "recipe[arcgis-enterprise::server]",
+    "recipe[arcgis-workflow-manager::server]"
+  ]
+}

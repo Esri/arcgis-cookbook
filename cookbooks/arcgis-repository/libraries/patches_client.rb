@@ -46,7 +46,7 @@ module ArcGIS
           if versions.include?(version_patches['version'])
             version_patches['patches'].each do |patch|
               patch_products = patch['Products']
-              if products.empty? || products.include?(patch_products)
+              if products.empty? || products.any? { |product| patch_products.include?(product) }
                 patches.append(patch)
               end
             end

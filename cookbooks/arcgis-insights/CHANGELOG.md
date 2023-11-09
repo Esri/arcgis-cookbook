@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of the arcgis-insights cookbook.
 
+## 4.2.0
+- Added support for ArcGIS Insights 2023.1.
+
 ## 4.1.0
 - Added support for ArcGIS Insights 2022.3.
 

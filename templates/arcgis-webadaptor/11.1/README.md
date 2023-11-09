@@ -4,7 +4,7 @@ title: "arcgis-webadaptor template"
 category: templates
 item: arcgis-webadaptor
 version: "11.1"
-latest: true
+latest: false
 ---
 
 # arcgis-webadaptor Deployment Template

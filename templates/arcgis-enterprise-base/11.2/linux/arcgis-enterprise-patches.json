@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "11.2",
+        "repository": {
+            "local_patches": "/opt/software/archives/patches",
+            "patch_notification": {
+                "products": [
+                    "Portal for ArcGIS",
+                    "ArcGIS Server",
+                    "ArcGIS Data Store",
+                    "ArcGIS Web Adaptor (Java)"
+                ]
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::patches]"
+    ]
+}

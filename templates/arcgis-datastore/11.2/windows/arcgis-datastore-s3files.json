@@ -1,0 +1,22 @@
+{
+    "arcgis": {
+        "version": "11.2",
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "ArcGIS_DataStore_Windows_112_188252.exe": {
+                    "subfolder": "11.2/setups"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

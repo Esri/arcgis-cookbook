@@ -7,7 +7,7 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '1.1.1'
 chef_version '>= 14.0' if defined? chef_version
 
-depends    'arcgis-enterprise', '~> 4.1'
+depends    'arcgis-enterprise', '~> 4.2'
 
 supports   'windows'
 supports   'ubuntu'

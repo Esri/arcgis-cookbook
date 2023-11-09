@@ -3,6 +3,10 @@ arcgis-desktop cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-desktop cookbook.
 
+4.2.0
+-----
+- Added support for ArcGIS License Manager 2023.0
+
 4.1.0
 -----
 - Added support for ArcGIS License Manager 2022.1

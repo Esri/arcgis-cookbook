@@ -84,13 +84,18 @@ module ArcGIS
     def configure_datastore(stores, server_url, username, password, data_dir, mode = nil)
       args = "\"#{server_url}\" \"#{username}\" \"#{password}\" \"#{data_dir}\" --stores #{stores}"
 
-      # Only add --mode parameter for post 10.8.1 tilecache data stores
+      # Add --mode parameter for post 10.8.1 tilecache and object data stores 
       # if the last known status is not 'Upgrading'.
       if !mode.nil? && !mode.empty? &&
          Gem::Version.new(@version) >= Gem::Version.new('10.8.1') &&
          stores.downcase.include?('tilecache') &&
          last_known_status(data_dir) != 'Upgrading'
         args += " --mode #{mode}"
+      elsif !mode.nil? && !mode.empty? &&
+        stores.downcase.include?('object') &&
+        mode.downcase == 'cluster' &&
+        last_known_status(data_dir) != 'Upgrading'
+       args += " --mode cluster"
       end
 
       if @platform == 'windows'
@@ -253,6 +258,8 @@ module ArcGIS
         'tile cache'
       when 'spatiotemporal'
         'spatiotemporal'
+      when 'object'
+        'object'  
       else
         'undefined'
       end

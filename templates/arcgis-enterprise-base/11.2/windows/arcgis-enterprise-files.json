@@ -1,0 +1,39 @@
+{
+  "arcgis": {
+    "repository": {
+      "local_archives": "C:\\Software\\Archives",
+      "shared": false,
+      "server": {
+        "username": "<repository_username>",
+        "password": "<repository_password>"
+      },
+      "files": {
+        "ArcGIS_Server_Windows_112_188239.exe": {
+          "subfolder": "software/arcgis/11.2"
+        },
+        "Portal_for_ArcGIS_Windows_112_188250.exe": {
+          "subfolder": "software/arcgis/11.2"
+        },
+        "Portal_for_ArcGIS_Web_Styles_Windows_112_188251.exe": {
+          "subfolder": "software/arcgis/11.2"
+        },
+        "ArcGIS_DataStore_Windows_112_188252.exe": {
+          "subfolder": "software/arcgis/11.2"
+        },
+        "ArcGIS_Web_Adaptor_for_Microsoft_IIS_112_188253.exe": {
+          "subfolder": "software/arcgis/11.2"
+        },
+        "dotnet-hosting-6.0.9-win.exe": {
+          "url": "https://download.visualstudio.microsoft.com/download/pr/eaa3eab9-cc21-44b5-a4e4-af31ee73b9fa/d8ad75d525dec0a30b52adc990796b11/dotnet-hosting-6.0.9-win.exe"
+        },
+        "WebDeploy_amd64_en-US.msi": {
+          "url": "https://download.microsoft.com/download/0/1/D/01DC28EA-638C-4A22-A57B-4CEF97755C6C/WebDeploy_amd64_en-US.msi"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::fileserver]",
+    "recipe[arcgis-repository::files]"
+  ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: portal_standby
 #
-# Copyright 2018 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,6 +64,19 @@ arcgis_enterprise_portal 'Join Portal Site' do
   retries 5
   retry_delay 30
   action :join_site
+end
+
+arcgis_enterprise_portal 'Import Root Certificates' do
+  portal_url node['arcgis']['portal']['url']
+  username node['arcgis']['portal']['admin_username']
+  password node['arcgis']['portal']['admin_password']
+  root_cert node['arcgis']['portal']['root_cert']
+  root_cert_alias node['arcgis']['portal']['root_cert_alias']
+  not_if { node['arcgis']['portal']['root_cert'].empty? ||
+           node['arcgis']['portal']['root_cert_alias'].empty?}
+  retries 5
+  retry_delay 30
+  action :import_root_cert
 end
 
 arcgis_enterprise_portal 'Configure HTTPS' do

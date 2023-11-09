@@ -1,0 +1,24 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_GeoEvent_Server_112_188353.tar.gz": {
+                    "subfolder": "software/arcgis/11.2"
+                },                
+                "ArcGIS_Server_Linux_112_188327.tar.gz": {
+                    "subfolder": "software/arcgis/11.2"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

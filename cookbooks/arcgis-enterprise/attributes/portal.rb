@@ -95,8 +95,6 @@ default['arcgis']['portal'].tap do |portal|
   
   case node['platform']
   when 'windows'
-    portal['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-                                               'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
     portal['authorization_file'] = ''
     portal['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                   "ArcGIS #{node['arcgis']['version']}",
@@ -108,6 +106,10 @@ default['arcgis']['portal'].tap do |portal|
     portal['patch_registry'] ='SOFTWARE\\ESRI\\Portal for ArcGIS\\Updates'
 
     case node['arcgis']['version']
+    when '11.2'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_112_188250.exe').gsub('/', '\\')
+      portal['product_code'] = '{F03C23C1-1F2C-42D0-85C4-38F49B710035}'
     when '11.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_111_185219.exe').gsub('/', '\\')
@@ -157,9 +159,6 @@ default['arcgis']['portal'].tap do |portal|
     portal['stop_tool'] = ::File.join(portal_install_dir,
                                       portal_install_subdir,
                                       'stopportal.sh')
-    portal['authorization_tool'] = ::File.join(portal_install_dir,
-                                               portal_install_subdir,
-                                               'tools/authorizeSoftware')
     portal['data_dir'] = ::File.join(portal_install_dir,
                                      portal_install_subdir,
                                      'usr/arcgisportal')
@@ -174,6 +173,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.2'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_112_188338.tar.gz')
     when '11.1'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_111_185303.tar.gz')

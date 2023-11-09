@@ -43,10 +43,15 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
     case node['arcgis']['version']
+    when '11.2'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_112_188278.exe').gsub('/', '\\')
+      geoevent['product_code'] = '{7CBB01F9-90D3-42A6-99A8-70E773B5E8C5}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent11.2\Server\Updates'
     when '11.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_111_185251.exe').gsub('/', '\\')
-      geoevent['product_code'] = 'XXXXXX'
+      geoevent['product_code'] = '{475EA5B0-E454-4870-BB1F-AB81EDDEC2A7}'
       geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent11.1\Server\Updates'
     when '11.0'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -83,6 +88,9 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
     case node['arcgis']['version']
+    when '11.2'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_112_188353.tar.gz')
     when '11.1'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_111_185315.tar.gz')

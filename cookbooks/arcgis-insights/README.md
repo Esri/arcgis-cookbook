@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-insights cookbook"
 category: cookbooks
 item: arcgis-insights
-version: 4.1.0
+version: 4.2.0
 latest: true
 ---
 
@@ -26,6 +26,7 @@ This cookbook installs and configures ArcGIS Insights.
 * 2022.1.1
 * 2022.2
 * 2022.3
+* 2023.1
 
 ## Platforms
 
@@ -48,7 +49,7 @@ The following cookbooks are required:
 
 ## Attributes
 
-* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2022.3`
+* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2023.1`
 * `node['arcgis']['insights']['setup_archive']` = Path to the ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
 * `node['arcgis']['insights']['setup']` = The location of the ArcGIS Insights setup executable. Default location is `%USERPROFILE%\\Documents\\ArcGIS Insights 2022.3\\Insights\Setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['patches]` = File names of ArcGIS Insights patches to install. Default value is `[]`.

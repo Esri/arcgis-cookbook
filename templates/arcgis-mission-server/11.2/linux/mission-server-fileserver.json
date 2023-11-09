@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "11.2",
+        "run_as_user": "arcgis",
+        "fileserver": {
+            "directories": [
+                "/gisdata/arcgismissionserver"
+            ],
+            "shares": [
+                "/gisdata/arcgismissionserver"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}

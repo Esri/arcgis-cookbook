@@ -28,5 +28,6 @@ default['arcgis']['fileserver']['directories'] = [ node['arcgis']['server']['loc
                                                    node['arcgis']['data_store']['local_backup_dir'],
                                                    ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'tilecache'),
                                                    ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'relational'),
+                                                   ::File.join(node['arcgis']['data_store']['local_backup_dir'], 'object'),
                                                    ::File.expand_path("..", node['arcgis']['portal']['local_content_dir']),
                                                    node['arcgis']['portal']['local_content_dir']]

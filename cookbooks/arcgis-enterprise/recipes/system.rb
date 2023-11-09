@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: system
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,10 @@ if platform?('windows')
   end
 else
   node['arcgis']['packages'].each do |package_install|
-    package package_install
+    package package_install do
+      retries 5
+      retry_delay 60
+    end
   end 
 
   group node['arcgis']['run_as_user'] do
@@ -107,6 +110,23 @@ else
   file "/etc/auto.master" do
     content lazy { IO.read("/etc/auto.master").gsub("#/net", "/net") }
     only_if { node['arcgis']['configure_autofs'] }
+  end
+
+  directory '/home/' + node['arcgis']['run_as_user'] + '/.ssh' do
+    mode '0770'
+    owner node['arcgis']['run_as_user']
+    group node['arcgis']['run_as_user']
+    not_if { node['arcgis']['run_as_user_auth_keys'].nil? }
+    action :create
+  end
+
+  file '/home/' + node['arcgis']['run_as_user'] + '/.ssh/authorized_keys' do
+    content lazy { IO.read(node['arcgis']['run_as_user_auth_keys']) }
+    mode '0660'
+    owner node['arcgis']['run_as_user']
+    group node['arcgis']['run_as_user']
+    not_if { node['arcgis']['run_as_user_auth_keys'].nil? }
+    action :create
   end
 
   service 'autofs' do
