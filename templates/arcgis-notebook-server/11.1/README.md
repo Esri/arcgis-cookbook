@@ -4,7 +4,7 @@ title: "arcgis-notebook-server template"
 category: templates
 item: arcgis-notebook-server
 version: "11.1"
-latest: true
+latest: false
 ---
 
 # arcgis-notebook-server Deployment Template

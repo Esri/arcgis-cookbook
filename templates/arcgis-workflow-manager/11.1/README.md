@@ -4,7 +4,7 @@ title: "arcgis-workflow-manager template"
 category: templates
 item: arcgis-workflow-manager
 version: "11.1"
-latest: true
+latest: false
 ---
 
 # arcgis-workflow-manager Deployment Template

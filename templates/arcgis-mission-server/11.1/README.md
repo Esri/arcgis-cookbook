@@ -4,7 +4,7 @@ title: "arcgis-mission-server template"
 category: templates
 item: arcgis-mission-server
 version: "11.1"
-latest: true
+latest: false
 ---
 
 # arcgis-mission-server Deployment Template
