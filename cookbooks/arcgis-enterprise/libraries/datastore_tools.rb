@@ -87,7 +87,7 @@ module ArcGIS
       # Add --mode parameter for post 10.8.1 tilecache and object data stores 
       # if the last known status is not 'Upgrading'.
       if !mode.nil? && !mode.empty? &&
-         Gem::Version.new(@version) >= Gem::Version.new('10.8.1') &&
+         Gem::Version.new(@version.gsub(/\s+/, '-')) >= Gem::Version.new('10.8.1') &&
          stores.downcase.include?('tilecache') &&
          last_known_status(data_dir) != 'Upgrading'
         args += " --mode #{mode}"
