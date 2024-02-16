@@ -4,7 +4,7 @@ title: "arcgis-workflow-manager template"
 category: templates
 item: arcgis-workflow-manager
 version: "11.1"
-latest: true
+latest: false
 ---
 
 # arcgis-workflow-manager Deployment Template
@@ -89,6 +89,10 @@ chef-client -z -j workflow-manager-server-federation.json
 ```shell
 chef-client -z -j workflow-manager-server-node.json
 ```
+
+### ArcGIS Web Adaptor Machines
+
+If ArcGIS Web Adaptor is required, use arcgis-webadaptor deployment template to install and configure it before federating ArcGIS Workflow Manager Server with Portal for ArcGIS.
 
 ## Install ArcGIS Workflow Manager Server Patches and Updates
 

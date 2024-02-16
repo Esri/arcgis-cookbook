@@ -3,7 +3,7 @@ layout: default
 title: "esri-tomcat cookbook"
 category: cookbooks
 item: esri-tomcat
-version: 0.2.1
+version: 0.2.2
 latest: true
 ---
 
@@ -11,15 +11,14 @@ latest: true
 
 This cookbook installs and configures Apache Tomcat for use with ArcGIS Web Adaptor.
 
-Requirements
-------------
-
-## Platforms
+## Supported Platforms
 
 * Ubuntu Server 18.04 and 20.04 LTS
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
 * Oracle Linux 8
+* Rocky Linux 8
+* AlmaLinux 9
 
 ## Dependencies
 

@@ -1,0 +1,21 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "windowsdesktop-runtime-6.0.23-win-x64.exe": {
+                    "subfolder": "11.2/thirdparty"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

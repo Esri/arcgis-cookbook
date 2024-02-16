@@ -92,6 +92,10 @@ chef-client -z -j workflow-manager-server-federation.json
 chef-client -z -j workflow-manager-server-node.json
 ```
 
+### ArcGIS Web Adaptor Machines
+
+If ArcGIS Web Adaptor is required, use arcgis-webadaptor deployment template to install and configure it before federating ArcGIS Workflow Manager Server with Portal for ArcGIS.
+
 ## Install ArcGIS Workflow Manager Server Patches and Updates
 
 To install software patches and updates after the initial installation or upgrade of ArcGIS Workflow Manager Server, download ArcGIS Workflow Manager Server patches from the global ArcGIS software repository into a local patches folder:

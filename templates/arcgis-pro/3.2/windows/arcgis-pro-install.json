@@ -1,0 +1,19 @@
+{
+  "arcgis": {
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "pro": {
+      "version": "3.2",
+      "allusers": 1,
+      "portal_list": "https://www.arcgis.com/",
+      "blockaddins": "0",
+      "lock_auth_settings": false,
+      "install_dir": "C:\\Program Files\\ArcGIS\\Pro"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-pro::install_pro]"
+  ]
+}

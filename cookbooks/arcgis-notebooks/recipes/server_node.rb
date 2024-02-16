@@ -69,13 +69,6 @@ arcgis_notebooks_server 'Start ArcGIS Notebook Server' do
   action :start
 end
 
-directory node['arcgis']['notebook_server']['workspace'] do
-  owner node['arcgis']['run_as_user']
-  recursive true
-  only_if { node['platform'] == 'windows' }
-  action :create
-end
-
 # Create local server logs directory
 directory node['arcgis']['notebook_server']['log_dir'] do
   owner node['arcgis']['run_as_user']

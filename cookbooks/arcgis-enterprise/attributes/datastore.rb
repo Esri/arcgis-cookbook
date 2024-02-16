@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: datastore
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ default['arcgis']['data_store'].tap do |data_store|
   data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
-  data_store['ports'] = '2443,4369,9220,9320,9829,9876,9900,25672,44369,45671,45672,29079-29090'
+  data_store['ports'] = '2443,4369,9220,9320,9820,9829,9830,9840,9876,9900,25672,44369,45671,45672,29079-29090'
 
   data_store['patches'] = []
   
@@ -50,6 +50,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '11.2'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_112_188252.exe').gsub('/', '\\')
+      data_store['product_code'] = '{FE7F4A14-4D96-4B31-8937-BA19C0A92DDB}'
     when '11.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_111_185221.exe').gsub('/', '\\')
@@ -84,6 +88,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '11.2'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_112_188340.tar.gz')
     when '11.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_111_185305.tar.gz')
@@ -150,13 +157,16 @@ default['arcgis']['data_store'].tap do |data_store|
 
   data_store['relational']['backup_type'] = 'fs'
   data_store['tilecache']['backup_type'] = 'fs'
+  data_store['object']['backup_type'] = 'none'
 
   if node['arcgis']['data_store']['backup_dir'].nil?
     data_store['relational']['backup_location'] = ::File.join(data_store['backup_dir'], 'relational')
     data_store['tilecache']['backup_location'] = ::File.join(data_store['backup_dir'], 'tilecache')
+    data_store['object']['backup_location'] = ::File.join(data_store['backup_dir'], 'object')
   else
     data_store['relational']['backup_location'] = ::File.join(node['arcgis']['data_store']['backup_dir'], 'relational')
     data_store['tilecache']['backup_location'] = ::File.join(node['arcgis']['data_store']['backup_dir'], 'tilecache')
+    data_store['object']['backup_location'] = ::File.join(node['arcgis']['data_store']['backup_dir'], 'object')
   end
 
   data_store['setup_options'] = ''

@@ -4,6 +4,11 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.2.2
+-----
+
+- Added support for Rocky Linux and AlmaLinux platforms.
+
 0.2.1
 -----
 

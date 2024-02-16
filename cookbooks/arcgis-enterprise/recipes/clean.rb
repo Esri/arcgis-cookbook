@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: clean
 #
-# Copyright 2015 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,19 +30,21 @@ end
 if node['platform'] == 'windows'
   directory node['arcgis']['server']['install_dir'] do
     recursive true
-    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) ||
-             node['arcgis']['server']['install_dir'] == 'C:\\ArcGIS' }
+    only_if { node['arcgis']['clean_install_dirs'] }
+    not_if { Utils.product_installed?(node['arcgis']['server']['product_code']) }
     action :delete
   end
 
   directory node['arcgis']['portal']['install_dir'] do
     recursive true
-    not_if { Utils.product_installed?(node['arcgis']['portal']['product_code']) }
+    only_if { node['arcgis']['clean_install_dirs'] }
+    not_if { Utils.product_installed?(node['arcgis']['portal']['product_code'])}
     action :delete
   end
 
   directory node['arcgis']['data_store']['install_dir'] do
     recursive true
+    only_if { node['arcgis']['clean_install_dirs'] }
     not_if { Utils.product_installed?(node['arcgis']['data_store']['product_code']) }
     action :delete
   end

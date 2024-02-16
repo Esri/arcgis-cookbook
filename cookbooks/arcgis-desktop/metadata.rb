@@ -4,12 +4,13 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Desktop and ArcGIS License Manager'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '4.1.0'
+version          '4.2.0'
 chef_version     '>= 14.0' if defined? chef_version
 
-depends          'arcgis-repository', '~> 4.1'
+depends          'arcgis-repository', '~> 4.2'
 depends          'windows', '~> 5.3'
 depends          'limits', '~> 1.0'
+depends          'java_properties', '~> 0.1'
 
 supports         'windows'
 supports         'ubuntu'

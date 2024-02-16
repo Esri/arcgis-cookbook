@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Attributes:: default
 #
-# Copyright 2015-2022 Esri
+# Copyright 2015-2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '3.1'
+    pro['version'] = '3.2'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -43,9 +43,13 @@ default['arcgis']['pro'].tap do |pro|
                            ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
                          end
 
-    default['ms_dotnet']['version'] = '6.0.5'
+    default['ms_dotnet']['version'] = '6.0.23'
 
     case node['arcgis']['pro']['version']
+    when '3.2'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_32_188049.exe').gsub('/', '\\')
+      pro['product_code'] = '{76DFAD3E-96C5-4544-A6B4-3774DBF88B4E}' 
     when '3.1'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_31_184994.exe').gsub('/', '\\')
@@ -102,9 +106,13 @@ default['arcgis']['pro'].tap do |pro|
       Chef::Log.warn 'Unsupported ArcGIS Pro version'
     end
 
-    pro['authorization_file_version'] = '11.0'
+    pro['authorization_file_version'] = '11.2'
 
     case node['ms_dotnet']['version']
+    when '6.0.23'
+      default['ms_dotnet']['url'] = 'https://download.visualstudio.microsoft.com/download/pr/83d32568-c5a2-4117-9591-437051785f41/e75171da01b1fa5c796660dc4b96beed/windowsdesktop-runtime-6.0.23-win-x64.exe'
+      default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'windowsdesktop-runtime-6.0.23-win-x64.exe').gsub('/', '\\')
     when '6.0.5'
       default['ms_dotnet']['url'] = 'https://download.visualstudio.microsoft.com/download/pr/5681bdf9-0a48-45ac-b7bf-21b7b61657aa/bbdc43bc7bf0d15b97c1a98ae2e82ec0/windowsdesktop-runtime-6.0.5-win-x64.exe'
       default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],

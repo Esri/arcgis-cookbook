@@ -156,8 +156,7 @@ end
 action :update_account do
   if node['platform'] == 'windows'
     if Utils.sc_logon_account('ArcGIS Server') != @new_resource.run_as_user
-      configureserviceaccount = ::File.join(@new_resource.install_dir,
-                                            'bin', 'ServerConfigurationUtility.exe')
+      configureserviceaccount = node['arcgis']['server']['configuration_utility']
       run_as_password = @new_resource.run_as_password.gsub("&", "^&")
       args = "/username \"#{@new_resource.run_as_user}\""\
              " /password \"#{run_as_password}\" "
@@ -260,25 +259,33 @@ action :create_site do
 
     admin_client.wait_until_available
 
-    admin_client.complete_upgrade if admin_client.upgrade_required?
+    if admin_client.upgrade_required?
+      Chef::Log.info('Completing ArcGIS Server site upgrade...')
+      
+      admin_client.complete_upgrade 
 
-    if admin_client.site_exist?
-      Chef::Log.warn('ArcGIS Server site already exists.')
-    else
-      Chef::Log.info('Creating ArcGIS Server site...')
-
-      admin_client.create_site(@new_resource.server_directories_root,
-                               @new_resource.config_store_type,
-                               @new_resource.config_store_connection_string,
-                               @new_resource.config_store_connection_secret,
-                               @new_resource.log_level,
-                               @new_resource.log_dir,
-                               @new_resource.max_log_file_age)
-
+      Chef::Log.info('ArcGIS Server site upgrade is complete.')
+      
       new_resource.updated_by_last_action(true)
+    else
+      if admin_client.site_exist?
+        Chef::Log.info('ArcGIS Server site already exists.')
+      else
+        Chef::Log.info('Creating ArcGIS Server site...')
+
+        admin_client.create_site(@new_resource.server_directories_root,
+                                @new_resource.config_store_type,
+                                @new_resource.config_store_connection_string,
+                                @new_resource.config_store_connection_secret,
+                                @new_resource.log_level,
+                                @new_resource.log_dir,
+                                @new_resource.max_log_file_age)
+
+        new_resource.updated_by_last_action(true)
+      end
     end
   rescue Exception => e
-    Chef::Log.error "Failed to create ArcGIS Server site. " + e.message
+    Chef::Log.error "Failed to create or upgrade ArcGIS Server site. " + e.message
     raise e
   end
 end
@@ -291,99 +298,107 @@ action :join_site do
 
     admin_client.wait_until_available
 
-    admin_client.complete_upgrade if admin_client.upgrade_required?
+    if admin_client.upgrade_required?
+      Chef::Log.info('Completing ArcGIS Server site upgrade...')
 
-    if admin_client.site_exist?
-      Chef::Log.warn('Machine is already connected to an ArcGIS Server site.')
-    else
-      if @new_resource.use_join_site_tool
-        config_store_connection = {
-          'type' => @new_resource.config_store_type,
-          'connectionString' => @new_resource.config_store_connection_string,
-          'connectionSecret' => @new_resource.config_store_connection_secret
-        }
+      admin_client.complete_upgrade 
 
-        if node['platform'] == 'windows'
-          config_store_connection_file = ::File.join(@new_resource.install_dir, 'framework','etc','config-store-connection.json')
-          ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
-
-          join_site_tool_cmd = [
-            '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
-            '-f', '"' + config_store_connection_file + '"', '-c', 'default'
-          ].join(' ')
-
-          # Mixlib::ShellOut does not load user profile of the impersonated user account,
-          # so the user's environment variables such as USERNAME, USERPROFILE, TEMP, TMP,
-          # APPDATA, and LOCALAPPDATA still point to the parent process user name and directories.
-          # See https://github.com/chef/mixlib-shellout/issues/168
-          # set the environment variables to get around this problem
-
-          homedrive = ENV['HOMEDRIVE'].nil? ? 'C:' : ENV['HOMEDRIVE']
-
-          run_as_user = node['arcgis']['run_as_user']
-
-          if run_as_user.include? "\\"
-            tokens = run_as_user.split(/\\/)
-            userdomain = tokens[0]
-            username = tokens[1]
-          else
-            userdomain = node['hostname']
-            username = run_as_user
-          end
-
-          userprofile = homedrive + '\\Users\\' + username
-          env = { 'AGSSERVER' => @new_resource.install_dir + '\\',
-                  'USERNAME' => username,
-                  'USERDOMAIN' => userdomain,
-                  'HOME' => homedrive + '/Users/' + username,
-                  'HOMEPATH' => '\\Users\\' + username,
-                  'USERPROFILE' => userprofile,
-                  'APPDATA' => userprofile + '\\AppData\\Roaming',
-                  'LOCALAPPDATA' => userprofile + '\\AppData\\Local',
-                  'TEMP' => userprofile + '\\AppData\\Local\\Temp',
-                  'TMP' => userprofile + '\\AppData\\Local\\Temp' }
-
-          cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
-            { :user => username,
-              :domain => userdomain,
-              :password => node['arcgis']['run_as_password'],
-              :timeout => 1800,
-              :environment => env })
-          cmd.run_command
-          cmd.error!
-        else
-          install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['server']['install_subdir'])
-
-          config_store_connection_file = ::File.join(install_dir, 'framework','etc','config-store-connection.json')
-          ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
-
-          join_site_tool_cmd = [
-            ::File.join(install_dir, 'tools','joinsite','join-site.sh'),
-                        '-f', config_store_connection_file, '-c', 'default'
-          ].join(' ')
-
-          cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
-                { :user => node['arcgis']['run_as_user'],
-                  :timeout => 1800 })
-          cmd.run_command
-          cmd.error!
-        end
-      else
-        primary_admin_client = ArcGIS::ServerAdminClient.new(
-          @new_resource.primary_server_url,
-          @new_resource.username,
-          @new_resource.password)
-
-        primary_admin_client.wait_until_site_exist
-
-        admin_client.join_site(@new_resource.primary_server_url,
-                               @new_resource.pull_license)
-      end
+      Chef::Log.info('ArcGIS Server site upgrade is complete.')
 
       new_resource.updated_by_last_action(true)
+    else  
+      if admin_client.site_exist?
+        Chef::Log.info('Machine is already connected to an ArcGIS Server site.')
+      else
+        if @new_resource.use_join_site_tool
+          config_store_connection = {
+            'type' => @new_resource.config_store_type,
+            'connectionString' => @new_resource.config_store_connection_string,
+            'connectionSecret' => @new_resource.config_store_connection_secret
+          }
+
+          if node['platform'] == 'windows'
+            config_store_connection_file = ::File.join(@new_resource.install_dir, 'framework','etc','config-store-connection.json')
+            ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
+
+            join_site_tool_cmd = [
+              '"' + ::File.join(@new_resource.install_dir, 'tools', 'JoinSite', 'join-site.bat') + '"',
+              '-f', '"' + config_store_connection_file + '"', '-c', 'default'
+            ].join(' ')
+
+            # Mixlib::ShellOut does not load user profile of the impersonated user account,
+            # so the user's environment variables such as USERNAME, USERPROFILE, TEMP, TMP,
+            # APPDATA, and LOCALAPPDATA still point to the parent process user name and directories.
+            # See https://github.com/chef/mixlib-shellout/issues/168
+            # set the environment variables to get around this problem
+
+            homedrive = ENV['HOMEDRIVE'].nil? ? 'C:' : ENV['HOMEDRIVE']
+
+            run_as_user = node['arcgis']['run_as_user']
+
+            if run_as_user.include? "\\"
+              tokens = run_as_user.split(/\\/)
+              userdomain = tokens[0]
+              username = tokens[1]
+            else
+              userdomain = node['hostname']
+              username = run_as_user
+            end
+
+            userprofile = homedrive + '\\Users\\' + username
+            env = { 'AGSSERVER' => @new_resource.install_dir + '\\',
+                    'USERNAME' => username,
+                    'USERDOMAIN' => userdomain,
+                    'HOME' => homedrive + '/Users/' + username,
+                    'HOMEPATH' => '\\Users\\' + username,
+                    'USERPROFILE' => userprofile,
+                    'APPDATA' => userprofile + '\\AppData\\Roaming',
+                    'LOCALAPPDATA' => userprofile + '\\AppData\\Local',
+                    'TEMP' => userprofile + '\\AppData\\Local\\Temp',
+                    'TMP' => userprofile + '\\AppData\\Local\\Temp' }
+
+            cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
+              { :user => username,
+                :domain => userdomain,
+                :password => node['arcgis']['run_as_password'],
+                :timeout => 1800,
+                :environment => env })
+            cmd.run_command
+            cmd.error!
+          else
+            install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['server']['install_subdir'])
+
+            config_store_connection_file = ::File.join(install_dir, 'framework','etc','config-store-connection.json')
+            ::File.open(config_store_connection_file, 'w') { |f| f.write(config_store_connection.to_json) }
+
+            join_site_tool_cmd = [
+              ::File.join(install_dir, 'tools','joinsite','join-site.sh'),
+                          '-f', config_store_connection_file, '-c', 'default'
+            ].join(' ')
+
+            cmd = Mixlib::ShellOut.new(join_site_tool_cmd,
+                  { :user => node['arcgis']['run_as_user'],
+                    :timeout => 1800 })
+            cmd.run_command
+            cmd.error!
+          end
+        else
+          primary_admin_client = ArcGIS::ServerAdminClient.new(
+            @new_resource.primary_server_url,
+            @new_resource.username,
+            @new_resource.password)
+
+          primary_admin_client.wait_until_site_exist
+
+          admin_client.join_site(@new_resource.primary_server_url,
+                                @new_resource.pull_license)
+        end
+
+        new_resource.updated_by_last_action(true)
+      end
     end
   rescue Exception => e
-    Chef::Log.error "Failed to join ArcGIS Server site. " + e.message
+    Chef::Log.error "Failed to join or upgrade ArcGIS Server site. " + e.message
     raise e
   end
 end
@@ -423,6 +438,10 @@ action :set_system_properties do
       Chef::Log.info 'ArcGIS Server system properties were not changed.'
       new_resource.updated_by_last_action(false)
     end
+
+    Chef::Log.info('Updating ArcGIS Server services directory properties...')
+    admin_client.update_services_directory_properties(@new_resource.services_dir_enabled)
+    Chef::Log.info 'ArcGIS Server services directory properties were updated.'
   rescue Exception => e
     Chef::Log.error 'Failed to update ArcGIS Server system properties. ' + e.message
     raise e
@@ -502,7 +521,9 @@ action :configure_security_protocol do
                                                @new_resource.hsts_enabled,
                                                @new_resource.virtual_dirs_security_enabled,
                                                @new_resource.allow_direct_access,
-                                               @new_resource.allowed_admin_access_ips)
+                                               @new_resource.allowed_admin_access_ips,
+                                               @new_resource.https_protocols,
+                                               @new_resource.cipher_suites)
 
     # Security configuration update causes the SOAP and REST service endpoints 
     # to be redeployed with the new configuration on every server machine in the site.                                           
@@ -513,8 +534,9 @@ action :configure_security_protocol do
     new_resource.updated_by_last_action(true)
 
   rescue Exception => e
-    Chef::Log.error "Failed to update security configuration in ArcGIS Server." + e.message
-    raise e
+    Chef::Log.warn e.message
+    # Updating security configuration may fail when other machinesin the site are not accessible.
+    # raise e
   end
 end
 

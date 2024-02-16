@@ -1,0 +1,9 @@
+{
+  "ms_dotnet": {
+    "version": "6.0.23",
+    "setup": "C:\\Software\\Archives\\windowsdesktop-runtime-6.0.23-win-x64.exe"
+  },
+  "run_list": [
+    "recipe[arcgis-pro::ms_dotnet]"
+  ]
+}

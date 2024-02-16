@@ -20,7 +20,7 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '2022.3'
+  insights['version'] = '2023.1'
 
   insights['patches'] = []
 
@@ -30,6 +30,10 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '2023.1'
+      insights['product_code'] = '{DEC86F7E-FD14-4920-933D-B18266696663}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2023_1_185917.exe')
     when '2022.3'
       insights['product_code'] = '{09230105-BBD4-401B-AB77-3E221BAD668F}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -93,6 +97,9 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '2023.1'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2023_1_185918.tar.gz')
     when '2022.3'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Linux_2022_3_184094.tar.gz')

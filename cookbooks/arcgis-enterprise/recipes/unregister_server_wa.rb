@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: unregister_server_wa
 #
-# Copyright 2021 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,5 +23,6 @@ arcgis_enterprise_server 'Unregister ArcGIS Server Web Adaptors' do
   install_dir node['arcgis']['server']['install_dir']
   username node['arcgis']['server']['admin_username']
   password node['arcgis']['server']['admin_password']
+  ignore_failure true
   action :unregister_web_adaptors
 end

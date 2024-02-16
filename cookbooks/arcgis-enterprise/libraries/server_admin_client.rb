@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -528,37 +528,111 @@ module ArcGIS
     # Update server security config
     def update_security_configuration(server_protocol, auth_mode, auth_tier, 
                                       hsts_enabled, virtual_dirs_security_enabled,
-                                      allow_direct_access, allowed_admin_access_ips)
-      if security_configuration['authenticationTier'] == 'ARCGIS_PORTAL'
-        Chef::Log.info("The server is federated. Skip the security configuration update.")
-        return
+                                      allow_direct_access, allowed_admin_access_ips,
+                                      https_protocols, cipher_suites)
+      security_config = security_configuration()
+      
+      if auth_mode.nil? || auth_mode.empty?
+        auth_mode = security_config['authenticationMode']
       end
 
-      request = Net::HTTP::Post.new(
-        URI.parse(@server_url + '/admin/security/config/update').request_uri)
-      request.add_field('Referer', 'referer')
+      if auth_tier.nil? || auth_tier.empty?
+        auth_tier = security_config['authenticationTier']
+      end
 
-      token = generate_token()
+      if https_protocols.nil? || https_protocols.empty?
+        https_protocols = security_config['httpsProtocols']
+      end
 
-      request.set_form_data('token' => token,
-                            'httpsProtocols' => 'TLSv1.2',
-                            'cipherSuites' => 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA',
-                            'Protocol' => server_protocol,
-                            'authenticationMode' => auth_mode,
-                            'authenticationTier' => auth_tier,
-                            'HSTSEnabled' => hsts_enabled,
-                            'virtualDirsSecurityEnabled' => virtual_dirs_security_enabled,
-                            'allowDirectAccess' => allow_direct_access,
-                            'allowedAdminAccessIPs' => allowed_admin_access_ips,
-                            'f' => 'json')
+      if cipher_suites.nil? || cipher_suites.empty?
+        cipher_suites = security_config['cipherSuites']
+      end
 
-      response = send_request(request, @server_url)
+      portal_properties = security_config['portalProperties'].nil? ? '' : security_config['portalProperties'].to_json
 
-      validate_response(response)
+      update_required = false
 
-      sleep(30.0)
+      if https_protocols != security_config['httpsProtocols']
+        update_required = true
+        Chef::Log.info("Updating server HTTPS protocols to '#{https_protocols}'.") 
+      end
 
-      wait_until_available
+      if cipher_suites != security_config['cipherSuites']
+        update_required = true
+        Chef::Log.info("Updating server cipher suites to '#{cipher_suites}'.") 
+      end
+
+      current_server_protocol = 'HTTPS'
+
+      if security_config['httpEnabled'] && security_config['sslEnabled']
+        current_server_protocol = 'HTTP_AND_HTTPS'
+      elsif security_config['httpEnabled']
+        current_server_protocol = 'HTTP'
+      end
+
+      if server_protocol != current_server_protocol
+        update_required = true
+        Chef::Log.info("Updating server protocol to '#{server_protocol}'.") 
+      end
+
+      if auth_mode != security_config['authenticationMode']
+        update_required = true
+        Chef::Log.info("Updating server authentication mode to '#{auth_mode}'.") 
+      end
+
+      if auth_tier != security_config['authenticationTier']
+        update_required = true
+        Chef::Log.info("Updating server authentication tier to '#{auth_tier}'.") 
+      end
+
+      if hsts_enabled != security_config['HSTSEnabled']
+        update_required = true
+        Chef::Log.info("Updating server HSTSEnabled setting to '#{hsts_enabled}'.") 
+      end
+
+      if virtual_dirs_security_enabled != security_config['virtualDirsSecurityEnabled']
+        update_required = true
+        Chef::Log.info("Updating server virtualDirsSecurityEnabled setting to '#{virtual_dirs_security_enabled}'.") 
+      end
+
+      if allow_direct_access != security_config['allowDirectAccess']
+        update_required = true
+        Chef::Log.info("Updating server allowDirectAccess setting to '#{allow_direct_access}'.") 
+      end
+
+      if !allowed_admin_access_ips.empty? && allowed_admin_access_ips != security_config['allowedAdminAccessIPs']
+        update_required = true
+        Chef::Log.info("Updating server allowed admin access IPs to '#{allowed_admin_access_ips}'.") 
+      end
+
+      if update_required
+        request = Net::HTTP::Post.new(
+          URI.parse(@server_url + '/admin/security/config/update').request_uri)
+        request.add_field('Referer', 'referer')
+
+        token = generate_token()
+
+        request.set_form_data('token' => token,
+                              'httpsProtocols' => https_protocols,
+                              'cipherSuites' => cipher_suites,
+                              'Protocol' => server_protocol,
+                              'authenticationMode' => auth_mode,
+                              'authenticationTier' => auth_tier,
+                              'HSTSEnabled' => hsts_enabled,
+                              'virtualDirsSecurityEnabled' => virtual_dirs_security_enabled,
+                              'allowDirectAccess' => allow_direct_access,
+                              'allowedAdminAccessIPs' => allowed_admin_access_ips,
+                              'portalProperties' => portal_properties,
+                              'f' => 'json')
+
+        response = send_request(request, @server_url)
+
+        validate_response(response)
+
+        sleep(30.0)
+
+        wait_until_available
+      end
     end
 
     def generate_token()
@@ -1018,6 +1092,53 @@ module ArcGIS
       web_adaptors.each do |web_adaptor|
         unregister_web_adaptor(web_adaptor['id'])
       end
+    end
+
+    def services_directory_properties
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/system/handlers/rest/servicesdirectory").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
+    end
+
+    def update_services_directory_properties(services_dir_enabled)
+      properties = services_directory_properties()
+
+      token = generate_token()
+
+      request = Net::HTTP::Post.new(
+        URI.parse(@server_url + "/admin/system/handlers/rest/servicesdirectory/edit").request_uri
+      )
+      
+      request["Content-Type"] = "application/x-www-form-urlencoded"
+      request['Referer'] = 'referer'
+
+      request.body = URI.encode_www_form(
+        'servicesDirEnabled' => services_dir_enabled ? 'true' : 'false',
+        'callbackFunctionsEnabled' => properties['callbackFunctionsEnabled'],
+        'allowedOrigins' => properties['allowedOrigins'],
+        'jsapi.arcgis' => properties['jsapi.arcgis'],
+        'jsapi.arcgis.sdk' => properties['jsapi.arcgis.sdk'],
+        'jsapi.arcgis.css' => properties['jsapi.arcgis.css'],
+        'jsapi.arcgis.css2' => properties['jsapi.arcgis.css2'],
+        'arcgis.com.map' => properties['arcgis.com.map'],
+        'arcgis.com.map.text'=> properties['arcgis.com.map.text'],
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)      
     end
 
     private

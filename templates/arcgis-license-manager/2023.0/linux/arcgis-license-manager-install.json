@@ -1,0 +1,16 @@
+{
+  "arcgis": {
+    "run_as_user": "arcgis",
+    "repository": {
+      "archives": "/opt/software/archives",
+      "setups": "/opt/software/setups"
+    },
+    "licensemanager": {
+      "version": "2023.0",
+      "install_dir": "/"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-desktop::licensemanager]"
+  ]
+}

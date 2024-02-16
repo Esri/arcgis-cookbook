@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-repository cookbook"
 category: cookbooks
 item: arcgis-repository
-version: 4.1.0
+version: 4.2.0
 latest: true
 ---
 
@@ -32,6 +32,8 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 * Red Hat Enterprise Linux Server 8
 * SUSE Linux Enterprise Server 15
 * Oracle Linux 8
+* Rocky Linux 8
+* AlmaLinux 9
 
 ## Dependencies
 

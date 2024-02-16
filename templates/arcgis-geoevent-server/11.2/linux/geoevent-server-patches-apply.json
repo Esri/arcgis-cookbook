@@ -1,0 +1,26 @@
+{
+    "arcgis": {
+        "version": "11.2",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-112-S-*.tar",
+                "ArcGIS-112-S-*.tar.gz"
+            ]
+        },
+        "geoevent": {
+            "patches": [
+                "GeoEvent-11.2-*.tar",
+                "GeoEvent-11.2-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]",
+        "recipe[arcgis-geoevent::install_patches]"
+    ]
+}

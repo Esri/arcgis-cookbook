@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-mission cookbook"
 category: cookbooks
 item: arcgis-mission
-version: 4.1.0
+version: 4.2.0
 latest: true
 ---
 
@@ -19,6 +19,7 @@ This cookbook installs and configures ArcGIS Mission Server.
 * 10.9.1
 * 11.0
 * 11.1
+* 11.2
 
 ## Supported ArcGIS software
 
@@ -61,7 +62,7 @@ The following cookbooks are required:
 * `node['arcgis']['mission_server']['log_dir']` = ArcGIS Mission Server log directory. Default value is `C:\arcgismissionserver\logs` on Windows and `/<install directory>/usr/logs` on Linux.
 * `node['arcgis']['mission_server']['max_log_file_age']` = ArcGIS Mission Server maximum log file age. Default value is `90`.
 * `node['arcgis']['mission_server']['setup_archive']` = Path to the ArcGIS Mission Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['mission_server']['setup']` = The location of the ArcGIS Mission Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.1\MissionServer\Setup.exe` on Windows and `/opt/arcgis/11.1/MissionServer/Setup` on Linux.
+* `node['arcgis']['mission_server']['setup']` = The location of the ArcGIS Mission Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.2\MissionServer\Setup.exe` on Windows and `/opt/arcgis/11.2/MissionServer/Setup` on Linux.
 * `node['arcgis']['mission_server']['configure_autostart']` = If set to true, on Linux the Mission Server is configured to start with the operating system. Default value is `true`.
 * `node['arcgis']['mission_server']['admin_username']` = Primary ArcGIS Mission Server administrator user name. Default user name is `siteadmin`.
 * `node['arcgis']['mission_server']['admin_password']` = Primary ArcGIS Mission Server administrator password. Default value is `nil`.
@@ -116,7 +117,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "mission_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Mission_Server_Linux_110_183045.tar.gz",
@@ -143,7 +144,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"
@@ -193,7 +194,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "mission_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Mission_Server_Linux_110_183045.tar.gz",
@@ -227,7 +228,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "mission_server": {
             "setup_archive": "/opt/software/esri/ArcGIS_Mission_Server_Linux_110_183045.tar.gz",
@@ -256,7 +257,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"
@@ -288,7 +289,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "mission_server": {
             "install_dir": "/home/arcgis"
@@ -309,7 +310,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.1",
+        "version": "11.2",
         "run_as_user": "arcgis",
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis/webapps"

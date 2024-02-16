@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-workflow-manager cookbook"
 category: cookbooks
 item: arcgis-workflow-manager
-version: 4.1.0
+version: 4.2.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ This cookbook installs and configures ArcGIS Workflow Manager Server and Web App
 * 10.9.1
 * 11.0
 * 11.1
+* 11.2
 
 ## Supported ArcGIS software
 
@@ -164,7 +165,7 @@ Attributes used by the recipe:
       "setup_archive": "C:\\Software\\Archives\\ArcGIS_Workflow_Manager_Server_110_182937.exe",
       "setup": "C:\\Software\\Setups\\ArcGIS11.0\\WorkflowManagerServer\\Setup.exe",
       "authorization_file": "C:\\Software\\AuthorizationFiles\\11.0\\Workflow_Manager_Server.prvc",
-      "authorization_file_version": "11.1",
+      "authorization_file_version": "11.2",
       "ports": "9830,9820,9840,9880,13443"      
     }
   },

@@ -28,6 +28,11 @@ execute 'extract jdk tarball' do
   action :run
 end
 
+execute 'remove java alternatives' do
+  command 'update-alternatives --remove-all java'
+  only_if 'update-alternatives --list java'
+end
+
 execute 'update java alternatives' do
   command "update-alternatives --install /usr/bin/java java #{node['java']['install_path']}/jdk-#{node['java']['version']}/bin/java 10"
 end

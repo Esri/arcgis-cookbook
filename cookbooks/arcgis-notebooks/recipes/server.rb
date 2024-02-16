@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: server
 #
-# Copyright 2019 Esri
+# Copyright 2023 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,7 +72,18 @@ end
 directory node['arcgis']['notebook_server']['directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0755'
+  end
+  recursive true
+  not_if { node['arcgis']['notebook_server']['directories_root'].start_with?('\\\\') ||
+           node['arcgis']['notebook_server']['directories_root'].start_with?('/net/') }
+  action :create
+end
+
+directory ::File.join(node['arcgis']['notebook_server']['directories_root'], 'directories') do
+  owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    mode '0755'
   end
   recursive true
   not_if { node['arcgis']['notebook_server']['directories_root'].start_with?('\\\\') ||
@@ -83,7 +94,7 @@ end
 directory node['arcgis']['notebook_server']['config_store_connection_string'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0700'
+    mode '0755'
   end
   recursive true
   only_if { node['arcgis']['notebook_server']['config_store_type'] == 'FILESYSTEM'}
@@ -94,8 +105,12 @@ end
 
 directory node['arcgis']['notebook_server']['workspace'] do
   owner node['arcgis']['run_as_user']
+  if node['platform'] != 'windows'
+    mode '0777'
+  end
   recursive true
-  only_if { node['platform'] == 'windows' }
+  not_if { node['arcgis']['notebook_server']['workspace'].start_with?('\\\\') ||
+           node['arcgis']['notebook_server']['workspace'].start_with?('/net/') }
   action :create
 end
 
@@ -103,7 +118,7 @@ end
 directory node['arcgis']['notebook_server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0775'
+    mode '0755'
   end
   recursive true
   not_if { node['arcgis']['notebook_server']['log_dir'].start_with?('\\\\') ||
