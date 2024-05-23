@@ -25,7 +25,6 @@ This cookbook installs and configures ArcGIS Mission Server.
 
 ## Platforms
 
-* Microsoft Windows Server 2012 R2 Standard and Datacenter
 * Microsoft Windows Server 2016 Standard and Datacenter
 * Microsoft Windows Server 2019 Standard and Datacenter
 * Microsoft Windows Server 2022 Standard and Datacenter

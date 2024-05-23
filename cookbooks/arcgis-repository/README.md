@@ -21,9 +21,7 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 
 ## Platforms
 
-* Windows 8 (8.1)
 * Windows 10
-* Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
 * Windows Server 2022
