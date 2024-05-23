@@ -3,7 +3,7 @@ layout: default
 title: "Get Started"
 category: overview
 item: get-started
-version: 4.2.0
+version: 5.0.0
 latest: true
 order: 2
 ---
@@ -28,23 +28,23 @@ See [cookbooks version compatibility]({{ site.baseurl }}/versions.html) page for
 
 ### On Windows
 
-To install the latest 16.x of Cinc Client, open a Windows PowerShell terminal as administrator and run:
+To install the latest 18.x of Cinc Client, open a Windows PowerShell terminal as administrator and run:
 
 ```powershell
-> . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -version 16
+> . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -version 18
 ```
 
 ### On Linux
 
-To install the latest 16.x of Cinc Client, open a terminal and run the following command as superuser:
+To install the latest 18.x of Cinc Client, open a terminal and run the following command as superuser:
 
 ```bash
-$ curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 16
+$ curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18
 ```
 
 ## Download Chef Cookbooks and Deployment Templates
 
-Download [arcgis-4.2.0-cookbooks.zip/tar.gz](https://github.com/Esri/arcgis-cookbook/releases/tag/v4.2.0) from Chef Cookbooks for ArcGIS [releases](https://github.com/Esri/arcgis-cookbook/releases) on GitHub to the machine and extract the contents of the archive to `/var/cinc` on Linux and `C:\cinc` on Windows.
+Download [arcgis-5.0.0-cookbooks.zip/tar.gz](https://github.com/Esri/arcgis-cookbook/releases/tag/v5.0.0) from Chef Cookbooks for ArcGIS [releases](https://github.com/Esri/arcgis-cookbook/releases) on GitHub to the machine and extract the contents of the archive to `/var/cinc` on Linux and `C:\cinc` on Windows.
 
 The archive contains ArcGIS-specific [Chef cookbooks]({{ site.baseurl }}/cookbooks.html), required third-party cookbooks, and [deployment templates]({{ site.baseurl }}/templates.html) for various ArcGIS configurations. The deployment templates located in 'templates' directory inside the archive provide template JSON files for different machine roles, ArcGIS software versions, and platforms.
 
