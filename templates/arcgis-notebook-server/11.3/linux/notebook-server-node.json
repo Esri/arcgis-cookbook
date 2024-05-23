@@ -1,0 +1,28 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "notebook_server": {
+            "install_dir": "/opt",
+            "install_system_requirements": true,
+            "authorization_file": "/opt/software/authorization_files/11.3/notebook_server.prvc",
+            "license_level": "standard",
+            "admin_username": "<notebook_server_admin_username>",
+            "admin_password": "<notebook_server_admin_password>",
+            "primary_server_url": "https://primary:11443/arcgis",
+            "log_dir": "/opt/arcgis/notebookserver/usr/logs",
+            "configure_autostart": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-notebooks::docker]",
+        "recipe[arcgis-notebooks::iptables]",
+        "recipe[arcgis-notebooks::restart_docker]",        
+        "recipe[arcgis-notebooks::server_node]"
+    ]
+}

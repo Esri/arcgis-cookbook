@@ -1,0 +1,33 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "mission_server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Mission",
+            "install_system_requirements": true,
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.3\\MissionServer.prvc",
+            "admin_username": "<mission_server_admin_username>",
+            "admin_password": "<mission_server_admin_password>",
+            "directories_root": "\\\\FILESERVER\\arcgismissionserver",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "\\\\FILESERVER\\arcgismissionserver\\config-store",
+            "log_level": "WARNING",
+            "log_dir": "C:\\arcgismissionserver\\logs",
+            "configure_autostart": true,
+            "system_properties": {
+                "WebSocketContextURL": "wss://domain.com/mission"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-mission::server]"
+    ]
+}

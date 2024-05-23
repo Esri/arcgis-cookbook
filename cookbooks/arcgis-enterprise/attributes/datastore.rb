@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: datastore
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ default['arcgis']['data_store'].tap do |data_store|
 
   data_store['types'] = 'tileCache,relational'
   data_store['mode'] = ''
+  data_store['roles'] = ''
   data_store['configure_autostart'] = true
   data_store['install_system_requirements'] = true
   data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
-  data_store['ports'] = '2443,4369,9220,9320,9820,9829,9830,9840,9876,9900,25672,44369,45671,45672,29079-29090'
+  data_store['ports'] = '2443,4369,9220,9320,9820,9829,9830,9831,9840,9876,9900,25672,44369,45671,45672,29079-29090'
 
   data_store['patches'] = []
   
@@ -50,6 +51,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '11.3'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_113_190233.exe').gsub('/', '\\')
+      data_store['product_code'] = '{E4FC0BED-0F94-49D4-9AF5-BBA64AED3787}'
     when '11.2'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_112_188252.exe').gsub('/', '\\')
@@ -66,18 +71,6 @@ default['arcgis']['data_store'].tap do |data_store|
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_1091_180054.exe').gsub('/', '\\')
       data_store['product_code'] = '{30BB3697-7815-406B-8F0C-EAAFB723AA97}'
-    when '10.9'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_109_177788.exe').gsub('/', '\\')
-      data_store['product_code'] = '{7A7D3A39-DBC0-48E8-B2C2-3466A84FE89E}'
-    when '10.8.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_1081_175216.exe').gsub('/', '\\')
-      data_store['product_code'] = '{45E1C306-B1AB-4AE5-8435-818F0F9F8821}'
-    when '10.8'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Windows_108_172872.exe').gsub('/', '\\')
-      data_store['product_code'] = '{2018A7D8-CBE8-4BCF-AF0E-C9AAFB4C9B6D}'
     else
       Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     end
@@ -88,6 +81,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '11.3'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_113_190318.tar.gz')
     when '11.2'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_112_188340.tar.gz')
@@ -100,15 +96,6 @@ default['arcgis']['data_store'].tap do |data_store|
     when '10.9.1'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_1091_180204.tar.gz')
-    when '10.9'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_109_177887.tar.gz')
-    when '10.8.1'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_1081_175312.tar.gz')
-    when '10.8'
-      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                'ArcGIS_DataStore_Linux_108_172991.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS Data Store version'
     end

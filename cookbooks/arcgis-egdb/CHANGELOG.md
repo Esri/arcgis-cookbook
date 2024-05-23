@@ -3,6 +3,11 @@ arcgis-egdb cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-egdb cookbook.
 
+2.0.0
+-----
+
+- TODO
+
 1.1.1
 -----
 

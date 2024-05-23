@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Attributes:: default
 #
-# Copyright 2015-2023 Esri
+# Copyright 2015-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ include_attribute 'arcgis-repository'
 default['arcgis']['pro'].tap do |pro|
   case node['platform']
   when 'windows'
-    pro['version'] = '3.2'
+    pro['version'] = '3.3'
 
     pro['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                'ArcGIS Pro ' + node['arcgis']['pro']['version'],
@@ -43,9 +43,13 @@ default['arcgis']['pro'].tap do |pro|
                            ENV['ProgramW6432'] + '\\ArcGIS\\Pro'
                          end
 
-    default['ms_dotnet']['version'] = '6.0.23'
+    default['ms_dotnet']['version'] = '8.0.3'
 
     case node['arcgis']['pro']['version']
+    when '3.3'
+      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                         'ArcGISPro_33_190016.exe').gsub('/', '\\')
+      pro['product_code'] = '{B43BC6C2-05D2-460B-AEE4-D15A9CA7B55E}' 
     when '3.2'
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_32_188049.exe').gsub('/', '\\')
@@ -66,49 +70,17 @@ default['arcgis']['pro'].tap do |pro|
       pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                          'ArcGISPro_29_179927.exe').gsub('/', '\\')
       pro['product_code'] = '{AD53732E-507C-4A7F-B451-BE7EA01D0832}'
-    when '2.8'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_28_177688.exe').gsub('/', '\\')
-      pro['product_code'] = '{26C745E6-B3C1-467B-9523-727D1803EE07}'
-    when '2.7'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_27_176624.exe').gsub('/', '\\')
-      pro['product_code'] = '{FBBB144A-B4BE-49A0-95C4-1007E3A42FA5}'
-    when '2.6'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_26_175036.exe').gsub('/', '\\')
-      pro['product_code'] = '{9D510CBA-7DB1-4E3D-8938-5E193DF406C9}'
-    when '2.5'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_25_172639.exe').gsub('/', '\\')
-      pro['product_code'] = '{0D695F82-EB12-4430-A241-20226042FD40}'
-    when '2.4'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_24_169232.exe').gsub('/', '\\')
-      pro['product_code'] = '{E3B1CE52-A1E6-4386-95C4-5AB450EF57BD}'
-    when '2.3'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_23_14527.exe').gsub('/', '\\')
-      pro['product_code'] = '{9CB8A8C5-202D-4580-AF55-E09803BA1959}'
-    when '2.2'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_22_163783.exe').gsub('/', '\\')
-      pro['product_code'] = '{A23CF244-D194-4471-97B4-37D448D2DE76}'
-    when '2.1'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_21_161559.exe').gsub('/', '\\')
-      pro['product_code'] = '{0368352A-8996-4E80-B9A1-B1BA43FAE6E6}'
-    when '2.0'
-      pro['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                         'ArcGISPro_20_156181.exe').gsub('/', '\\')
-      pro['product_code'] = '{28A4967F-DE0D-4076-B62D-A1A9EA62FF0A}'
     else
       Chef::Log.warn 'Unsupported ArcGIS Pro version'
     end
 
-    pro['authorization_file_version'] = '11.2'
+    pro['authorization_file_version'] = '11.3'
 
     case node['ms_dotnet']['version']
+    when '8.0.3'
+      default['ms_dotnet']['url'] = 'https://download.visualstudio.microsoft.com/download/pr/51bc18ac-0594-412d-bd63-18ece4c91ac4/90b47b97c3bfe40a833791b166697e67/windowsdesktop-runtime-8.0.3-win-x64.exe'
+      default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'windowsdesktop-runtime-8.0.3-win-x64.exe').gsub('/', '\\')
     when '6.0.23'
       default['ms_dotnet']['url'] = 'https://download.visualstudio.microsoft.com/download/pr/83d32568-c5a2-4117-9591-437051785f41/e75171da01b1fa5c796660dc4b96beed/windowsdesktop-runtime-6.0.23-win-x64.exe'
       default['ms_dotnet']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -124,6 +96,11 @@ default['arcgis']['pro'].tap do |pro|
     else
       Chef::Log.warn 'Unsupported Microsoft .NET version'
     end
+
+    # Microsoft Edge WebView2 setup location
+    default['webview2']['url'] = 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/4af8eb86-208b-4fb7-952b-af2a783d5c14/MicrosoftEdgeWebview2Setup.exe'
+    default['webview2']['setup'] = ::File.join(node['arcgis']['repository']['archives'],
+                                               'MicrosoftEdgeWebview2Setup.exe').gsub('/', '\\')
   else
     Chef::Log.warn "ArcGIS Pro is not supported on #{node['platform']} platform."
   end

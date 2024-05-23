@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: portal
 #
-# Copyright 2015-2022 Esri
+# Copyright 2015-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 # limitations under the License.
 require 'fileutils'
 require 'pathname'
+require 'java-properties'
 require 'json'
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
@@ -43,7 +44,7 @@ end
 action :unpack do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup_archive
-    args = "/s /d \"#{@new_resource.setups_repo}\""
+    args = "/s /d \"#{@new_resource.setups_repo}\" #{@new_resource.unpack_options}"
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
     cmd.error!
@@ -286,7 +287,8 @@ action :create_site do
   # Complete portal upgrade if the upgrade API is available (starting from ArcGIS Enterprise 10.6)
   if portal_admin_client.complete_upgrade(@new_resource.upgrade_backup,
                                           @new_resource.upgrade_rollback,
-                                          @new_resource.authorization_file)
+                                          @new_resource.authorization_file,
+                                          @new_resource.enable_debug)
     Chef::Log.info('Wait until portal restarted after upgrade.')
 
     1800.times do
@@ -339,7 +341,8 @@ action :create_site do
                                     @new_resource.security_question_answer,
                                     content_store.to_json,
                                     @new_resource.user_license_type_id,
-                                    @new_resource.authorization_file)
+                                    @new_resource.authorization_file,
+                                    @new_resource.enable_debug)
 
     sleep(120.0)
 
@@ -725,4 +728,74 @@ action :configure_hostidentifiers_properties do
     variables ( {:hostidentifier => node['arcgis']['portal']['hostidentifier'],
                  :preferredidentifier => node['arcgis']['portal']['preferredidentifier']} )
   end
+end
+
+action :webgisdr_export do
+  if node['platform'] == 'windows'
+    webgisdr_tool_dir = ::File.join(@new_resource.install_dir, 'tools', 'webgisdr')
+    webgisdr_poperties_path = ::File.join(webgisdr_tool_dir, 'webgisdr-export.properties')                                     
+    command = "webgisdr --export --file \"#{webgisdr_poperties_path}\""
+  else
+    webgisdr_tool_dir = ::File.join(@new_resource.install_dir,
+                                    node['arcgis']['portal']['install_subdir'],
+                                    'tools', 'webgisdr')
+    webgisdr_poperties_path = ::File.join(webgisdr_tool_dir, 'webgisdr-export.properties')                                    
+    command = "./webgisdr.sh --export --file \"#{webgisdr_poperties_path}\""                                    
+  end
+
+  properties = ::JavaProperties.generate(@new_resource.webgisdr_properties)
+
+  ::File.open(webgisdr_poperties_path, "w") {|f| f.write(properties)}
+
+  FileUtils.chown(@new_resource.run_as_user, nil, webgisdr_poperties_path)
+
+  cmd = Mixlib::ShellOut.new(command,
+                             :cwd => webgisdr_tool_dir,
+                             :timeout => @new_resource.webgisdr_timeout,
+                             :user => @new_resource.run_as_user,
+                             :password => @new_resource.run_as_password)
+  cmd.run_command
+
+  Chef::Log.info(cmd.stdout)
+
+  FileUtils.rm(webgisdr_poperties_path)
+
+  cmd.error!
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :webgisdr_import do
+  if node['platform'] == 'windows'
+    webgisdr_tool_dir = ::File.join(@new_resource.install_dir, 'tools', 'webgisdr')
+    webgisdr_poperties_path = ::File.join(webgisdr_tool_dir, 'webgisdr-import.properties')                                     
+    command = "webgisdr --import --file \"#{webgisdr_poperties_path}\""
+  else
+    webgisdr_tool_dir = ::File.join(@new_resource.install_dir,
+                                    node['arcgis']['portal']['install_subdir'],
+                                    'tools', 'webgisdr')
+    webgisdr_poperties_path = ::File.join(webgisdr_tool_dir, 'webgisdr-import.properties')                                    
+    command = "./webgisdr.sh --import --file \"#{webgisdr_poperties_path}\""                                    
+  end
+
+  properties = ::JavaProperties.generate(@new_resource.webgisdr_properties)
+
+  ::File.open(webgisdr_poperties_path, "w") {|f| f.write(properties)}
+
+  FileUtils.chown(@new_resource.run_as_user, nil, webgisdr_poperties_path)
+
+  cmd = Mixlib::ShellOut.new(command,
+                             :cwd => webgisdr_tool_dir,
+                             :timeout => @new_resource.webgisdr_timeout,
+                             :user => @new_resource.run_as_user,
+                             :password => @new_resource.run_as_password)
+  cmd.run_command
+
+  Chef::Log.info(cmd.stdout)
+
+  FileUtils.rm(webgisdr_poperties_path)
+
+  cmd.error!
+
+  new_resource.updated_by_last_action(true)
 end

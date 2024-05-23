@@ -1,0 +1,12 @@
+{
+  "arcgis": {
+    "version": "11.3",
+    "mission_server": {
+      "admin_username": "<mission_server_admin_username>",
+      "admin_password": "<mission_server_admin_password>"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-mission::unregister_server_wa]"
+  ]
+}

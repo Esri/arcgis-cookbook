@@ -1,0 +1,24 @@
+{
+  "arcgis": {
+    "repository": {
+      "local_archives": "/opt/software/archives",
+      "shared": false,
+      "server": {
+        "username": "<repository_username>",
+        "password": "<repository_password>"
+      },
+      "files": {
+        "ArcGIS_Server_Linux_113_190305.tar.gz": {
+          "subfolder": "software/arcgis/11.3"
+        },
+        "ArcGIS_Workflow_Manager_Server_113_190342.tar.gz": {
+          "subfolder": "software/arcgis/11.3"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::fileserver]",
+    "recipe[arcgis-repository::files]"
+  ]
+}

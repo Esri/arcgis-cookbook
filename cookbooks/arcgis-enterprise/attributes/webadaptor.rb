@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: webadaptor
 #
-# Copyright 2023 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,6 +37,54 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
                                                         'Tools\\ConfigureWebAdaptor.exe').gsub('/', '\\')
 
     case node['arcgis']['version']
+    when '11.3'
+      web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
+                                         "ArcGIS #{node['arcgis']['version']}",
+                                         'WebAdaptorIIS', 'Setup.exe').gsub('/', '\\')
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_for_Microsoft_IIS_113_190234.exe').gsub('/', '\\')
+      web_adaptor['product_codes'] = [
+        '{6D1FDF29-5DAB-4816-9CDE-15CF663E3BDD}', '{9DA66832-790E-4A08-90D8-3305D2C4F2A2}',
+        '{E3DF9FCC-2078-4816-B195-EE30D1C74086}', '{87C9FEB8-73A7-436A-861E-74C3A3D7805B}',
+        '{3D881639-2227-4E9E-9380-C55991C92D3F}', '{7FB27776-2537-456E-BF4D-6E90B1050E16}',
+        '{013D126B-0E28-4070-B57D-1C7128511E09}', '{F2D44D27-A3EB-4892-A260-7FF8D90AE3ED}',
+        '{AC6ECF31-E1D9-4A08-B7E2-9BF4EA138BFD}', '{D2B275D6-F12D-4AB1-B0E3-7E72E42309F6}',
+        '{8AC70A2E-6E62-47C1-8DAE-63481CF7E570}', '{1C94E9C9-8FE0-4647-B679-1C99721D8E5A}',
+        '{36E80F76-A84A-4C2E-9087-F6B6FC60B8F0}', '{442DAF3B-289D-45AC-855D-CD1AF79AD046}',
+        '{2F5AE3DF-9918-4BB3-ADAC-D6A02681E8C5}', '{B2775E94-5176-42F2-9161-C52EFD7BFFD5}',
+        '{614151D0-B8AE-4D85-83B3-70AFA3961E1A}', '{C9DD2778-546E-4E27-AEC1-C51BCA198172}',
+        '{BF09767E-0CB7-4DAF-9ABE-400EE03CB9D6}', '{72587C29-AB2F-42F4-AB8B-A54325CA7A71}',
+        '{1FA8B39E-07B5-4EAE-BABD-1B121131FEB2}', '{CFE37EEE-9148-4A1D-904C-05EBD63345DA}',
+        '{2C774E47-A888-4F31-8425-781628500874}', '{2F923C43-6CF5-44B7-A21F-AFDE607C417D}',
+        '{112A5C83-2207-4B94-9829-7433E8B82A7E}', '{2EE1C0D5-4631-47B3-B77E-CA5062732BA4}',
+        '{0D125A07-D3FE-4388-870A-0CAC77280683}', '{0155E162-901D-41DF-A260-AA8E6C833D9A}',
+        '{20F7ABC9-CC0F-47DD-B3FB-AA3D70140F1D}', '{407A2E2C-F8D7-4900-9F68-442774F9DD9E}',
+        '{E86311FF-9990-48CD-A04C-B3404FA5B395}', '{2CF5D03B-AD63-4BB4-A3C6-7FD1D595F810}',
+        '{8F2FCF64-7190-45B8-8DC4-4DAB5ED83425}', '{8673E73F-83A3-4C29-8BAB-516394436BC0}',
+        '{6B41E749-D67F-4975-A858-7EEB32532C12}', '{E953DD69-8BA7-4653-AFEE-622E42B77AE1}',
+        '{457B6C44-9A92-4F31-A071-359E8F000A70}', '{44FE2519-ABD7-4557-BD59-A1717928C539}',
+        '{0B7987AB-85E2-480C-B245-D4BECE95E8EB}', '{D5985070-E78C-4B9A-8075-929EE77AC4B0}',
+        '{F5D192C7-104E-4524-9DE0-36B34216B999}', '{65B4454A-4C0E-4DF0-BC32-18552466B306}',
+        '{8AE7199B-D50C-48AD-BB82-1C289443C4C1}', '{0FDDEF60-6FA8-4DA7-9E05-A8CC4A1C1C9B}',
+        '{033430AD-8978-459F-8CDA-2FD49B67752B}', '{85BD45E5-25CB-4FED-BBAE-2AA34286E556}',
+        '{E46DBEB4-628D-4DC6-BC13-32F42B6EF5F6}', '{D976C4CB-B3B6-43C9-87E9-F27E2BE826AE}',
+        '{91869554-E02E-4AB1-956F-AC1B54AF2158}', '{A88F3595-7DC9-455C-813D-66C6C687A9D1}',
+        '{44CAC131-3CA6-44A1-AFBD-3E083365D5F0}'
+      ]
+
+      web_adaptor['config_web_adaptor_exe'] = ::File.join(ENV['CommonProgramFiles'],
+                                                          'ArcGIS\\WebAdaptor\\IIS',
+                                                          node['arcgis']['version'],
+                                                          'Tools\\ConfigureWebAdaptor.exe').gsub('/', '\\')
+
+      web_adaptor['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Web Adaptor (IIS) 11.3\\Updates'
+
+      # ASP.NET Core Runtime 8 Hosting Bundle and Web Deploy 3.6 are required by ArcGIS Web Adaptor IIS 6. 
+      web_adaptor['dotnet_setup_url'] = 'https://download.visualstudio.microsoft.com/download/pr/2a7ae819-fbc4-4611-a1ba-f3b072d4ea25/32f3b931550f7b315d9827d564202eeb/dotnet-hosting-8.0.0-win.exe'
+      web_adaptor['dotnet_setup_path'] = ::File.join(node['arcgis']['repository']['setups'], 'dotnet-hosting-8.0.0-win.exe').gsub('/', '\\')
+
+      web_adaptor['web_deploy_setup_url'] = 'https://download.microsoft.com/download/0/1/D/01DC28EA-638C-4A22-A57B-4CEF97755C6C/WebDeploy_amd64_en-US.msi'
+      web_adaptor['web_deploy_setup_path'] = ::File.join(node['arcgis']['repository']['setups'], 'WebDeploy_amd64_en-US.msi').gsub('/', '\\')
     when '11.2'
       web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                          "ArcGIS #{node['arcgis']['version']}",
@@ -139,57 +187,6 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
         '{4A3B27C6-7CB1-4DE8-BCB1-221B9A23E2E1}'
       ]
       web_adaptor['patch_registry'] ='SOFTWARE\\WOW6432Node\\ESRI\\ArcGIS Web Adaptor (IIS) 10.9.1\\Updates'
-    when '10.9'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'ArcGIS_Web_Adaptor_for_Microsoft_IIS_109_177789.exe').gsub('/', '\\')
-      web_adaptor['product_codes'] = [
-        '{1FD4759C-6858-42AD-A1DC-6DA0C3B1D28C}', '{E3CBD7DB-60AE-45F3-B281-F9556781E602}',
-        '{D712233D-C35F-4A04-A7E8-6D3F00A40544}', '{D5EBAE28-7A5C-41E7-A04F-A1AAFF75C8AC}',
-        '{2F798220-41AF-4D8D-B425-98095F3DC287}', '{06B94095-F4F9-4434-8358-2E84965B6301}',
-        '{F2C06411-06A3-4617-8577-7975BD6CC32E}', '{10C21BB5-7E8C-47F6-AB6E-AC62300EA034}',
-        '{B0D3E289-039D-470C-A9DC-1EB9713B2458}', '{35838A3A-D572-4B2B-8C83-4F8A99324F92}',
-        '{CEEC063C-D280-490E-B795-373E7DE6266A}', '{4CB4458D-C08A-4DE8-9D0B-45C4E0B849F9}',
-        '{83605278-1596-4C33-8484-CF2BD4C07587}', '{A2AE04B5-879C-4E0A-B237-D642D8BBE3C7}',
-        '{38E1E357-BA81-4135-A11A-51FBC9C858DC}', '{947676E2-B5A6-49CB-A5AA-DFEB54D8F064}',
-        '{8E838EF7-0B7D-4E2A-AF21-4639AC6E5492}', '{37913C5B-A6BA-4F1D-B12F-AD505B91D05A}',
-        '{1C9C9C3C-CE4D-4F42-8A3B-78ECA6C57B8E}', '{0C000BEA-E770-4138-A707-CCB02E64469A}',
-        '{D5CEFB24-D0FD-4C73-8685-205222E08C12}'
-      ]
-      web_adaptor['patch_registry'] ='SOFTWARE\\WOW6432Node\\ESRI\\ArcGIS Web Adaptor (IIS) 10.9\\Updates'
-    when '10.8.1'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'ArcGIS_Web_Adaptor_for_Microsoft_IIS_1081_175217.exe').gsub('/', '\\')
-      web_adaptor['product_codes'] = [
-        '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}', '{56F26E70-2C61-45BC-A624-E100175086F7}',
-        '{996B7BC1-3AF4-4633-AF5F-F7BE67448F51}', '{0FB565D2-7C0E-4723-B086-C67443ADE5FD}',
-        '{246A7BFA-BE78-4031-A36D-F7BB95FFC5E2}', '{7D3E447C-3DB7-488D-AB11-C84A02476FF5}',
-        '{1B5B7A25-F639-44F8-987B-6CD8F88967BE}', '{4242D730-262E-45E0-8E1F-9060F03452C3}',
-        '{7CF4D730-F1D6-4D01-B750-D1BA7E55C3CC}', '{179DB6A6-DFE4-4AF1-92D5-2FDDD831A783}',
-        '{0F67B656-1ED6-4C87-9DB3-DA51ABEE40C0}', '{86F8D877-87EA-4296-9D48-64D7AE94330B}',
-        '{80FEB406-8086-42FE-B14B-C45A96B36894}', '{5990ACD0-4A80-4115-BFAE-F8DEB498A7C0}',
-        '{12E78447-5AD7-41DB-82E5-BEDAAE7242C0}', '{25A1ECD8-4FAA-4271-9586-6FD94549365D}',
-        '{221CCAE0-DA79-4C5E-ABCA-396E827334B1}', '{508FBAA8-FD44-4998-B797-1666BD41D804}',
-        '{23EB5093-17EE-45A0-AE9F-C96B6456C15F}', '{BEB8559D-6843-4EED-A2ED-7BA9325EF482}',
-        '{A12D63AE-3DE9-45A0-8799-F2BFF29A1665}'
-      ]
-      web_adaptor['patch_registry'] ='SOFTWARE\\WOW6432Node\\ESRI\\ArcGIS Web Adaptor (IIS) 10.8.1\\Updates'
-    when '10.8'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'Web_Adaptor_for_Microsoft_IIS_108_172749.exe').gsub('/', '\\')
-      web_adaptor['product_codes'] = [ 
-        '{D6059C27-7199-4A94-806B-6C40EFD02828}', '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}',
-        '{068CA630-558A-4C4A-983F-ECF5F8183FC9}', '{F168EBD1-CEDA-469B-89E4-E79C85253CB6}',
-        '{96229607-EC9D-4805-AF94-E1AC47676586}', '{D89375FD-6CAC-4204-8761-22F51B39E6A1}',
-        '{BABA485F-681E-4B5D-95EF-54CC738F4A0C}', '{AEFE7DEE-1EEE-4F99-BCA7-2193B86C7058}',
-        '{FC4B3333-7AEB-46C6-AD90-E071A18D653F}', '{119C0DB0-02B8-442C-B3F5-999D99C9D42F}',
-        '{89946E15-3E27-4F13-946F-30205F18D34B}', '{5B21D9CD-DDC8-4768-88F6-3C0633E7B97E}',
-        '{C0752042-FAAC-4A94-B5A4-918BE46B7595}', '{751ED05E-63BF-407C-9039-C72F33CC73D4}',
-        '{720EDDD5-B0FD-4E53-8F80-0F328EA8ABE0}', '{5FBFC270-1AEE-4E41-B7A2-47F7C742EF95}',
-        '{A46D3ECC-39D2-459C-9BC3-1C780CA5BCF1}', '{CAE80A6F-8046-47CE-B3F6-D2ACEDDDA99A}',
-        '{0B5C6775-B1D2-4D41-B233-FC2CDC913FEE}', '{278663A9-7CA3-40D5-84EA-CA7A9CABACB6}',
-        '{9452D085-0F4F-4869-B8B4-D660B4DD8692}'
-      ]
-      web_adaptor['patch_registry'] ='SOFTWARE\\WOW6432Node\\ESRI\\ArcGIS Web Adaptor (IIS) 10.8\\Updates'
     else
       Chef::Log.warn 'Unsupported ArcGIS Web Adaptor version'
     end
@@ -197,6 +194,32 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     # Product codes used to uninstall ArcGIS Web Adaptor during upgrades.
     # The list includes the first two-four product codes form each supported ArcGIS version.
     web_adaptor['all_product_codes'] = [
+      '{6D1FDF29-5DAB-4816-9CDE-15CF663E3BDD}', '{9DA66832-790E-4A08-90D8-3305D2C4F2A2}', # 11.3
+      '{E3DF9FCC-2078-4816-B195-EE30D1C74086}', '{87C9FEB8-73A7-436A-861E-74C3A3D7805B}',
+      '{3D881639-2227-4E9E-9380-C55991C92D3F}', '{7FB27776-2537-456E-BF4D-6E90B1050E16}',
+      '{013D126B-0E28-4070-B57D-1C7128511E09}', '{F2D44D27-A3EB-4892-A260-7FF8D90AE3ED}',
+      '{AC6ECF31-E1D9-4A08-B7E2-9BF4EA138BFD}', '{D2B275D6-F12D-4AB1-B0E3-7E72E42309F6}',
+      '{8AC70A2E-6E62-47C1-8DAE-63481CF7E570}', '{1C94E9C9-8FE0-4647-B679-1C99721D8E5A}',
+      '{36E80F76-A84A-4C2E-9087-F6B6FC60B8F0}', '{442DAF3B-289D-45AC-855D-CD1AF79AD046}',
+      '{2F5AE3DF-9918-4BB3-ADAC-D6A02681E8C5}', '{B2775E94-5176-42F2-9161-C52EFD7BFFD5}',
+      '{614151D0-B8AE-4D85-83B3-70AFA3961E1A}', '{C9DD2778-546E-4E27-AEC1-C51BCA198172}',
+      '{BF09767E-0CB7-4DAF-9ABE-400EE03CB9D6}', '{72587C29-AB2F-42F4-AB8B-A54325CA7A71}',
+      '{1FA8B39E-07B5-4EAE-BABD-1B121131FEB2}', '{CFE37EEE-9148-4A1D-904C-05EBD63345DA}',
+      '{2C774E47-A888-4F31-8425-781628500874}', '{2F923C43-6CF5-44B7-A21F-AFDE607C417D}',
+      '{112A5C83-2207-4B94-9829-7433E8B82A7E}', '{2EE1C0D5-4631-47B3-B77E-CA5062732BA4}',
+      '{0D125A07-D3FE-4388-870A-0CAC77280683}', '{0155E162-901D-41DF-A260-AA8E6C833D9A}',
+      '{20F7ABC9-CC0F-47DD-B3FB-AA3D70140F1D}', '{407A2E2C-F8D7-4900-9F68-442774F9DD9E}',
+      '{E86311FF-9990-48CD-A04C-B3404FA5B395}', '{2CF5D03B-AD63-4BB4-A3C6-7FD1D595F810}',
+      '{8F2FCF64-7190-45B8-8DC4-4DAB5ED83425}', '{8673E73F-83A3-4C29-8BAB-516394436BC0}',
+      '{6B41E749-D67F-4975-A858-7EEB32532C12}', '{E953DD69-8BA7-4653-AFEE-622E42B77AE1}',
+      '{457B6C44-9A92-4F31-A071-359E8F000A70}', '{44FE2519-ABD7-4557-BD59-A1717928C539}',
+      '{0B7987AB-85E2-480C-B245-D4BECE95E8EB}', '{D5985070-E78C-4B9A-8075-929EE77AC4B0}',
+      '{F5D192C7-104E-4524-9DE0-36B34216B999}', '{65B4454A-4C0E-4DF0-BC32-18552466B306}',
+      '{8AE7199B-D50C-48AD-BB82-1C289443C4C1}', '{0FDDEF60-6FA8-4DA7-9E05-A8CC4A1C1C9B}',
+      '{033430AD-8978-459F-8CDA-2FD49B67752B}', '{85BD45E5-25CB-4FED-BBAE-2AA34286E556}',
+      '{E46DBEB4-628D-4DC6-BC13-32F42B6EF5F6}', '{D976C4CB-B3B6-43C9-87E9-F27E2BE826AE}',
+      '{91869554-E02E-4AB1-956F-AC1B54AF2158}', '{A88F3595-7DC9-455C-813D-66C6C687A9D1}',
+      '{44CAC131-3CA6-44A1-AFBD-3E083365D5F0}',
       '{3F2DF3A0-0EB7-4DED-BA7F-A33B7B106252}', '{CAB137C6-98F0-4569-9484-719632E81CF6}', # 11.2
       '{899B1E0C-4675-4E52-BFBC-4FFF69DBAF8E}', '{4DE50EC3-6CB8-4EE5-B634-1AE53499F6D4}',
       '{A0ABE60F-0E01-4D84-A08B-EE34EFF96584}', '{066DEFEE-E71D-42F5-859E-225825268720}',
@@ -240,40 +263,7 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
       '{CA174887-E7C6-4DE9-8797-72CBD7FC4B1C}', '{B658575F-82ED-49BE-980C-D4A5089FCA7A}',
       '{CBEE526A-29B6-46FE-B7F8-B930A785CFF8}', '{76618450-9F2C-4FCC-9CDA-01A61F9E1953}',
       '{17591EF3-221C-4DD1-B773-6C9617925B5F}', '{566920BF-1EF3-4E62-B2BF-029475E35AAB}',
-      '{4A3B27C6-7CB1-4DE8-BCB1-221B9A23E2E1}',
-      '{1FD4759C-6858-42AD-A1DC-6DA0C3B1D28C}', '{E3CBD7DB-60AE-45F3-B281-F9556781E602}', # 10.9
-      '{D712233D-C35F-4A04-A7E8-6D3F00A40544}', '{D5EBAE28-7A5C-41E7-A04F-A1AAFF75C8AC}',
-      '{2F798220-41AF-4D8D-B425-98095F3DC287}', '{06B94095-F4F9-4434-8358-2E84965B6301}',
-      '{F2C06411-06A3-4617-8577-7975BD6CC32E}', '{10C21BB5-7E8C-47F6-AB6E-AC62300EA034}',
-      '{B0D3E289-039D-470C-A9DC-1EB9713B2458}', '{35838A3A-D572-4B2B-8C83-4F8A99324F92}',
-      '{CEEC063C-D280-490E-B795-373E7DE6266A}', '{4CB4458D-C08A-4DE8-9D0B-45C4E0B849F9}',
-      '{83605278-1596-4C33-8484-CF2BD4C07587}', '{A2AE04B5-879C-4E0A-B237-D642D8BBE3C7}',
-      '{38E1E357-BA81-4135-A11A-51FBC9C858DC}', '{947676E2-B5A6-49CB-A5AA-DFEB54D8F064}',
-      '{8E838EF7-0B7D-4E2A-AF21-4639AC6E5492}', '{37913C5B-A6BA-4F1D-B12F-AD505B91D05A}',
-      '{1C9C9C3C-CE4D-4F42-8A3B-78ECA6C57B8E}', '{0C000BEA-E770-4138-A707-CCB02E64469A}',
-      '{D5CEFB24-D0FD-4C73-8685-205222E08C12}',
-      '{9695EF78-A2A8-4383-AFBF-627C55FE31DC}', '{56F26E70-2C61-45BC-A624-E100175086F7}', # 10.8.1
-      '{996B7BC1-3AF4-4633-AF5F-F7BE67448F51}', '{0FB565D2-7C0E-4723-B086-C67443ADE5FD}',
-      '{246A7BFA-BE78-4031-A36D-F7BB95FFC5E2}', '{7D3E447C-3DB7-488D-AB11-C84A02476FF5}',
-      '{1B5B7A25-F639-44F8-987B-6CD8F88967BE}', '{4242D730-262E-45E0-8E1F-9060F03452C3}',
-      '{7CF4D730-F1D6-4D01-B750-D1BA7E55C3CC}', '{179DB6A6-DFE4-4AF1-92D5-2FDDD831A783}',
-      '{0F67B656-1ED6-4C87-9DB3-DA51ABEE40C0}', '{86F8D877-87EA-4296-9D48-64D7AE94330B}',
-      '{80FEB406-8086-42FE-B14B-C45A96B36894}', '{5990ACD0-4A80-4115-BFAE-F8DEB498A7C0}',
-      '{12E78447-5AD7-41DB-82E5-BEDAAE7242C0}', '{25A1ECD8-4FAA-4271-9586-6FD94549365D}',
-      '{221CCAE0-DA79-4C5E-ABCA-396E827334B1}', '{508FBAA8-FD44-4998-B797-1666BD41D804}',
-      '{23EB5093-17EE-45A0-AE9F-C96B6456C15F}', '{BEB8559D-6843-4EED-A2ED-7BA9325EF482}',
-      '{A12D63AE-3DE9-45A0-8799-F2BFF29A1665}',
-      '{D6059C27-7199-4A94-806B-6C40EFD02828}', '{E77ED9CA-7DC8-45FC-A8BB-57AD2096EF8A}', # 10.8
-      '{068CA630-558A-4C4A-983F-ECF5F8183FC9}', '{F168EBD1-CEDA-469B-89E4-E79C85253CB6}',
-      '{96229607-EC9D-4805-AF94-E1AC47676586}', '{D89375FD-6CAC-4204-8761-22F51B39E6A1}',
-      '{BABA485F-681E-4B5D-95EF-54CC738F4A0C}', '{AEFE7DEE-1EEE-4F99-BCA7-2193B86C7058}',
-      '{FC4B3333-7AEB-46C6-AD90-E071A18D653F}', '{119C0DB0-02B8-442C-B3F5-999D99C9D42F}',
-      '{89946E15-3E27-4F13-946F-30205F18D34B}', '{5B21D9CD-DDC8-4768-88F6-3C0633E7B97E}',
-      '{C0752042-FAAC-4A94-B5A4-918BE46B7595}', '{751ED05E-63BF-407C-9039-C72F33CC73D4}',
-      '{720EDDD5-B0FD-4E53-8F80-0F328EA8ABE0}', '{5FBFC270-1AEE-4E41-B7A2-47F7C742EF95}',
-      '{A46D3ECC-39D2-459C-9BC3-1C780CA5BCF1}', '{CAE80A6F-8046-47CE-B3F6-D2ACEDDDA99A}',
-      '{0B5C6775-B1D2-4D41-B233-FC2CDC913FEE}', '{278663A9-7CA3-40D5-84EA-CA7A9CABACB6}',
-      '{9452D085-0F4F-4869-B8B4-D660B4DD8692}'
+      '{4A3B27C6-7CB1-4DE8-BCB1-221B9A23E2E1}'
     ]
   else # node['platform'] == 'linux'
     web_adaptor['setup'] = ::File.join(node['arcgis']['repository']['setups'],
@@ -282,6 +272,9 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     web_adaptor['lp-setup'] = node['arcgis']['web_adaptor']['setup']
 
     case node['arcgis']['version']
+    when '11.3'
+      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                 'ArcGIS_Web_Adaptor_Java_Linux_113_190319.tar.gz')
     when '11.2'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'ArcGIS_Web_Adaptor_Java_Linux_112_188341.tar.gz')
@@ -294,15 +287,6 @@ default['arcgis']['web_adaptor'].tap do |web_adaptor|
     when '10.9.1'
       web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                  'ArcGIS_Web_Adaptor_Java_Linux_1091_180206.tar.gz')
-    when '10.9'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'ArcGIS_Web_Adaptor_Java_Linux_109_177888.tar.gz')
-    when '10.8.1'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'ArcGIS_Web_Adaptor_Java_Linux_1081_175313.tar.gz')
-    when '10.8'
-      web_adaptor['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                 'Web_Adaptor_Java_Linux_108_172992.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS Web Adaptor version'
     end

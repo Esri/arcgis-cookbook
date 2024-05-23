@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: install_portal
 #
-# Copyright 2018-2021 Esri
+# Copyright 2018-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ end
 
 arcgis_enterprise_portal 'Unpack Portal for ArcGIS' do
   setup_archive node['arcgis']['portal']['setup_archive']
+  unpack_options node['arcgis']['portal']['unpack_options']
   setups_repo node['arcgis']['repository']['setups']
   run_as_user node['arcgis']['run_as_user']
   only_if { ::File.exist?(node['arcgis']['portal']['setup_archive']) &&

@@ -1,0 +1,25 @@
+{
+    "arcgis": {
+      "version": "11.3",
+      "run_as_user": "arcgis", 
+      "run_as_password": "<run_as_password>",
+      "repository": {
+        "archives": "C:\\Software\\Archives",
+        "setups": "C:\\Software\\Setups"
+      },
+      "mission_server": {
+        "wa_name": "mission"
+      },
+      "web_adaptor": {
+          "install_system_requirements": true,
+          "dotnet_setup_path": "C:\\Software\\Archives\\dotnet-hosting-8.0.0-win.exe",
+          "web_deploy_setup_path": "C:\\Software\\Archives\\WebDeploy_amd64_en-US.msi"
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-enterprise::system]",
+      "recipe[esri-iis::install]",
+      "recipe[arcgis-mission::install_server_wa]"
+    ]
+  }
+  

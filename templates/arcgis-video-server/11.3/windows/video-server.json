@@ -1,0 +1,29 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "video_server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Video",
+            "install_system_requirements": true,
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.3\\VideoServer.prvc",
+            "admin_username": "<video_server_admin_username>",
+            "admin_password": "<video_server_admin_password>",
+            "directories_root": "C:\\arcgisvideoserver",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "C:\\arcgisvideoserver\\config-store",
+            "log_level": "WARNING",
+            "log_dir": "C:\\arcgisvideoserver\\logs",
+            "configure_autostart": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-video::server]"
+    ]
+}

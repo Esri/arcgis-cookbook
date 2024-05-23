@@ -1,0 +1,46 @@
+{
+  "arcgis": {
+    "version": "11.3",
+    "repository": {
+      "local_archives": "C:\\Software\\Archives",
+      "server": {
+        "s3bucket": "arcgisstore-us-east-1",
+        "region": "us-east-1",
+        "aws_access_key": "",
+        "aws_secret_access_key": ""
+      },
+      "files": {
+        "ArcGIS_Server_Windows_113_190188.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "ArcGIS_Server_Windows_113_190188.exe.001": {
+          "subfolder": "11.3/setups"
+        },
+        "Portal_for_ArcGIS_Windows_113_189790.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "Portal_for_ArcGIS_Windows_113_189790.exe.001": {
+          "subfolder": "11.3/setups"
+        },
+        "Portal_for_ArcGIS_Web_Styles_Windows_113_190232.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "ArcGIS_DataStore_Windows_113_190233.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "ArcGIS_Web_Adaptor_for_Microsoft_IIS_113_190234.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "dotnet-hosting-8.0.0-win.exe": {
+          "subfolder": "11.3/thirdparty"
+        },
+        "WebDeploy_amd64_en-US.msi": {
+          "subfolder": "11.3/thirdparty"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::s3files2]"
+  ]
+}

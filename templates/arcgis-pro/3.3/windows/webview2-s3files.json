@@ -1,0 +1,21 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "MicrosoftEdgeWebview2Setup.exe": {
+                    "subfolder": "11.3/thirdparty"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

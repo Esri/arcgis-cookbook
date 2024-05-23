@@ -11,6 +11,25 @@ order: 6
 
 Changes made in each version of the Chef Cookbooks for ArcGIS.
 
+## 5.0.0
+
+- Added support for ArcGIS Enterprise 11.3.
+- Added support for ArcGIS Insights 2023.2 and 2023.3.
+- Added support for ArcGIS License Manager 2024.0.
+- Added support for ArcGIS Pro 3.3.
+- Added arcgis-video cookbook.
+- Added arcgis-license-manager cookbook.
+- Removed arcgis-desktop cookbook.
+- Dropped support for Chef 14.
+- Updated third party cookbooks to latest versions.
+
+## 4.2.0
+
+- Added support for ArcGIS Enterprise 11.2.
+- Added support for ArcGIS Pro 3.2.
+- Added support for ArcGIS Insights 2023.1.
+- Added support for ArcGIS License Manager 2023.0.
+
 ## 4.1.0
 
 - Added support for ArcGIS Enterprise 11.1.

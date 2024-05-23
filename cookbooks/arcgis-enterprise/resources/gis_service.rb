@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: gis_service
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+unified_mode true
 
 actions :publish, :start, :stop, :delete, :add_permission, :clean_permissions, :upload_item
 

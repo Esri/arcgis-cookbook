@@ -1,0 +1,12 @@
+{
+  "arcgis": {
+    "version": "11.3",
+    "video_server": {
+      "admin_username": "<video_server_admin_username>",
+      "admin_password": "<video_server_admin_password>"
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-video::unregister_server_wa]"
+  ]
+}

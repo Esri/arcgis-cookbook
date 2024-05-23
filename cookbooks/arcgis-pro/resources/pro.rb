@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-pro
 # Resource:: pro
 #
-# Copyright 2015 Esri
+# Copyright 2015-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+unified_mode true
 
 actions :system, :unpack, :install, :uninstall, :patches, :authorize
 

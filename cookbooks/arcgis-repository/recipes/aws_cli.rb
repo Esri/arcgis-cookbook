@@ -2,7 +2,7 @@
 # Cookbook:: arcgis-repository
 # Recipe:: aws_cli
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@
 
 if node['platform'] == 'windows'
   windows_package 'Install AWS CLI' do
-    source node['arcgis']['repository']['server']['aws_cli_msi_url']
+    source node['arcgis']['repository']['aws_cli']['msi_url']
     options '/qn'
     installer_type :msi
     returns [0, 3010, 1638]
+    not_if 'aws --version'
     action :install
   end
 
@@ -33,14 +34,16 @@ else
 
   remote_file 'Download AWS CLI Linux ZIP' do
     path "#{Chef::Config['file_cache_path']}/awscliv2.zip"
-    source node['arcgis']['repository']['server']['aws_cli_zip_url']
-    not_if 'which aws'
+    source node['arcgis']['repository']['aws_cli']['zip_url']
+    not_if  { ::File.exist?(::File.join(node['arcgis']['repository']['aws_cli']['bin_dir'], 'aws')) }
     action :create
   end
 
   execute 'Install AWS CLI' do
-    command 'unzip awscliv2.zip && sudo ./aws/install'
+    command "unzip awscliv2.zip && sudo ./aws/install"\
+            " --install-dir #{node['arcgis']['repository']['aws_cli']['install_dir']}"\
+            " --bin-dir #{node['arcgis']['repository']['aws_cli']['bin_dir']}"
     cwd Chef::Config['file_cache_path']
-    not_if 'which aws'
+    not_if  { ::File.exist?(::File.join(node['arcgis']['repository']['aws_cli']['bin_dir'], 'aws')) }
   end
 end

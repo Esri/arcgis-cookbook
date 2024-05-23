@@ -1,0 +1,20 @@
+{
+    "arcgis": {
+        "portal": {
+            "private_url": "https://portal.domain.com/portal",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "root_cert": "",
+            "root_cert_alias": "videoserver"
+        },
+        "video_server": {
+            "web_context_url": "https://server.domain.com/video",
+            "private_url": "https://server.domain.com/video",
+            "admin_username": "<video_server_admin_username>",
+            "admin_password": "<video_server_admin_password>"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-video::federation]"
+    ]
+}

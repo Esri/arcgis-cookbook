@@ -9,11 +9,4 @@ metadata
 group :integration do
   cookbook 'arcgis-repository', path: '../arcgis-repository'
   cookbook 'arcgis-enterprise', path: '../arcgis-enterprise'
-  cookbook 'apt'
-  cookbook 'aws'
-  cookbook 'postgresql'
-  cookbook 'seven_zip'
-  cookbook 'tar'
-  fixture  'download-setups-s3'
-  fixture  'postgresql-test'
 end

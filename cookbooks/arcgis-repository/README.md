@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-repository cookbook"
 category: cookbooks
 item: arcgis-repository
-version: 4.2.0
+version: 5.0.0
 latest: true
 ---
 
@@ -13,26 +13,27 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 
 ## Supported ArcGIS versions
 
-* 10.8
-* 10.8.1
-* 10.9
 * 10.9.1
 * 11.0
 * 11.1
+* 11.2
+* 11.3
 
 ## Platforms
 
-* Windows 8 (8.1)
 * Windows 10
-* Windows Server 2012 (R2)
 * Windows Server 2016
 * Windows Server 2019
 * Windows Server 2022
-* Ubuntu Server 18.04 and 20.04 LTS
+* Ubuntu Server 20.04 LTS
+* Ubuntu Server 22.04 LTS
 * Red Hat Enterprise Linux Server 8
+* Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
 * Oracle Linux 8
+* Oracle Linux 9
 * Rocky Linux 8
+* Rocky Linux 9
 * AlmaLinux 9
 
 ## Dependencies
@@ -58,6 +59,12 @@ The following cookbooks are required:
 * `node['arcgis']['repository']['patch_notification']['url']` = ArcGIS patch notification file URL. The default URL is `https://downloads.esri.com/patch_notification/patches.json`.
 * `node['arcgis']['repository']['patch_notification']['products']` = An array or ArcGIS product names used to filter downloaded patches. If the array is empty, patches are downloaded for all products. The default value is `[]`.
 * `node['arcgis']['repository']['patch_notification']['versions']` = An array of ArcGIS versions used to filter downloaded patches. The default value is `[node['arcgis']['version']]`.
+* `node['arcgis']['repository']['patch_notification']['subfolder']` = S3 bucket subfolder with patches. The default value is `nil`.
+* `node['arcgis']['repository']['patch_notification']['patches']` = An array of file name patterns used to filter downloaded patches. The default value is `[]`.
+* `node['arcgis']['repository']['aws_cli']['msi_url']` = AWS CLI MSI setup URL. The default URL is `https://awscli.amazonaws.com/AWSCLIV2.msi`.
+* `node['arcgis']['repository']['aws_cli']['zip_url']` = AWS CLI ZIP setup URL. The default URL is `https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip`.
+* `node['arcgis']['repository']['aws_cli']['bin_dir']` = The main `aws` program in the install directory is symbolically linked to the file `aws` in the specified path. The default directory is `/usr/local/bin`.
+* `node['arcgis']['repository']['aws_cli']['install_dir']` = AWS CLI installation directory. The default directory is `/usr/local/aws-cli`
 
 ## Recipes
 
@@ -65,8 +72,20 @@ The following cookbooks are required:
 
 Downloads and installs AWS CLI on the machine.
 
-```
+Attributes used by the recipe:
+
+```json
 {
+  "arcgis": {
+    "repository": {
+      "aws_cli": {
+        "msi_url": "https://awscli.amazonaws.com/AWSCLIV2.msi",
+        "zip_url": "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip",
+        "bin_dir": "/usr/local/bin",
+        "install_dir": "/usr/local/aws-cli"
+      }
+    }
+  },
   "run_list": [
     "recipe[arcgis-repository::aws_cli]"
   ]
@@ -184,6 +203,8 @@ Attributes used by the recipe:
 
 Downloads files from the ArcGIS software repository in S3 to the local repository specified by the node['arcgis']['repository']['local_archives'] attribute.
 
+Downloads patches form S3 subfolder specified by node['arcgis']['repository']['patch_notification']['subfolder'] attribute to the local patches repository specified by node['arcgis]['repository']['local_patches'] attribute.
+
 The s3files2 recipe invokes arcgis-repository::aws_cli recipe to install AWS CLI on the machine.
 
 Attributes used by the recipe:
@@ -192,16 +213,23 @@ Attributes used by the recipe:
 {
    "arcgis":{
       "repository":{
-         "local_archives":"C:\\Software\\Archives",
-         "server":{
-            "region": "us-east-1",
-            "s3bucket":"arcgisstore-us-east-1",
-            "aws_access_key":"<access_key>",
-            "aws_secret_access_key":"<secret_key>"
-         },
-         "files": {
+        "local_archives":"C:\\Software\\Archives",
+        "local_patches":"C:\\Software\\Archives\\Patches",
+        "server":{
+          "region": "us-east-1",
+          "s3bucket":"arcgisstore-us-east-1",
+          "aws_access_key":"<access_key>",
+          "aws_secret_access_key":"<secret_key>"
+        },
+        "patch_notification": {
+          "subfolder": "<s3 bucket folder>",
+          "patches": [
+            "*.msp"
+          ]
+        },
+        "files": {
           "<file name>": {
-            "subfolder": "<folder>"
+            "subfolder": "<s3 bucket folder>"
           }
         }
       }

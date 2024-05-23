@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-tomcat
 # Recipe:: install
 #
-# Copyright 2022 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ instance_name = node['tomcat']['instance_name']
 tomcat_install instance_name do
   version node['tomcat']['version']
   install_path node['tomcat']['install_path']
+  tarball_base_uri node['tomcat']['tarball_base_uri']
+  checksum_base_uri node['tomcat']['checksum_base_uri']
   tarball_path node['tomcat']['tarball_path']
   verify_checksum node['tomcat']['verify_checksum']
   tomcat_user node['tomcat']['user']

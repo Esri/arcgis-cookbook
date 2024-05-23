@@ -31,7 +31,7 @@ end
 default['arcgis']['run_as_msa'] = false
 default['arcgis']['run_as_user_auth_keys'] = nil
 
-default['arcgis']['version'] = '11.2'
+default['arcgis']['version'] = '11.3'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: server
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -107,6 +107,7 @@ default['arcgis']['server'].tap do |server|
   server['security']['privileges'] = {'PUBLISH' => [], 'ADMINISTER' => []}
   server['setup_archive'] = ''
   server['product_code'] = ''
+  server['unpack_options'] = ''
 
   # disable nodeagent plugins on aws ec2
   server['disable_nodeagent_plugins'] = true
@@ -143,6 +144,15 @@ default['arcgis']['server'].tap do |server|
                                                   'ServerConfigurationUtility.exe').gsub('/', '\\')    
 
     case node['arcgis']['version']
+    when '11.3'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_113_190188.exe').gsub('/', '\\')
+      server['product_code'] = '{BFADF38F-B9D3-40E6-AFD5-7DA1DA5BD349}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        server_install_dir, 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.3\\Updates'        
+      server['unpack_options'] = '/x'
     when '11.2'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_112_188239.exe').gsub('/', '\\')
@@ -181,41 +191,6 @@ default['arcgis']['server'].tap do |server|
       default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
                                                                      "ArcGISx6410.9").gsub('/', '\\')
       server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.9\\Updates'
-      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
-      server['configuration_utility'] = ::File.join(server_install_dir,
-                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
-    when '10.9'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_109_177775.exe').gsub('/', '\\')
-      server['product_code'] = '{32A62D8E-BE72-4B28-AA0E-FE546D827240}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.9").gsub('/', '\\')
-      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.9\\Updates'
-      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
-      server['configuration_utility'] = ::File.join(server_install_dir,
-                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
-    when '10.8.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_1081_175203.exe').gsub('/', '\\')
-      server['product_code'] = '{E9B85E31-4C31-4528-996B-F06E213F8BB3}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.8").gsub('/', '\\')
-      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.8\\Updates'
-      server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
-      server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-                                                 'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
-      server['configuration_utility'] = ::File.join(server_install_dir,
-                                                    'bin', 'ServerConfigurationUtility.exe').gsub('/', '\\')
-    when '10.8'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Windows_108_172859.exe').gsub('/', '\\')
-      server['product_code'] = '{458BF5FF-2DF8-426B-AEBC-BE4C47DB6B54}'
-      default['arcgis']['python']['runtime_environment'] = File.join(node['arcgis']['python']['install_dir'], 
-                                                                     "ArcGISx6410.8").gsub('/', '\\')
-      server['patch_registry'] = 'SOFTWARE\\ESRI\\Server10.8\\Updates'
-      server['geoanalytics_ports'] = '2181,2182,2190,7077,56540-56545'
       server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
                                                  'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')      
       server['configuration_utility'] = ::File.join(server_install_dir,
@@ -269,6 +244,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.3'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_113_190305.tar.gz')
     when '11.2'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_112_188327.tar.gz')
@@ -281,15 +259,6 @@ default['arcgis']['server'].tap do |server|
     when '10.9.1'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_1091_180182.tar.gz')
-    when '10.9'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_109_177864.tar.gz')
-    when '10.8.1'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_1081_175289.tar.gz')
-    when '10.8'
-      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                            'ArcGIS_Server_Linux_108_172977.tar.gz')
     else
       Chef::Log.warn 'Unsupported ArcGIS Server version'
     end

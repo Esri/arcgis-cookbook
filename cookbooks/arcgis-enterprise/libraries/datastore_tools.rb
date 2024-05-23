@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,21 +81,27 @@ module ArcGIS
       nil
     end
 
-    def configure_datastore(stores, server_url, username, password, data_dir, mode = nil)
+    def configure_datastore(stores, server_url, username, password, data_dir, mode, roles)
       args = "\"#{server_url}\" \"#{username}\" \"#{password}\" \"#{data_dir}\" --stores #{stores}"
 
-      # Add --mode parameter for post 10.8.1 tilecache and object data stores 
+      # Add --mode parameter for tilecache and object data stores 
       # if the last known status is not 'Upgrading'.
       if !mode.nil? && !mode.empty? &&
-         Gem::Version.new(@version) >= Gem::Version.new('10.8.1') &&
          stores.downcase.include?('tilecache') &&
          last_known_status(data_dir) != 'Upgrading'
         args += " --mode #{mode}"
       elsif !mode.nil? && !mode.empty? &&
-        stores.downcase.include?('object') &&
-        mode.downcase == 'cluster' &&
-        last_known_status(data_dir) != 'Upgrading'
-       args += " --mode cluster"
+         stores.downcase.include?('object') &&
+         mode.downcase == 'cluster' &&
+         last_known_status(data_dir) != 'Upgrading'
+        args += " --mode cluster"
+      end
+
+      ## Add --roles parameter for post 11.3 spatiotemporal data store
+      if !roles.nil? && !roles.empty? &&
+         Gem::Version.new(@version) >= Gem::Version.new('11.3') &&
+         stores.downcase.include?('spatiotemporal')
+        args += " --roles #{roles}"
       end
 
       if @platform == 'windows'

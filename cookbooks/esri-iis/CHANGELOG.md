@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the esri-iis cookbook.
 
+## 0.3.0
+
+- Updated required cookbooks and Chef version.
+
 ## 0.2.1
 
 - Don't use default passwords.

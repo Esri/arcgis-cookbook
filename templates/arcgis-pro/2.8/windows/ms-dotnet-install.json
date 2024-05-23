@@ -1,9 +1,0 @@
-{
-  "ms_dotnet": {
-    "version": "4.8",
-    "setup": "C:\\Software\\Archives\\ndp48-x86-x64-allos-enu.exe"
-  },
-  "run_list": [
-    "recipe[arcgis-pro::ms_dotnet]"
-  ]
-}

@@ -1,0 +1,20 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "fileserver": {
+            "directories": [
+                "C:\\arcgisserver"
+            ],
+            "shares": [
+                "C:\\arcgisserver"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+	    "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: portal
 #
-# Copyright 2018 Esri
+# Copyright 2018-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,8 +76,7 @@ arcgis_enterprise_portal 'Create Portal Site' do
   object_store node['arcgis']['portal']['object_store']
   upgrade_backup node['arcgis']['portal']['upgrade_backup']
   upgrade_rollback node['arcgis']['portal']['upgrade_rollback']
-  retries 5
-  retry_delay 600
+  enable_debug node['arcgis']['portal']['enable_debug']
   action :create_site
 end
 

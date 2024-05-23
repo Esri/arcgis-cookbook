@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-tomcat
 # Recipe:: openjdk
 #
-# Copyright 2021 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ end
 
 execute 'remove java alternatives' do
   command 'update-alternatives --remove-all java'
-  only_if 'update-alternatives --list java'
+  only_if 'update-alternatives --display java'
 end
 
 execute 'update java alternatives' do
