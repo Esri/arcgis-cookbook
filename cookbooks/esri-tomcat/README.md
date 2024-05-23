@@ -3,7 +3,7 @@ layout: default
 title: "esri-tomcat cookbook"
 category: cookbooks
 item: esri-tomcat
-version: 0.2.2
+version: 0.3.0
 latest: true
 ---
 
@@ -13,16 +13,21 @@ This cookbook installs and configures Apache Tomcat for use with ArcGIS Web Adap
 
 ## Supported Platforms
 
-* Ubuntu Server 18.04 and 20.04 LTS
+* Ubuntu Server 20.04 LTS
+* Ubuntu Server 22.04 LTS
 * Red Hat Enterprise Linux Server 8
+* Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
 * Oracle Linux 8
+* Oracle Linux 9
 * Rocky Linux 8
+* Rocky Linux 9
 * AlmaLinux 9
 
 ## Dependencies
 
 The following cookbooks are required:
+
 * tomcat
 * openssl
 
@@ -30,9 +35,11 @@ The following cookbooks are required:
 
 ### General
 
-* `node['tomcat']['version']` = Tomcat version to install. Default is `9.0.48`.
+* `node['tomcat']['version']` = Tomcat version to install. Default is `9.0.83`.
 * `node['tomcat']['instance_name']` = Tomcat instance name. Default is `arcgis`.
 * `node['tomcat']['install_path']` = Tomcat installation directory. Default is `/opt/tomcat_INSTANCENAME_VERSION`.
+* `node['tomcat']['tarball_base_uri']` = The base URI to the apache mirror containing the tarballs. Default is `https://archive.apache.org/dist/tomcat/`.
+* `node['tomcat']['checksum_base_uri']`  = The base URI to the apache mirror containing the md5 or sha512 file. Default URI is `https://archive.apache.org/dist/tomcat/`.
 * `node['tomcat']['tarball_path']` = Tomcat tarball archive path. Default is `<Chef file cache path>/apache-tomcat-<tomcat version>.tar.gz`.
 * `node['tomcat']['verify_checksum']` = Verify checksum of downloaded Tomcat tarball. Default value is `true`.
 * `node['tomcat']['forward_ports']` = If set to `true`, default recipe includes the 'firewalld' or 'iptables' recipe. Default value is `true`.
@@ -54,9 +61,9 @@ The following cookbooks are required:
 
 ### OpenJDK
 
-* `node['java']['version']` = Major Java version. Default version is `11`.
-* `node['java']['tarball_uri']` = JDK tarball URI. Default URI is `https://download.java.net/java/ga/jdk11/openjdk-11_linux-x64_bin.tar.gz`.
-* `node['java']['tarball_path']` = JDK tarball local path. Default path is `<file_cache_path>/openjdk-11_linux-x64_bin.tar.gz`.
+* `node['java']['version']` = Major Java version. Default version is `11.0.21+9`.
+* `node['java']['tarball_uri']` = JDK tarball URI. Default URI is `https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz`.
+* `node['java']['tarball_path']` = JDK tarball local path. Default path is `<file_cache_path>/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz`.
 * `node['java']['install_path']` = JDK installation path. Default path is `/opt`.
 
 ## Recipes

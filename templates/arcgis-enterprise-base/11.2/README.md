@@ -4,7 +4,7 @@ title: "arcgis-enterprise-base template"
 category: templates
 item: arcgis-enterprise-base
 version: "11.2"
-latest: true
+latest: false
 ---
 
 # arcgis-enterprise-base Deployment Template
@@ -22,7 +22,7 @@ The base ArcGIS Enterprise deployment machines include the following components:
 
 ## System Requirements
 
-Consult the ArcGIS Enterprise 11.1 system requirements documentation for the required/recommended hardware specification.
+Consult the ArcGIS Enterprise 11.2 system requirements documentation for the required/recommended hardware specification.
 
 ### Recommended Chef Client versions
 
@@ -150,7 +150,7 @@ chef-client -z -j arcgis-enterprise-patches-apply.json
 
 > It's not recommended to upgrade a base ArcGIS Enterprise deployment using the deployment template if it was not initially deployed using an earlier version of the template.
 
-To upgrade a base ArcGIS Enterprise deployed using the arcgis-enterprise-base deployment template to the 11.1 version, you will need:
+To upgrade a base ArcGIS Enterprise deployed using the arcgis-enterprise-base deployment template to the 11.2 version, you will need:
 
 * ArcGIS 11.2 setup archives,
 * ArcGIS 11.2 software authorization files,
@@ -162,7 +162,7 @@ Upgrading a highly available base ArcGIS Enterprise deployment may take several 
 
 Before starting the upgrade process, it's highly recommended to backup ArcGIS Enterprise using the webgisdr utility. To prevent operating system updates during the upgrade process, it's recommended to install all the recommended/required OS updates before upgrading ArcGIS Enterprise.
 
-The attributes defined in the upgrade JSON files must match the actual deployment configuration. To make upgrade JSON files, update the 11.1 template JSON files by copying the attribute values from the JSON files used for the initial deployment or the last upgrade.
+The attributes defined in the upgrade JSON files must match the actual deployment configuration. To make upgrade JSON files, update the 11.2 template JSON files by copying the attribute values from the JSON files used for the initial deployment or the last upgrade.
 
 > In some cases, the difference between the original and the new deployment template JSON files will be only in the value of arcgis.version attribute. In those cases, the easiest way to make the upgrade JSON files is to change the arcgis.version attribute values to the new version. But the new deployment templates might change recipes in the run_list, add new attributes, and introduce other significant changes. To keep the upgrade JSON files in sync with the new deployment template's version, it's recommended to update the new deployment templates instead of the original JSON files.
 

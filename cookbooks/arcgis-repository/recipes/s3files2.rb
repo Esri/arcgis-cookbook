@@ -2,7 +2,7 @@
 # Cookbook:: arcgis-repository
 # Recipe:: s3files2
 #
-# Copyright 2023 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,14 +46,43 @@ env = if aws_access_key.nil? || aws_access_key.empty?
         'AWS_SECRET_ACCESS_KEY' => node['arcgis']['repository']['server']['aws_secret_access_key']}
       end
 
+aws = node['platform'] == 'windows' ? 'aws' : ::File.join(node['arcgis']['repository']['aws_cli']['bin_dir'], 'aws')
+
 node['arcgis']['repository']['files'].each do |filename, props|
   # Download the remote file from S3
   s3_key = props['subfolder'].nil? ? filename : ::File.join(props['subfolder'], filename)
   path = ::File.join(node['arcgis']['repository']['local_archives'], filename)
 
   execute "Download #{filename}" do
-    command "aws s3 cp s3://#{s3_bucket}/#{s3_key} #{path} --region #{s3_region} --no-progress"
+    command "#{aws} s3 cp s3://#{s3_bucket}/#{s3_key} #{path} --region #{s3_region} --no-progress"
     environment env
     not_if { ::File.exist?(::File.join(node['arcgis']['repository']['local_archives'], filename)) }
   end
+end
+
+# Download patches
+
+patch_notification = node['arcgis']['repository']['patch_notification']
+src = "s3://#{s3_bucket}/#{patch_notification['subfolder']}"
+dst = node['arcgis']['repository']['local_patches']
+
+filters = '--exclude "*"'
+
+patch_notification['patches'].each do |patch|
+  filters += " --include \"#{patch}\""
+end
+
+# Create patches directory
+directory dst do
+  mode '0755' if node['platform'] != 'windows'
+  recursive true
+  not_if { patch_notification['subfolder'].nil? }  
+  action :create
+end
+
+execute "Download ArcGIS patches from S3 repository" do
+  command "#{aws} s3 cp #{src} #{dst} #{filters} --recursive --region #{s3_region} --no-progress"
+  environment env
+  live_stream true
+  not_if { patch_notification['subfolder'].nil? }
 end

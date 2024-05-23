@@ -4,16 +4,14 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs and configures ArcGIS Enterprise'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '4.2.0'
-chef_version     '>= 14.0' if defined? chef_version
+version          '5.0.0'
+chef_version     '>= 15.3' if defined? chef_version
 
-depends          'arcgis-repository', '~> 4.2'
+depends          'arcgis-repository', '~> 5.0'
 depends          'hostsfile', '~> 3.0'
-depends          'limits', '~> 1.0'
-depends          'windows', '~> 5.3'
-depends          'windows_firewall', '~> 5.0'
-depends          'ms_dotnet', '~> 4.2'
-depends          'nfs', '~> 2.6'
+depends          'limits', '~> 2.3'
+depends          'ms_dotnet', '~> 6.0'
+depends          'nfs', '~> 5.1'
 depends          'java_properties', '~> 0.1'
 
 supports         'windows'
@@ -75,6 +73,8 @@ recipe 'arcgis-enterprise::unregister_machine', 'Unregisters server machine from
 recipe 'arcgis-enterprise::unregister_machines', 'Unregisters from the ArcGIS Server site all the server machines except for the local machine'
 recipe 'arcgis-enterprise::unregister_stopped_machines', 'Unregisters all unavailable server machines in \'default\' cluster from the ArcGIS Server site'
 recipe 'arcgis-enterprise::unregister_server_wa', 'Unregisters all ArcGIS Server Web Adaptors'
+recipe 'arcgis-enterprise::webgisdr_export', 'Creates ArcGIS Enterprise backup using WebGISDR utility'
+recipe 'arcgis-enterprise::webgisdr_import', 'Restores ArcGIS Enterprise from backup using WebGISDR utility'
 recipe 'arcgis-enterprise::webstyles', 'Installs Portal for ArcGIS Web Styles'
 
 issues_url 'https://github.com/Esri/arcgis-cookbook/issues' if respond_to?(:issues_url)

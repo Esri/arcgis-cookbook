@@ -1,0 +1,31 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "server": {
+                "s3bucket": "arcgisstore-us-east-1",
+                "region": "us-east-1",
+                "aws_access_key": "",
+                "aws_secret_access_key": ""
+            },
+            "files": {
+                "VC_redist.x64.exe": {
+                    "subfolder": "11.3/thirdparty"
+                },
+                "msodbcsql13.msi": {
+                    "subfolder": "11.3/thirdparty"
+                },
+                "msodbcsql17.msi": {
+                    "subfolder": "11.3/thirdparty"
+                },
+                "MsSqlCmdLnUtils.msi": {
+                    "subfolder": "11.3/thirdparty"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::s3files2]"
+    ]
+}

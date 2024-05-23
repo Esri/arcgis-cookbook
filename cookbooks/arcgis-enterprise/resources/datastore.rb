@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: datastore
 #
-# Copyright 2022 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+unified_mode true
+
 actions :system, :unpack, :install, :uninstall, :update_account, :configure_autostart,
         :stop, :start, :configure, :configure_backup_location, :prepare_upgrade,
         :configure_hostidentifiers_properties, :remove_machine
@@ -30,6 +32,7 @@ attribute :data_dir, :kind_of => String
 attribute :backup_dir, :kind_of => String
 attribute :types, :kind_of => String, :default => 'tileCache,relational'
 attribute :mode, :kind_of => String
+attribute :roles, :kind_of => String
 attribute :run_as_user, :kind_of => String
 attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false

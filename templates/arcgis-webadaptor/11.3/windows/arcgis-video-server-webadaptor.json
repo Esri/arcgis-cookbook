@@ -1,0 +1,36 @@
+{
+    "arcgis": {
+      "version": "11.3",
+      "run_as_user": "arcgis", 
+      "run_as_password": "<run_as_password>",
+      "configure_windows_firewall": true,
+      "repository": {
+        "archives": "C:\\Software\\Archives",
+        "setups": "C:\\Software\\Setups"
+      },
+      "iis": {
+        "keystore_file": "C:\\Temp\\keystore.pfx",
+        "keystore_password": "<keystore_password>",
+        "replace_https_binding": true
+      },
+      "video_server": {
+        "wa_name": "video",
+        "url": "https://localhost:21443/arcgis",
+        "wa_url": "https://localhost/video",
+        "admin_username": "<video_server_admin_username>",
+        "admin_password": "<video_server_admin_password>"
+      },
+      "web_adaptor": {
+        "install_system_requirements": true,
+        "dotnet_setup_path": "C:\\Software\\Archives\\dotnet-hosting-8.0.0-win.exe",
+        "web_deploy_setup_path": "C:\\Software\\Archives\\WebDeploy_amd64_en-US.msi",
+        "admin_access": true
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-enterprise::system]",
+      "recipe[esri-iis]",
+      "recipe[arcgis-video::server_wa]"
+    ]
+  }
+  

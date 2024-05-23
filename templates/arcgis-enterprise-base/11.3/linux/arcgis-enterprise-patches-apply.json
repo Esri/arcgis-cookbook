@@ -1,0 +1,36 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-113-PFA-*.tar",
+                "ArcGIS-113-PFA-*.tar.gz"
+            ]
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-113-S-*.tar",
+                "ArcGIS-113-S-*.tar.gz"
+            ]
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-113-DS-*.tar",
+                "ArcGIS-113-DS-*.tar.gz"
+            ]
+        },
+        "web_adaptor": {
+            "patches": []
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

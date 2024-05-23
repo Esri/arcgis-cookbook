@@ -7,15 +7,17 @@ arcgis cookbook is a collection of Chef cookbooks for ArcGIS configuration manag
 
 The following cookbooks are required:
 
-* arcgis-desktop
 * arcgis-egdb
 * arcgis-enterprise
 * arcgis-geoevent
 * arcgis-insights
+* arcgis-license-manager
+* arcgis-mission
+* arcgis-notebooks
 * arcgis-pro
 * arcgis-repository
-* arcgis-notebooks
-* arcgis-mission
+* arcgis-video
+* arcgis-workflow-manager
 * esri-iis
 * esri-tomcat
 
@@ -37,7 +39,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 Licensing
 ---------
 
-Copyright 2021 Esri
+Copyright 2024 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

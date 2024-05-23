@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Resource:: portal
 #
-# Copyright 2022 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +17,15 @@
 # limitations under the License.
 #
 
+unified_mode true
+
 actions :system, :unpack, :install, :uninstall, :stop, :start,
         :update_account, :configure_autostart, :authorize,
         :create_site, :join_site, :set_system_properties, :configure_https,
         :unregister_standby, :register_server, :federate_server,
         :unfederate_server, :enable_server_function, :set_allssl,
         :set_identity_store, :configure_hostidentifiers_properties,
-        :import_root_cert
+        :import_root_cert, :webgisdr_export, :webgisdr_import
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -76,6 +78,10 @@ attribute :server_function, :kind_of => String
 attribute :user_license_type_id, :kind_of => String
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :system_properties, :kind_of => Hash, :default => {}
+attribute :webgisdr_properties, :kind_of => Hash, :default => {}
+attribute :webgisdr_timeout, :kind_of => Integer, :default => 36000
+attribute :unpack_options, :kind_of => String, :default => ''
+attribute :enable_debug, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)
   super

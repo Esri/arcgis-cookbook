@@ -4,12 +4,11 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs/Configures esri-tomcat'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.2.2'
-chef_version     '>= 14.0'
+version          '0.3.0'
+chef_version     '>= 15.3'
 
-depends          'tomcat', '>= 3.2.0'
-depends          'openssl', '~> 8.5'
-depends          'iptables', '~> 7.1'
+depends          'tomcat', '~> 5.0'
+depends          'iptables', '~> 8.0'
 
 %w(ubuntu redhat centos oracle suse rocky almalinux).each do |os|
   supports os

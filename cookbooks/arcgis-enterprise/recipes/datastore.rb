@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: datastore
 #
-# Copyright 2018 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ arcgis_enterprise_datastore 'Configure ArcGIS Data Store' do
   data_dir node['arcgis']['data_store']['data_dir']
   types node['arcgis']['data_store']['types']
   mode node['arcgis']['data_store']['mode']
+  roles node['arcgis']['data_store']['roles']
   run_as_user node['arcgis']['run_as_user']
   server_url node['arcgis']['server']['url']
   username node['arcgis']['server']['admin_username']

@@ -1,0 +1,18 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "web_adaptor": {
+            "patches": [
+                "ArcGIS-113-WAJ-*.tar",
+                "ArcGIS-113-WAJ-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

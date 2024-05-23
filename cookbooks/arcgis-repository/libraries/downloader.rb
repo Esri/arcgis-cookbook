@@ -1,5 +1,5 @@
 #
-# Copyright 2021 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ module Downloader
 
   # Downloads file from the specified URL to a local path.
   def self.download(url, path)
-    URI.open(url) { |download|
+    URI.parse(url).open { |download|
       IO.copy_stream(download, path)
     }
   end

@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+# ArcGIS Video Server systemd unit file
+# ------------------------------------------------------------------
+#
+# Configure ArcGIS Video Server to be started at boot on RHEL 7.x by
+# following these instructions:
+#
+# 1.) Switch to the root user.
+#
+# 2.) Copy this file to /etc/systemd/system
+#
+# 3.) Enable the service to start at boot:
+#
+#     # systemctl enable agsvideo.service
+#
+# 4.) Verify systemd service is setup correctly:
+#
+#    # systemctl stop agsvideo.service
+#    # systemctl start agsvideo.service
+#    # systemctl status agsvideo.service
+#
+# 5.) Reboot the system and verify that Video Server restarts properly.
+#
+# ------------------------------------------------------------------
+
+[Unit]
+Description=ArcGIS Video Server Service
+After=network.target
+
+[Service]
+Type=forking
+User=<%=@agsuser%>
+LimitNOFILE=65535
+LimitNPROC=25059
+GuessMainPID=false
+ExecStart=<%=@agsvideohome%>/startvideoserver.sh
+ExecStop=<%=@agsvideohome%>/stopvideoserver.sh
+<%=@cloudenvironment%>
+
+[Install]
+WantedBy=multi-user.target
+

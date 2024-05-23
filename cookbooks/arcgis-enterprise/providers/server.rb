@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: server
 #
-# Copyright 2015 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ end
 action :unpack do
   if node['platform'] == 'windows'
     cmd = @new_resource.setup_archive
-    args = "/s /d \"#{@new_resource.setups_repo}\""
+    args = "/s /d \"#{@new_resource.setups_repo}\" #{@new_resource.unpack_options}"
     cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
     cmd.run_command
     cmd.error!

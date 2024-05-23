@@ -1,0 +1,28 @@
+{
+  "arcgis": {
+    "version": "11.3",
+    "repository": {
+      "local_archives": "C:\\Software\\Archives",
+      "server": {
+        "s3bucket": "arcgisstore-us-east-1",
+        "region": "us-east-1",
+        "aws_access_key": "",
+        "aws_secret_access_key": ""
+      },
+      "files": {
+        "Portal_for_ArcGIS_Windows_113_189790.exe": {
+          "subfolder": "11.3/setups"
+        },
+        "Portal_for_ArcGIS_Windows_113_189790.exe.001": {
+          "subfolder": "11.3/setups"
+        },
+        "Portal_for_ArcGIS_Web_Styles_Windows_113_190232.exe": {
+          "subfolder": "11.3/setups"
+        }
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-repository::s3files2]"
+  ]
+}

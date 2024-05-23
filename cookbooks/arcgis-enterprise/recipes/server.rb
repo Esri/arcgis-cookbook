@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: server
 #
-# Copyright 2023 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -135,8 +135,6 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   config_store_connection_string node['arcgis']['server']['config_store_connection_string']
   config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
   config_store_type node['arcgis']['server']['config_store_type']
-  retries 5
-  retry_delay 30
   action :create_site
 end
 

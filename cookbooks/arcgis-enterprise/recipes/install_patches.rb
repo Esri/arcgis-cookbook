@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: install_patches
 #
-# Copyright 2022 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,17 @@ arcgis_enterprise_portal 'Stop Portal for ArcGIS before patching' do
   not_if { node['arcgis']['portal']['patches'].empty? }
   only_if { node['arcgis']['portal']['configure_autostart'] }
   action :stop
+end
+
+# The Portal for ArcGIS Validation and Repair tool must be run on all 
+# 11.1, 10.9.1 and 10.8.1 machines with Portal for ArcGIS installed.
+# This tool is not available on Linux.
+execute "Run Portal for ArcGIS Validation and Repair tool" do
+  command "\"#{node['arcgis']['portal']['repair_tool']}\" /silent /repair"
+  timeout 14400
+  only_if { node['platform'] == 'windows' &&
+            !node['arcgis']['portal']['repair_tool'].nil? &&
+            Utils.product_installed?(node['arcgis']['portal']['product_code']) }
 end
 
 node['arcgis']['portal']['patches'].each do |patch|

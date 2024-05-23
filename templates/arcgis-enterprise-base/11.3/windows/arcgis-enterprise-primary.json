@@ -1,0 +1,100 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "iis": {
+            "keystore_file": "C:\\Temp\\keystore.pfx",
+            "keystore_password": "<keystore_password>",
+            "replace_https_binding": true
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "install_system_requirements": true,
+            "private_url": "https://domain.com:6443/arcgis",
+            "web_context_url": "https://domain.com/server",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.3\\Server.prvc",
+            "directories_root": "\\\\FILESERVER\\arcgisserver",
+            "log_dir": "C:\\arcgisserver\\logs",
+            "log_level": "WARNING",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "\\\\FILESERVER\\arcgisserver\\config-store",
+            "wa_name": "server",
+            "services_dir_enabled": true,
+            "system_properties": {
+                "WebContextURL": "https://domain.com/server"
+            }
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "setup_options": "ADDLOCAL=relational,tilecache",
+            "install_system_requirements": true,
+            "data_dir": "C:\\arcgisdatastore",
+            "preferredidentifier": "hostname",
+            "types": "tileCache,relational",
+            "tilecache": {
+                "backup_type": "fs",
+                "backup_location": "\\\\FILESERVER\\arcgisbackup\\tilecache"
+            },
+            "relational": {
+                "backup_type": "fs",
+                "backup_location": "\\\\FILESERVER\\arcgisbackup\\relational"
+            }
+        },
+        "portal": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+            "install_system_requirements": true,
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "admin_email": "admin@mydomain.com",
+            "admin_full_name": "Administrator",
+            "admin_description": "Initial account administrator",
+            "security_question": "Your favorite ice cream flavor?",
+            "security_question_answer": "bacon",
+            "data_dir": "C:\\arcgisportal",
+            "log_dir": "C:\\arcgisportal\\logs",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "content_store_type": "fileStore",
+            "content_store_provider": "FileSystem",
+            "content_store_connection_string": "\\\\FILESERVER\\arcgisportal\\content",
+            "object_store": "",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.3\\Portal.json",
+            "user_license_type_id": "",
+            "wa_name": "portal",
+            "root_cert": "",
+            "root_cert_alias": "rootcert",
+            "system_properties": {
+                "privatePortalURL": "https://domain.com:7443/arcgis",
+                "WebContextURL": "https://domain.com/portal"
+            }
+        },
+        "web_adaptor": {
+            "install_system_requirements": true,
+            "dotnet_setup_path": "C:\\Software\\Archives\\dotnet-hosting-8.0.0-win.exe",
+            "web_deploy_setup_path": "C:\\Software\\Archives\\WebDeploy_amd64_en-US.msi",
+            "admin_access": true,
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[esri-iis]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal]",
+        "recipe[arcgis-enterprise::portal_wa]",
+        "recipe[arcgis-enterprise::server]",
+        "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::datastore]",
+        "recipe[arcgis-enterprise::federation]"
+    ]
+}

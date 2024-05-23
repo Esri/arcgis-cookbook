@@ -388,7 +388,8 @@ action :configure do
                                       @new_resource.username,
                                       @new_resource.password,
                                       @new_resource.data_dir,
-                                      @new_resource.mode)
+                                      @new_resource.mode,
+                                      @new_resource.roles)
 
   new_resource.updated_by_last_action(true)
 end
@@ -404,7 +405,7 @@ action :configure_backup_location do
 
   # At 10.8 tilecache backup location is no longer registered by default
   # therefore --operation register needs to be used.
-  if %w[tilecache spatiotemporal graph].include?(@new_resource.store) && Gem::Version.new(node['arcgis']['version']) >= Gem::Version.new('10.8')
+  if %w[tilecache spatiotemporal graph].include?(@new_resource.store)
     operation = 'register'
   end
 

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: system
 #
-# Copyright 2023 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,32 +55,44 @@ else
     action :create
   end
 
+  # limit 'example-1' do
+  #   domain '*'
+  #   type 'hard'
+  #   item 'nofile'
+  #   value 512
+  # end
+
   ['hard', 'soft'].each do |t|
-    set_limit node['arcgis']['run_as_user'] do
+    limit "#{node['arcgis']['run_as_user']}-nofile-#{t}" do
+      domain node['arcgis']['run_as_user']
       type t
       item 'nofile'
       value 65536
     end
 
-    set_limit node['arcgis']['run_as_user'] do
+    limit "#{node['arcgis']['run_as_user']}-nproc-#{t}" do
+      domain node['arcgis']['run_as_user']
       type t
       item 'nproc'
       value 25059
     end
 
-    set_limit node['arcgis']['run_as_user'] do
+    limit "#{node['arcgis']['run_as_user']}-memlock-#{t}" do
+      domain node['arcgis']['run_as_user']
       type t
       item 'memlock'
       value 'unlimited'
     end
 
-    set_limit node['arcgis']['run_as_user'] do
+    limit "#{node['arcgis']['run_as_user']}-fsize-#{t}" do
+      domain node['arcgis']['run_as_user']
       type t
       item 'fsize'
       value 'unlimited'
     end
 
-    set_limit node['arcgis']['run_as_user'] do
+    limit "#{node['arcgis']['run_as_user']}-as-#{t}" do
+      domain node['arcgis']['run_as_user']
       type t
       item 'as'
       value 'unlimited'
@@ -108,7 +120,7 @@ else
 
   # Remove comment from #/net in /etc/auto.master
   file "/etc/auto.master" do
-    content lazy { IO.read("/etc/auto.master").gsub("#/net", "/net") }
+    content lazy { File.read("/etc/auto.master").gsub("#/net", "/net") }
     only_if { node['arcgis']['configure_autofs'] }
   end
 
@@ -121,7 +133,7 @@ else
   end
 
   file '/home/' + node['arcgis']['run_as_user'] + '/.ssh/authorized_keys' do
-    content lazy { IO.read(node['arcgis']['run_as_user_auth_keys']) }
+    content lazy { File.read(node['arcgis']['run_as_user_auth_keys']) }
     mode '0660'
     owner node['arcgis']['run_as_user']
     group node['arcgis']['run_as_user']

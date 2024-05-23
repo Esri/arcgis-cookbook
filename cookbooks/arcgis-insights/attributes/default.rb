@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-insights
 # Attributes:: default
 #
-# Copyright 2023 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ include_attribute 'arcgis-repository'
 include_attribute 'arcgis-enterprise'
 
 default['arcgis']['insights'].tap do |insights|
-  insights['version'] = '2023.1'
+  insights['version'] = '2023.3'
 
   insights['patches'] = []
 
@@ -30,6 +30,14 @@ default['arcgis']['insights'].tap do |insights|
                         node['arcgis']['insights']['version'] + '\\Insights\\Setup.exe'
 
     case node['arcgis']['insights']['version']
+    when '2023.3'
+      insights['product_code'] = '{8041A388-0EDD-4475-8C92-A032058A5EA4}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2023_3_188686.exe')
+    when '2023.2'
+      insights['product_code'] = '{59F56DCC-E25E-45A5-8146-FD8C841E127E}'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Windows_2023_2_186056.exe')
     when '2023.1'
       insights['product_code'] = '{DEC86F7E-FD14-4920-933D-B18266696663}'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
@@ -97,6 +105,12 @@ default['arcgis']['insights'].tap do |insights|
                                     'Insights/Insights-Setup.sh')
 
     case node['arcgis']['insights']['version']
+    when '2023.3'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2023_3_188687.tar.gz')
+    when '2023.2'
+      insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_Insights_Linux_2023_2_186057.tar.gz')
     when '2023.1'
       insights['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_Insights_Linux_2023_1_185918.tar.gz')

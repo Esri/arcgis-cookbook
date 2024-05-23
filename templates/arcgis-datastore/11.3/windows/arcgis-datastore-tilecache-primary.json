@@ -1,0 +1,35 @@
+{
+    "arcgis": {
+        "version": "11.3",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "url": "https://SERVER:6443/arcgis"
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "setup_options": "ADDLOCAL=tilecache",
+            "install_system_requirements": true,
+            "types": "tileCache",
+            "mode": "primaryStandby",
+            "preferredidentifier": "hostname",
+            "data_dir": "C:\\arcgisdatastore",
+            "tilecache": {
+                "backup_type": "fs",
+                "backup_location": "\\\\FILESERVER\\arcgisbackup\\tilecache"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::datastore]"
+    ]
+}

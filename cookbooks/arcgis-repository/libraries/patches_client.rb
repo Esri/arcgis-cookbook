@@ -61,7 +61,7 @@ module ArcGIS
       def download_patches(platform, products, versions, patches_dir)
         ::Chef::Log.info("Downloading ArcGIS #{versions.join(',')} patches for #{platform} platform.")
         
-        accepted_formats  = (platform == 'windows') ? ['.msp'] : ['.tar', '.gz']
+        accepted_formats  = (platform == 'windows') ? ['.msp', '.exe'] : ['.tar', '.gz']
 
         get_patches(products, versions).each do |patch|
           patch['PatchFiles'].each do |file_url|
@@ -74,7 +74,7 @@ module ArcGIS
                 begin
                   Downloader.download(file_url, local_file_path)
                 rescue Exception => e
-                  Chef::Log.marn "Failed to download patch from '#{file_url}'. #{e.message}"
+                  Chef::Log.warn "Failed to download patch from '#{file_url}'. #{e.message}"
                 end                  
               end
             end

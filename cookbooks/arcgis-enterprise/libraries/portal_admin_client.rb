@@ -266,7 +266,8 @@ module ArcGIS
                     security_question_answer,
                     content_store,
                     user_license_type_id,
-                    license_file)
+                    license_file,
+                    enable_debug = false)
       create_site_uri = URI.parse(@portal_url + '/portaladmin/createNewSite')
 
       request = Net::HTTP::Post::Multipart.new(
@@ -283,6 +284,7 @@ module ArcGIS
         'file' => UploadIO.new(File.new(license_file),
                                 'application/json',
                                 File.basename(license_file)),
+        'enableDebug' => enable_debug ? 'true' : 'false',
         'f' => 'json')
 
       response = send_request(request, true)

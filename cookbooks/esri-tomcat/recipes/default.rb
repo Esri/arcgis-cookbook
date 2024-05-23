@@ -2,7 +2,7 @@
 # Cookbook Name:: esri-tomcat
 # Recipe:: default
 #
-# Copyright 2021 Esri
+# Copyright 2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

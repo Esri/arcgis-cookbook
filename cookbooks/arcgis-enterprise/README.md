@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-enterprise cookbook"
 category: cookbooks
 item: arcgis-enterprise
-version: 4.2.0
+version: 5.0.0
 latest: true
 ---
 
@@ -13,13 +13,11 @@ This cookbook installs and configures ArcGIS Enterprise components.
 
 ## Supported ArcGIS versions
 
-* 10.8
-* 10.8.1
-* 10.9
 * 10.9.1
 * 11.0
 * 11.1
 * 11.2
+* 11.3
 
 ## Supported ArcGIS Software
 
@@ -38,11 +36,15 @@ This cookbook installs and configures ArcGIS Enterprise components.
 * Windows Server 2016
 * Windows Server 2019
 * Windows Server 2022
-* Ubuntu Server 18.04 and 20.04 LTS
+* Ubuntu Server 20.04 LTS
+* Ubuntu Server 22.04 LTS
 * Red Hat Enterprise Linux Server 8
+* Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
 * Oracle Linux 8
+* Oracle Linux 9
 * Rocky Linux 8
+* Rocky Linux 9
 * AlmaLinux 9
 
 > Check the system requirements of the specific ArcGIS software version to make sure that the platform is supported in that version.
@@ -64,7 +66,7 @@ The following cookbooks are required:
 
 ### General
 
-* `node['arcgis']['version']` = ArcGIS version. Default value is `11.2`.
+* `node['arcgis']['version']` = ArcGIS version. Default value is `11.3`.
 * `node['arcgis']['run_as_user']` = User account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default account name is `arcgis`.
 * `node['arcgis']['run_as_uid']` = Numeric identifier of user account used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default user identifier is `1100`.
 * `node['arcgis']['run_as_gid']` = Numeric identifier of user group used to run ArcGIS Server, Portal for ArcGIS, and ArcGIS Data Store. Default group identifier is `1100`.
@@ -146,6 +148,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['server']['pull_license]` = If set to `true`, the server_node recipe pulls the ArcGIS Server license from other server machines in the site. The default value is `false`.
 * `node['arcgis']['server']['patches]` = File names of ArcGIS Server patches to install. Default value is `[]`.
 * `node['arcgis']['server']['services_dir_enabled']` = If set to `true` enables ArcGIS Server services directory. Default value is `true`.
+* `node['arcgis']['server']['unpack_options']` = ArcGIS Server windows self-extracting archive command line options. Default value is `/x` for ArcGIS Server 11.3 and `''` for older versions.
 
 ### Web Adaptor
 
@@ -158,7 +161,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['web_adaptor']['reindex_portal_content']` = If set to `true`, Web Adaptor registration reindexes Portal for ArcGIS content. Default value is `true`.
 * `node['arcgis']['web_adaptor']['patches]` = File names of ArcGIS Web Adaptor patches to install. Default value is `[]`.
 * `node['arcgis']['web_adaptor']['install_system_requirements']` = If set to true, the required third-party packages are installed on the machine before running the ArcGIS Web Adaptor setup. Default value is `true`.
-* `node['arcgis']['web_adaptor']['dotnet_setup_path']` = Path to ASP.NET Core Runtime Hosting Bundle setup. Default path is `<ArcGIS software setups folder>\dotnet-hosting-6.0.9-win.exe`.
+* `node['arcgis']['web_adaptor']['dotnet_setup_path']` = Path to ASP.NET Core Runtime Hosting Bundle setup. Default path is `<ArcGIS software setups folder>\dotnet-hosting-8.0.0-win.exe`.
 * `node['arcgis']['web_adaptor']['web_deploy_setup_path']` = Path to Web Deploy setup. Default path is `<ArcGIS software setups folder>\WebDeploy_amd64_en-US.msi`.
 
 ### Portal
@@ -186,7 +189,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['portal']['data_dir']` = Data directory path used by the Portal for ArcGIS setup. The path must be a local directory, not a shared network directory. Default path on Windows is `C:\arcgisportal`; on Linux, it is `/arcgis/portal/usr/arcgisportal/`.
 * `node['arcgis']['portal']['content_dir']` = Portal for ArcGIS content directory. Default directory is `C:\arcgisportal\content` on Windows and `/arcgis/portal/usr/arcgisportal/content` on Linux.
 * `node['arcgis']['portal']['authorization_file']` = Portal for ArcGIS authorization file path. Default location and file name is `''`.
-* `node['arcgis']['portal']['authorization_file_version']` = Portal for ArcGIS authorization file version. Default value is `11.2`.
+* `node['arcgis']['portal']['authorization_file_version']` = Portal for ArcGIS authorization file version. Default value is `11.3`.
 * `node['arcgis']['portal']['user_license_type_id']` = Portal for ArcGIS administrator user license type Id.
 * `node['arcgis']['portal']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for Portal for ArcGIS. Default value is `nil`.
 * `node['arcgis']['portal']['keystore_password']` = Keystore file password for Portal for ArcGIS. Default value is `nil`.
@@ -209,8 +212,12 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['portal']['security']['user_store_config']` = User store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['portal']['security']['role_store_config']` = Role store configuration. Default value is `{'type' => 'BUILTIN', 'properties' => {}}`
 * `node['arcgis']['portal']['system_properties']` = Portal for ArcGIS system properties. Default value is `{}`.
-* `node['arcgis']['portal']['ports']` = Ports opened in Windows firewall for Portal for ArcGIS. Default ports are `5701,5702,5703,7080,7443,7005,7099,7120,7220,7654`.
+* `node['arcgis']['portal']['ports']` = Ports opened in Windows firewall for Portal for ArcGIS. Default ports are `5701,5702,5703,7080,7443,7005,7099,7120,7220,7654,7820,7830,7840`.
 * `node['arcgis']['portal']['patches]` = File names of Portal for ArcGIS patches to install. Default value is `[]`.
+* `node['arcgis']['portal']['webgisdr_properties']` = webgisdr tool properties. Default value is `{}`.
+* `node['arcgis']['portal']['webgisdr_timeout']` = webgisdr tool execution timeout in seconds. Default timeout is `36000`.
+* `node['arcgis']['portal']['unpack_options']` = Portal for ArcGIS windows self-extracting archive command line options. Default value is `/x` for Portal for ArcGIS 11.3 and `''` for older versions.
+* `node['arcgis']['portal']['enable_debug']` = Specifies the log level when creating and upgrading Portal for ArcGIS site. If `true`, the log level is set to DEBUG, otherwise the log level is set to VERBOSE. The default value is `false`.
 
 ### Web Styles
 
@@ -231,8 +238,9 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['data_store']['configure_autostart']` = If set to true, on Linux ArcGIS Data Store is configured to start with the operating system. Default value is `true`.
 * `node['arcgis']['data_store']['hostidentifier']` = Host name or IP address of ArcGIS Data Store machine. Default value is  `''`.
 * `node['arcgis']['data_store']['preferredidentifier']` = ArcGIS Data Store preferred identifier method `<hostname|ip>`. Default method used is `hostname`.
-* `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, `<relational|tileCache|spatiotemporal|graph|object>`. By default, `tileCache,relational` is used.
+* `node['arcgis']['data_store']['types']` = Comma-separated list of ArcGIS Data Store types to be created, `<relational|tileCache|spatiotemporal|graph|object>`. The default value is `tileCache,relational`.
 * `node['arcgis']['data_store']['mode']` = Tile cache ArcGIS Data Store mode, `<primaryStandby|cluster>`. Supported from ArcGIS Data Store 10.8.1. The default value is empty string ``, which means the default mode for the ArcGIS Data Store version is used or the currently configured mode is used.
+* `node['arcgis']['data_store']['roles']` = Comma-separated list of Spatiotemporal ArcGIS Data Store roles, `[coord][,][data]`. Supported from ArcGIS Data Store 11.3. The default value is `''`.
 * `node['arcgis']['data_store']['relational']['backup_type']` = Type of location to use for relational data store backups `<fs|s3|azure|none>`. The default value is `fs` for file system.
 * `node['arcgis']['data_store']['relational']['backup_location']` = Relational data store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/relational`.
 * `node['arcgis']['data_store']['tilecache']['backup_type']` = Type of location to use for tile cache data store backups `<fs|s3|azure|none>`. The default value is `fs` for file system.
@@ -240,7 +248,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['data_store']['object']['backup_type']` = Type of location to use for object data store backups `<fs|s3|azure|none>`. The default value is `fs` for file system.
 * `node['arcgis']['data_store']['object']['backup_location']` = Object data store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/object`.
 * `node['arcgis']['data_store']['force_remove_machine']` = Specify true only if the ArcGIS Server site is unavailable when ArcGIS Data Store machine is removed. Default value is `false`.
-* `node['arcgis']['data_store']['ports']` = Ports opened in Windows firewall for ArcGIS Data Store. Default ports are `2443,4369,9220,9320,9820,9829,9830,9840,9876,9900,25672,44369,45671,45672,29079-29090`.
+* `node['arcgis']['data_store']['ports']` = Ports opened in Windows firewall for ArcGIS Data Store. Default ports are `2443,4369,9220,9320,9820,9829,9830,9831,9840,9876,9900,25672,44369,45671,45672,29079-29090`.
 * `node['arcgis']['data_store']['patches]` = File names of ArcGIS Data Store patches to install. Default value is `[]`.  
 
 ### Linux Web Server
@@ -258,7 +266,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "clean_install_dirs": false,
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
@@ -368,7 +376,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "configure_windows_firewall": false,
@@ -378,7 +386,7 @@ Attributes used by the recipe:
       "admin_password": "<password>"
     },
     "data_store": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\DataStore\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\DataStore\\Setup.exe",
       "install_system_requirements":  true,
       "configure_autostart": true,
       "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
@@ -458,7 +466,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "server": {
       "private_url": "https://domain.com:6443/arcgis",
       "web_context_url": "https://domain.com/server",
@@ -489,7 +497,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "server": {
       "private_url": "https://domain.com:6443/arcgis",
       "web_context_url": "https://domain.com/server",
@@ -520,7 +528,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "server": {
       "private_url": "https://domain.com:6443/arcgis",
       "web_context_url": "https://domain.com/server",
@@ -549,25 +557,25 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "server": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Server\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Server\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
       "wa_name": "server"
     },
     "portal": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Portal\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Portal\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
       "wa_name": "portal"
     },
     "data_store": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\DataStore\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\DataStore\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\DataStore"
     },
     "web_adaptor": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\WebAdaptorIIS\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\WebAdaptorIIS\\Setup.exe",
       "install_dir": ""
     },
     "python": {
@@ -589,7 +597,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
       "wa_name": "server"
@@ -621,18 +629,18 @@ Attributes used by the recipe:
 {
   "arcgis": {
     "server": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Server\\Setup.exe",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\Server.prvc"
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Server\\Setup.exe",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\Server.prvc"
     },
     "portal": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Portal\\Setup.exe",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\Portal.json"
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Portal\\Setup.exe",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\Portal.json"
     },
     "data_store": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\DataStore\\SetupFile\\Setup.exe"
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\DataStore\\SetupFile\\Setup.exe"
     },
     "web_adaptor": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\WebAdaptorIIS\\Setup.exe"
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\WebAdaptorIIS\\Setup.exe"
     }
   },
   "run_list": [
@@ -681,7 +689,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis", 
     "run_as_password": "<password>",
     "fileserver": {
@@ -741,11 +749,11 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "data_store": {
-      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.2\\ArcGISDataStore\\Setup.exe",
+      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.3\\ArcGISDataStore\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
       "data_dir": "C:\\arcgisdatastore",
       "backup_dir": "C:\\arcgisdatastore\\backup",      
@@ -768,11 +776,11 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "portal": {
-      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.2\\PortalForArcGIS\\Setup.exe",
+      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.3\\PortalForArcGIS\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
       "install_system_requirements":  true,
       "configure_autostart": true,
@@ -794,9 +802,9 @@ Attributes used by the recipe on Windows:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_adaptor": {
-      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.2\\WebAdaptorIIS\\Setup.exe",
+      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.3\\WebAdaptorIIS\\Setup.exe",
       "install_dir": "",
       "install_system_requirements": true
     },
@@ -819,11 +827,11 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "server": {
-      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.2\\ArcGISServer\\Setup.exe",
+      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.3\\ArcGISServer\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
       "install_system_requirements": true,
       "configure_autostart": true
@@ -847,9 +855,9 @@ Attributes used by the recipe on Windows:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_adaptor": {
-      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.2\\WebAdaptorIIS\\Setup.exe",
+      "setup": "C:\\Users\\Administrator\\Documents\\ArcGIS 11.3\\WebAdaptorIIS\\Setup.exe",
       "install_dir": ""
     },
     "server": {
@@ -871,18 +879,18 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "server": {
-      "lp-setup": "C:\\ArcGIS\\11.2\\Setups\\Server\\Japanese\\setup.msi"
+      "lp-setup": "C:\\ArcGIS\\11.3\\Setups\\Server\\Japanese\\setup.msi"
     },
     "portal": {
-      "lp-setup": "C:\\ArcGIS\\11.2\\Setups\\Portal\\Japanese\\setup.msi"
+      "lp-setup": "C:\\ArcGIS\\11.3\\Setups\\Portal\\Japanese\\setup.msi"
     },
     "data_store": {
-      "lp-setup": "C:\\ArcGIS\\11.2\\Setups\\DataStore\\Japanese\\setup.msi"
+      "lp-setup": "C:\\ArcGIS\\11.3\\Setups\\DataStore\\Japanese\\setup.msi"
     },
     "web_adaptor": {
-      "lp-setup": "C:\\ArcGIS\\11.2\\Setups\\WebAdaptorIIS\\Japanese\\setup.msi"
+      "lp-setup": "C:\\ArcGIS\\11.3\\Setups\\WebAdaptorIIS\\Japanese\\setup.msi"
     }
   },
   "run_list": [
@@ -896,6 +904,8 @@ Attributes used by the recipe:
 Installs hot fixes and patches for ArcGIS Enterprise software.
 
 The recipe installs patches specified by the arcgis.portal.patches, arcgis.server.patches, arcgis.datastore.patches, and arcgis.webadaptor.patches attributes. The patch names may contain a wildcard '\*'. For example, "ArcGIS-1091-\*.msp" specifies all .msp patches that start with "ArcGIS-1091-".
+
+Before installing patches, the recipe runs Portal for ArcGIS Validation and Repair tool on 11.1 and 10.9.1 windows machines with Portal for ArcGIS installed.
 
 Attributes used by the recipe:
 
@@ -933,18 +943,18 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "cache_authorization_files": false,
     "configure_windows_firewall": false,
     "portal": {
       "domain_name": "portal.domain.com",
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Portal\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Portal\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\portal.json",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\portal.json",
       "user_license_type_id" : "creatorUT",
-      "authorization_file_version": "11.2",
+      "authorization_file_version": "11.3",
       "install_system_requirements":  true,
       "configure_autostart": true,
       "data_dir": "C:\\arcgisportal",
@@ -1024,16 +1034,16 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "cache_authorization_files": false,
     "configure_windows_firewall": false,
     "portal": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Portal\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Portal\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\Portal.prvc",
-      "authorization_file_version": "11.2",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\Portal.prvc",
+      "authorization_file_version": "11.3",
       "install_system_requirements":  true,
       "configure_autostart": true,
       "data_dir": "C:\\arcgisportal",
@@ -1061,9 +1071,9 @@ Attributes used by the recipe on Windows:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_adaptor": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\WebAdaptorIIS\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\WebAdaptorIIS\\Setup.exe",
       "install_dir": "",
       "install_system_requirements": true
     },
@@ -1086,12 +1096,12 @@ Attributes used by the recipe on Linux:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_server": {
       "webapp_dir": "/opt/tomcat_arcgis/webapps"
     },
     "web_adaptor":{
-      "setup": "/arcgis/11.2/WebAdaptor/CD_Linux/Setup",
+      "setup": "/arcgis/11.3/WebAdaptor/CD_Linux/Setup",
       "install_dir": "/",
       "install_system_requirements": true
     },
@@ -1130,7 +1140,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "cache_authorization_files": false,
@@ -1138,8 +1148,8 @@ Attributes used by the recipe:
     "server": {
       "setup": "C:\\ArcGIS\\10.5\\Setups\\Server\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\Server.prvc",
-      "authorization_file_version": "11.2",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\Server.prvc",
+      "authorization_file_version": "11.3",
       "install_system_requirements":  true,
       "configure_autostart": true,
       "directories_root": "C:\\arcgisserver",
@@ -1209,16 +1219,16 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "cache_authorization_files": false,
     "configure_windows_firewall": false,
     "server": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\Server\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\Server\\Setup.exe",
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
-      "authorization_file": "C:\\ArcGIS\\11.2\\Authorization_Files\\Server.prvc",
-      "authorization_file_version": "11.2",
+      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\Server.prvc",
+      "authorization_file_version": "11.3",
       "install_system_requirements":  true,
       "configure_autostart": true,
       "directories_root": "C:\\arcgisserver",
@@ -1288,9 +1298,9 @@ Attributes used by the recipe on Windows:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_adaptor": {
-      "setup": "C:\\ArcGIS\\11.2\\Setups\\WebAdaptorIIS\\Setup.exe",
+      "setup": "C:\\ArcGIS\\11.3\\Setups\\WebAdaptorIIS\\Setup.exe",
       "install_dir": "",
       "install_system_requirements": true,
       "admin_access": true
@@ -1314,12 +1324,12 @@ Attributes used by the recipe on Linux:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "web_server": {
       "webapp_dir": "/opt/tomcat_arcgis/webapps"
     },
     "web_adaptor":{
-      "setup": "/arcgis/11.2/WebAdaptor/CD_Linux/Setup",
+      "setup": "/arcgis/11.3/WebAdaptor/CD_Linux/Setup",
       "install_dir": "/",
       "install_system_requirements": true,
       "admin_access": true
@@ -1635,6 +1645,78 @@ Attributes used by the recipe:
 }
 ```
 
+### webgisdr_export
+
+Creates ArcGIS Enterprise backup using WebGISDR utility.
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "run_as_user": "acrgis",
+    "run_as_password": "<run_as_password>",
+    "portal": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+      "webgisdr_timeout": 36000,      
+      "webgisdr_properties": {
+        "PORTAL_ADMIN_URL": "https://domain.com:7443/arcgis",
+        "PORTAL_ADMIN_USERNAME": "sitedmin",
+        "PORTAL_ADMIN_PASSWORD": "<password>",
+        "PORTAL_ADMIN_PASSWORD_ENCRYPTED": false,
+        "BACKUP_RESTORE_MODE": "backup",
+        "SHARED_LOCATION": "\\\\\\\\FILESERVER\\\\arcgisbackup\\\\webgisdr",
+        "INCLUDE_SCENE_TILE_CACHES": false,
+        "BACKUP_STORE_PROVIDER": "AmazonS3",
+        "S3_ENCRYPTED": false,
+        "S3_BUCKET": "<S3 bucket>",
+        "S3_CREDENTIALTYPE": "IAMRole",
+        "S3_REGION": "us-east-1"
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::webgisdr_export]"
+  ]
+}
+```
+
+### webgisdr_import
+
+Restores ArcGIS Enterprise from backup using WebGISDR utility.
+
+Attributes used by the recipe:
+
+```JSON
+{
+  "arcgis": {
+    "run_as_user": "acrgis",
+    "run_as_password": "<run_as_password>",
+    "portal": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+      "webgisdr_timeout": 36000,      
+      "webgisdr_properties": {
+        "PORTAL_ADMIN_URL": "https://domain.com:7443/arcgis",
+        "PORTAL_ADMIN_USERNAME": "sitedmin",
+        "PORTAL_ADMIN_PASSWORD": "<password>",
+        "PORTAL_ADMIN_PASSWORD_ENCRYPTED": false,
+        "BACKUP_RESTORE_MODE": "backup",
+        "SHARED_LOCATION": "\\\\\\\\FILESERVER\\\\arcgisbackup\\\\webgisdr",
+        "INCLUDE_SCENE_TILE_CACHES": false,
+        "BACKUP_STORE_PROVIDER": "AmazonS3",
+        "S3_ENCRYPTED": false,
+        "S3_BUCKET": "<S3 bucket>",
+        "S3_CREDENTIALTYPE": "IAMRole",
+        "S3_REGION": "us-east-1"
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::webgisdr_import]"
+  ]
+}
+```
+
 ### webstyles
 
 Installs ArcGIS WebStyles.
@@ -1644,9 +1726,9 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-   "version":"11.2",
+   "version":"11.3",
     "webstyles": {
-      "setup":"C:\\ArcGIS\\11.2\\Setups\\ArcGIS 11.2\\ArcGISWebStyles\\Setup.exe"
+      "setup":"C:\\ArcGIS\\11.3\\Setups\\ArcGIS 11.3\\ArcGISWebStyles\\Setup.exe"
     }
   },
   "run_list": [

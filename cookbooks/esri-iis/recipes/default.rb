@@ -21,7 +21,7 @@ include_recipe 'esri-iis::install'
 
 require 'openssl'
 
-openssl_x509 node['arcgis']['iis']['keystore_file'].gsub(/\.pfx/, '.pem') do
+openssl_x509_certificate node['arcgis']['iis']['keystore_file'].gsub(/\.pfx/, '.pem') do
   common_name node['arcgis']['iis']['domain_name']
   org 'test'
   org_unit 'dev'
