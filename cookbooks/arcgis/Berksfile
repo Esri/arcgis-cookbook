@@ -19,7 +19,7 @@ group :release do
   cookbook 'esri-tomcat', path: '../esri-tomcat'
   # Lock versions of the dependent cookbooks  
   cookbook 'apt', '~> 7.4'
-  cookbook 'docker', '~> 4.12'
+  cookbook 'docker', '~> 11.3'
   cookbook 'homebrew', '5.3.6'
   cookbook 'hostsfile', '~> 3.0'
   cookbook 'iptables', '~> 7.1'

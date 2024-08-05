@@ -4,12 +4,12 @@ maintainer_email 'contracts@esri.com'
 license 'Apache-2.0'
 description 'Installs/Configures ArcGIS Notebook Server'
 long_description 'Installs/Configures ArcGIS Notebook Server'
-version '4.2.0'
+version '4.2.1'
 chef_version '>= 14.0' if defined? chef_version
 
 depends          'arcgis-enterprise', '~> 4.2'
 depends          'arcgis-repository', '~> 4.2'
-depends          'docker', '~> 4.9'
+depends          'docker', '~> 11.3'
 depends          'iptables', '~> 7.1'
 
 supports         'ubuntu'
