@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the arcgis-notebooks cookbook.
 
+# 4.0.1
+
+- Updated docker cookbook dependency version to '~> 11.3'.
+
 # 4.0.0
 
 - Added support for ArcGIS Notebook Server 11.0.
