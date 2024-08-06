@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-notebooks cookbook"
 category: cookbooks
 item: arcgis-notebooks
-version: 4.1.0
+version: 4.1.1
 latest: true
 ---
 
