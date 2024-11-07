@@ -20,7 +20,7 @@
 arcgis_notebooks_data 'Uninstall ArcGIS Notebook Server Samples Data' do
   install_dir node['arcgis']['notebook_server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
-  not_if { if node['platform'] == 'windows' }
+  not_if { node['platform'] == 'windows' }
   only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
                                               node['hostname'],
                                               node['arcgis']['version'],
