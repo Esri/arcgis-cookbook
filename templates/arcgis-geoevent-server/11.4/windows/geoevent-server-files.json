@@ -1,0 +1,27 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Server_Windows_114_192938.exe": {
+                    "subfolder": "software/arcgis/11.4"
+                },
+                "ArcGIS_Server_Windows_114_192938.exe.001": {
+                    "subfolder": "software/arcgis/11.4"
+                },
+                "ArcGIS_GeoEvent_Server_114_192949.exe": {
+                    "subfolder": "software/arcgis/11.4"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

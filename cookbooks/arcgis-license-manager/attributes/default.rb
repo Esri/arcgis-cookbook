@@ -22,7 +22,7 @@ default['arcgis']['run_as_user'] = 'arcgis'
 default['arcgis']['run_as_password'] = nil
 
 default['arcgis']['licensemanager'].tap do |licensemanager|
-  licensemanager['version'] = '2024.0'
+  licensemanager['version'] = '2024.1'
   licensemanager['packages'] = []
 
   case node['platform']
@@ -34,6 +34,10 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_dir'] = ENV['ProgramFiles(x86)'] + '\\ArcGIS'
 
     case node['arcgis']['licensemanager']['version']
+    when '2024.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Windows_2024_1_192691.exe').gsub('/', '\\')
+      licensemanager['product_code'] = '{2BCB59D3-E25C-4F17-8C94-121A12B68A6C}'
     when '2024.0'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Windows_2024_0_190004.exe').gsub('/', '\\')
@@ -66,6 +70,9 @@ default['arcgis']['licensemanager'].tap do |licensemanager|
     licensemanager['install_subdir'] = 'arcgis/license' + node['arcgis']['licensemanager']['version']
 
     case node['arcgis']['licensemanager']['version']
+    when '2024.1'
+      licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_License_Manager_Linux_2024_1_192720.tar.gz')
     when '2024.0'
       licensemanager['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_License_Manager_Linux_2024_0_190033.tar.gz')

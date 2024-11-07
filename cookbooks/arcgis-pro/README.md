@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-pro cookbook"
 category: cookbooks
 item: arcgis-pro
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -19,6 +19,7 @@ This cookbook installs and configures ArcGIS Pro.
 * 3.1
 * 3.2
 * 3.3
+* 3.4
 
 ## Platforms
 
@@ -37,7 +38,7 @@ The following cookbooks are required:
 
 ## Attributes
 
-* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `3.3`
+* `node['arcgis']['pro']['version']` = ArcGIS Pro version. Default version is `3.4`
 * `node['arcgis']['pro']['setup_archive']` = Path to ArcGIS Pro setup archive. Default value depends on the `node['arcgis']['pro']['version']` attribute value.
 * `node['arcgis']['pro']['setup']` = The location of the ArcGIS Pro setup msi. Default location is `C:\Temp\ArcGISPro\ArcGISPro.msi`.
 * `node['arcgis']['pro']['install_dir']` = ArcGIS Pro installation directory. Default installation directory is `%ProgramFiles%\ArcGIS\Pro`.
@@ -71,9 +72,9 @@ Attributes used by the recipe:
 {
   "arcgis": {
     "pro": {
-      "version": "3.3",
-      "authorization_file_version": "11.3",
-      "setup": "C:\\ArcGIS\\ArcGIS Pro 3.3\\ArcGISPro\\ArcGISPro.msi",
+      "version": "3.4",
+      "authorization_file_version": "11.4",
+      "setup": "C:\\ArcGIS\\ArcGIS Pro 3.4\\ArcGISPro\\ArcGISPro.msi",
       "allusers": 1,
       "authorization_type": "SINGLE_USE",
       "software_class": "Professional",  
@@ -97,8 +98,8 @@ Attributes used by the recipe:
 {
   "arcgis": {
     "pro": {
-     "version": "3.3",
-     "setup": "C:\\ArcGIS\\ArcGIS Pro 3.3\\ArcGISPro\\ArcGISPro.msi",
+     "version": "3.4",
+     "setup": "C:\\ArcGIS\\ArcGIS Pro 3.4\\ArcGISPro\\ArcGISPro.msi",
      "allusers": 1  
     }
   },
@@ -153,7 +154,7 @@ Attributes used by the recipe:
 {
   "arcgis": {
     "pro": {
-      "version": "3.3"
+      "version": "3.4"
     }
   },
   "run_list":[

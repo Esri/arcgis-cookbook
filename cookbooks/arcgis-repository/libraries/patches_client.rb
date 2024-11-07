@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,11 +62,13 @@ module ArcGIS
         ::Chef::Log.info("Downloading ArcGIS #{versions.join(',')} patches for #{platform} platform.")
         
         accepted_formats  = (platform == 'windows') ? ['.msp', '.exe'] : ['.tar', '.gz']
+        minified_versions = versions.map { |version| version.gsub('.', '') }
 
         get_patches(products, versions).each do |patch|
           patch['PatchFiles'].each do |file_url|
             uri = URI.parse(file_url)
-            if accepted_formats.include?(File.extname(uri.path))
+            if accepted_formats.include?(File.extname(uri.path)) && 
+               minified_versions.any? { |v| ::File.basename(uri.path).include?(v) }
               local_file_path = ::File.join(patches_dir, ::File.basename(uri.path))
 
               if !::File.exists?(local_file_path)

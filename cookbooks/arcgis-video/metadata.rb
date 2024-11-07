@@ -4,11 +4,11 @@ maintainer_email 'contracts@esri.com'
 license 'Apache-2.0'
 description 'Installs/Configures ArcGIS Video Server'
 long_description 'Installs/Configures ArcGIS Video Server'
-version '5.0.0'
+version '5.1.0'
 chef_version '>= 15.3' if defined? chef_version
 
-depends          'arcgis-enterprise', '~> 5.0'
-depends          'arcgis-repository', '~> 5.0'
+depends          'arcgis-enterprise', '~> 5.1'
+depends          'arcgis-repository', '~> 5.1'
 
 supports         'ubuntu'
 supports         'redhat'

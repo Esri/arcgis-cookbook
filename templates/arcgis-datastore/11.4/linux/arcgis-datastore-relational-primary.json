@@ -1,0 +1,31 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "server": {
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "url": "https://SERVER:6443/arcgis"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f Relational",
+            "install_system_requirements": true,
+            "types": "relational",
+            "preferredidentifier": "hostname",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "relational": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/relational"
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::datastore]"
+    ]
+}

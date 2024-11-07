@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Recipe:: default
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ end
 arcgis_geoevent_geoevent 'Authorize ArcGIS GeoEvent Server' do
   authorization_file node['arcgis']['geoevent']['authorization_file']
   authorization_file_version node['arcgis']['geoevent']['authorization_file_version']
+  authorization_options node['arcgis']['geoevent']['authorization_options']
   retries 5
   retry_delay 60
   not_if { node['arcgis']['geoevent']['authorization_file'] == '' ||

@@ -66,6 +66,7 @@ default['arcgis']['server'].tap do |server|
   server['system_properties'] = {}
   server['log_level'] = 'WARNING'
   server['max_log_file_age'] = 90
+  server['enable_debug'] = false
   server['is_hosting'] = true
   server['configure_autostart'] = true
   server['install_system_requirements'] = true
@@ -144,6 +145,15 @@ default['arcgis']['server'].tap do |server|
                                                   'ServerConfigurationUtility.exe').gsub('/', '\\')    
 
     case node['arcgis']['version']
+    when '11.4'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_114_192938.exe').gsub('/', '\\')
+      server['product_code'] = '{C5CF7CE9-7501-4ECC-9C48-A7DD5A259AE2}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        server_install_dir, 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server11.4\\Updates'        
+      server['unpack_options'] = '/x'
     when '11.3'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_113_190188.exe').gsub('/', '\\')
@@ -244,6 +254,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.4'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_114_192977.tar.gz')
     when '11.3'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_113_190305.tar.gz')
@@ -285,6 +298,7 @@ default['arcgis']['server'].tap do |server|
   end
 
   server['config_store_connection_secret'] = ''
+  server['cloud_config'] = ''
 
   server['setup_options'] = ''
   server['authorization_options'] = ''

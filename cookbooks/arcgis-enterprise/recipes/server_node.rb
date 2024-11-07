@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: server_node
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ end
 directory node['arcgis']['server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0775'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
@@ -125,6 +125,7 @@ arcgis_enterprise_server 'Join ArcGIS Server Site' do
   install_dir node['arcgis']['server']['install_dir']
   use_join_site_tool node['arcgis']['server']['use_join_site_tool']
   pull_license node['arcgis']['server']['pull_license']
+  enable_debug node['arcgis']['server']['enable_debug']
   if node['arcgis']['server']['use_join_site_tool']
     config_store_connection_string node['arcgis']['server']['config_store_connection_string']
     config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']

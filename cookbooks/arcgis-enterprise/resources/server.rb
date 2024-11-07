@@ -58,6 +58,7 @@ attribute :server_directories_root, :kind_of => String
 attribute :config_store_connection_string, :kind_of => String
 attribute :config_store_connection_secret, :kind_of => String
 attribute :config_store_type, :kind_of => String, :default => 'FILESYSTEM'
+attribute :cloud_config, :kind_of => String, :default => ''
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
 attribute :data_item, :kind_of => Hash
@@ -87,6 +88,7 @@ attribute :cipher_suites, :kind_of => String, :default => ''
 attribute :setup_options, :kind_of => String, :default => ''
 attribute :authorization_options, :kind_of => String, :default => ''
 attribute :unpack_options, :kind_of => String, :default => ''
+attribute :enable_debug, :kind_of => [TrueClass, FalseClass], :default => false
 
 def initialize(*args)
   super

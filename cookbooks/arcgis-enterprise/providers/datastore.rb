@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: datastore
 #
-# Copyright 2015 Esri
+# Copyright 2015-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -266,7 +266,7 @@ action :configure_autostart do
       variables template_variables
       owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load systemd unit file]', :immediately
     end
 
@@ -405,7 +405,7 @@ action :configure_backup_location do
 
   # At 10.8 tilecache backup location is no longer registered by default
   # therefore --operation register needs to be used.
-  if %w[tilecache spatiotemporal graph].include?(@new_resource.store)
+  if %w[tilecache spatiotemporal graph object].include?(@new_resource.store)
     operation = 'register'
   end
 

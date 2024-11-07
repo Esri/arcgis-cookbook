@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-workflow-manager
 # Recipe:: server
 #
-# Copyright 2021 Esri
+# Copyright 2021-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ include_recipe 'arcgis-workflow-manager::install_server'
 arcgis_workflow_manager_server 'Authorize ArcGIS Workflow Manager Server' do
   authorization_file node['arcgis']['workflow_manager_server']['authorization_file']
   authorization_file_version node['arcgis']['workflow_manager_server']['authorization_file_version']
+  authorization_options node['arcgis']['workflow_manager_server']['authorization_options']
   retries 5
   retry_delay 60
   not_if { node['arcgis']['workflow_manager_server']['authorization_file'] == '' ||

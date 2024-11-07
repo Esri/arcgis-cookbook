@@ -45,7 +45,7 @@ default['arcgis']['egdb']['data_items'] = [{
   'database' => 'egdb',
   'data_item_path' => '/enterpriseDatabases/registeredDatabase',
   'connection_file' => ::File.join(node['arcgis']['egdb']['connection_files_dir'], 'RDS_egdb.sde'),
-  'is_managed' => true,
+  'is_managed' => false,
   'connection_type' => 'shared'
 }]
 

@@ -25,6 +25,8 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
                                                         ::File.basename(node['arcgis']['geoevent']['authorization_file']))
   end
+  geoevent['authorization_options'] = ''
+  
   geoevent['configure_autostart'] = true
 
   geoevent['ports'] = '6180,6143,4181,4182,4190,9191,9192,9193,9194,9220,9320,5565,5575,27271,27272,27273,2181,2182,2190'
@@ -43,6 +45,11 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = 'C:\\ArcGIS\\GeoEvent\\SetupFiles\\setup.msi'
 
     case node['arcgis']['version']
+    when '11.4'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_114_192949.exe').gsub('/', '\\')
+      geoevent['product_code'] = '{4CEDE889-6698-4083-B221-7499B7A32D39}'
+      geoevent['patch_registry'] ='SOFTWARE\ESRI\GeoEvent11.4\Server\Updates'
     when '11.3'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_113_190259.exe').gsub('/', '\\')
@@ -78,6 +85,9 @@ default['arcgis']['geoevent'].tap do |geoevent|
     geoevent['lp-setup'] = '/arcgis/geo-event-cdLP/Language-Pack-Setup.sh'
 
     case node['arcgis']['version']
+    when '11.4'
+      geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                              'ArcGIS_GeoEvent_Server_114_192990.tar.gz')
     when '11.3'
       geoevent['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                               'ArcGIS_GeoEvent_Server_113_190331.tar.gz')

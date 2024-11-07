@@ -32,6 +32,7 @@ attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
+attribute :authorization_options, :kind_of => String, :default => ''
 attribute :product_code, :kind_of => String
 
 def initialize(*args)

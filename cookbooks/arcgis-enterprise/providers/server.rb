@@ -262,7 +262,12 @@ action :create_site do
     if admin_client.upgrade_required?
       Chef::Log.info('Completing ArcGIS Server site upgrade...')
       
-      admin_client.complete_upgrade 
+      # Async upgrades are supported starting from ArcGIS Server 11.4
+      if ['10.9.1', '11.0', '11.1', '11.2', '11.3'].include?(node['arcgis']['version'])
+        admin_client.complete_upgrade       
+      else
+        admin_client.complete_upgrade_async(@new_resource.enable_debug)
+      end
 
       Chef::Log.info('ArcGIS Server site upgrade is complete.')
       
@@ -273,13 +278,20 @@ action :create_site do
       else
         Chef::Log.info('Creating ArcGIS Server site...')
 
-        admin_client.create_site(@new_resource.server_directories_root,
-                                @new_resource.config_store_type,
-                                @new_resource.config_store_connection_string,
-                                @new_resource.config_store_connection_secret,
-                                @new_resource.log_level,
-                                @new_resource.log_dir,
-                                @new_resource.max_log_file_age)
+        if @new_resource.cloud_config.empty?
+          admin_client.create_site(@new_resource.server_directories_root,
+                                   @new_resource.config_store_type,
+                                   @new_resource.config_store_connection_string,
+                                   @new_resource.config_store_connection_secret,
+                                   @new_resource.log_level,
+                                   @new_resource.log_dir,
+                                   @new_resource.max_log_file_age)
+        else
+          admin_client.create_site_cloud(@new_resource.cloud_config,
+                                         @new_resource.log_level,
+                                         @new_resource.log_dir,
+                                         @new_resource.max_log_file_age)
+        end
 
         new_resource.updated_by_last_action(true)
       end
@@ -301,7 +313,11 @@ action :join_site do
     if admin_client.upgrade_required?
       Chef::Log.info('Completing ArcGIS Server site upgrade...')
 
-      admin_client.complete_upgrade 
+      if ['10.9.1', '11.0', '11.1', '11.2', '11.3'].include?(node['arcgis']['version'])
+        admin_client.complete_upgrade       
+      else
+        admin_client.complete_upgrade_async(@new_resource.enable_debug)
+      end
 
       Chef::Log.info('ArcGIS Server site upgrade is complete.')
 
@@ -708,7 +724,7 @@ action :configure_autostart do
       variables template_variables
       owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load systemd unit file]', :immediately
     end
 
@@ -852,13 +868,25 @@ action :unregister_machine do
 
     admin_client.wait_until_available
 
-    Chef::Log.info('Unregistering server machine...')
+    if admin_client.site_exist?
+      Chef::Log.info('Unregistering ArcGIS Web Adaptors referencing the machine...')
+      
+      web_adaptors = admin_client.web_adaptors
 
-    machine_name = admin_client.local_machine_name
+      web_adaptors.each do |web_adaptor|
+        if web_adaptor['machineIP'] == node['ipaddress']
+          admin_client.unregister_web_adaptor(web_adaptor['id'])
+        end
+      end
 
-    admin_client.unregister_machine(machine_name)
+      Chef::Log.info('Unregistering server machine...')
 
-    new_resource.updated_by_last_action(true)
+      machine_name = admin_client.local_machine_name
+
+      admin_client.unregister_machine(machine_name)
+
+      new_resource.updated_by_last_action(true)
+    end
   rescue Exception => e
     Chef::Log.error "Failed to unregister server machine. " + e.message
     raise e

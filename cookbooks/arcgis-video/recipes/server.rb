@@ -27,6 +27,7 @@ end
 arcgis_video_server 'Authorize ArcGIS Video Server' do
   authorization_file node['arcgis']['video_server']['authorization_file']
   authorization_file_version node['arcgis']['video_server']['authorization_file_version']
+  authorization_options node['arcgis']['video_server']['authorization_options']
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_video_server[Stop ArcGIS Video Server]', :immediately
@@ -97,7 +98,7 @@ end
 directory node['arcgis']['video_server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0775'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['video_server']['log_dir'].start_with?('\\\\') ||

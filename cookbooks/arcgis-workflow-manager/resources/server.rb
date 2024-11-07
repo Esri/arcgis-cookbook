@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-workflow-manager
 # Resource:: server
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
+attribute :authorization_options, :kind_of => String, :default => ''
 attribute :product_code, :kind_of => String
 attribute :ports, :kind_of => String
 attribute :enabled_modules, :kind_of => String
@@ -183,13 +184,13 @@ action :authorize do
     cmd = node['arcgis']['server']['authorization_tool']
 
     if node['platform'] == 'windows'
-      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S #{@new_resource.authorization_options}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command
       cmd.error!
     else
-      args = "-f \"#{@new_resource.authorization_file}\""
+      args = "-f \"#{@new_resource.authorization_file}\" #{@new_resource.authorization_options}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
             { :timeout => 600, :user => node['arcgis']['run_as_user'] })
@@ -226,7 +227,7 @@ action :configure_autostart do
       variables template_variables
       owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load systemd unit file]', :immediately
     end
 

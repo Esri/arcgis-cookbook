@@ -49,7 +49,7 @@ end
 
 directory node['arcgis']['portal']['log_dir'] do
   owner node['arcgis']['run_as_user']
-  mode '0755' if node['platform'] != 'windows'
+  mode '0700' if node['platform'] != 'windows'
   recursive true
   action :create
 end

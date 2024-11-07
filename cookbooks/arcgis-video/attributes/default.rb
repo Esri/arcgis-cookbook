@@ -38,8 +38,11 @@ default['arcgis']['video_server'].tap do |video_server|
   video_server['web_context_url'] = "https://#{node['arcgis']['video_server']['domain_name']}/#{node['arcgis']['video_server']['wa_name']}"
 
   video_server['ports'] = '21080,21443'
+
   video_server['authorization_file'] = node['arcgis']['server']['authorization_file']
   video_server['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  video_server['authorization_options'] = ''
+
   video_server['configure_autostart'] = true
   video_server['install_system_requirements'] = true
 
@@ -93,6 +96,10 @@ default['arcgis']['video_server'].tap do |video_server|
     video_server['log_dir'] = 'C:\\arcgisvideoserver\\logs'
 
     case node['arcgis']['version']
+    when '11.4'
+      video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Video_Server_Windows_114_192955.exe').gsub('/', '\\')
+      video_server['product_code'] = '{016CE7D6-3D42-4D1A-8AEE-4846433173D1}'
     when '11.3'
       video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Video_Server_Windows_113_190272.exe').gsub('/', '\\')
@@ -137,6 +144,9 @@ default['arcgis']['video_server'].tap do |video_server|
                                           'usr', 'logs')
 
     case node['arcgis']['version']
+    when '11.4'
+      video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'ArcGIS_Video_Server_Linux_114_192993.tar.gz')
     when '11.3'
       video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                   'ArcGIS_Video_Server_Linux_113_190341.tar.gz')

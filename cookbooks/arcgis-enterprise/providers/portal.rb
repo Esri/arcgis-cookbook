@@ -201,7 +201,7 @@ action :configure_autostart do
       variables template_variables
       owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load systemd unit file]', :immediately
     end
 
@@ -397,6 +397,8 @@ action :set_system_properties do
     Chef::Log.info 'Portal system properties were not changed.'
   end
 
+  portal_admin_client.wait_until_available
+  
   portal_admin_client.edit_log_settings(@new_resource.log_level,
                                         @new_resource.log_dir,
                                         @new_resource.max_log_file_age)
@@ -422,6 +424,36 @@ action :set_identity_store do
   rescue Exception => e
     Chef::Log.error "Failed to configure Portal identity stores. " + e.message
     raise e
+  end
+end
+
+# Unregisters local machine from portal
+action :unregister_machine do
+  portal_admin_client = ArcGIS::PortalAdminClient.new(
+    @new_resource.portal_url,
+    @new_resource.username,
+    @new_resource.password)
+
+  portal_admin_client.wait_until_available
+
+  if portal_admin_client.site_exist?
+    Chef::Log.info('Unregistering ArcGIS Web Adaptors referencing the machine...')
+    
+    web_adaptors = portal_admin_client.web_adaptors
+
+    web_adaptors.each do |web_adaptor|
+      if web_adaptor['machineIP'] == node['ipaddress']
+        portal_admin_client.unregister_web_adaptor(web_adaptor['id'])
+      end
+    end
+
+    machine_name = portal_admin_client.local_machine_name
+
+    Chef::Log.info("Unregistering Portal machine #{machine_name}...")
+
+    portal_admin_client.unregister_machine(machine_name)
+
+    new_resource.updated_by_last_action(true)
   end
 end
 

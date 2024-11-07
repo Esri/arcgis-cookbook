@@ -1,0 +1,36 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-114-PFA-*.tar",
+                "ArcGIS-114-PFA-*.tar.gz"
+            ]
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-114-S-*.tar",
+                "ArcGIS-114-S-*.tar.gz"
+            ]
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-114-DS-*.tar",
+                "ArcGIS-114-DS-*.tar.gz"
+            ]
+        },
+        "web_adaptor": {
+            "patches": []
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

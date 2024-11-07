@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-repository cookbook"
 category: cookbooks
 item: arcgis-repository
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 * 11.1
 * 11.2
 * 11.3
+* 11.4
 
 ## Platforms
 
@@ -27,6 +28,7 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 * Windows Server 2022
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15

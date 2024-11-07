@@ -1,0 +1,26 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-114-S-*.tar",
+                "ArcGIS-114-S-*.tar.gz"
+            ]
+        },
+        "workflow_manager_server": {
+            "patches": [
+                "WorkflowManager-11.4-*.tar",
+                "WorkflowManager-11.4-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]",
+        "recipe[arcgis-workflow-manager::install_patches]"
+    ]
+}

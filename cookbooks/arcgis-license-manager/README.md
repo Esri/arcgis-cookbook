@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-license-manager cookbook"
 category: cookbooks
 item: arcgis-license-manager
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ This cookbook installs and configures ArcGIS License Manager.
 * 2022.1
 * 2023.0
 * 2024.0
+* 2024.1
 
 ## Supported Platforms
 
@@ -39,9 +40,9 @@ The following cookbooks are required:
 ## Attributes
 
 * `node['arcgis']['run_as_user']` = User account used to run ArcGIS License Manager on Linux. Default account name is `arcgis`.
-* `node['arcgis']['licensemanager']['version']` = ArcGIS License Manager version. Default value is `2024.0`.
+* `node['arcgis']['licensemanager']['version']` = ArcGIS License Manager version. Default value is `2024.1`.
 * `node['arcgis']['licensemanager']['setup_archive']` = The location of ArcGIS License Manager setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS License Manager 2024.0\LicenseManager\Setup.exe` on Windows, and `/opt/arcgis/2020.0/LicenseManager_Linux/Setup` on Linux.
+* `node['arcgis']['licensemanager']['setup']` = The location of ArcGIS License Manager setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS License Manager 2024.1\LicenseManager\Setup.exe` on Windows, and `/opt/arcgis/2024.1/LicenseManager_Linux/Setup` on Linux.
 * `node['arcgis']['licensemanager']['install_dir']` = ArcGIS License Manager installation directory. By default, the license manager is installed to `%ProgramFiles(x86)%\ArcGIS` on Windows and `/` on Linux.
 * `node['arcgis']['licensemanager']['packages']` = Linux system packages to install before installing ArcGIS License Manager. Default value is `[]`.
 
@@ -65,8 +66,8 @@ Attributes used by the recipe:
        "setups": "C:\\Software\\Setups" 
     },
     "licensemanager": {
-      "version": "2024.0",
-      "setup": "C:\\Software\\Setups\\License Manager 2024.0\\LicenseManager\\Setup.exe",
+      "version": "2024.1",
+      "setup": "C:\\Software\\Setups\\License Manager 2024.1\\LicenseManager\\Setup.exe",
       "install_dir": "C:\\Program Files (x86)\\ArcGIS"
     }
   },

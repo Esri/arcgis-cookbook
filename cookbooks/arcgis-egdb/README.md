@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-egdb cookbook"
 category: cookbooks
 item: arcgis-egdb
-version: 2.0.0
+version: 2.1.0
 latest: true
 ---
 
@@ -19,6 +19,7 @@ The arcgis-egdb cookbook creates enterprise geodatabases in SQL Server or Postgr
 * Windows Server 2022
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
@@ -65,7 +66,7 @@ ArcPy does not support creating databases in Amazon RDS database servers. The co
     "database" : "egdb",
     "data_item_path" : "/enterpriseDatabases/registeredDatabase",
     "connection_file": "C:\\chef\\misc_scripts\\connection_files\\RDS_egdb.sde",
-    "is_managed" : true,
+    "is_managed" : false,
     "connection_type" : "shared"
   }]
   ```
@@ -81,7 +82,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server",
       "private_url": "https://domain.com:6443/arcgis",
@@ -94,7 +95,7 @@ Attributes used by the recipe:
     "egdb": {
       "engine": "postgres",
       "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
-      "keycodes": "C:\\Program Files\\ESRI\\License11.3\\sysgen\\keycodes",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.4\\sysgen\\keycodes",
       "postgresbin" : "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
       "master_username": "EsriRDSAdmin",
       "master_password": "changeit",
@@ -104,7 +105,7 @@ Attributes used by the recipe:
         "database": "egdb",
         "data_item_path": "/enterpriseDatabases/registeredDatabase",
         "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
-        "is_managed": true,
+        "is_managed": false,
         "connection_type": "shared"
       }]
     }
@@ -124,7 +125,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server"
@@ -135,7 +136,7 @@ Attributes used by the recipe:
     "egdb": {
       "engine": "postgres",
       "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
-      "keycodes": "C:\\Program Files\\ESRI\\License11.3\\sysgen\\keycodes",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.4\\sysgen\\keycodes",
       "postgresbin" : "C:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin",
       "master_username": "EsriRDSAdmin",
       "master_password": "changeit",
@@ -146,7 +147,7 @@ Attributes used by the recipe:
         "database": "egdb",
         "data_item_path": "/enterpriseDatabases/registeredDatabase",
         "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
-        "is_managed": true,
+        "is_managed": false,
         "connection_type": "shared"
       }]
     }
@@ -166,7 +167,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server"
     },
@@ -175,7 +176,7 @@ Attributes used by the recipe:
     },
     "egdb": {
       "endpoint": "xxx.cluster-yyy.us-east-2.rds.amazonaws.com",
-      "keycodes": "C:\\Program Files\\ESRI\\License11.3\\sysgen\\keycodes",
+      "keycodes": "C:\\Program Files\\ESRI\\License11.4\\sysgen\\keycodes",
       "master_username": "EsriRDSAdmin",
       "master_password": "changeit",
       "db_password": "changeit",
@@ -183,7 +184,7 @@ Attributes used by the recipe:
         "database": "egdb",
         "data_item_path": "/enterpriseDatabases/registeredDatabase",
         "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
-        "is_managed": true,
+        "is_managed": false,
         "connection_type": "shared"
       }]
     }
@@ -213,7 +214,7 @@ Attributes used by the recipe:
         "database": "egdb",
         "data_item_path": "/enterpriseDatabases/registeredDatabase",
         "connection_file": "C:\\chef\\msic_scripts\\connection_files\\RDS_egdb.sde",
-        "is_managed": true,
+        "is_managed": false,
         "connection_type": "shared"
       }]
     }

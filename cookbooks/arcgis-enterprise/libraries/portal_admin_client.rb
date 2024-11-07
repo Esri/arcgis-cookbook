@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Esri
+# Copyright 2022-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -621,8 +621,10 @@ module ArcGIS
       JSON.parse(response.body)
     end
 
-    def update_system_properties(system_properties)
-      return if system_properties.empty?
+    def update_system_properties(properties)
+      return if properties.empty?
+
+      merged_properties = system_properties().merge(properties)
 
       request = Net::HTTP::Post.new(URI.parse(
         @portal_url + '/portaladmin/system/properties/update').request_uri)
@@ -632,7 +634,7 @@ module ArcGIS
       token = generate_token(@generate_token_url)
 
       request.set_form_data('token' => token,
-                            'properties' => system_properties.to_json,
+                            'properties' => merged_properties.to_json,
                             'f' => 'json')
 
       response = send_request(request)
@@ -692,6 +694,38 @@ module ArcGIS
       response = send_request(request)
 
       validate_response(response)
+    end
+
+    def unregister_web_adaptor(id)
+      request = Net::HTTP::Post.new(URI.parse(@portal_url +
+        "/portaladmin/system/webadaptors/#{id}/unregister").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@generate_token_url)
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def web_adaptors
+      request = Net::HTTP::Post.new(URI.parse(@portal_url + 
+        '/portaladmin/system/webadaptors').request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token(@generate_token_url)
+
+      request.set_form_data('token' => token, 'f' => 'json')
+
+      response = send_request(request)
+
+      validate_response(response)
+
+      JSON.parse(response.body)['webAdaptors']
     end
 
     def generate_token(generate_token_url)

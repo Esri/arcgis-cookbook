@@ -1,0 +1,35 @@
+{
+    "java": {
+        "version": "11.0.21+9",
+        "tarball_uri": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz",
+        "tarball_path": "/opt/software/archives/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.83",        
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.83.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.83"
+    },
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.83/webapps"
+        },
+        "video_server": {
+            "wa_name": "video"
+        },        
+        "web_adaptor": {
+            "install_dir": "/opt"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat::install]",
+        "recipe[arcgis-video::install_server_wa]"
+    ]
+}

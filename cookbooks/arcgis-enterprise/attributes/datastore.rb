@@ -51,6 +51,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '11.4'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_114_192943.exe').gsub('/', '\\')
+      data_store['product_code'] = '{4AC2C588-DFDC-449E-8DFF-3701C3C3824A}'
     when '11.3'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_113_190233.exe').gsub('/', '\\')
@@ -81,6 +85,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '11.4'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_114_192981.tar.gz')
     when '11.3'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_113_190318.tar.gz')
@@ -142,8 +149,8 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['backup_dir'] = node['arcgis']['data_store']['local_backup_dir']
   end
 
-  data_store['relational']['backup_type'] = 'fs'
-  data_store['tilecache']['backup_type'] = 'fs'
+  data_store['relational']['backup_type'] = 'none'
+  data_store['tilecache']['backup_type'] = 'none'
   data_store['object']['backup_type'] = 'none'
 
   if node['arcgis']['data_store']['backup_dir'].nil?

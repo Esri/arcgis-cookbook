@@ -38,9 +38,12 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
   notebook_server['web_context_url'] = "https://#{node['arcgis']['notebook_server']['domain_name']}/#{node['arcgis']['notebook_server']['wa_name']}"
 
   notebook_server['ports'] = '11443'
+  
   notebook_server['authorization_file'] = node['arcgis']['server']['authorization_file']
   notebook_server['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  notebook_server['authorization_options'] = ''
   notebook_server['license_level'] = 'standard'
+
   notebook_server['configure_autostart'] = true
   notebook_server['install_system_requirements'] = true
   notebook_server['install_samples_data'] = false
@@ -147,6 +150,14 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['patches'] = []
 
     case node['arcgis']['version']
+    when '11.4'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_114_192992.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_114_192952.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_114_192953.tar.gz')
+      notebook_server['data_setup_archive'] = nil
     when '11.3'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_113_190340.tar.gz')

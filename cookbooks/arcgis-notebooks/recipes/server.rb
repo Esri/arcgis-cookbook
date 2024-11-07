@@ -27,6 +27,7 @@ end
 arcgis_notebooks_server 'Authorize ArcGIS Notebook Server' do
   authorization_file node['arcgis']['notebook_server']['authorization_file']
   authorization_file_version node['arcgis']['notebook_server']['authorization_file_version']
+  authorization_options node['arcgis']['notebook_server']['authorization_options']
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_notebooks_server[Stop ArcGIS Notebook Server]', :immediately
@@ -72,7 +73,7 @@ end
 directory node['arcgis']['notebook_server']['directories_root'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0755'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['notebook_server']['directories_root'].start_with?('\\\\') ||
@@ -83,7 +84,7 @@ end
 directory ::File.join(node['arcgis']['notebook_server']['directories_root'], 'directories') do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0755'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['notebook_server']['directories_root'].start_with?('\\\\') ||
@@ -94,7 +95,7 @@ end
 directory node['arcgis']['notebook_server']['config_store_connection_string'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0755'
+    mode '0700'
   end
   recursive true
   only_if { node['arcgis']['notebook_server']['config_store_type'] == 'FILESYSTEM'}
@@ -118,7 +119,7 @@ end
 directory node['arcgis']['notebook_server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0755'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['notebook_server']['log_dir'].start_with?('\\\\') ||

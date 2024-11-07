@@ -125,7 +125,7 @@ else
   end
 
   directory '/home/' + node['arcgis']['run_as_user'] + '/.ssh' do
-    mode '0770'
+    mode '0700'
     owner node['arcgis']['run_as_user']
     group node['arcgis']['run_as_user']
     not_if { node['arcgis']['run_as_user_auth_keys'].nil? }
@@ -134,7 +134,7 @@ else
 
   file '/home/' + node['arcgis']['run_as_user'] + '/.ssh/authorized_keys' do
     content lazy { File.read(node['arcgis']['run_as_user_auth_keys']) }
-    mode '0660'
+    mode '0600'
     owner node['arcgis']['run_as_user']
     group node['arcgis']['run_as_user']
     not_if { node['arcgis']['run_as_user_auth_keys'].nil? }

@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-workflow-manager cookbook"
 category: cookbooks
 item: arcgis-workflow-manager
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ This cookbook installs and configures ArcGIS Workflow Manager Server.
 * 11.1
 * 11.2
 * 11.3
+* 11.4
 
 ## Supported ArcGIS software
 
@@ -29,6 +30,7 @@ This cookbook installs and configures ArcGIS Workflow Manager Server.
 * Microsoft Windows Server 2022 Standard and Datacenter
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
@@ -48,9 +50,10 @@ The following cookbooks are required:
 ## Attributes
 
 * `node['arcgis']['workflow_manager_server']['setup_archive']` = Path to the ArcGIS Workflow Manager Server setup archive. Default value depends on the `node['arcgis']['version']` attribute value.
-* `node['arcgis']['workflow_manager_server']['setup']` = The location of the ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.3\WorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/10.9/WorkflowManagerServer/Setup.sh` on Linux.
+* `node['arcgis']['workflow_manager_server']['setup']` = The location of the ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.4\WorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/10.9/WorkflowManagerServer/Setup.sh` on Linux.
 * `node['arcgis']['workflow_manager_server']['authorization_file']` = ArcGIS Workflow Manager Server authorization file path. Default value is set to the value of `node['arcgis']['server']['authorization_file']`
 * `node['arcgis']['workflow_manager_server']['authorization_file_version']` = ArcGIS Workflow Manager Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
+* `node['arcgis']['workflow_manager_server']['authorization_options']` = Additional ArcGIS Workflow Manager Server software authorization command line options. Default options are `''`.
 * `node['arcgis']['workflow_manager_server']['ports']` = Ports used by ArcGIS Workflow Manager Server. Default ports are `9820,9830,9840,9880,13443,13820,13830,13840`.
 * `node['arcgis']['workflow_manager_server']['patches]` = File names of ArcGIS Workflow Manager Server patches to install. Default value is `[]`.
 * `node['arcgis']['workflow_manager_server']['distributed_data_provider]` = If set to `true`, distributed data provider module is enabled. Default value is `false`.
@@ -100,7 +103,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "configure_windows_firewall": true,
@@ -113,7 +116,7 @@ Attributes used by the recipe:
     },
     "workflow_manager_server": {
       "setup_archive": "C:\\Software\\Archives\\ArcGIS_Workflow_Manager_Server_113_190273.exe",
-      "setup": "C:\\Software\\Setups\\ArcGIS11.3\\WorkflowManagerServer\\Setup.exe",
+      "setup": "C:\\Software\\Setups\\ArcGIS11.4\\WorkflowManagerServer\\Setup.exe",
       "ports": "9830,9820,9840,9880,13443"      
     }
   },
@@ -154,7 +157,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "configure_windows_firewall": true,
@@ -167,9 +170,9 @@ Attributes used by the recipe:
     },
     "workflow_manager_server": {
       "setup_archive": "C:\\Software\\Archives\\ArcGIS_Workflow_Manager_Server_113_190273.exe",
-      "setup": "C:\\Software\\Setups\\ArcGIS11.3\\WorkflowManagerServer\\Setup.exe",
-      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.3\\Workflow_Manager_Server.prvc",
-      "authorization_file_version": "11.3",
+      "setup": "C:\\Software\\Setups\\ArcGIS11.4\\WorkflowManagerServer\\Setup.exe",
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.4\\Workflow_Manager_Server.prvc",
+      "authorization_file_version": "11.4",
       "ports": "9830,9820,9840,9880,13443"      
     }
   },
@@ -186,7 +189,7 @@ Uninstalls ArcGIS Workflow Manager Server.
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS\\Server"

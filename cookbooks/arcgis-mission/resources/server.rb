@@ -32,6 +32,7 @@ attribute :run_as_password, :kind_of => String, :sensitive => true
 attribute :run_as_msa, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :authorization_file, :kind_of => String
 attribute :authorization_file_version, :kind_of => String
+attribute :authorization_options, :kind_of => String, :default => ''
 attribute :product_code, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String, :sensitive => true
@@ -243,9 +244,9 @@ action :configure_autostart do
       source agsmission_service_file
       cookbook 'arcgis-mission'
       variables agsmission_template_variables
-      owner agsuser
+      owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load agsmission systemd unit file]', :immediately
     end
 
@@ -272,7 +273,7 @@ action :authorize do
     cmd = node['arcgis']['mission_server']['authorization_tool']
 
     if node['platform'] == 'windows'
-      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S #{@new_resource.authorization_options}"
       sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
 
       sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time
@@ -297,7 +298,7 @@ action :authorize do
 
       sa_cmd.error!
     else
-      args = "-f \"#{@new_resource.authorization_file}\""
+      args = "-f \"#{@new_resource.authorization_file}\" #{@new_resource.authorization_options}"
       sa_cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
             { :timeout => 600, :user => node['arcgis']['run_as_user'] })
       sleep(rand(0..120)) # Use random delay top reduce probability of multiple machines authorization at the same time

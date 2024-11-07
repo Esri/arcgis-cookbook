@@ -1,0 +1,16 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "repository": {
+            "local_patches": "C:\\Software\\Archives\\Patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Web Adaptor (IIS)"
+                ]
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::patches]"
+    ]
+}
