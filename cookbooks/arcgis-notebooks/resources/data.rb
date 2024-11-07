@@ -19,7 +19,7 @@
 
 unified_mode true
 
-actions :unpack, :install, :post_install
+actions :unpack, :install, :post_install, :uninstall
 
 attribute :setup_archive, kind_of: String
 attribute :setups_repo, kind_of: String
@@ -96,6 +96,27 @@ action :post_install do
 
     cmd = Mixlib::ShellOut.new("su - #{@new_resource.run_as_user} -c \"#{cmd} #{args}\"",
           { :timeout => 1200 })
+    cmd.run_command
+    cmd.error!
+  end
+end
+
+action :uninstall do
+  if node['platform'] == 'windows'
+    cmd = 'msiexec'
+    args = "/qn /x #{@new_resource.product_code}"
+
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 3600 })
+    cmd.run_command
+    cmd.error!
+  else
+    install_subdir = ::File.join(@new_resource.install_dir,
+                                 node['arcgis']['notebook_server']['install_subdir'])
+    cmd = ::File.join(install_subdir, 'uninstall_ArcGISNotebookServerSamplesData.sh')
+    args = '-s'
+
+    cmd = Mixlib::ShellOut.new("su - #{@new_resource.run_as_user} -c \"#{cmd} #{args}\"",
+                               { :timeout => 3600 })
     cmd.run_command
     cmd.error!
   end

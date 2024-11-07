@@ -1,0 +1,73 @@
+{
+    "java": {
+        "version": "11.0.21+9",
+        "tarball_uri": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz",
+        "tarball_path": "/opt/software/archives/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.83",
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.83.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.83",
+        "keystore_file": "/opt/tomcat_arcgis_9.0.83/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "<keystore_password>"
+    },
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.83/webapps"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "primary_server_url": "https://primary.com:6443/arcgis",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "log_dir": "/opt/arcgis/server/usr/logs",
+            "enable_debug": false,            
+            "authorization_file": "/opt/software/authorization_files/11.4/server.prvc",
+            "install_system_requirements": true,
+            "wa_name": "server"
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f Relational",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "preferredidentifier": "hostname",
+            "install_system_requirements": true,
+            "types": "relational"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "primary_machine_url": "https://primary.com:7443",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "install_system_requirements": true,
+            "wa_name": "portal",
+            "root_cert": "",
+            "root_cert_alias": "rootcert"
+        },
+        "web_adaptor": {
+            "install_dir": "/opt",
+            "admin_access": true,
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal_standby]",
+        "recipe[arcgis-enterprise::portal_wa]",
+        "recipe[arcgis-enterprise::server_node]",
+        "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::datastore_standby]"
+    ]
+}

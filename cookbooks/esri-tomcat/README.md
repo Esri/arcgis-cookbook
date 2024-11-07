@@ -3,7 +3,7 @@ layout: default
 title: "esri-tomcat cookbook"
 category: cookbooks
 item: esri-tomcat
-version: 0.3.0
+version: 0.3.1
 latest: true
 ---
 
@@ -15,6 +15,7 @@ This cookbook installs and configures Apache Tomcat for use with ArcGIS Web Adap
 
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15

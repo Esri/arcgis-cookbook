@@ -23,6 +23,7 @@ default['arcgis']['workflow_manager_server'].tap do |server|
     server['cached_authorization_file'] = ::File.join(Chef::Config[:file_cache_path],
                                                       ::File.basename(node['arcgis']['workflow_manager_server']['authorization_file']))
   end
+  server['authorization_options'] = ''  
 
   server['ports'] = '9820,9830,9840,9880,13443,13820,13830,13840'
 
@@ -41,6 +42,11 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   'ArcGISWorkflowManagerServer', 'Setup.exe')
 
     case node['arcgis']['version']
+    when '11.4'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_114_192956.exe').gsub('/', '\\')
+      server['product_code'] = '{455C44DE-39C6-4D9F-BC13-48F7626492E8}'
+      server['patch_registry'] ='SOFTWARE\\ESRI\\workflowmanager\\Server\\11.4\\Updates'
     when '11.3'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_113_190273.exe').gsub('/', '\\')
@@ -78,6 +84,9 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   'ArcGISWorkflowManagerServer', 'Setup.sh')
 
     case node['arcgis']['version']
+    when '11.4'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_114_192994.tar.gz')
     when '11.3'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_113_190342.tar.gz')

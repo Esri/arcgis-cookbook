@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: default
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ end
 default['arcgis']['run_as_msa'] = false
 default['arcgis']['run_as_user_auth_keys'] = nil
 
-default['arcgis']['version'] = '11.3'
+default['arcgis']['version'] = '11.4'
 
 default['arcgis']['cache_authorization_files'] = false
 default['arcgis']['configure_windows_firewall'] = false

@@ -271,6 +271,10 @@ action :configure_with_portal do
       end
     end
 
+    # Wait for 3 minutes to let the load balancer's health check to pass
+    # during upgrades of HA Portal for ArcGIS deployments. 
+    sleep(180.0)
+
     Utils.wait_until_url_available(healthcheck_url)
 
     # wait_until_url_available does not wait more than 10 minutes.

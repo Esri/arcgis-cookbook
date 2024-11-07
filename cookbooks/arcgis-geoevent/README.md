@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-geoevent cookbook"
 category: cookbooks
 item: arcgis-geoevent
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -18,6 +18,7 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 * 11.1
 * 11.2
 * 11.3
+* 11.4
 
 ## Supported ArcGIS software
 
@@ -31,6 +32,7 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 * Windows Server 2022
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
@@ -51,8 +53,9 @@ The following cookbooks are required:
 
 * `node['arcgis']['geoevent']['authorization_file']` = ArcGIS GeoEvent Server authorization file path. 
 * `node['arcgis']['geoevent']['authorization_file_version']` = ArcGIS GeoEvent Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
+* `node['arcgis']['geoevent']['authorization_options']` = Additional ArcGIS GeoEvent Server software authorization command line options. Default options are `''`.
 * `node['arcgis']['geoevent']['setup_archive']` = Path to the ArcGIS GeoEvent Server setup archive. Default value depends on `node['arcgis']['version']` attribute value.
-* `node['arcgis']['geoevent']['setup']` = The location of the ArcGIS GeoEvent Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.3\ArcGISGeoEventServer\Setup.exe` on Windows and `/opt/arcgis/11.3/geoevent/Setup.sh` on Linux.
+* `node['arcgis']['geoevent']['setup']` = The location of the ArcGIS GeoEvent Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.4\ArcGISGeoEventServer\Setup.exe` on Windows and `/opt/arcgis/11.4/geoevent/Setup.sh` on Linux.
 * `node['arcgis']['geoevent']['setup_options']` = Additional ArcGIS GeoEvent Server setup command line options. Default options are `''`.
 * `node['arcgis']['geoevent']['configure_autostart']` = If set to true, on Linux the GeoEvent Server is configured to start with the operating system.  Default value is `true`.
 * `node['arcgis']['geoevent']['ports']` = Ports to open for GeoEvent. Default depends on `node['arcgis']['version']`.
@@ -73,7 +76,7 @@ Attributes used by the recipe:
 ```JSON
 {
     "arcgis": {
-        "version": "11.3",
+        "version": "11.4",
         "run_as_user": "arcgis",
         "server": {
             "install_dir": "C:\\Program Files\\ArcGIS\\Server"
@@ -94,16 +97,16 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS",
     },
     "geoevent": {
-      "setup": "C:\\ArcGIS\\11.3\\GeoEvent\\Setup.exe",
-      "authorization_file": "C:\\ArcGIS\\11.3\\Authorization_Files\\GeoEvent.prvc",
-      "authorization_file_version": "11.3"
+      "setup": "C:\\ArcGIS\\11.4\\GeoEvent\\Setup.exe",
+      "authorization_file": "C:\\ArcGIS\\11.4\\Authorization_Files\\GeoEvent.prvc",
+      "authorization_file_version": "11.4"
     }
   },
   "run_list": [
@@ -143,9 +146,9 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "geoevent": {
-      "lp-setup": "C:\\ArcGIS\\11.3\\GeoEvent\\Japanese\\Setup.exe"
+      "lp-setup": "C:\\ArcGIS\\11.4\\GeoEvent\\Japanese\\Setup.exe"
     }
   },
   "run_list":[
@@ -163,7 +166,7 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.3",
+    "version": "11.4",
     "run_as_user": "arcgis",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS"

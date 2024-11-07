@@ -1,5 +1,0 @@
-name 'download-setups-s3'
-depends 'arcgis-enterprise'
-depends 'aws'
-depends 'seven_zip'
-depends 'tar'

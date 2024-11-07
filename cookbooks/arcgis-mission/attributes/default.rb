@@ -38,8 +38,11 @@ default['arcgis']['mission_server'].tap do |mission_server|
   mission_server['web_context_url'] = "https://#{node['arcgis']['mission_server']['domain_name']}/#{node['arcgis']['mission_server']['wa_name']}"
 
   mission_server['ports'] = '20443,20301,20160'
+
   mission_server['authorization_file'] = node['arcgis']['server']['authorization_file']
   mission_server['authorization_file_version'] = node['arcgis']['server']['authorization_file_version']
+  mission_server['authorization_options'] = ''
+
   mission_server['configure_autostart'] = true
   mission_server['install_system_requirements'] = true
 
@@ -93,6 +96,10 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '11.4'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_114_192950.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{3338445A-81E9-421C-A331-BA1BFBE8A8DE}'
     when '11.3'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_113_190267.exe').gsub('/', '\\')
@@ -159,6 +166,9 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '11.4'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_114_192991.tar.gz')
     when '11.3'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_113_190339.tar.gz')

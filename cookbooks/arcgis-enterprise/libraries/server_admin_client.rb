@@ -1,5 +1,5 @@
 #
-# Copyright 2023 Esri
+# Copyright 2023-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -167,6 +167,91 @@ module ArcGIS
       validate_response(response)
     end
 
+    def poll_upgrade_status
+      upgrade_uri = URI.parse(@server_url + '/admin/upgrade')
+
+      upgrade_uri.query = URI.encode_www_form(
+        'runAsync' => true,
+        'f' => 'json')
+
+      request = Net::HTTP::Get.new(upgrade_uri.request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      # Retry 5 times if the poll fails
+      for _ in 1..5 do
+        begin
+          response = send_request(request, @server_url)
+
+          validate_response(response)
+
+          return JSON.parse(response.body)
+        rescue Exception => ex
+          Chef::Log.warn("Failed to poll upgrade status. #{ex.message}")
+
+          sleep(5.0)
+        end
+      end
+
+      validate_response(response)
+    end
+
+    # Asynchronous version of complete_upgrade
+    # See https://developers.arcgis.com/rest/enterprise-administration/server/upgrade/
+    # Asyncronous upgrade is not supported by ArcGIS Server versions before 11.3.
+    # If async upgrade is not supported, runAsync POST parameters is ignored and
+    # the upgrade operation runs in the syncr mode.
+    def complete_upgrade_async(enable_debug = false)
+      request = Net::HTTP::Post.new(URI.parse(
+        @server_url + '/admin/upgrade').request_uri)
+
+      request.set_form_data(
+        'runAsync' => true,
+        'enableDebug' => enable_debug,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      upgrade_status = JSON.parse(response.body)
+
+      while 'IN_PROGRESS'.casecmp(upgrade_status['upgradeStatus']) == 0 ||
+            'In Progress'.casecmp(upgrade_status['upgradeStatus']) == 0
+        sleep(5.0)
+        upgrade_status = poll_upgrade_status
+      end
+
+      unless upgrade_status['stages'].nil?
+        # Log upgrade stages
+        upgrade_status['stages'].each do |stage|
+          Chef::Log.info("#{stage['name']}: #{stage['state']}")
+        end
+      end
+
+      unless upgrade_status['warnings'].nil?
+        # Log upgrade warnings
+        upgrade_status['warnings'].each do |warning|
+          Chef::Log.warn(warning)
+        end
+      end
+
+      if 'Success'.casecmp(upgrade_status['upgradeStatus']) == 0 || 
+         'Success with warnings'.casecmp(upgrade_status['upgradeStatus']) == 0 ||
+         'success'.casecmp(upgrade_status['status']) == 0 # Syncronous upgrade status
+        unless upgrade_status['upgradeFromVersion'].nil? || upgrade_status['upgradeToVersion'].nil?
+          Chef::Log.info("ArcGIS Server upgrade from #{upgrade_status['upgradeFromVersion']} to #{upgrade_status['upgradeToVersion']} completed successfully.")
+        else
+          Chef::Log.info("ArcGIS Server upgrade completed successfully.")
+        end
+
+        return true
+      else
+        messages = upgrade_status['messages'].nil? ? '' : upgrade_status['messages']
+        raise "ArcGIS Server upgrade failed. #{messages}"
+      end
+    end
+
     def create_site(server_directories_root,
                     config_store_type,
                     config_store_connection_string,
@@ -225,6 +310,31 @@ module ArcGIS
                             'directories' => directories.to_json,
                             'settings' => log_settings.to_json,
                             'cluster' => '',
+                            'f' => 'json')
+
+      response = send_request(request, @server_url, true)
+
+      validate_response(response)
+    end
+
+    def create_site_cloud(cloud_config,
+                          log_level,
+                          log_dir,
+                          max_log_file_age)
+      log_settings = {
+        'logLevel' => log_level,
+        'logDir' => log_dir,
+        'maxErrorReportsCount' => 10,
+        'maxLogFileAge' => max_log_file_age 
+      }
+
+      request = Net::HTTP::Post.new(URI.parse(
+      @server_url + '/admin/createNewSite').request_uri)
+
+      request.set_form_data('username' => @admin_username,
+                            'password' => @admin_password,
+                            'CloudConfigJson' => cloud_config,
+                            'settings' => log_settings.to_json,
                             'f' => 'json')
 
       response = send_request(request, @server_url, true)
@@ -447,8 +557,8 @@ module ArcGIS
         'type' => 'egdb',
         'clientPath' => nil,
         'info' => {
-          'isManaged' => is_managed,
-          'dataStoreConnectionType' => connection_type,
+          'isManaged' => is_managed.nil? ? false : is_managed,
+          'dataStoreConnectionType' => connection_type.nil? ? 'shared' : connection_type,
           'connectionString' => connection_string
         }
       }
@@ -836,13 +946,17 @@ module ArcGIS
     end
 
     def update_system_properties(properties)
+      return if properties.empty?
+            
+      merged_properties = system_properties().merge(properties)
+
       request = Net::HTTP::Post.new(URI.parse(@server_url + '/admin/system/properties/update').request_uri)
 
       request.add_field('Referer', 'referer')
 
       token = generate_token()
 
-      request.set_form_data('properties' => properties.to_json,
+      request.set_form_data('properties' => merged_properties.to_json,
                             'token' => token, 
                             'f' => 'json')
 
@@ -1073,7 +1187,7 @@ module ArcGIS
       validate_response(response)
     end
 
-    def unregister_web_adaptors
+    def web_adaptors
       request = Net::HTTP::Post.new(URI.parse(@server_url +
         "/admin/system/webadaptors").request_uri)
 
@@ -1087,8 +1201,10 @@ module ArcGIS
 
       validate_response(response)
 
-      web_adaptors = JSON.parse(response.body)['webAdaptors']
+      return JSON.parse(response.body)['webAdaptors']
+    end
 
+    def unregister_web_adaptors
       web_adaptors.each do |web_adaptor|
         unregister_web_adaptor(web_adaptor['id'])
       end

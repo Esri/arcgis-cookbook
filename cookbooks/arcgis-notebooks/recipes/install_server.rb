@@ -50,6 +50,21 @@ arcgis_notebooks_server 'Unpack ArcGIS Notebook Server Setup' do
   action :unpack
 end
 
+# Uninstall previous version of ArcGIS Notebook Server Samples Data.
+['10.9.1', '11.0', '11.1', '11.2', '11.3'].each do |samples_data_version|
+  arcgis_notebooks_data 'Uninstall ArcGIS Notebook Server Samples Data' do
+    install_dir node['arcgis']['notebook_server']['install_dir']
+    run_as_user node['arcgis']['run_as_user']
+    not_if { node['platform'] == 'windows' }
+    not_if { samples_data_version == node['arcgis']['version'] }
+    only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                node['hostname'],
+                                                samples_data_version,
+                                                :ArcGISNotebookServer_ArcGISNotebookServerSamplesData) }
+    action :uninstall
+  end 
+end
+
 arcgis_notebooks_server 'Setup ArcGIS Notebook Server' do
   setup node['arcgis']['notebook_server']['setup']
   install_dir node['arcgis']['notebook_server']['install_dir']

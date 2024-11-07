@@ -3,6 +3,11 @@ arcgis-repository cookbook CHANGELOG
 
 This file is used to list changes made in each version of the arcgis-repository cookbook.
 
+5.1.0
+-----
+
+- Added support for ArcGIS Enterprise 11.4.
+
 5.0.0
 -----
 

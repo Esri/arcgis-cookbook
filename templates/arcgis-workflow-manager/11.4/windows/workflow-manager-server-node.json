@@ -1,0 +1,33 @@
+{
+  "arcgis": {
+    "version": "11.4",
+    "run_as_user": "arcgis",
+    "run_as_password": "<run_as_password>",
+    "configure_windows_firewall": true,
+    "repository": {
+      "archives": "C:\\Software\\Archives",
+      "setups": "C:\\Software\\Setups"
+    },
+    "server": {
+      "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+      "install_system_requirements": true,
+      "primary_server_url": "https://primary.com:6443/arcgis",
+      "admin_username": "<server_admin_username>",
+      "admin_password": "<server_admin_password>",
+      "pull_license": false,
+      "log_dir": "C:\\arcgisserver\\logs",
+      "enable_debug": false,
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.4\\Server.prvc"
+    },
+    "workflow_manager_server": {
+      "authorization_file": "C:\\Software\\AuthorizationFiles\\11.4\\Workflow_Manager_Server.prvc",
+      "distributed_data_provider": true      
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::system]",
+    "recipe[arcgis-enterprise::disable_loopback_check]",
+    "recipe[arcgis-enterprise::server_node]",
+    "recipe[arcgis-workflow-manager::server]"
+  ]
+}

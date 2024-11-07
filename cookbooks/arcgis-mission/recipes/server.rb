@@ -27,6 +27,7 @@ end
 arcgis_mission_server 'Authorize ArcGIS Mission Server' do
   authorization_file node['arcgis']['mission_server']['authorization_file']
   authorization_file_version node['arcgis']['mission_server']['authorization_file_version']
+  authorization_options node['arcgis']['mission_server']['authorization_options']
   retries 2
   retry_delay 30
   notifies :stop, 'arcgis_mission_server[Stop ArcGIS Mission Server]', :immediately
@@ -97,7 +98,7 @@ end
 directory node['arcgis']['mission_server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0775'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['mission_server']['log_dir'].start_with?('\\\\') ||

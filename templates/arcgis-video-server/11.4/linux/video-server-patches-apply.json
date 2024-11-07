@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "video_server": {
+            "patches": [
+                "ArcGIS-114-VS-*.tar",
+                "ArcGIS-114-VS-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-video::install_patches]"
+    ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: samples_data
 #
-# Copyright 2021 Esri
+# Copyright 2021-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ arcgis_notebooks_data 'Unpack ArcGIS Notebook Server Samples Data Setup' do
   setup_archive node['arcgis']['notebook_server']['data_setup_archive']
   setups_repo node['arcgis']['repository']['setups']
   run_as_user node['arcgis']['run_as_user']
-  only_if { ::File.exist?(node['arcgis']['notebook_server']['data_setup_archive']) &&
+  only_if { !node['arcgis']['notebook_server']['data_setup_archive'].nil? &&
+            ::File.exist?(node['arcgis']['notebook_server']['data_setup_archive']) &&
             !::File.exist?(node['arcgis']['notebook_server']['data_setup']) }
   if node['platform'] == 'windows'
     not_if { Utils.product_installed?(node['arcgis']['notebook_server']['data_product_code']) }

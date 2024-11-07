@@ -114,6 +114,11 @@ default['arcgis']['portal'].tap do |portal|
     portal['patch_registry'] ='SOFTWARE\\ESRI\\Portal for ArcGIS\\Updates'
 
     case node['arcgis']['version']
+    when '11.4'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_114_192940.exe').gsub('/', '\\')
+      portal['product_code'] = '{CFB543E4-7FB7-4F9D-BD1F-483347B142DF}'
+      portal['unpack_options'] = '/x'
     when '11.3'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_113_189790.exe').gsub('/', '\\')
@@ -178,6 +183,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '11.4'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_114_192978.tar.gz')
     when '11.3'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_113_190316.tar.gz')

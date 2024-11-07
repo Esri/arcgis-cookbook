@@ -11,6 +11,13 @@ order: 6
 
 Changes made in each version of the Chef Cookbooks for ArcGIS.
 
+## 5.1.0
+
+- Added support for ArcGIS Enterprise 11.4.
+- Added support for ArcGIS Insights 2024.1.
+- Added support for ArcGIS License Manager 2024.1.
+- Added support for ArcGIS Pro 3.4.
+
 ## 5.0.0
 
 - Added support for ArcGIS Enterprise 11.3.

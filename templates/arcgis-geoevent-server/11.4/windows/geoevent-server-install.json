@@ -1,0 +1,24 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "install_system_requirements": true
+        },
+        "geoevent": {
+            "setup_options": "USERBACKUPCONFIGFILES=YES"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_server]",
+        "recipe[arcgis-geoevent]"
+    ]
+}

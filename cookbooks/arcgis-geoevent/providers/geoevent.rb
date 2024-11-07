@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-geoevent
 # Provider:: geoevent
 #
-# Copyright 2015 Esri
+# Copyright 2015-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -294,9 +294,9 @@ action :configure_autostart do
       source gateway_service_file
       cookbook 'arcgis-geoevent'
       variables gateway_template_variables
-      owner agsuser
+      owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load gateway systemd unit file]', :immediately
     end
 
@@ -316,9 +316,9 @@ action :configure_autostart do
       source geoevent_service_file
       cookbook 'arcgis-geoevent'
       variables geoevent_template_variables
-      owner agsuser
+      owner 'root'
       group 'root'
-      mode '0755'
+      mode '0600'
       notifies :run, 'execute[Load geoevent systemd unit file]', :immediately
     end
 
@@ -347,13 +347,13 @@ action :authorize do
     cmd = node['arcgis']['server']['authorization_tool']
 
     if node['platform'] == 'windows'
-      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S"
+      args = "/VER #{@new_resource.authorization_file_version} /LIF \"#{@new_resource.authorization_file}\" /S #{@new_resource.authorization_options}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 600 })
       cmd.run_command
       cmd.error!
     else
-      args = "-f \"#{@new_resource.authorization_file}\""
+      args = "-f \"#{@new_resource.authorization_file}\" #{@new_resource.authorization_options}"
 
       cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}",
             { :timeout => 600, :user => node['arcgis']['run_as_user'] })

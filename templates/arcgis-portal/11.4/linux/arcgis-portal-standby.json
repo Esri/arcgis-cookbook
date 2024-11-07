@@ -1,0 +1,26 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "primary_machine_url": "https://primary.com:7443",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "install_system_requirements": true,
+            "root_cert": "",
+            "root_cert_alias": "rootcert"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal_standby]"
+    ]
+}

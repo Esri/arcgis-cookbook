@@ -116,7 +116,7 @@ end
 directory node['arcgis']['server']['log_dir'] do
   owner node['arcgis']['run_as_user']
   if node['platform'] != 'windows'
-    mode '0775'
+    mode '0700'
   end
   recursive true
   not_if { node['arcgis']['server']['log_dir'].start_with?('\\\\') ||
@@ -132,9 +132,11 @@ arcgis_enterprise_server 'Create ArcGIS Server site' do
   log_level node['arcgis']['server']['log_level']
   log_dir node['arcgis']['server']['log_dir']
   max_log_file_age node['arcgis']['server']['max_log_file_age']
+  enable_debug node['arcgis']['server']['enable_debug']
   config_store_connection_string node['arcgis']['server']['config_store_connection_string']
   config_store_connection_secret node['arcgis']['server']['config_store_connection_secret']
   config_store_type node['arcgis']['server']['config_store_type']
+  cloud_config node['arcgis']['server']['cloud_config']
   action :create_site
 end
 

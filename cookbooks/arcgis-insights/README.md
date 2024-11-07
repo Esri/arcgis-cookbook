@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-insights cookbook"
 category: cookbooks
 item: arcgis-insights
-version: 5.0.0
+version: 5.1.0
 latest: true
 ---
 
@@ -29,6 +29,7 @@ This cookbook installs and configures ArcGIS Insights.
 * 2023.1
 * 2023.2
 * 2023.3
+* 2024.1
 
 ## Platforms
 
@@ -38,6 +39,7 @@ This cookbook installs and configures ArcGIS Insights.
 * Windows Server 2022
 * Ubuntu Server 20.04 LTS
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * Red Hat Enterprise Linux Server 8
 * Red Hat Enterprise Linux Server 9
 * SUSE Linux Enterprise Server 15
@@ -56,9 +58,9 @@ The following cookbooks are required:
 
 ## Attributes
 
-* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2023.3`
+* `node['arcgis']['insights']['version']` = ArcGIS Insights version. Default version is `2024.1`
 * `node['arcgis']['insights']['setup_archive']` = Path to the ArcGIS Insights setup archive. Default value depends on `node['arcgis']['insights']['version']` attribute value.
-* `node['arcgis']['insights']['setup']` = The location of the ArcGIS Insights setup executable. Default location is `%USERPROFILE%\\Documents\\ArcGIS Insights 2023.3\\Insights\Setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
+* `node['arcgis']['insights']['setup']` = The location of the ArcGIS Insights setup executable. Default location is `%USERPROFILE%\\Documents\\ArcGIS Insights 2024.1\\Insights\Setup.exe` on Windows and `/opt/arcgis/Insights/Insights-Setup.sh` on Linux.
 * `node['arcgis']['insights']['patches]` = File names of ArcGIS Insights patches to install. Default value is `[]`.
 
 ## Recipes
@@ -72,15 +74,15 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "run_as_password": "<password>",
     "server": {
       "install_dir": "C:\\Program Files\\ArcGIS",
     },
     "insights": {
-      "version": "2023.3",
-      "setup": "%USERPROFILE%\\Documents\\ArcGIS Insights 2023.3\\Insights\\Setup.exe"
+      "version": "2024.1",
+      "setup": "%USERPROFILE%\\Documents\\ArcGIS Insights 2024.1\\Insights\\Setup.exe"
     }
   },
   "run_list": [
@@ -93,7 +95,7 @@ Attributes used by the recipe:
 
 ### install_patches
 
-Installs patches for ArcGIS Insights. The recipe installs patches from the patches folder specified by the arcgis.insights.patches attribute. The patch names may contain a wildcard '\*'. For example, "ArcGIS-1091-\*.msp" specifies all .msp patches that start with "ArcGIS-1091-".
+Installs patches for ArcGIS Insights. The recipe installs patches from the patches folder specified by the arcgis.insights.patches attribute. The patch names may contain a wildcard '\*'. For example, "ArcGIS-113-\*.msp" specifies all .msp patches that start with "ArcGIS-113-".
 
 Attributes used by the recipe:
 
@@ -122,13 +124,13 @@ Attributes used by the recipe:
 ```JSON
 {
   "arcgis": {
-    "version": "11.2",
+    "version": "11.3",
     "run_as_user": "arcgis",
     "server": {
       "install_dir": "C:\\Program Files (x86)\\ArcGIS"
     },
     "insights": {
-      "version": "2023.3"
+      "version": "2024.1"
      }
   },
   "run_list":[

@@ -1,0 +1,103 @@
+{
+    "java": {
+        "version": "11.0.21+9",
+        "tarball_uri": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz",
+        "tarball_path": "/opt/software/archives/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    },
+    "tomcat": {
+        "version": "9.0.83",
+        "tarball_path": "/opt/software/archives/apache-tomcat-9.0.83.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_9.0.83",
+        "keystore_file": "/opt/tomcat_arcgis_9.0.83/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "<keystore_password>"
+    },
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_9.0.83/webapps"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "private_url": "https://domain.com:6443/arcgis",
+            "web_context_url": "https://domain.com/server",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "authorization_file": "/opt/software/authorization_files/11.4/server.prvc",
+            "directories_root": "/net/FILESERVER/gisdata/arcgisserver",
+            "log_dir": "/opt/arcgis/server/usr/logs",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "/net/FILESERVER/gisdata/arcgisserver/config-store",
+            "install_system_requirements": true,
+            "wa_name": "server",
+            "services_dir_enabled": true,
+            "system_properties": {
+                "WebContextURL": "https://domain.com/server"
+            }
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f Relational",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "preferredidentifier": "hostname",
+            "install_system_requirements": true,
+            "types": "relational",
+            "relational": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/relational"
+            }
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "admin_email": "admin@mydomain.com",
+            "admin_full_name": "Administrator",
+            "admin_description": "Initial account administrator",
+            "security_question": "Your favorite ice cream flavor?",
+            "security_question_answer": "bacon",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "content_store_type": "fileStore",
+            "content_store_provider": "FileSystem",
+            "content_store_connection_string": "/net/FILESERVER/gisdata/arcgisportal/content",
+            "object_store": "",
+            "authorization_file": "/opt/software/authorization_files/11.4/portal.json",
+            "user_license_type_id": "",
+            "install_system_requirements": true,
+            "wa_name": "portal",
+            "root_cert": "",
+            "root_cert_alias": "rootcert",
+            "system_properties": {
+                "privatePortalURL": "https://domain.com:7443/arcgis",
+                "WebContextURL": "https://domain.com/portal"
+            }
+        },
+        "web_adaptor": {
+            "install_dir": "/opt",
+            "admin_access": true,
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal]",
+        "recipe[arcgis-enterprise::portal_wa]",
+        "recipe[arcgis-enterprise::server]",
+        "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::datastore]",
+        "recipe[arcgis-enterprise::federation]"
+    ]
+}

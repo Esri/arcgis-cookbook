@@ -1,0 +1,31 @@
+{
+    "arcgis": {
+        "version": "11.4",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "server": {
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "url": "https://SERVER:6443/arcgis"
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "setup_options": "ADDLOCAL=object",
+            "install_system_requirements": true,
+            "types": "object",
+            "mode": "cluster",
+            "preferredidentifier": "hostname",
+            "data_dir": "C:\\arcgisdatastore"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::datastore_standby]"
+    ]
+}

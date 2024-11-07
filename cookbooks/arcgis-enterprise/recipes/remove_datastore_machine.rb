@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: remove_datastore_machine
 #
-# Copyright 2021 Esri
+# Copyright 2021-2024 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,5 +24,6 @@ arcgis_enterprise_datastore 'Remove Data Store Machine' do
   hostidentifier node['arcgis']['data_store']['hostidentifier']
   run_as_user node['arcgis']['run_as_user']
   force_remove_machine node['arcgis']['data_store']['force_remove_machine']
+  ignore_failure true # If the machine is already removed, the action will fail.
   action :remove_machine
 end

@@ -82,7 +82,11 @@ module ArcGIS
     end
 
     def configure_datastore(stores, server_url, username, password, data_dir, mode, roles)
-      args = "\"#{server_url}\" \"#{username}\" \"#{password}\" \"#{data_dir}\" --stores #{stores}"
+      if @platform == 'windows'
+        args = "\"#{server_url}\" \"#{username}\" \"#{password}\" \"#{data_dir}\" --stores #{stores}"
+      else
+        args = "\'#{server_url}\' \'#{username}\' \'#{password}\' \'#{data_dir}\' --stores #{stores}"
+      end      
 
       # Add --mode parameter for tilecache and object data stores 
       # if the last known status is not 'Upgrading'.
@@ -209,7 +213,11 @@ module ArcGIS
     end
 
     def prepare_upgrade(store, server_url, username, password, data_dir)
-      args = "--server-url \"#{server_url}\" --server-admin \"#{username}\" --server-password \"#{password}\" --data-dir \"#{data_dir}\" --store \"#{store}\" --prompt no"
+      if @platform == 'windows'
+        args = "--server-url \"#{server_url}\" --server-admin \"#{username}\" --server-password \"#{password}\" --data-dir \"#{data_dir}\" --store \"#{store}\" --prompt no"
+      else
+        args = "--server-url \'#{server_url}\' --server-admin \'#{username}\' --server-password \'#{password}\' --data-dir \'#{data_dir}\' --store \'#{store}\' --prompt no"        
+      end
 
       if @platform == 'windows'
         tool = ::File.join(@tools_dir, 'prepareupgrade')
