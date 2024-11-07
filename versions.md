@@ -37,6 +37,7 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS Enterprise Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: |:---: |
+| 5.1.0 | 11.4, 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 11.2, 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -58,6 +59,7 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS GeoEvent Server Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: |:---: |
+| 5.1.0 | 11.4, 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 11.2, 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -79,7 +81,8 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS Insights Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: |:---: |
-| 5.0.0 | 2023.1, 2022.3, 2022.2, 2022.1, 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1 | >= 15.3 | 18.4.2 | 18.4.2 |
+| 5.1.0 | 2024.1, 2023.3, 2023.2, 2023.1, 2022.3, 2022.2, 2022.1, 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1 | >= 15.3 | 18.4.2 | 18.4.2 |
+| 5.0.0 | 2023.3, 2023.2, 2023.1, 2022.3, 2022.2, 2022.1, 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 2023.1, 2022.3, 2022.2, 2022.1, 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1, 3.4.1 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 2022.3, 2022.2, 2022.1, 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1, 3.4.1 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.0.0 | 2021.3.1, 2021.3, 2021.2.1, 2021.2, 2021.1.1, 2021.1, 2020.3, 2020.2, 2020.1, 3.4.1 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -100,12 +103,14 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS License Manager  Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 :---: | --- | :---: | :---: |:---: |
+| 5.1.0 | 2024.1, 2024.0, 2023.0, 2022.1, 2022.0, 2021.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 2024.0, 2023.0, 2022.1, 2022.0, 2021.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 
 ## arcgis-mission cookbook
 
 | Cookbook Version | ArcGIS Mission Server Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: | :---: |
+| 5.1.0 | 11.4, 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 11.2, 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -119,6 +124,7 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS Notebook Server Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: | :---: |
+| 5.1.0 | 11.4, 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 11.2, 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 11.1, 11.0, 10.9.1, 10.9, 10.8.1, 10.8 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -133,6 +139,7 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS Pro Versions | Supported Chef Client Versions | Recommended Chef Client Version |Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: |:---: |
+| 5.1.0 | 3.4, 3.3, 3.2, 3.1, 3.0.3, 2.9 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 3.3, 3.2, 3.1, 3.0.3, 2.9 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 3.2, 3.1, 3.0.3, 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 3.1, 3.0.3, 2.9, 2.8, 2.7, 2.6, 2.5, 2.4 | >= 14.0 | 16.18.30 | 16.18.30 |
@@ -154,12 +161,14 @@ This page helps clarify the supported versions of ArcGIS and Chef for Chef Cookb
 
 | Cookbook Version | ArcGIS Video Server Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: | :---: |
+| 5.1.0 | 11.4, 11.3 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3 | >= 15.3 | 18.4.2 | 18.4.2 |
 
 ## arcgis-workflow-manager cookbook
 
 | Cookbook Version | ArcGIS Workflow Manager Server Versions | Supported Chef Client Versions | Recommended Chef Client Version | Recommended Cinc Client Version |
 | :---: | --- | :---: | :---: | :---: |
+| 5.1.0 | 11.4, 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 5.0.0 | 11.3, 11.2, 11.1, 11.0, 10.9.1 | >= 15.3 | 18.4.2 | 18.4.2 |
 | 4.2.0 | 11.2, 11.1, 11.0, 10.9.1, 10.9, 10.8.1 | >= 14.0 | 16.18.30 | 16.18.30 |
 | 4.1.0 | 11.1, 11.0, 10.9.1, 10.9, 10.8.1 | >= 14.0 | 16.18.30 | 16.18.30 |
