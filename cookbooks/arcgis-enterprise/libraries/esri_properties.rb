@@ -19,8 +19,16 @@ require 'java-properties'
 
 module EsriProperties
 
+  def self.get_home(user)
+    cmd = Mixlib::ShellOut.new("getent passwd \"#{user}\" | cut -d: -f6 | awk '{printf $0}'", {:user => user})
+    cmd.run_command
+    return "/home/#{user}" if cmd.error?
+    
+    cmd.stdout
+  end
+
   def self.esri_properties(user, hostname, arcgis_version)
-    properties_file_path = "/home/#{user}/.ESRI.properties.*.#{arcgis_version}"
+    properties_file_path = "#{self.get_home(user)}/.ESRI.properties.*.#{arcgis_version}"
 
     cmd = Mixlib::ShellOut.new("cat #{properties_file_path}", { :user => user })
     cmd.run_command
