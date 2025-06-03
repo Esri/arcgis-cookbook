@@ -283,7 +283,7 @@ Required attribute changes:
 * arcgis.portal.admin_password - Specify Portal for ArcGIS administrator account password
 * arcgis.portal.admin_email - Specify Portal for ArcGIS administrator account e-mail
 * arcgis.portal.admin_full_name - Specify Portal for ArcGIS administrator account full name
-* arcgis.portal.security_question - Specify Portal for ArcGIS administrator account security question (See [Create Site - ArcGIS REST API](https://developers.arcgis.com/rest/enterprise-administration/portal/create-site.htm) for the list of allowed security questions)
+* arcgis.portal.security_question_index - Specify Portal for ArcGIS administrator account security question index (See [Create Site - ArcGIS REST API](https://developers.arcgis.com/rest/enterprise-administration/portal/create-site.htm) for the list of allowed security questions)
 * arcgis.portal.security_question_answer - Specify Portal for ArcGIS administrator account security question answer
 * arcgis.portal.content_store_connection_string - Replace 'FILESERVER' with the file server machine hostname or static IP address
 * arcgis.portal.authorization_file - Specify path to the Portal for ArcGIS software authorization file

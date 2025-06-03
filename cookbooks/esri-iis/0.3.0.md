@@ -18,6 +18,7 @@ This cookbook enables IIS, installs features required by ArcGIS Web Adaptor (IIS
 * Windows Server 2016
 * Windows Server 2019
 * Windows Server 2022
+* Windows Server 2025
 
 ## Dependencies
 
