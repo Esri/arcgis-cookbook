@@ -13,8 +13,7 @@ This cookbook enables IIS, installs features required by ArcGIS Web Adaptor (IIS
 
 ## Platforms
 
-* Windows 10
-  - requires .Net Framework 3.5 (See ms_dotnet cookbook README)
+* Windows 11
 * Windows Server 2016
 * Windows Server 2019
 * Windows Server 2022
