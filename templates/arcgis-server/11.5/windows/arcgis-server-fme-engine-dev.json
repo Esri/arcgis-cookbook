@@ -15,6 +15,7 @@
             "azarcimgdev.corp.ukrail.net": "10.163.11.73",
             "azarcfeddev.corp.ukrail.net": "10.163.11.75",
             "azarcdstrdev.corp.ukrail.net": "10.163.11.101",
+            "azfmeendev.corp.ukrail.net": "10.163.11.100",
             "devgis.networkrail.co.uk": "10.163.11.202"
         },
         "server": {
@@ -31,8 +32,8 @@
             "config_store_type": "FILESYSTEM",
             "config_store_connection_string": "\\\\stgdepstorage02dev.file.core.windows.net\\stgdepstorage02dev-share\\arcgisserver_hosting",
             "services_dir_enabled": true,
-            "domain_name": "azarcsvrdev.corp.ukrail.net",
-            "hostname": "azarcsvrdev",
+            "domain_name": "azfmeendev.corp.ukrail.net",
+            "hostname": "azfmeendev",
             "root_cert": "",
             "root_cert_alias": "",
             "system_properties": {

@@ -15,6 +15,7 @@
             "azarcprtltest.corp.ukrail.net": "10.163.106.74",
             "azarcimgtest.corp.ukrail.net": "10.163.106.73",
             "azarcfedtest.corp.ukrail.net": "10.163.106.71",
+            "azfmeentest.corp.ukrail.net": "10.163.106.104",
             "testgis.networkrail.co.uk": "10.163.106.200"
         },
         "server": {
@@ -31,8 +32,8 @@
             "config_store_type": "FILESYSTEM",
             "config_store_connection_string": "\\\\stgdepstorage02test.file.core.windows.net\\stgdepstorage02test-share\\arcgisserver_hosting",
             "services_dir_enabled": true,
-            "domain_name": "azarcsvrtest.corp.ukrail.net",
-            "hostname": "azarcsvrtest",
+            "domain_name": "azfmeentest.corp.ukrail.net",
+            "hostname": "azfmeentest",
             "root_cert": "",
             "root_cert_alias": "",
             "system_properties": {
