@@ -1,0 +1,49 @@
+{
+    "arcgis": {
+        "version": "11.5",
+        "run_as_user": "gdepadmin",
+        "run_as_password": "P{r:D[anlz5lhVH>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups",
+            "certificates": "C:\\Software\\Certificates"
+        },
+        "hosts": {
+            "azarcsvrtest.corp.ukrail.net": "10.163.106.76",
+            "azarcdstrtest.corp.ukrail.net": "10.163.106.102",
+            "azarcprtltest.corp.ukrail.net": "10.163.106.74",
+            "azarcimgtest.corp.ukrail.net": "10.163.106.73",
+            "azarcfedtest.corp.ukrail.net": "10.163.106.71",
+            "testgis.networkrail.co.uk": "10.163.106.200"
+        },
+        "server": {
+            "install_dir": "F:\\Programs\\ArcGIS\\Server",
+            "install_system_requirements": true,
+            "admin_username": "arcgisadmin",
+            "admin_password": "nXTB*Z[6ab}(mTCX",
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\11.5\\Server.prvc",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "soc_max_heap_size": 64,
+            "directories_root": "\\\\stgdepstorage02test.file.core.windows.net\\stgdepstorage02test-share\\arcgisserver_hosting",
+            "log_dir": "F:\\arcgisserver\\logs",
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "\\\\stgdepstorage02test.file.core.windows.net\\stgdepstorage02test-share\\arcgisserver_hosting",
+            "services_dir_enabled": true,
+            "domain_name": "azarcsvrtest.corp.ukrail.net",
+            "hostname": "azarcsvrtest",
+            "root_cert": "",
+            "root_cert_alias": "",
+            "system_properties": {
+                "suspendedMachineUnregisterThreshold": -1,
+                "machineSuspendThreshold": 60
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",
+        "recipe[arcgis-enterprise::server]"
+    ]
+}
