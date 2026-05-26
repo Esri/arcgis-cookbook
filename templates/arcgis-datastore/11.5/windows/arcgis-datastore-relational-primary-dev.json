@@ -25,7 +25,7 @@
             "install_dir": "F:\\Programs\\ArcGIS\\DataStore",
             "setup_options": "ADDLOCAL=relational",
             "install_system_requirements": true,
-            "types": "relational,object",
+            "types": "relational",
             "preferredidentifier": "hostname",
             "hostidentifier": "azarcdstrdev.corp.ukrail.net",
             "data_dir": "F:\\arcgisdatastore",
@@ -36,14 +36,6 @@
                 "max_connections": 150,
                 "pitr": "disable",
                 "enablessl": true                
-            },
-            "object": {
-                "backup_type": "fs",
-                "backup_location": "F:\\arcgisbackup\\object",
-                "disk_threshold_readonly": 5120,
-                "max_connections": 150,
-                "pitr": "disable",
-                "enablessl": true
             }
         }
     },
