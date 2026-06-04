@@ -4,6 +4,11 @@ esri-tomcat cookbook CHANGELOG
 
 This file is used to list changes made in each version of the esri-tomcat cookbook.
 
+0.4.0
+-----
+
+- Updated supported Chef versions.
+
 0.3.3
 -----
 

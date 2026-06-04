@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "C:\\Software\\Archives\\Patches"
+        },
+        "notebook_server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\NotebookServer",
+            "patches": [
+                "ArcGIS-121-NS-*.msp"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-notebooks::install_patches]"
+    ]
+}

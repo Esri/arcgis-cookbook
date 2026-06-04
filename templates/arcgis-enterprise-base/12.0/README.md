@@ -59,7 +59,7 @@ Windows
 
 * ArcGIS_DataStore_Windows_120_197709.exe
 * ArcGIS_DataStore_Windows_120_197709.exe.001
-* ArcGIS_Server_Windows_120_%BUIDNUM%.exe
+* ArcGIS_Server_Windows_120_197664.exe
 * ArcGIS_Server_Windows_120_197664.exe.001
 * ArcGIS_Web_Adaptor_for_Microsoft_IIS_120_197711.exe
 * Portal_for_ArcGIS_Windows_120_197706.exe

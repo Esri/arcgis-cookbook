@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-egdb
 # Recipe:: sqlcmd
 #
-# Copyright 2019 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,20 +56,20 @@ when 'windows'
     returns [0, 3010, 1638]
   end
 
-  # Install MS SQL ODBC Driver 17
+  # Install MS SQL ODBC Driver 18
 
-  directory ::File.dirname(node['arcgis']['egdb']['msodbcsql17_msi_path']) do
+  directory ::File.dirname(node['arcgis']['egdb']['msodbcsql18_msi_path']) do
     recursive true
     action :create
   end
 
-  remote_file node['arcgis']['egdb']['msodbcsql17_msi_path'] do
-    source node['arcgis']['egdb']['msodbcsql17_msi_url']
-    not_if { ::File.exist?(node['arcgis']['egdb']['msodbcsql17_msi_path']) }
+  remote_file node['arcgis']['egdb']['msodbcsql18_msi_path'] do
+    source node['arcgis']['egdb']['msodbcsql18_msi_url']
+    not_if { ::File.exist?(node['arcgis']['egdb']['msodbcsql18_msi_path']) }
   end
 
-  windows_package 'SQL ODBC Driver 17' do
-    source node['arcgis']['egdb']['msodbcsql17_msi_path']
+  windows_package 'SQL ODBC Driver 18' do
+    source node['arcgis']['egdb']['msodbcsql18_msi_path']
     options 'IACCEPTMSODBCSQLLICENSETERMS=YES'
     returns [0, 3010, 1638]
   end

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: install_server
 #
-# Copyright 2019-2025 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,10 +57,12 @@ end
     run_as_user node['arcgis']['run_as_user']
     not_if { node['platform'] == 'windows' }
     not_if { samples_data_version == node['arcgis']['version'] }
-    only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
-                                                node['hostname'],
-                                                samples_data_version,
-                                                :ArcGISNotebookServer_ArcGISNotebookServerSamplesData) }
+    if node['platform'] != 'windows'    
+      only_if { EsriProperties.product_installed?(node['arcgis']['run_as_user'],
+                                                  node['hostname'],
+                                                  samples_data_version,
+                                                  :ArcGISNotebookServer_ArcGISNotebookServerSamplesData) }
+    end
     action :uninstall
   end 
 end
@@ -93,6 +95,7 @@ arcgis_notebooks_server 'Run postinstallation utility for advanced images' do
   install_dir node['arcgis']['notebook_server']['install_dir']
   run_as_user node['arcgis']['run_as_user']
   docker_images node['arcgis']['notebook_server']['advanced_images']
+  not_if { node['arcgis']['notebook_server']['advanced_images'].nil? }
   only_if { node['arcgis']['notebook_server']['license_level'] == 'advanced' }
   action :post_install
 end

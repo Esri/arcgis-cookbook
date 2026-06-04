@@ -1,15 +1,14 @@
-name 'arcgis-video'
-maintainer 'Esri'
+name             'arcgis-video'
+maintainer       'Esri'
 maintainer_email 'contracts@esri.com'
-license 'Apache-2.0'
-description 'Installs/Configures ArcGIS Video Server'
+license          'Apache-2.0'
+description      'Installs/Configures ArcGIS Video Server'
 long_description 'Installs/Configures ArcGIS Video Server'
-version '5.3.0'
-chef_version '>= 15.3' if defined? chef_version
+version          '5.4.0'
+chef_version     '>= 15.3', '< 19'
 
-depends          'arcgis-enterprise', '~> 5.3'
-depends          'arcgis-repository', '~> 5.3'
-
+depends          'arcgis-enterprise', '~> 5.4'
+depends          'arcgis-repository', '~> 5.4'
 supports         'ubuntu'
 supports         'redhat'
 supports         'centos'

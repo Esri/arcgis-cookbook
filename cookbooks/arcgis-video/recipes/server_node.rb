@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-video
 # Recipe:: server_node
 #
-# Copyright 2025 Esri
+# Copyright 2025-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -88,4 +88,21 @@ arcgis_video_server 'Join ArcGIS Video Server site' do
   retries 5
   retry_delay 30
   action :join_site
+end
+
+arcgis_video_server 'Configure HTTPS' do
+  server_url node['arcgis']['video_server']['url']
+  username node['arcgis']['video_server']['admin_username']
+  password node['arcgis']['video_server']['admin_password']
+  keystore_file node['arcgis']['video_server']['keystore_file']
+  keystore_password node['arcgis']['video_server']['keystore_password']
+  cert_alias node['arcgis']['video_server']['cert_alias']
+  root_cert node['arcgis']['video_server']['root_cert']
+  root_cert_alias node['arcgis']['video_server']['root_cert_alias']
+  import_certificate_chain node['arcgis']['video_server']['import_certificate_chain']
+  retries 5
+  retry_delay 30
+  not_if { node['arcgis']['video_server']['keystore_file'].empty? &&
+           node['arcgis']['video_server']['root_cert'].empty? }
+  action :configure_https
 end

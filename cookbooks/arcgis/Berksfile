@@ -5,13 +5,11 @@ source 'https://supermarket.chef.io'
 metadata
 
 group :release do
-  cookbook 'arcgis-license-manager', path: '../arcgis-license-manager'
   cookbook 'arcgis-egdb', path: '../arcgis-egdb'
   cookbook 'arcgis-enterprise', path: '../arcgis-enterprise'
   cookbook 'arcgis-geoevent', path: '../arcgis-geoevent'
   cookbook 'arcgis-notebooks', path: '../arcgis-notebooks'
   cookbook 'arcgis-mission', path: '../arcgis-mission'
-  cookbook 'arcgis-insights', path: '../arcgis-insights'
   cookbook 'arcgis-pro', path: '../arcgis-pro'
   cookbook 'arcgis-repository', path: '../arcgis-repository'
   cookbook 'arcgis-workflow-manager', path: '../arcgis-workflow-manager'
@@ -20,7 +18,6 @@ group :release do
   cookbook 'esri-tomcat', path: '../esri-tomcat'
   # Lock versions of the dependent cookbooks  
   cookbook 'apt', '~> 7.5'
-  cookbook 'docker', '~> 11.3'
   cookbook 'hostsfile', '~> 3.0'
   cookbook 'iptables', '~> 8.0'
   cookbook 'java', '~> 11.2'

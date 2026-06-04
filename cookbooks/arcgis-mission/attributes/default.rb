@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Attributes:: default
 #
-# Copyright 2024-2025 Esri
+# Copyright 2024-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,6 +65,17 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                                 'com.esri.arcgis.carbon.persistence.impl.filesystem.FSConfigPersistence'
                                               end
 
+  mission_server['keystore_file'] = ''
+  if ENV['ARCGIS_MISSION_SERVER_KEYSTORE_PASSWORD'].nil?
+    mission_server['keystore_password'] = nil
+  else
+    mission_server['keystore_password'] = ENV['ARCGIS_MISSION_SERVER_KEYSTORE_PASSWORD']
+  end
+  mission_server['cert_alias'] = mission_server['domain_name']
+  mission_server['root_cert'] = ''
+  mission_server['root_cert_alias'] = ''
+  mission_server['import_certificate_chain'] = true
+
   mission_server['log_level'] = 'WARNING'
   mission_server['max_log_file_age'] = 90
 
@@ -96,6 +107,10 @@ default['arcgis']['mission_server'].tap do |mission_server|
     mission_server['log_dir'] = 'C:\\arcgismissionserver\\logs'
 
     case node['arcgis']['version']
+    when '12.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Windows_121_200173.exe').gsub('/', '\\')
+      mission_server['product_code'] = '{E116D18B-4CB4-4E16-8EA5-CDD2CCA67DF4}'
     when '12.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Windows_120_197768.exe').gsub('/', '\\')
@@ -174,6 +189,9 @@ default['arcgis']['mission_server'].tap do |mission_server|
                                             'usr', 'logs')
 
     case node['arcgis']['version']
+    when '12.1'
+      mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Mission_Server_Linux_121_200215.tar.gz')
     when '12.0'
       mission_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Mission_Server_Linux_120_197844.tar.gz')

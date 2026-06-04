@@ -10,7 +10,6 @@ The following cookbooks are required:
 * arcgis-egdb
 * arcgis-enterprise
 * arcgis-geoevent
-* arcgis-insights
 * arcgis-license-manager
 * arcgis-mission
 * arcgis-notebooks

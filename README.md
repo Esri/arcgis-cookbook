@@ -10,7 +10,6 @@ Included cookbooks:
 * [arcgis-egdb](cookbooks/arcgis-egdb) - creates enterprise geodatabases in SQL Server or PostgreSQL DBMS and registers them with ArcGIS Server.
 * [arcgis-enterprise](cookbooks/arcgis-enterprise) - installs and configures ArcGIS Server, ArcGIS Data Store, Portal for ArcGIS, ArcGIS WebAdaptor.
 * [arcgis-geoevent](cookbooks/arcgis-geoevent) - installs and configures ArcGIS GeoEvent Server.
-* [arcgis-insights](cookbooks/arcgis-insights) - installs and configures Insights for ArcGIS.
 * [arcgis-mission](cookbooks/arcgis-mission) - installs and configures ArcGIS Mission Server.
 * [arcgis-notebooks](cookbooks/arcgis-notebooks) - installs and configures ArcGIS Notebook Server.
 * [arcgis-pro](cookbooks/arcgis-pro) - installs and configures ArcGIS Pro.
@@ -48,7 +47,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ## Licensing
 
-Copyright 2015-2024 Esri
+Copyright 2015-2026 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.

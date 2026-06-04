@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-license-manager cookbook"
 category: cookbooks
 item: arcgis-license-manager
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 

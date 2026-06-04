@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-mission cookbook"
 category: cookbooks
 item: arcgis-mission
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -21,6 +21,7 @@ This cookbook installs and configures ArcGIS Mission Server.
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Supported ArcGIS software
 
@@ -80,6 +81,11 @@ The following cookbooks are required:
 * `node['arcgis']['mission_server']['system_properties']` = ArcGIS Mission Server system properties. Default value is `{}`.
 * `node['arcgis']['mission_server']['hostname']` = Host name or IP address of the ArcGIS Mission Server machine. Default value is  `''`.
 * `node['arcgis']['mission_server']['patches]` = File names of ArcGIS Mission Server patches to install. Default value is `[]`.
+* `node['arcgis']['mission_server']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for ArcGIS Mission Server. Default value is `nil`.
+* `node['arcgis']['mission_server']['keystore_password']` = Keystore file password for ArcGIS Mission Server. Default value is `nil`.
+* `node['arcgis']['mission_server']['cert_alias']` = SSL certificate alias for ArcGIS Mission Server. Default alias is composed of these values: `node['arcgis']['mission_server']['domain_name']`.
+* `node['arcgis']['mission_server']['root_cert']` = ArcGIS Mission Server root CA certificate PEM file path. Default value is `''`.
+* `node['arcgis']['mission_server']['root_cert_alias']` = ArcGIS Mission Server root CA certificate alias. Default value is `''`.
 
 ## Recipes
 
@@ -272,7 +278,7 @@ Attributes used by the recipe:
         },
         "web_adaptor": {
             "install_dir": "/",
-            "setup_archive": "/opt/software/esri/ArcGIS_Web_Adaptor_Java_Linux_120_%BUIDNUM%.tar.gz"
+            "setup_archive": "/opt/software/esri/ArcGIS_Web_Adaptor_Java_Linux_120_197844.tar.gz"
         },
         "mission_server": {
             "url": "https://hostname:20443",

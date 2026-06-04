@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: server_node
 #
-# Copyright 2019-2025 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,4 +87,21 @@ arcgis_notebooks_server 'Join ArcGIS Notebook Server site' do
   retries 5
   retry_delay 30
   action :join_site
+end
+
+arcgis_notebooks_server 'Configure HTTPS' do
+  server_url node['arcgis']['notebook_server']['url']
+  username node['arcgis']['notebook_server']['admin_username']
+  password node['arcgis']['notebook_server']['admin_password']
+  keystore_file node['arcgis']['notebook_server']['keystore_file']
+  keystore_password node['arcgis']['notebook_server']['keystore_password']
+  cert_alias node['arcgis']['notebook_server']['cert_alias']
+  root_cert node['arcgis']['notebook_server']['root_cert']
+  root_cert_alias node['arcgis']['notebook_server']['root_cert_alias']
+  import_certificate_chain node['arcgis']['notebook_server']['import_certificate_chain']
+  retries 5
+  retry_delay 30
+  not_if { node['arcgis']['notebook_server']['keystore_file'].empty? &&
+           node['arcgis']['notebook_server']['root_cert'].empty? }
+  action :configure_https
 end

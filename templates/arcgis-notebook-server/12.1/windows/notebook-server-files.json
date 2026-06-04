@@ -1,0 +1,24 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Notebook_Windows_Container_Image_121_200177.tar.gz": {
+                    "subfolder": "software/arcgis/12.1"
+                },
+                "ArcGIS_Notebook_Server_Windows_121_200174.exe": {
+                    "subfolder": "software/arcgis/12.1"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

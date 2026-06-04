@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-workflow-manager cookbook"
 category: cookbooks
 item: arcgis-workflow-manager
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -21,6 +21,7 @@ This cookbook installs and configures ArcGIS Workflow Manager Server.
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Supported ArcGIS software
 
@@ -52,7 +53,7 @@ The following cookbooks are required:
 ## Attributes
 
 * `node['arcgis']['workflow_manager_server']['setup_archive']` = Path to the ArcGIS Workflow Manager Server setup archive. Default value depends on the `node['arcgis']['version']` attribute value.
-* `node['arcgis']['workflow_manager_server']['setup']` = The location of the ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS11.5\WorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/12.0/WorkflowManagerServer/Setup.sh` on Linux.
+* `node['arcgis']['workflow_manager_server']['setup']` = The location of the ArcGIS Workflow Manager Server setup executable. Default location is `%USERPROFILE%\Documents\ArcGIS12.1\ArcGISWorkflowManagerServer\Setup.exe` on Windows and `/opt/arcgis/12.1/ArcGISWorkflowManagerServer/Setup.sh` on Linux.
 * `node['arcgis']['workflow_manager_server']['authorization_file']` = ArcGIS Workflow Manager Server authorization file path. Default value is set to the value of `node['arcgis']['server']['authorization_file']`
 * `node['arcgis']['workflow_manager_server']['authorization_file_version']` = ArcGIS Workflow Manager Server authorization file version. Default value is `node['arcgis']['server']['authorization_file_version']`.
 * `node['arcgis']['workflow_manager_server']['authorization_options']` = Additional ArcGIS Workflow Manager Server software authorization command line options. Default options are `''`.

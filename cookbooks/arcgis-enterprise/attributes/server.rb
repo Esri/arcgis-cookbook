@@ -147,6 +147,15 @@ default['arcgis']['server'].tap do |server|
                                                   'ServerConfigurationUtility.exe').gsub('/', '\\')    
 
     case node['arcgis']['version']
+    when '12.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Windows_121_200157.exe').gsub('/', '\\')
+      server['product_code'] = '{93056F2C-C97C-4958-B79E-92E9873F8C61}'
+      default['arcgis']['python']['runtime_environment'] = File.join(
+        server_install_dir, 
+        'framework\\runtime\\ArcGIS\\bin\\Python\\envs\\arcgispro-py3').gsub('/', '\\')
+      server['patch_registry'] ='SOFTWARE\\ESRI\\Server12.1\\Updates'        
+      server['unpack_options'] = '/x'
     when '12.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Windows_120_197664.exe').gsub('/', '\\')
@@ -274,6 +283,9 @@ default['arcgis']['server'].tap do |server|
     server['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '12.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Server_Linux_121_200205.tar.gz')
     when '12.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Server_Linux_120_197810.tar.gz')

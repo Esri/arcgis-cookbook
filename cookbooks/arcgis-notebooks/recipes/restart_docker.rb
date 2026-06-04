@@ -1,7 +1,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: restart_docker
 #
-# Copyright 2022 Esri
+# Copyright 2022-2025 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-docker_service 'default' do
+arcgis_notebooks_docker 'default' do
   only_if { ::File.exist?('/lib/systemd/system/docker.service') || 
             ::File.exist?('/usr/lib/systemd/system/docker.service') }  
   action :restart

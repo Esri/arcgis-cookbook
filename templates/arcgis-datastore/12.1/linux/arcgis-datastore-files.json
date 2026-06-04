@@ -1,0 +1,21 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_DataStore_Linux_121_200208.tar.gz": {
+                    "subfolder": "software/arcgis/12.1"
+                  }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

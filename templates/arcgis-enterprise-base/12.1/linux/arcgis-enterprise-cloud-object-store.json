@@ -1,0 +1,33 @@
+{
+    "arcgis": {
+        "server": {
+            "url": "https://localhost:6443/arcgis",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "data_items": [
+                {
+                    "path": "/cloudStores/cloudObjectStore",
+                    "type": "objectStore",
+                    "provider": "amazon",
+                    "info": {
+                        "isManaged": true,
+                        "systemManaged": false,
+                        "isManagedData": true,
+                        "purposes": [
+                            "feature-tile",
+                            "scene"
+                        ],
+                        "connectionString": "{\"accessKeyId\":\"<value>\",\"secretAccessKey\":\"<value>\",\"regionEndpointUrl\":\"https://s3.<region>.amazonaws.com\",\"defaultEndpointsProtocol\":\"https\",\"credentialType\":\"accesskey\",\"region\":\"<region>\"}",
+                        "objectStore": "<containerName>/<folderName>",
+                        "encryptAttributes": [
+                            "info.connectionString"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::server_data_items]"
+    ]
+}

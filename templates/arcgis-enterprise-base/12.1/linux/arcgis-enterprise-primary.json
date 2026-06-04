@@ -1,0 +1,132 @@
+{
+    "java": {
+        "version": "17.0.15+6",
+        "tarball_uri": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz",
+        "tarball_path": "/opt/software/archives/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz"
+    },
+    "tomcat": {
+        "version": "10.1.41",
+        "tarball_path": "/opt/software/archives/apache-tomcat-10.1.41.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_10.1.41",
+        "keystore_file": "/opt/tomcat_arcgis_10.1.41/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "<keystore_password>"
+    },
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_10.1.41/webapps"
+        },
+        "server": {
+            "install_dir": "/opt",
+            "private_url": "https://domain.com:6443/arcgis",
+            "web_context_url": "https://domain.com/server",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "authorization_file": "/opt/software/authorization_files/12.1/server.prvc",
+            "directories_root": "/net/FILESERVER/gisdata/arcgisserver",
+            "log_dir": "/opt/arcgis/server/usr/logs",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "config_store_type": "FILESYSTEM",
+            "config_store_connection_string": "/net/FILESERVER/gisdata/arcgisserver/config-store",
+            "cloud_config": "",
+            "install_system_requirements": true,
+            "wa_name": "server",
+            "services_dir_enabled": true,
+            "callback_functions_enabled": true,
+            "system_properties": {
+                "WebContextURL": "https://domain.com/server"
+            }
+        },
+        "data_store": {
+            "install_dir": "/opt",
+            "setup_options": "-f Relational,Object",
+            "data_dir": "/gisdata/arcgisdatastore",
+            "preferredidentifier": "hostname",
+            "install_system_requirements": true,
+            "types": "relational,object",
+            "object": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/object"
+            },
+            "relational": {
+                "backup_type": "fs",
+                "backup_location": "/net/FILESERVER/gisdata/arcgisbackup/relational",
+                "disk_threshold_readonly": 5120,
+                "max_connections": 150,
+                "pitr": "disable",
+                "enablessl": true
+            }
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "admin_username": "<portal_admin_username>",
+            "admin_password": "<portal_admin_password>",
+            "admin_email": "<portal_admin_email>",
+            "admin_full_name": "Administrator",
+            "admin_description": "Initial account administrator",
+            "security_question_index": 1,
+            "security_question_answer": "<security_question_answer>",
+            "log_dir": "/opt/arcgis/portal/usr/arcgisportal/logs",
+            "log_level": "WARNING",
+            "enable_debug": false,
+            "content_store_type": "fileStore",
+            "content_store_provider": "FileSystem",
+            "content_store_connection_string": "/net/FILESERVER/gisdata/arcgisportal/content",
+            "object_store": "",
+            "authorization_file": "/opt/software/authorization_files/12.1/portal.json",
+            "user_license_type_id": "",
+            "install_system_requirements": true,
+            "wa_name": "portal",
+            "root_cert": "",
+            "root_cert_alias": "rootcert",
+            "hsts_enabled": false,
+            "security": {
+                "policy":{
+                    "minLength": null,
+                    "minUpper": null,
+                    "minLower": null,
+                    "minLetter": null,
+                    "minDigit": null,
+                    "minOther": null,
+                    "expirationInDays": null,
+                    "historySize": null
+                }
+            },            
+            "system_properties": {
+                "privatePortalURL": "https://domain.com:7443/arcgis",
+                "WebContextURL": "https://domain.com/portal"
+            },
+            "organization": {
+                "access": "public",
+                "allssl": true
+            },
+            "settings": {
+            }
+        },
+        "web_adaptor": {
+            "install_dir": "/opt",
+            "reindex_portal_content": false
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-enterprise::install_portal]",
+        "recipe[arcgis-enterprise::webstyles]",
+        "recipe[arcgis-enterprise::portal]",
+        "recipe[arcgis-enterprise::portal_security]",
+        "recipe[arcgis-enterprise::portal_wa]",
+        "recipe[arcgis-enterprise::server]",
+        "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::datastore]",
+        "recipe[arcgis-enterprise::federation]"
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "arcgis": {
+      "version": "12.1",
+      "repository": {
+        "local_archives": "/opt/software/archives",
+        "server": {
+            "s3bucket": "arcgisstore-us-east-1",
+            "region": "us-east-1",
+            "aws_access_key": "",
+            "aws_secret_access_key": ""
+
+        },
+        "files": {
+          "Portal_for_ArcGIS_Linux_121_200206.tar.gz": {
+            "subfolder": "12.1/setups"
+          },
+          "Portal_for_ArcGIS_Web_Styles_Linux_121_200207.tar.gz": {
+            "subfolder": "12.1/setups"
+          }
+        }
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-repository::s3files2]"
+    ]
+  }
+  

@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-geoevent cookbook"
 category: cookbooks
 item: arcgis-geoevent
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -21,6 +21,7 @@ This cookbook installs and configures ArcGIS GeoEvent Server.
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Supported ArcGIS software
 

@@ -1,5 +1,5 @@
 #
-# Copyright 2022-2025 Esri
+# Copyright 2022-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,9 +60,9 @@ module Utils
     end
   end
 
-  def self.wait_until_url_available(url, redirects = 0)
+  def self.wait_until_url_available(url, redirects = 0, timeout = MAX_RETRIES * SLEEP_TIME)
     starting = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    MAX_RETRIES.times do
+    (timeout / SLEEP_TIME).to_i.times do
       if url_available?(url, redirects)
         elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - starting
         Chef::Log.debug format('URL %s became available after %0.2f seconds.', url, elapsed)

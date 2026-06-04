@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Attributes:: default
 #
-# Copyright 2023-2025 Esri
+# Copyright 2023-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,9 +47,13 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
   notebook_server['configure_autostart'] = true
   notebook_server['install_system_requirements'] = true
   notebook_server['install_samples_data'] = false
-  notebook_server['install_docker'] = true
-  notebook_server['docker_version'] = '28.5.2'
   
+  notebook_server['install_docker'] = true
+  notebook_server['docker_version'] = '29.3.1'
+  notebook_server['docker_repository_url'] = 'https://download.docker.com'
+  # Ignore the new snapshotter system and enable addition of iptables rules
+  notebook_server['docker_daemon_json'] = '{"features": {"containerd-snapshotter": false},"iptables": true}'
+
   notebook_server['setup_archive'] = ''
 
   notebook_server['admin_username'] = 'siteadmin'
@@ -69,6 +73,16 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
                                                   'com.esri.arcgis.carbon.persistence.impl.filesystem.FSConfigPersistence'
                                                 end
 
+  notebook_server['keystore_file'] = ''
+  if ENV['ARCGIS_NOTEBOOK_SERVER_KEYSTORE_PASSWORD'].nil?
+    notebook_server['keystore_password'] = nil
+  else
+    notebook_server['keystore_password'] = ENV['ARCGIS_NOTEBOOK_SERVER_KEYSTORE_PASSWORD']
+  end
+  notebook_server['cert_alias'] = notebook_server['domain_name']
+  notebook_server['root_cert'] = ''
+  notebook_server['root_cert_alias'] = ''
+  notebook_server['import_certificate_chain'] = true
 
   notebook_server['log_level'] = 'WARNING'
   notebook_server['max_log_file_age'] = 90
@@ -80,32 +94,52 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['setup'] = ::File.join(node['arcgis']['repository']['setups'],
                                            'ArcGIS ' + node['arcgis']['version'],
                                            'NotebookServer', 'Setup.exe')
-    notebook_server['data_setup'] = ::File.join(node['arcgis']['repository']['setups'],
-                                                'ArcGIS ' + node['arcgis']['version'],
-                                                'NotebookServerData', 'Setup.exe')
 
     notebook_server['install_dir'] = ::File.join(ENV['ProgramW6432'], 'ArcGIS\\NotebookServer').gsub('/', '\\')
     notebook_server['install_subdir'] = ''
-    notebook_server['authorization_tool'] = ::File.join(ENV['ProgramW6432'],
-      'Common Files\\ArcGIS\\bin\\SoftwareAuthorization.exe').gsub('/', '\\')
+
+    if node['arcgis']['notebook_server']['install_dir'].nil?
+      notebook_server_install_dir = notebook_server['install_dir']
+    else
+      notebook_server_install_dir = node['arcgis']['notebook_server']['install_dir']
+    end
+
+    notebook_server['authorization_tool'] = ::File.join(notebook_server_install_dir,
+      'tools\\SoftwareAuthorization\\SoftwareAuthorization.exe').gsub('/', '\\')
+    notebook_server['keycodes'] = ::File.join(ENV['ProgramW6432'],
+      "ESRI\\License#{node['arcgis']['notebook_server']['authorization_file_version']}\\sysgen\\keycodes").gsub('/', '\\')      
 
     notebook_server['directories_root'] = 'C:\\arcgisnotebookserver'
     notebook_server['config_store_connection_string'] = 'C:\\arcgisnotebookserver\\config-store'
-    notebook_server['workspace'] = 'C:\\arcgisnotebookserver\\arcgisworkspace'
+    notebook_server['workspace'] = 'C:\\arcgisnotebookserver\\directories\\arcgisworkspace'
     notebook_server['log_dir'] = 'C:\\arcgisnotebookserver\\logs'
+    notebook_server['advanced_images'] = nil
 
     case node['arcgis']['version']
-    when '10.9.1'
+    when '12.1'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                     'ArcGIS_Notebook_Server_Windows_1091_180089.exe').gsub('/', '\\')
+                                                     'ArcGIS_Notebook_Server_Windows_121_200174.exe').gsub('/', '\\')
       notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                       'ArcGIS_Notebook_Docker_Standard_1091_180090.tar.gz').gsub('/', '\\')
-      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                       'ArcGIS_Notebook_Docker_Advanced_1091_180091.tar.gz').gsub('/', '\\')
-      notebook_server['product_code'] = '{39DA210D-DE33-4223-8268-F81D2674B501}'
-      notebook_server['data_setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
-                                                          'ArcGIS_Notebook_Server_Samples_Data_Windows_1091_180107.exe').gsub('/', '\\')
-      notebook_server['data_product_code'] = '{02AB631F-4427-4426-B515-8895F9315D22}'
+                                                       'ArcGIS_Notebook_Windows_Container_Image_121_200177.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{E3307F5C-C424-45A9-8B2D-8950B9700B74}'
+    when '12.0'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Windows_120_197685.exe').gsub('/', '\\')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Windows_Container_Image_120_197688.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{42B859BB-95D1-4778-B2A7-991F3DD812E1}'
+    when '11.5'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Windows_115_195405.exe').gsub('/', '\\')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Windows_Container_Image_115_195408.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{C9AB6062-B63C-4745-AB1F-2532D594379F}'
+    when '11.4'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Windows_114_192951.exe').gsub('/', '\\')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Windows_Container_Image_114_192954.tar.gz').gsub('/', '\\')
+      notebook_server['product_code'] = '{A853CA10-4978-4882-8629-571FBA02618D}'
     else
       Chef::Log.warn 'Unsupported ArcGIS Notebook Server version'
     end
@@ -151,6 +185,14 @@ default['arcgis']['notebook_server'].tap do |notebook_server|
     notebook_server['patches'] = []
 
     case node['arcgis']['version']
+    when '12.1'
+      notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                     'ArcGIS_Notebook_Server_Linux_121_200216.tar.gz')
+      notebook_server['standard_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Standard_121_200175.tar.gz')
+      notebook_server['advanced_images'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                       'ArcGIS_Notebook_Docker_Advanced_121_200176.tar.gz')
+      notebook_server['data_setup_archive'] = nil
     when '12.0'
       notebook_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                      'ArcGIS_Notebook_Server_Linux_120_197845.tar.gz')

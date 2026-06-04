@@ -1,0 +1,34 @@
+{
+    "arcgis": {
+        "version": "12.1",        
+        "repository": {
+            "patches": "C:\\Software\\Archives\\Patches"
+        },
+        "portal": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
+            "patches": [
+                "ArcGIS-121-PFA-*.msp"
+            ]
+        },
+        "server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\Server",
+            "patches": [
+                "ArcGIS-121-S-*.msp"
+            ]
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "patches": [
+                "ArcGIS-121-DS-*.msp"
+            ]
+        },
+        "web_adaptor": {
+            "patches": [
+                "ArcGIS-121-WAI-*.msp"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

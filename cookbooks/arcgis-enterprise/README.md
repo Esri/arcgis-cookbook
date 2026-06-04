@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-enterprise cookbook"
 category: cookbooks
 item: arcgis-enterprise
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -21,6 +21,7 @@ This cookbook installs and configures ArcGIS Enterprise components.
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Supported ArcGIS Software
 
@@ -168,7 +169,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['web_adaptor']['reindex_portal_content']` = If set to `true`, Web Adaptor registration reindexes Portal for ArcGIS content. Default value is `true`.
 * `node['arcgis']['web_adaptor']['patches]` = File names of ArcGIS Web Adaptor patches to install. Default value is `[]`.
 * `node['arcgis']['web_adaptor']['install_system_requirements']` = If set to true, the required third-party packages are installed on the machine before running the ArcGIS Web Adaptor setup. Default value is `true`.
-* `node['arcgis']['web_adaptor']['dotnet_setup_path']` = Path to ASP.NET Core Runtime Hosting Bundle setup. Default path is `<ArcGIS software setups folder>\dotnet-hosting-8.0.6-win.exe`.
+* `node['arcgis']['web_adaptor']['dotnet_setup_path']` = Path to ASP.NET Core Runtime Hosting Bundle setup. Default path is `<ArcGIS software setups folder>\dotnet-hosting-10.0.1-win.exe`.
 * `node['arcgis']['web_adaptor']['web_deploy_setup_path']` = Path to Web Deploy setup. Default path is `<ArcGIS software setups folder>\WebDeploy_amd64_en-US.msi`.
 * `node['arcgis']['web_adaptor']['war_file']` = ArcGIS Web Adaptor WAR file to deploy (arcgis.war | arcgis_tomcat10.war). Default value is `arcgis.war`.
 
@@ -224,7 +225,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['portal']['security']['config']` = Portal for ArcGIS security configuration properties. Default value is `nil`.
 * `node['arcgis']['portal']['security']['policy']` = Portal for ArcGIS organization security policy settings. Default value is `{}`.
 * `node['arcgis']['portal']['system_properties']` = Portal for ArcGIS system properties. Default value is `{}`.
-* `node['arcgis']['portal']['ports']` = Ports opened in Windows firewall for Portal for ArcGIS. Default ports are `5701,5702,5703,7080,7443,7005,7099,7120,7220,7654,7820,7830,7840`.
+* `node['arcgis']['portal']['ports']` = Ports opened in Windows firewall for Portal for ArcGIS. Default ports are `5701,5702,5703,7080,7443,7005,7099,7120,7220,7654,7820,7830,7840,11211,50432`.
 * `node['arcgis']['portal']['patches]` = File names of Portal for ArcGIS patches to install. Default value is `[]`.
 * `node['arcgis']['portal']['webgisdr_properties']` = webgisdr tool properties. Default value is `{}`.
 * `node['arcgis']['portal']['webgisdr_timeout']` = webgisdr tool execution timeout in seconds. Default timeout is `36000`.
@@ -267,7 +268,7 @@ Portal for ArcGIS, and ArcGIS Data Store. Default value is `nil`.
 * `node['arcgis']['data_store']['object']['backup_type']` = Type of location to use for object data store backups `<fs|s3|azure|none>`. The default value is `none`.
 * `node['arcgis']['data_store']['object']['backup_location']` = Object data store backup location. The default location is `node['arcgis']['data_store']['backup_dir']/object`.
 * `node['arcgis']['data_store']['force_remove_machine']` = Specify true only if the ArcGIS Server site is unavailable when ArcGIS Data Store machine is removed. Default value is `false`.
-* `node['arcgis']['data_store']['ports']` = Ports opened in Windows firewall for ArcGIS Data Store. Default ports are `2443,4369,9220,9320,9820,9828,9829,9830,9831,9840,9850,9876,9900,25672,44369,45671,45672,29079-29090`.
+* `node['arcgis']['data_store']['ports']` = Ports opened in Windows firewall for ArcGIS Data Store. Default ports are `2443,4369,9220,9320,9820,9828,9829,9830,9831,9840,9850,9856,9857,9872,9876,9886,9894,9900,11211,19864,19879,25672,28981,29079-29090,29858,29859,29860-29863,29879,29895,44369,45671,45672`.
 * `node['arcgis']['data_store']['patches]` = File names of ArcGIS Data Store patches to install. Default value is `[]`.  
 
 ### Linux Web Server

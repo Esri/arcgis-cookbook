@@ -1,0 +1,14 @@
+{
+    "arcgis": {
+        "version": "12.1",
+        "egdb": {
+            "vc_redist_path": "C:\\Software\\Archives\\VC_redist.x64.exe",
+            "msodbcsql13_msi_path": "C:\\Software\\Archives\\msodbcsql13.msi",
+            "msodbcsql18_msi_path": "C:\\Software\\Archives\\msodbcsql18.msi",
+            "mssqlcmdlnutils_msi_path": "C:\\Software\\Archives\\MsSqlCmdLnUtils.msi"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-egdb::sqlcmd]"
+    ]
+}

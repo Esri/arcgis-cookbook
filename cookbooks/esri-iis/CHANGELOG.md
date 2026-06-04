@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the esri-iis cookbook.
 
+## 0.4.0
+
+- Updated supported Chef versions.
+
 ## 0.3.0
 
 - Updated required cookbooks and Chef version.

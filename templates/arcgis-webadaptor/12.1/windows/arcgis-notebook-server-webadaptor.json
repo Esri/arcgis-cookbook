@@ -1,0 +1,35 @@
+{
+    "arcgis": {
+      "version": "12.1",
+      "run_as_user": "arcgis", 
+      "run_as_password": "<run_as_password>",
+      "configure_windows_firewall": true,
+      "repository": {
+        "archives": "C:\\Software\\Archives",
+        "setups": "C:\\Software\\Setups"
+      },
+      "iis": {
+        "keystore_file": "C:\\Temp\\keystore.pfx",
+        "keystore_password": "<keystore_password>",
+        "replace_https_binding": true
+      },
+      "notebook_server": {
+        "wa_name": "notebooks",
+        "url": "https://localhost:11443/arcgis",
+        "wa_url": "https://localhost/notebooks",
+        "admin_username": "<notebook_server_admin_username>",
+        "admin_password": "<notebook_server_admin_password>"
+      },
+      "web_adaptor": {
+        "install_system_requirements": true,
+        "dotnet_setup_path": "C:\\Software\\Archives\\dotnet-hosting-8.0.11-win.exe",
+        "web_deploy_setup_path": "C:\\Software\\Archives\\WebDeploy_amd64_en-US.msi"
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-enterprise::system]",
+      "recipe[esri-iis]",
+      "recipe[arcgis-notebooks::server_wa]"
+    ]
+  }
+  
