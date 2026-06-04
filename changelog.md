@@ -11,6 +11,14 @@ order: 6
 
 Changes made in each version of the Chef Cookbooks for ArcGIS.
 
+## 5.4.0
+
+- Removed arcgis-insights and arcgis-license-manager cookbooks.
+- Added support for ArcGIS Enterprise 12.1.
+- Added support for ArcGIS Pro 3.7.
+- Added support for ArcGIS Notebook Server on Windows.
+- Added support for importing an existing SSL certificates and root certificates into ArcGIS Notebook Server and ArcGIS Mission Server.
+
 ## 5.3.0
 
 - Added support for ArcGIS Enterprise 12.0.

@@ -153,7 +153,7 @@ Required attribute changes:
 * arcgis.mission_server.url - Specify ArcGIS Mission Server URL.
 * arcgis.mission_server.wa_url - Specify ArcGIS Web Adaptor URL.
 * tomcat.keystore_file - (Linux only) Specify path to the SSL certificate file in PKCS12 format that will be used to configure the HTTPS listener in Apache Tomcat.
-* tomcat.keystore_type - (Linux only) Specify password of the SSL certificate file.
+* tomcat.keystore_password - (Linux only) Specify password of the SSL certificate file.
 
 ### arcgis-notebook-server-webadaptor-install
 
@@ -245,7 +245,7 @@ Required attribute changes:
 * arcgis.server.url - Specify ArcGIS Server URL.
 * arcgis.server.wa_url - Specify ArcGIS Web Adaptor URL.
 * tomcat.keystore_file - (Linux only) Specify path to the SSL certificate file in PKCS12 format that will be used to configure the HTTPS listener in Apache Tomcat.
-* tomcat.keystore_type - (Linux only) Specify password of the SSL certificate file.
+* tomcat.keystore_password - (Linux only) Specify password of the SSL certificate file.
 
 ### arcgis-video-server-webadaptor-install
 
@@ -278,7 +278,7 @@ Required attribute changes:
 * arcgis.video_server.url - Specify ArcGIS Video Server URL.
 * arcgis.video_server.wa_url - Specify ArcGIS Web Adaptor URL.
 * tomcat.keystore_file - (Linux only) Specify path to the SSL certificate file in PKCS12 format that will be used to configure the HTTPS listener in Apache Tomcat.
-* tomcat.keystore_type - (Linux only) Specify password of the SSL certificate file.
+* tomcat.keystore_password - (Linux only) Specify password of the SSL certificate file.
 
 ### arcgis-webadaptor-patches
 
