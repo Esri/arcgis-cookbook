@@ -429,7 +429,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.relational.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 ### arcgis-datastore-relational-standby
@@ -441,7 +441,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-spatiotemporal
 
@@ -452,7 +452,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.spatiotemporal.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 ### arcgis-datastore-spatiotemporal-node
@@ -464,7 +464,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-tilecache-primary
 
@@ -475,7 +475,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.tilecache.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 ### arcgis-datastore-tilecache-standby
@@ -487,7 +487,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-tilecache-cluster
 
@@ -498,7 +498,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.tilecache.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 ### arcgis-datastore-tilecache-cluster-node
@@ -510,7 +510,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-object
 
@@ -521,7 +521,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.object.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 > For single machine object store configurations, change arcgis.data_store.mode attribute to 'primaryStandby'.
@@ -535,7 +535,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-graph
 
@@ -546,7 +546,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 * arcgis.data_store.graph.backup_location - Replace 'FILESERVER' with the file server machine hostname or static IP address.
 
 ### arcgis-datastore-graph-node
@@ -558,7 +558,7 @@ Required attribute changes:
 * arcgis.run_as_password - (Windows only) password of 'arcgis' Windows user account
 * arcgis.server.admin_username - Specify ArcGIS Server primary site administrator account user name.
 * arcgis.server.admin_password- Specify ArcGIS Server primary site administrator account password.
-* arcgis.server.private_url - Specify private URL of ArcGIS Server site to register the data store.
+* arcgis.server.url - Specify URL of ArcGIS Server site to register the data store.
 
 ### arcgis-datastore-remove-machine
 
