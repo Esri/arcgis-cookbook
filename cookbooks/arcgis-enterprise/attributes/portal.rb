@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: portal
 #
-# Copyright 2022-2025 Esri
+# Copyright 2022-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ default['arcgis']['portal'].tap do |portal|
   portal['unpack_options'] = ''
 
   portal['system_properties'] = {}
-  portal['ports'] = '5701,5702,5703,7080,7443,7005,7099,7120,7220,7654,7820,7830,7840'
+  portal['ports'] = '5701,5702,5703,7080,7443,7005,7099,7120,7220,7654,7820,7830,7840,11211,50432'
 
   portal['living_atlas']['group_ids'] = ['81f4ed89c3c74086a99d168925ce609e', '6646cd89ff1849afa1b95ed670a298b8']
 
@@ -126,6 +126,11 @@ default['arcgis']['portal'].tap do |portal|
     portal['patch_registry'] ='SOFTWARE\\ESRI\\Portal for ArcGIS\\Updates'
 
     case node['arcgis']['version']
+    when '12.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Windows_121_200161.exe').gsub('/', '\\')
+      portal['product_code'] = '{B089C99B-8570-40E1-88C0-EF86CA36E536}'
+      portal['unpack_options'] = '/x'
     when '12.0'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Windows_120_197706.exe').gsub('/', '\\')
@@ -205,6 +210,9 @@ default['arcgis']['portal'].tap do |portal|
     portal['lp-setup'] = node['arcgis']['server']['setup']
 
     case node['arcgis']['version']
+    when '12.1'
+      portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'Portal_for_ArcGIS_Linux_121_200206.tar.gz')
     when '12.0'
       portal['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'Portal_for_ArcGIS_Linux_120_197821.tar.gz')

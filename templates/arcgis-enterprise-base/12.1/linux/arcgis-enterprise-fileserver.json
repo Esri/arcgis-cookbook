@@ -1,0 +1,27 @@
+{
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "fileserver": {
+            "directories": [
+                "/gisdata/arcgisserver",
+                "/gisdata/arcgisbackup",
+                "/gisdata/arcgisbackup/object",
+                "/gisdata/arcgisbackup/relational",
+                "/gisdata/arcgisbackup/webgisdr",
+                "/gisdata/arcgisportal",
+                "/gisdata/arcgisportal/content"
+            ],
+            "shares": [
+                "/gisdata/arcgisserver",
+                "/gisdata/arcgisbackup",
+                "/gisdata/arcgisportal"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "arcgis": {
+      "repository": {
+        "local_archives": "/opt/software/archives",
+        "shared": false,
+        "server": {
+          "username": "<repository_username>",
+          "password": "<repository_password>"
+        },
+        "files": {
+          "Portal_for_ArcGIS_Linux_121_200206.tar.gz": {
+            "subfolder": "software/arcgis/12.1"
+          },
+          "Portal_for_ArcGIS_Web_Styles_Linux_121_200207.tar.gz": {
+            "subfolder": "software/arcgis/12.1"
+          }
+        }
+      }
+    },
+    "run_list": [
+      "recipe[arcgis-repository::fileserver]",
+      "recipe[arcgis-repository::files]"
+    ]
+  }
+  

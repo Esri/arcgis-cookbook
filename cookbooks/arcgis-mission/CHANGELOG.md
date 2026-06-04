@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of the arcgis-mission cookbook.
 
+## 5.4.0
+
+- Added support for ArcGIS Mission Server 12.1.
+- Added support for SSL certificates configuration for ArcGIS Mission Server.
+
 ## 5.3.0
 
 - Added support for ArcGIS Mission Server 12.0.

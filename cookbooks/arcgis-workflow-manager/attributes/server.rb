@@ -42,6 +42,11 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   'ArcGISWorkflowManagerServer', 'Setup.exe')
 
     case node['arcgis']['version']
+    when '12.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_121_200180.exe').gsub('/', '\\')
+      server['product_code'] = '{CF66FDBC-FBF0-4593-8222-172328452A77}'
+      server['patch_registry'] ='SOFTWARE\\ESRI\\workflowmanager\\Server\\12.1\\Updates'
     when '12.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_120_197690.exe').gsub('/', '\\')
@@ -94,6 +99,9 @@ default['arcgis']['workflow_manager_server'].tap do |server|
                                   'ArcGISWorkflowManagerServer', 'Setup.sh')
 
     case node['arcgis']['version']
+    when '12.1'
+      server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                            'ArcGIS_Workflow_Manager_Server_121_200217.tar.gz')
     when '12.0'
       server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                             'ArcGIS_Workflow_Manager_Server_120_197847.tar.gz')

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: iptables
 #
-# Copyright 2021-2025 Esri
+# Copyright 2021-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 # limitations under the License.
 #
 
-iptables_packages 'install iptables' do
+arcgis_notebooks_iptables 'Install iptables' do
   only_if { node['arcgis']['cloud']['provider'] == 'ec2' }
+  action :install
 end
 
 # Reject Docker containers access to EC2 instance metadata IP address.

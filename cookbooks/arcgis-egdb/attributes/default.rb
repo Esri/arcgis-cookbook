@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-egdb
 # Attributes:: default
 #
-# Copyright 2019 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,10 +59,8 @@ default['arcgis']['egdb']['vc_redist_path'] = ::File.join(node['arcgis']['reposi
 default['arcgis']['egdb']['msodbcsql13_msi_url'] = 'https://download.microsoft.com/download/D/5/E/D5EEF288-A277-45C8-855B-8E2CB7E25B96/x64/msodbcsql.msi'
 default['arcgis']['egdb']['msodbcsql13_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],
                                                               'msodbcsql13.msi').gsub('/', '\\')
-
-default['arcgis']['egdb']['msodbcsql17_msi_url'] = 'https://download.microsoft.com/download/E/6/B/E6BFDC7A-5BCD-4C51-9912-635646DA801E/en-US/17.5.2.1/x64/msodbcsql.msi'
-default['arcgis']['egdb']['msodbcsql17_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],
-                                                              'msodbcsql17.msi').gsub('/', '\\')
+default['arcgis']['egdb']['msodbcsql18_msi_url'] = 'https://download.microsoft.com/download/7bf9fad4-0f21-486d-a750-fc990ded5624/amd64/1033/msodbcsql.msi'
+default['arcgis']['egdb']['msodbcsql18_msi_path'] = ::File.join(node['arcgis']['repository']['setups'], 'msodbcsql18.msi').gsub('/', '\\')
 
 default['arcgis']['egdb']['mssqlcmdlnutils_msi_url'] = 'https://download.microsoft.com/download/4/C/C/4CC1A229-3C56-4A7F-A3BA-F903C73E5895/EN/x64/MsSqlCmdLnUtils.msi'
 default['arcgis']['egdb']['mssqlcmdlnutils_msi_path'] = ::File.join(node['arcgis']['repository']['setups'],

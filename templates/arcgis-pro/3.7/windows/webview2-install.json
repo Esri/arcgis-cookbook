@@ -1,0 +1,8 @@
+{
+  "webview2": {
+    "setup": "C:\\Software\\Archives\\MicrosoftEdgeWebview2Setup.exe"
+  },
+  "run_list": [
+    "recipe[arcgis-pro::webview2]"
+  ]
+}

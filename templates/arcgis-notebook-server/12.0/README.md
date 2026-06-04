@@ -34,8 +34,8 @@ Consult the ArcGIS Notebook Server 12.0 system requirements documentation for th
 * Rocky Linux 9
 * AlmaLinux 9
 
-> On Red Hat Enterprise Linux Server platforms Mirantis Container Runtime must be installed before running Chef.
-
+> On SUSE Linux Enterprise Server (SLES) Mirantis Container Runtime must be installed before running Chef.
+ 
 Enable running sudo without password for the user running the Chef client.
 
 ### Required ArcGIS Software Repository Content

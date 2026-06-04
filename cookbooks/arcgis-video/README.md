@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-video cookbook"
 category: cookbooks
 item: arcgis-video
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -17,6 +17,7 @@ This cookbook installs and configures ArcGIS Video Server.
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Supported ArcGIS software
 
@@ -68,6 +69,11 @@ The following cookbooks are required:
 * `node['arcgis']['video_server']['system_properties']` = ArcGIS Video Server system properties. Default value is `{}`.
 * `node['arcgis']['video_server']['hostname']` = Host name or IP address of the ArcGIS Video Server machine. Default value is  `''`.
 * `node['arcgis']['video_server']['patches]` = File names of ArcGIS Video Server patches to install. Default value is `[]`.
+* `node['arcgis']['video_server']['keystore_file']` = Path to PKSC12 keystore file (.pfx) with SSL certificate for ArcGIS Video Server. Default value is `nil`.
+* `node['arcgis']['video_server']['keystore_password']` = Keystore file password for ArcGIS Video Server. Default value is `nil`.
+* `node['arcgis']['video_server']['cert_alias']` = SSL certificate alias for ArcGIS Video Server. Default alias is composed of these values: `node['arcgis']['video_server']['domain_name']`.
+* `node['arcgis']['video_server']['root_cert']` = ArcGIS Video Server root CA certificate PEM file path. Default value is `''`.
+* `node['arcgis']['video_server']['root_cert_alias']` = ArcGIS Video Server root CA certificate alias. Default value is `''`.
 
 ## Recipes
 

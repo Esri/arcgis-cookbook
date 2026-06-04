@@ -1,7 +1,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: docker
 #
-# Copyright 2022-2025 Esri
+# Copyright 2022-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
 # limitations under the License.
 #
 
-docker_service 'default' do
-  install_method 'package'
+arcgis_notebooks_docker "Install Docker CE" do
   version node['arcgis']['notebook_server']['docker_version']
+  docker_repository_url node['arcgis']['notebook_server']['docker_repository_url']
   only_if { node['arcgis']['notebook_server']['install_docker'] }
-  action [:create, :start]
+  action :install
 end
-   
+
+# See: https://docs.docker.com/reference/cli/dockerd/#daemon-configuration-file
+file '/etc/docker/daemon.json' do
+  content node['arcgis']['notebook_server']['docker_daemon_json']
+  mode '0644'
+  not_if { node['arcgis']['notebook_server']['docker_daemon_json'].nil? }
+end

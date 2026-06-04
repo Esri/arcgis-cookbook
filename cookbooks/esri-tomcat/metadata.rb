@@ -4,8 +4,8 @@ maintainer_email 'contracts@esri.com'
 license          'Apache 2.0'
 description      'Installs/Configures esri-tomcat'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.3.3'
-chef_version     '>= 15.3'
+version          '0.4.0'
+chef_version     '>= 15.3', '< 19'
 
 depends          'tomcat', '~> 5.0'
 depends          'iptables', '~> 8.0'

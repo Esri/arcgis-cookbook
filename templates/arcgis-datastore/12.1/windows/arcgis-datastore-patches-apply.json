@@ -1,0 +1,17 @@
+{
+    "arcgis": {
+        "version": "12.1",        
+        "repository": {
+            "patches": "C:\\Software\\Archives\\Patches"
+        },
+        "data_store": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
+            "patches": [
+                "ArcGIS-121-DS-*.msp"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

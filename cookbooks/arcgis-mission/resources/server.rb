@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Resource:: server
 #
-# Copyright 2022-2025 Esri
+# Copyright 2022-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ unified_mode true
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :create_site, :join_site,
-        :unregister_machine, :unregister_web_adaptors, :set_system_properties
+        :unregister_machine, :unregister_web_adaptors, :set_system_properties,
+        :configure_https
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -47,6 +48,12 @@ attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
 attribute :hostname, :kind_of => String
+attribute :keystore_file, :kind_of => [String, nil]
+attribute :keystore_password, :kind_of => [String, nil], :sensitive => true
+attribute :cert_alias, :kind_of => String
+attribute :root_cert, :kind_of => String
+attribute :root_cert_alias, :kind_of => String
+attribute :import_certificate_chain, :kind_of => [TrueClass, FalseClass], :default => true
 
 def initialize(*args)
   super
@@ -427,4 +434,49 @@ action :set_system_properties do
   admin_client.wait_until_available
 
   admin_client.update_system_properties(@new_resource.system_properties)
+end
+
+action :configure_https do
+  begin
+    admin_client = ArcGIS::MissionServerAdminClient.new(@new_resource.server_url,
+                                                        @new_resource.username,
+                                                        @new_resource.password)
+
+    admin_client.machines.each do |machine|
+      machine_name = machine['machineName']
+
+      # Import root certificate if it does not exist
+      unless @new_resource.root_cert.empty? || 
+            admin_client.ssl_certificate_exist?(machine_name,
+                                                @new_resource.root_cert_alias)
+        admin_client.import_root_ssl_certificate(machine_name,
+                                                 @new_resource.root_cert,
+                                                 @new_resource.root_cert_alias)
+      end
+
+      cert_alias = admin_client.get_server_ssl_certificate(machine_name)
+
+      unless @new_resource.keystore_file.empty? || cert_alias == @new_resource.cert_alias
+        unless admin_client.ssl_certificate_exist?(machine_name, @new_resource.cert_alias)
+          admin_client.import_server_ssl_certificate(machine_name,
+                                                     @new_resource.keystore_file,
+                                                     @new_resource.keystore_password,
+                                                     @new_resource.cert_alias,
+                                                     @new_resource.import_certificate_chain)
+        end
+
+        admin_client.set_server_ssl_certificate(machine_name, @new_resource.cert_alias)
+
+        # Editing the machine configuration causes the machine to be restarted.
+        admin_client.wait_until_available
+        sleep(60.0)
+        admin_client.wait_until_available
+
+        new_resource.updated_by_last_action(true)
+      end
+    end
+  rescue Exception => e
+    Chef::Log.error "Failed to configure SSL certificates in ArcGIS Mission Server. " + e.message
+    raise e
+  end
 end

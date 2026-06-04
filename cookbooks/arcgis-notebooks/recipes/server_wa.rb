@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Recipe:: server_wa
 #
-# Copyright 2019 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ arcgis_enterprise_webadaptor 'Configure Web Adaptor with Notebook Server' do
   username node['arcgis']['notebook_server']['admin_username']
   password node['arcgis']['notebook_server']['admin_password']
   admin_access true
-  mode node['arcgis']['version'] == '10.7.1' ? 'server' : 'notebook'
+  mode 'notebook'
   retries 5
   retry_delay 60
   action :configure_with_server

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Provider:: webadaptor
 #
-# Copyright 2023-2025 Esri
+# Copyright 2023-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -213,7 +213,7 @@ action :configure_with_server do
     uri = URI.parse(@new_resource.server_url)
     server_url = uri.scheme + '://' + uri.host + ':' + uri.port.to_s
 
-    Utils.wait_until_url_available(wa_url)
+    Utils.wait_until_url_available(wa_url, 0, 180.0)
     Utils.wait_until_url_available(server_url)
 
     if node['platform'] == 'windows'
@@ -247,7 +247,7 @@ action :configure_with_portal do
     healthcheck_url = @new_resource.portal_wa_url + '/portaladmin/healthCheck'
 
     Utils.wait_until_url_available(portal_url)
-    Utils.wait_until_url_available(wa_url)
+    Utils.wait_until_url_available(wa_url, 0, 180.0)
 
     if node['platform'] == 'windows'
       cmd = node['arcgis']['web_adaptor']['config_web_adaptor_exe']

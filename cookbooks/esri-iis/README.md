@@ -3,7 +3,7 @@ layout: default
 title: "esri-iis cookbook"
 category: cookbooks
 item: esri-iis
-version: 0.3.0
+version: 0.4.0
 latest: true
 ---
 

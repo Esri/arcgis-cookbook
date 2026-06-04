@@ -2,6 +2,12 @@
 
 This file is used to list changes made in each version of the arcgis-notebooks cookbook.
 
+## 5.4.0
+
+- Added support for ArcGIS Notebook Server 12.1.
+- Added support for ArcGIS Notebook Server on Windows.
+- Added support for SSL certificates configuration for ArcGIS Notebook Server.
+
 ## 5.3.0
 
 - Added support for ArcGIS Notebook Server 12.0.

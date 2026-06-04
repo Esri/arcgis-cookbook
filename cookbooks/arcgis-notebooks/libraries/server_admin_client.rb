@@ -1,5 +1,5 @@
 #
-# Copyright 2022-2025 Esri
+# Copyright 2022-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -267,14 +267,17 @@ module ArcGIS
     end
 
     def machines
-      request = Net::HTTP::Post.new(URI.parse(@server_url +
-        "/admin/machines").request_uri)
-
-      request.add_field('Referer', 'referer')
+      machines_uri = URI.parse(@server_url + '/admin/machines')
 
       token = generate_token()
 
-      request.set_form_data('token' => token, 'f' => 'json')
+      machines_uri.query = URI.encode_www_form(
+        'token' => token,
+        'f' => 'json')
+
+      request = Net::HTTP::Get.new(machines_uri.request_uri)
+
+      request.add_field('Referer', 'referer')
 
       response = send_request(request, @server_url)
 
@@ -308,6 +311,55 @@ module ArcGIS
 
       request.set_form_data(
         'machineNames' => machine_name,
+        'token' => token,
+        'f' => 'json')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+    end
+
+    def machine_info(machine_name)
+      machine_info_uri = URI.parse(@server_url + "/admin/machines/#{machine_name}")
+
+      token = generate_token()
+
+      machine_info_uri.query = URI.encode_www_form(
+        'token' => token,
+        'f' => 'json')
+
+      request = Net::HTTP::Get.new(machine_info_uri.request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      JSON.parse(response.body)
+    end
+
+    def get_server_ssl_certificate(machine_name)
+      machine_info(machine_name)['webServerCertificateAlias']
+    end
+
+    def set_server_ssl_certificate(machine_name, cert_alias)
+      machine = machine_info(machine_name)
+
+      request = Net::HTTP::Post.new(URI.parse(@server_url +
+        "/admin/machines/#{machine_name}/edit").request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      token = generate_token()
+
+      request.set_form_data(
+        'machineName' => machine_name,
+        'adminURL' => machine['adminURL'],
+        'webServerMaxHeapSize' => machine['webServerMaxHeapSize'],
+        'webServerCertificateAlias' => cert_alias,
         'token' => token,
         'f' => 'json')
 
@@ -352,6 +404,80 @@ module ArcGIS
       web_adaptors.each do |web_adaptor|
         unregister_web_adaptor(web_adaptor['id'])
       end
+    end
+
+    def ssl_certificate_exist?(machine_name, cert_alias)
+      cert_alias_machine_uri = URI.parse(@server_url + "/admin/machines/#{machine_name}/sslCertificates/#{cert_alias.downcase}")
+
+      token = generate_token()
+
+      cert_alias_machine_uri.query = URI.encode_www_form(
+        'token' => token,
+        'f' => 'json')
+
+      request = Net::HTTP::Get.new(cert_alias_machine_uri.request_uri)
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
+
+      true
+    rescue Exception
+      false
+    end
+
+    def import_server_ssl_certificate(machine_name, cert_file, cert_password, cert_alias, import_certificate_chain = true)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      url = URI.parse(@server_url + 
+        "/admin/machines/#{machine_name}/sslCertificates/importExistingServerCertificate")
+
+      token = generate_token()
+
+      request = Net::HTTP::Post::Multipart.new url.path,
+        'certFile' => UploadIO.new(File.new(cert_file), 'application/x-pkcs12', cert_alias),
+        'certPassword' => cert_password,
+        'alias' => cert_alias,
+        'importCertificateChain' => import_certificate_chain,
+        'token' => token,
+        'f' => 'json'
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url, true)
+
+      validate_response(response)
+    end
+
+    def import_root_ssl_certificate(machine_name, cert_file, cert_alias)
+      begin
+        require 'net/http/post/multipart'
+      rescue LoadError
+        Chef::Log.error("Missing gem 'multipart-post'. Use the 'system' recipe to install it first.")
+      end
+
+      url = URI.parse(@server_url + 
+        "/admin/machines/#{machine_name}/sslCertificates/importRootOrIntermediate")
+
+      token = generate_token()
+
+      request = Net::HTTP::Post::Multipart.new url.path,
+        'rootCACertificate' => UploadIO.new(File.new(cert_file), 'application/x-x509-ca-cert', cert_alias),
+        'alias' => cert_alias,
+        'token' => token,
+        'f' => 'json'
+
+      request.add_field('Referer', 'referer')
+
+      response = send_request(request, @server_url)
+
+      validate_response(response)
     end
 
     private

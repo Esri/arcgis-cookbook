@@ -3,7 +3,7 @@ layout: default
 title: "esri-tomcat cookbook"
 category: cookbooks
 item: esri-tomcat
-version: 0.3.3
+version: 0.4.0
 latest: true
 ---
 

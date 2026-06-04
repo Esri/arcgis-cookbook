@@ -151,4 +151,21 @@ arcgis_notebooks_server 'Set ArcGIS Notebook Server system properties' do
   action :set_system_properties
 end
 
+arcgis_notebooks_server 'Configure HTTPS' do
+  server_url node['arcgis']['notebook_server']['url']
+  username node['arcgis']['notebook_server']['admin_username']
+  password node['arcgis']['notebook_server']['admin_password']
+  keystore_file node['arcgis']['notebook_server']['keystore_file']
+  keystore_password node['arcgis']['notebook_server']['keystore_password']
+  cert_alias node['arcgis']['notebook_server']['cert_alias']
+  root_cert node['arcgis']['notebook_server']['root_cert']
+  root_cert_alias node['arcgis']['notebook_server']['root_cert_alias']
+  import_certificate_chain node['arcgis']['notebook_server']['import_certificate_chain']
+  retries 5
+  retry_delay 30
+  not_if { node['arcgis']['notebook_server']['keystore_file'].empty? &&
+           node['arcgis']['notebook_server']['root_cert'].empty? }
+  action :configure_https
+end
+
 include_recipe 'arcgis-notebooks::samples_data' if node['arcgis']['notebook_server']['install_samples_data']

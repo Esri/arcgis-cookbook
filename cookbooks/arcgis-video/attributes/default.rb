@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-video
 # Attributes:: default
 #
-# Copyright 2024-2025 Esri
+# Copyright 2024-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,6 +65,17 @@ default['arcgis']['video_server'].tap do |video_server|
                                               'com.esri.arcgis.carbon.persistence.impl.filesystem.FSConfigPersistence'
                                             end
 
+  video_server['keystore_file'] = ''
+  if ENV['ARCGIS_VIDEO_SERVER_KEYSTORE_PASSWORD'].nil?
+    video_server['keystore_password'] = nil
+  else
+    video_server['keystore_password'] = ENV['ARCGIS_VIDEO_SERVER_KEYSTORE_PASSWORD']
+  end
+  video_server['cert_alias'] = video_server['domain_name']
+  video_server['root_cert'] = ''
+  video_server['root_cert_alias'] = ''
+  video_server['import_certificate_chain'] = true
+
   video_server['log_level'] = 'WARNING'
   video_server['max_log_file_age'] = 90
 
@@ -96,6 +107,10 @@ default['arcgis']['video_server'].tap do |video_server|
     video_server['log_dir'] = 'C:\\arcgisvideoserver\\logs'
 
     case node['arcgis']['version']
+    when '12.1'
+      video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                    'ArcGIS_Video_Server_Windows_121_200179.exe').gsub('/', '\\')
+      video_server['product_code'] = '{691DD84E-B01A-4341-888B-6B941F671E6E}'
     when '12.0'
       video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                     'ArcGIS_Video_Server_Windows_120_197689.exe').gsub('/', '\\')
@@ -152,6 +167,9 @@ default['arcgis']['video_server'].tap do |video_server|
                                           'usr', 'logs')
 
     case node['arcgis']['version']
+    when '12.1'
+      video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                  'ArcGIS_Video_Server_Linux_121_200212.tar.gz')
     when '12.0'
       video_server['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                   'ArcGIS_Video_Server_Linux_120_197846.tar.gz')

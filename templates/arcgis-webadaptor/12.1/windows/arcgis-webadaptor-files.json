@@ -1,0 +1,27 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "C:\\Software\\Archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Web_Adaptor_for_Microsoft_IIS_121_200166.exe": {
+                    "subfolder": "software/arcgis/12.1"
+                },
+                "dotnet-hosting-10.0.1-win.exe": {
+                  "url": "https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/10.0.1/dotnet-hosting-10.0.1-win.exe"
+                },
+                "WebDeploy_amd64_en-US.msi": {
+                  "url": "https://download.microsoft.com/download/webdeploy_amd64_en-US.msi"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: portal_wa
 #
-# Copyright 2018 Esri
+# Copyright 2018-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ arcgis_enterprise_webadaptor 'Configure Web Adaptor with Portal' do
   username node['arcgis']['portal']['admin_username']
   password node['arcgis']['portal']['admin_password']
   reindex_portal_content node['arcgis']['web_adaptor']['reindex_portal_content']
-  retries 10
-  retry_delay 600
+  retries 5
+  retry_delay 60
   action :configure_with_portal
 end

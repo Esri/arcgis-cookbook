@@ -3,7 +3,7 @@ layout: default
 title: "arcgis-repository cookbook"
 category: cookbooks
 item: arcgis-repository
-version: 5.3.0
+version: 5.4.0
 latest: true
 ---
 
@@ -21,6 +21,7 @@ arcgis-repository cookbook downloads ArcGIS software setup archives from remote 
 * 11.4
 * 11.5
 * 12.0
+* 12.1
 
 ## Platforms
 

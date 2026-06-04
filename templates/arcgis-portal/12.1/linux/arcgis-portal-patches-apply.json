@@ -1,0 +1,19 @@
+{
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "patches": "/opt/software/archives/patches"
+        },
+        "portal": {
+            "install_dir": "/opt",
+            "patches": [
+                "ArcGIS-121-PFA-*.tar",
+                "ArcGIS-121-PFA-*.tar.gz"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::install_patches]"
+    ]
+}

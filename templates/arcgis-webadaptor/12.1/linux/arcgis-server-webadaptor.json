@@ -1,0 +1,42 @@
+{
+    "java": {
+        "version": "17.0.15+6",
+        "tarball_uri": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz",
+        "tarball_path": "/opt/software/archives/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz"
+    },
+    "tomcat": {
+        "version": "10.1.41",
+        "tarball_path": "/opt/software/archives/apache-tomcat-10.1.41.tar.gz",
+        "install_path": "/opt/tomcat_arcgis_10.1.41",
+        "keystore_file": "/opt/tomcat_arcgis_10.1.41/conf/ssl_certificate_file.pfx",
+        "keystore_type": "pkcs12",
+        "keystore_password": "<keystore_password>"
+    },
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "repository": {
+            "archives": "/opt/software/archives",
+            "setups": "/opt/software/setups"
+        },
+        "web_server": {
+            "webapp_dir": "/opt/tomcat_arcgis_10.1.41/webapps"
+        },
+        "server": {
+            "url": "https://domain.com:6443/arcgis",
+            "wa_url": "https://domain.com/server",
+            "admin_username": "<server_admin_username>",
+            "admin_password": "<server_admin_password>",
+            "wa_name": "server"
+        },
+        "web_adaptor": {
+            "install_dir": "/opt"
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[esri-tomcat::openjdk]",
+        "recipe[esri-tomcat]",
+        "recipe[arcgis-enterprise::server_wa]"
+    ]
+}

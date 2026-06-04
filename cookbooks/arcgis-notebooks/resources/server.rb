@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-notebooks
 # Resource:: server
 #
-# Copyright 2019-2025 Esri
+# Copyright 2019-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ unified_mode true
 
 actions :system, :unpack, :install, :uninstall, :update_account, :stop, :start,
         :configure_autostart, :authorize, :post_install, :create_site, :join_site,
-        :unregister_machine, :unregister_web_adaptors, :set_system_properties
+        :unregister_machine, :unregister_web_adaptors, :set_system_properties,
+        :configure_https
 
 attribute :setup_archive, :kind_of => String
 attribute :setups_repo, :kind_of => String
@@ -49,6 +50,12 @@ attribute :log_level, :kind_of => String, :default => 'WARNING'
 attribute :log_dir, :kind_of => String
 attribute :max_log_file_age, :kind_of => Integer, :default => 90
 attribute :system_properties, :kind_of => Hash, :default => {}
+attribute :keystore_file, :kind_of => [String, nil]
+attribute :keystore_password, :kind_of => [String, nil], :sensitive => true
+attribute :cert_alias, :kind_of => String
+attribute :root_cert, :kind_of => String
+attribute :root_cert_alias, :kind_of => String
+attribute :import_certificate_chain, :kind_of => [TrueClass, FalseClass], :default => true
 
 def initialize(*args)
   super
@@ -355,11 +362,17 @@ end
 
 action :post_install do
   if node['platform'] == 'windows'
-    cmd = ::File.join(@new_resource.install_dir, 'tools', 'postInstallUtility', 'PostInstallUtility.bat')
+    cmd = ::File.join(@new_resource.install_dir, 'tools', 'PostInstallUtility', 'PostInstallUtility.bat')
     args = "-l \"#{@new_resource.docker_images}\""
+    env = { 'AGSNOTEBOOK' => @new_resource.install_dir + '\\' }
 
-    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", { :timeout => 1200 })
+    cmd = Mixlib::ShellOut.new("\"#{cmd}\" #{args}", 
+          { :timeout => 3600, :environment => env })
     cmd.run_command
+
+    Chef::Log.debug('STDOUT < ' + cmd.stdout)
+    Chef::Log.debug('STDERR < ' + cmd.stderr)
+
     cmd.error!
   else
     install_dir = ::File.join(@new_resource.install_dir, node['arcgis']['notebook_server']['install_subdir'])
@@ -367,8 +380,12 @@ action :post_install do
     args = "-l #{@new_resource.docker_images}"
 
     cmd = Mixlib::ShellOut.new("su - #{@new_resource.run_as_user} -c \"#{cmd} #{args}\"",
-          { :timeout => 1200 })
+          { :timeout => 3600 })
     cmd.run_command
+
+    Chef::Log.debug('STDOUT < ' + cmd.stdout)
+    Chef::Log.debug('STDERR < ' + cmd.stderr)
+
     cmd.error!
   end
 end
@@ -463,4 +480,49 @@ action :set_system_properties do
   admin_client.wait_until_available
 
   admin_client.update_system_properties(@new_resource.system_properties)
+end
+
+action :configure_https do
+  begin
+    admin_client = ArcGIS::NotebookServerAdminClient.new(@new_resource.server_url,
+                                                         @new_resource.username,
+                                                         @new_resource.password)
+
+    admin_client.machines.each do |machine|
+      machine_name = machine['machineName']
+
+      # Import root certificate if it does not exist
+      unless @new_resource.root_cert.empty? || 
+            admin_client.ssl_certificate_exist?(machine_name,
+                                                @new_resource.root_cert_alias)
+        admin_client.import_root_ssl_certificate(machine_name,
+                                                @new_resource.root_cert,
+                                                @new_resource.root_cert_alias)
+      end
+
+      cert_alias = admin_client.get_server_ssl_certificate(machine_name)
+
+      unless @new_resource.keystore_file.empty? || cert_alias == @new_resource.cert_alias
+        unless admin_client.ssl_certificate_exist?(machine_name, @new_resource.cert_alias)
+          admin_client.import_server_ssl_certificate(machine_name,
+                                                    @new_resource.keystore_file,
+                                                    @new_resource.keystore_password,
+                                                    @new_resource.cert_alias,
+                                                    @new_resource.import_certificate_chain)
+        end
+
+        admin_client.set_server_ssl_certificate(machine_name, @new_resource.cert_alias)
+
+        # Editing the machine configuration causes the machine to be restarted.
+        admin_client.wait_until_available
+        sleep(60.0)
+        admin_client.wait_until_available
+
+        new_resource.updated_by_last_action(true)
+      end
+    end
+  rescue Exception => e
+    Chef::Log.error "Failed to configure SSL certificates in ArcGIS Notebook Server. " + e.message
+    raise e
+  end
 end

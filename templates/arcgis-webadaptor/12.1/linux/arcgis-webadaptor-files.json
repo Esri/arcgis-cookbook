@@ -1,0 +1,27 @@
+{
+    "arcgis": {
+        "repository": {
+            "local_archives": "/opt/software/archives",
+            "shared": false,
+            "server": {
+                "username": "<repository_username>",
+                "password": "<repository_password>"
+            },
+            "files": {
+                "ArcGIS_Web_Adaptor_Java_Linux_121_200209.tar.gz": {
+                    "subfolder": "software/arcgis/12.1"
+                },
+                "apache-tomcat-10.1.41.tar.gz": {
+                    "url": "https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.41/bin/apache-tomcat-10.1.41.tar.gz"
+                },
+                "OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz": {
+                    "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz"
+                }
+            }
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-repository::fileserver]",
+        "recipe[arcgis-repository::files]"
+    ]
+}

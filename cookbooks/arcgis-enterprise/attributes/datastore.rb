@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Attributes:: datastore
 #
-# Copyright 2023-2025 Esri
+# Copyright 2023-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ default['arcgis']['data_store'].tap do |data_store|
   data_store['force_remove_machine'] = false
   data_store['setup_archive'] = ''
   data_store['product_code'] = ''
-  data_store['ports'] = '2443,4369,9220,9320,9820,9828,9829,9830,9831,9840,9850,9876,9900,25672,44369,45671,45672,29079-29090'
+  data_store['ports'] = '2443,4369,9220,9320,9820,9828,9829,9830,9831,9840,9850,9856,9857,9872,9876,9886,9894,9900,11211,19864,19879,25672,28981,29079-29090,29858,29859,29860-29863,29879,29895,44369,45671,45672'
 
   data_store['patches'] = []
   
@@ -51,6 +51,10 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['patch_registry'] ='SOFTWARE\\ESRI\\ArcGIS Data Store\\Updates'
 
     case node['arcgis']['version']
+    when '12.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Windows_121_200164.exe').gsub('/', '\\')
+      data_store['product_code'] = '{0D10FFF3-8380-4E15-952E-DC031EB3940D}'
     when '12.0'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Windows_120_197709.exe').gsub('/', '\\')
@@ -93,6 +97,9 @@ default['arcgis']['data_store'].tap do |data_store|
     data_store['lp-setup'] = node['arcgis']['data_store']['setup']
 
     case node['arcgis']['version']
+    when '12.1'
+      data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
+                                                'ArcGIS_DataStore_Linux_121_200208.tar.gz')
     when '12.0'
       data_store['setup_archive'] = ::File.join(node['arcgis']['repository']['archives'],
                                                 'ArcGIS_DataStore_Linux_120_197823.tar.gz')

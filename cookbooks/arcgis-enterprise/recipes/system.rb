@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-enterprise
 # Recipe:: system
 #
-# Copyright 2023-2025 Esri
+# Copyright 2023-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -120,10 +120,22 @@ else
     only_if { ENV['arcgis_cloud_platform'] == 'aws' }
   end
 
+  service 'enable autofs' do
+    service_name 'autofs'
+    only_if { node['arcgis']['configure_autofs'] }
+    action [:enable, :start]
+  end
+  
   # Remove comment from #/net in /etc/auto.master
   file "/etc/auto.master" do
     content lazy { File.read("/etc/auto.master").gsub("#/net", "/net") }
+    notifies :reload, 'service[reload autofs]', :immediately
     only_if { node['arcgis']['configure_autofs'] }
+  end
+
+  service 'reload autofs' do
+    service_name 'autofs'
+    action :nothing
   end
 
   directory '/home/' + node['arcgis']['run_as_user'] + '/.ssh' do
@@ -141,11 +153,6 @@ else
     group node['arcgis']['run_as_user']
     not_if { node['arcgis']['run_as_user_auth_keys'].nil? }
     action :create
-  end
-
-  service 'autofs' do
-    only_if { node['arcgis']['configure_autofs'] }
-    action [:enable, :reload, :restart]
   end
 end
 

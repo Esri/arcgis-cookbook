@@ -1,0 +1,26 @@
+{
+  "arcgis": {
+    "run_as_user": "arcgis",
+    "portal": {
+      "install_dir": "/opt",
+      "webgisdr_timeout": 36000,
+      "webgisdr_properties": {
+        "PORTAL_ADMIN_URL": "https://domain.com:7443/arcgis",
+        "PORTAL_ADMIN_USERNAME": "<portal_admin_username>",
+        "PORTAL_ADMIN_PASSWORD": "<portal_admin_password>",
+        "PORTAL_ADMIN_PASSWORD_ENCRYPTED": false,
+        "BACKUP_RESTORE_MODE": "backup",
+        "SHARED_LOCATION": "/net/FILESERVER/gisdata/arcgisbackup/webgisdr",
+        "INCLUDE_SCENE_TILE_CACHES": false,
+        "BACKUP_STORE_PROVIDER": "AmazonS3",
+        "S3_ENCRYPTED": false,
+        "S3_BUCKET": "<S3 bucket>",
+        "S3_CREDENTIALTYPE": "IAMRole",
+        "S3_REGION": "us-east-1"
+      }
+    }
+  },
+  "run_list": [
+    "recipe[arcgis-enterprise::webgisdr_export]"
+  ]
+}

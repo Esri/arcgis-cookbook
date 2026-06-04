@@ -2,7 +2,7 @@
 # Cookbook Name:: arcgis-mission
 # Recipe:: server_node
 #
-# Copyright 2021-2025 Esri
+# Copyright 2021-2026 Esri
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -88,4 +88,21 @@ arcgis_mission_server 'Join ArcGIS Mission Server site' do
   retries 5
   retry_delay 30
   action :join_site
+end
+
+arcgis_mission_server 'Configure HTTPS' do
+  server_url node['arcgis']['mission_server']['url']
+  username node['arcgis']['mission_server']['admin_username']
+  password node['arcgis']['mission_server']['admin_password']
+  keystore_file node['arcgis']['mission_server']['keystore_file']
+  keystore_password node['arcgis']['mission_server']['keystore_password']
+  cert_alias node['arcgis']['mission_server']['cert_alias']
+  root_cert node['arcgis']['mission_server']['root_cert']
+  root_cert_alias node['arcgis']['mission_server']['root_cert_alias']
+  import_certificate_chain node['arcgis']['mission_server']['import_certificate_chain']
+  retries 5
+  retry_delay 30
+  not_if { node['arcgis']['mission_server']['keystore_file'].empty? &&
+           node['arcgis']['mission_server']['root_cert'].empty? }
+  action :configure_https
 end

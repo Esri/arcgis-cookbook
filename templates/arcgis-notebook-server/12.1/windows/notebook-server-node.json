@@ -1,0 +1,28 @@
+{
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "run_as_password": "<run_as_password>",
+        "configure_windows_firewall": true,
+        "repository": {
+            "archives": "C:\\Software\\Archives",
+            "setups": "C:\\Software\\Setups"
+        },
+        "notebook_server": {
+            "install_dir": "C:\\Program Files\\ArcGIS\\NotebookServer",    
+            "install_system_requirements": true,
+            "authorization_file": "C:\\Software\\AuthorizationFiles\\12.1\\NotebookServer.prvc",
+            "license_level": "standard",
+            "admin_username": "<notebook_server_admin_username>",
+            "admin_password": "<notebook_server_admin_password>",
+            "primary_server_url": "https://primary:11443/arcgis",
+            "log_dir": "C:\\arcgisnotebookserver\\logs",
+            "configure_autostart": true
+        }
+    },
+    "run_list": [
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::disable_loopback_check]",     
+        "recipe[arcgis-notebooks::server_node]"
+    ]
+}

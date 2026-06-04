@@ -1,0 +1,23 @@
+{
+    "arcgis": {
+        "version": "12.1",
+        "run_as_user": "arcgis",
+        "fileserver": {
+            "directories": [
+                "/gisdata/arcgisbackup",
+                "/gisdata/arcgisbackup/relational",
+                "/gisdata/arcgisbackup/spatiotemporal",
+                "/gisdata/arcgisbackup/graph",
+                "/gisdata/arcgisbackup/object"
+            ],
+            "shares": [
+                "/gisdata/arcgisbackup"
+            ]
+        }
+    },
+    "run_list": [
+        "recipe[nfs::server]",
+        "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::fileserver]"
+    ]
+}
