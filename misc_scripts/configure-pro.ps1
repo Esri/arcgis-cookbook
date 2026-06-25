@@ -171,11 +171,19 @@ if (-not $clientExePath) {
 Push-Location $chefBase
 
 Write-Host "Running Cinc client with template: $templateJsonTarget"
-& $clientExePath -z -r "run_list" -j $templateJsonTarget
+& $clientExePath -z -c 'C:\chef\client.rb' -j $templateJsonTarget -L 'C:\chef\client.log'
 
 $cincExitCode = $LASTEXITCODE
 
 Pop-Location
+
+Write-Host ("cinc-client exited with code {0}" -f $cincExitCode)
+
+if (Test-Path 'C:\chef\client.log') {
+  Write-Host '----- BEGIN C:\chef\client.log (last 200 lines) -----'
+  Get-Content -Path 'C:\chef\client.log' -Tail 200 | ForEach-Object { Write-Host $_ }
+  Write-Host '----- END C:\chef\client.log (last 200 lines) -----'
+}
 
 if ($cincExitCode -eq 0) {
   Write-Host "ArcGIS Pro 3.5 installation completed successfully"
