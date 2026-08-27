@@ -6,7 +6,14 @@
         "configure_windows_firewall": true,
         "repository": {
             "archives": "C:\\Software\\Archives",
-            "setups": "C:\\Software\\Setups"
+            "setups": "C:\\Software\\Setups",
+            "local_patches": "C:\\Software\\Archives\\Patches",
+            "patches": "C:\\Software\\Archives\\Patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Data Store"
+                ]
+            }
         },
         "iis": {
             "keystore_file": "C:\\Temp\\keystore.pfx",
@@ -53,7 +60,10 @@
                 "max_connections": 150,
                 "pitr": "disable",
                 "enablessl": true                
-            }
+            },
+            "patches": [
+                "ArcGIS-121-DS-RSU-Patch.msp"
+            ]
         },
         "portal": {
             "install_dir": "C:\\Program Files\\ArcGIS\\Portal",
@@ -120,6 +130,9 @@
         "recipe[arcgis-enterprise::portal_wa]",
         "recipe[arcgis-enterprise::server]",
         "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-repository::patches]",
+        "recipe[arcgis-enterprise::install_patches]",          
         "recipe[arcgis-enterprise::datastore]",
         "recipe[arcgis-enterprise::federation]"
     ]

@@ -4,7 +4,14 @@
         "run_as_user": "arcgis",
         "repository": {
             "archives": "/opt/software/archives",
-            "setups": "/opt/software/setups"
+            "setups": "/opt/software/setups",
+            "local_patches": "/opt/software/archives/patches",
+            "patches": "/opt/software/archives/patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Data Store"
+                ]
+            }
         },
         "server": {
             "admin_username": "<server_admin_username>",
@@ -17,11 +24,17 @@
             "install_system_requirements": true,
             "types": "relational",
             "preferredidentifier": "hostname",
-            "data_dir": "/gisdata/arcgisdatastore"
+            "data_dir": "/gisdata/arcgisdatastore",
+            "patches": [
+                "ArcGIS-121-DS-RSU-Patch-linux.tar"
+            ]
         }
     },
     "run_list": [
         "recipe[arcgis-enterprise::system]",
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-repository::patches]",
+        "recipe[arcgis-enterprise::install_patches]",           
         "recipe[arcgis-enterprise::datastore_standby]"
     ]
 }
