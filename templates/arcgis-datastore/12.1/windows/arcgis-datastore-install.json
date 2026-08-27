@@ -6,19 +6,31 @@
         "configure_windows_firewall": true,
         "repository": {
             "archives": "C:\\Software\\Archives",
-            "setups": "C:\\Software\\Setups"
+            "setups": "C:\\Software\\Setups",
+            "local_patches": "C:\\Software\\Archives\\Patches",
+            "patches": "C:\\Software\\Archives\\Patches",
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Data Store"
+                ]
+            }
         },
         "data_store": {
             "install_dir": "C:\\Program Files\\ArcGIS\\DataStore",
             "setup_options": "ADDLOCAL=ALL",
             "install_system_requirements": true,
             "preferredidentifier": "hostname",
-            "data_dir": "C:\\arcgisdatastore"
+            "data_dir": "C:\\arcgisdatastore",
+            "patches": [
+                "ArcGIS-121-DS-RSU-Patch.msp"
+            ]
         }
     },
     "run_list": [
         "recipe[arcgis-enterprise::system]",
         "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-repository::patches]",
+        "recipe[arcgis-enterprise::install_patches]",            
         "recipe[arcgis-enterprise::start_datastore]"
     ]
 }

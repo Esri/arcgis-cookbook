@@ -17,7 +17,14 @@
         "run_as_user": "arcgis",
         "repository": {
             "archives": "/opt/software/archives",
-            "setups": "/opt/software/setups"
+            "setups": "/opt/software/setups",
+            "local_patches": "/opt/software/archives/patches",
+            "patches": "/opt/software/archives/patches",            
+            "patch_notification": {
+                "products": [
+                    "ArcGIS Data Store"
+                ]
+            }
         },
         "web_server": {
             "webapp_dir": "/opt/tomcat_arcgis_10.1.41/webapps"
@@ -40,7 +47,10 @@
             "data_dir": "/gisdata/arcgisdatastore",
             "preferredidentifier": "hostname",
             "install_system_requirements": true,
-            "types": "relational"
+            "types": "relational",
+            "patches": [
+                "ArcGIS-121-DS-RSU-Patch-linux.tar"
+            ]
         },
         "portal": {
             "install_dir": "/opt",
@@ -69,6 +79,9 @@
         "recipe[arcgis-enterprise::portal_wa]",
         "recipe[arcgis-enterprise::server_node]",
         "recipe[arcgis-enterprise::server_wa]",
+        "recipe[arcgis-enterprise::install_datastore]",
+        "recipe[arcgis-repository::patches]",
+        "recipe[arcgis-enterprise::install_patches]",             
         "recipe[arcgis-enterprise::datastore_standby]"
     ]
 }
